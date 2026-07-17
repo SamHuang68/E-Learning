@@ -2,14 +2,17 @@ import { getSupabase, isSupabaseConfigured } from '../lib/supabase'
 import {
   applyCloudBundle,
   defaultKanaProgress,
+  defaultLearningMeta,
   defaultToeicProgress,
   loadKanaProgress,
   loadLang,
+  loadLearningMeta,
   loadProgress,
   loadToeicProgress,
   setProgressChangeHook,
   type AppView,
   type KanaProgress,
+  type LearningMeta,
   type ProgressState,
   type ToeicProgress,
 } from './storage'
@@ -24,6 +27,7 @@ export type CloudProgressRow = {
   kana: KanaProgress
   toeic: ToeicProgress
   lang: AppView
+  meta: LearningMeta
   updated_at: string
 }
 
@@ -76,6 +80,7 @@ function localBundle() {
     kana: loadKanaProgress(),
     toeic: loadToeicProgress(),
     lang: loadLang(),
+    meta: loadLearningMeta(),
   }
 }
 
@@ -92,6 +97,7 @@ function normalizeRow(data: Record<string, unknown>): Omit<CloudProgressRow, 'us
     kana: (data.kana as KanaProgress) ?? defaultKanaProgress(),
     toeic: (data.toeic as ToeicProgress) ?? defaultToeicProgress(),
     lang: normalizeLang(data.lang),
+    meta: (data.meta as LearningMeta) ?? defaultLearningMeta(),
     updated_at:
       typeof data.updated_at === 'string'
         ? data.updated_at
@@ -113,7 +119,7 @@ export async function hydrateFromCloud(userId: string): Promise<SyncOutcome> {
   try {
     const { data, error } = await sb
       .from('user_progress')
-      .select('user_id, aoba, kana, toeic, lang, updated_at')
+      .select('user_id, aoba, kana, toeic, lang, meta, updated_at')
       .eq('user_id', userId)
       .maybeSingle()
 
@@ -127,6 +133,7 @@ export async function hydrateFromCloud(userId: string): Promise<SyncOutcome> {
         kana: bundle.kana,
         toeic: bundle.toeic,
         lang: bundle.lang,
+        meta: bundle.meta,
         updated_at: new Date().toISOString(),
       })
       if (upsertError) throw upsertError
@@ -141,6 +148,7 @@ export async function hydrateFromCloud(userId: string): Promise<SyncOutcome> {
       kana: row.kana,
       toeic: row.toeic,
       lang: row.lang,
+      meta: row.meta,
     })
     allowPush = true
     emit('synced')
@@ -165,6 +173,7 @@ export async function pushProgressNow(): Promise<boolean> {
       kana: bundle.kana,
       toeic: bundle.toeic,
       lang: bundle.lang,
+      meta: bundle.meta,
       updated_at: new Date().toISOString(),
     })
     if (error) throw error
@@ -213,6 +222,7 @@ export async function resetCloudProgress(): Promise<boolean> {
     kana: defaultKanaProgress(),
     toeic: defaultToeicProgress(),
     lang: 'hub' as AppView,
+    meta: defaultLearningMeta(),
   }
 
   emit('syncing')
