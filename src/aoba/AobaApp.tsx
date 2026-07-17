@@ -1,18 +1,27 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { KanaLab } from '../components/KanaLab'
+import { ExerciseSession } from '../components/ExerciseSession'
 import { LessonBuilder } from '../components/LessonBuilder'
 import { PracticeView } from '../components/PracticeView'
 import { Sidebar, type NavId } from '../components/Sidebar'
 import { TodayView } from '../components/TodayView'
+import { collectUnitCardIds, itemKey } from '../data/contentPack'
 import { jlptLevels, type BuilderConfig } from '../data/course'
 import { flattenKana, getKanaRows } from '../data/kana'
+import { getJaPractice } from '../data/practiceContent'
+import { cardsToExercises } from '../engine/exercises'
+import { dailyProgress } from '../engine/habits'
+import { buildDailyQueue } from '../engine/srs'
+import { applyExerciseSessionResult } from '../engine/sessionResults'
 import { decodeShare } from '../utils/prompt'
 import { useAuth } from '../auth/AuthProvider'
 import {
   loadKanaProgress,
+  loadLearningMeta,
   loadProgress,
   saveProgress,
   type LangId,
+  type LearningMeta,
   type ProgressState,
 } from '../utils/storage'
 
@@ -38,6 +47,12 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
   const [practice, setPractice] = useState<'vocab' | 'reading' | 'grammar' | null>(
     null,
   )
+  const [special, setSpecial] = useState<
+    'review' | 'mock' | 'placement' | 'kanji' | 'scenario' | 'speaking' | null
+  >(null)
+  const [learningMeta, setLearningMeta] = useState<LearningMeta>(() =>
+    loadLearningMeta(),
+  )
   const [builderSeed, setBuilderSeed] = useState<Partial<BuilderConfig>>()
   const [speakingHint, setSpeakingHint] = useState('音訊待命')
   const [kanaTotals, setKanaTotals] = useState(initialKanaTotals)
@@ -52,6 +67,26 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
   const level =
     jlptLevels.find((l) => l.id === progress.levelId) ?? jlptLevels[0]
   const unit = level.units.find((u) => u.id === progress.unitId) ?? level.units[0]
+  const currentPack = useMemo(
+    () => getJaPractice(progress.levelId, unit.id),
+    [progress.levelId, unit.id],
+  )
+  const unitItemIds = useMemo(
+    () =>
+      currentPack
+        ? collectUnitCardIds(currentPack).map((id) => itemKey('ja', id))
+        : [],
+    [currentPack],
+  )
+  const reviewQueue = useMemo(
+    () =>
+      buildDailyQueue({
+        allIds: unitItemIds,
+        items: learningMeta.items,
+      }),
+    [learningMeta.items, unitItemIds],
+  )
+  const daily = useMemo(() => dailyProgress(learningMeta), [learningMeta])
 
   const progressPct = useMemo(() => {
     const v = (progress.vocabDone / unit.words) * 100
@@ -67,6 +102,7 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
   useEffect(() => {
     const onHydrated = () => {
       setProgress(loadProgress())
+      setLearningMeta(loadLearningMeta())
       setKanaTotals(initialKanaTotals())
     }
     window.addEventListener('e-learning:progress-hydrated', onHydrated)
@@ -90,12 +126,119 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
     setProgress((p) => ({ ...p, ...patch }))
   }
 
+  function applyPracticeProgress(
+    kind: 'vocab' | 'reading' | 'grammar',
+    delta = 1,
+  ) {
+    const amount = Math.max(0, delta)
+    setLearningMeta(loadLearningMeta())
+    if (amount <= 0) return
+
+    setProgress((prev) => {
+      if (kind === 'vocab') {
+        return {
+          ...prev,
+          vocabDone: Math.min(unit.words, prev.vocabDone + amount),
+          xp: prev.xp + amount * 5,
+        }
+      }
+      if (kind === 'reading') {
+        return {
+          ...prev,
+          readingDone: Math.min(unit.reading, prev.readingDone + amount),
+          xp: prev.xp + amount * 8,
+        }
+      }
+      return {
+        ...prev,
+        grammarStarted: true,
+        xp: prev.xp + amount * 10,
+      }
+    })
+  }
+
+  function awardReviewXp(delta = 1) {
+    const amount = Math.max(0, delta)
+    setLearningMeta(loadLearningMeta())
+    if (amount <= 0) return
+    setProgress((prev) => ({ ...prev, xp: prev.xp + amount * 2 }))
+  }
+
   function handleNav(id: NavId) {
     setPractice(null)
+    setSpecial(null)
     setNav(id)
   }
 
+  function renderMockSession() {
+    const cards = currentPack
+      ? [...currentPack.vocab, ...currentPack.passage, ...currentPack.grammar]
+      : []
+    const exercises = cardsToExercises(cards, 'ja', cards).slice(0, 15)
+    return (
+      <ExerciseSession
+        title={`單元總測驗 · Unit ${unit.id}`}
+        lang="ja"
+        exercises={exercises}
+        onExit={() => {
+          setSpecial(null)
+          setNav('today')
+        }}
+        onComplete={(result) => {
+          const saved = applyExerciseSessionResult(result, {
+            track: 'ja',
+            kind: 'mock',
+          })
+          awardReviewXp(saved.correctCards)
+          setSpecial(null)
+          setNav('today')
+        }}
+      />
+    )
+  }
+
   function renderContent() {
+    if (special === 'review') {
+      return (
+        <PracticeView
+          kind="vocab"
+          levelId={progress.levelId}
+          unit={unit}
+          mode="quiz"
+          reviewIds={reviewQueue.queue}
+          onBack={() => {
+            setSpecial(null)
+            setNav('today')
+          }}
+          onProgress={awardReviewXp}
+        />
+      )
+    }
+
+    if (special === 'mock') return renderMockSession()
+
+    if (special === 'placement') {
+      return (
+        <div className="result-panel">
+          <div>
+            <strong>Placement</strong>
+            <span>分級測驗準備中</span>
+          </div>
+          <p>目前可先用今日複習與單元總測驗校準學習進度。</p>
+          <button
+            type="button"
+            className="primary-btn inline"
+            onClick={() => {
+              setSpecial(null)
+              setNav('today')
+            }}
+          >
+            返回今日學習
+          </button>
+        </div>
+      )
+    }
+
     if (practice) {
       return (
         <PracticeView
@@ -106,21 +249,7 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
             setPractice(null)
             setNav('today')
           }}
-          onProgress={() => {
-            if (practice === 'vocab') {
-              patchProgress({
-                vocabDone: Math.min(unit.words, progress.vocabDone + 1),
-                xp: progress.xp + 5,
-              })
-            } else if (practice === 'reading') {
-              patchProgress({
-                readingDone: Math.min(unit.reading, progress.readingDone + 1),
-                xp: progress.xp + 8,
-              })
-            } else {
-              patchProgress({ grammarStarted: true, xp: progress.xp + 10 })
-            }
-          }}
+          onProgress={(delta) => applyPracticeProgress(practice, delta)}
         />
       )
     }
@@ -145,12 +274,7 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
           levelId={progress.levelId}
           unit={unit}
           onBack={() => setNav('today')}
-          onProgress={() =>
-            patchProgress({
-              vocabDone: Math.min(unit.words, progress.vocabDone + 1),
-              xp: progress.xp + 5,
-            })
-          }
+          onProgress={(delta) => applyPracticeProgress('vocab', delta)}
         />
       )
     }
@@ -161,9 +285,7 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
           levelId={progress.levelId}
           unit={unit}
           onBack={() => setNav('today')}
-          onProgress={() =>
-            patchProgress({ grammarStarted: true, xp: progress.xp + 10 })
-          }
+          onProgress={(delta) => applyPracticeProgress('grammar', delta)}
         />
       )
     }
@@ -175,9 +297,30 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
         progress={progress}
         onOpenBuilder={() => setNav('builder')}
         onOpenKana={() => setNav('kana')}
-        onStartVocab={() => setPractice('vocab')}
-        onStartReading={() => setPractice('reading')}
-        onStartGrammar={() => setPractice('grammar')}
+        onStartVocab={() => {
+          setSpecial(null)
+          setPractice('vocab')
+        }}
+        onStartReading={() => {
+          setSpecial(null)
+          setPractice('reading')
+        }}
+        onStartGrammar={() => {
+          setSpecial(null)
+          setPractice('grammar')
+        }}
+        onStartReview={() => {
+          setPractice(null)
+          setSpecial('review')
+        }}
+        onStartMock={() => {
+          setPractice(null)
+          setSpecial('mock')
+        }}
+        onStartPlacement={() => {
+          setPractice(null)
+          setSpecial('placement')
+        }}
         onSelectUnit={(id) =>
           patchProgress({
             unitId: id,
@@ -186,11 +329,21 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
             grammarStarted: false,
           })
         }
+        dueCount={reviewQueue.queue.length}
+        streak={learningMeta.streak}
+        dailyDone={daily.done}
+        dailyGoal={daily.goal}
       />
     )
   }
 
-  const title = practice
+  const title = special
+    ? special === 'review'
+      ? '今日複習'
+      : special === 'mock'
+        ? '單元總測驗'
+        : '分級測驗'
+    : practice
     ? practice === 'vocab'
       ? '單字練習'
       : practice === 'reading'
@@ -209,7 +362,7 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
   return (
     <main className="app-shell">
       <Sidebar
-        nav={practice ? 'today' : nav}
+        nav={practice || special ? 'today' : nav}
         onNav={handleNav}
         level={level}
         unit={unit}

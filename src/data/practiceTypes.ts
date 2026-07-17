@@ -16,7 +16,11 @@ export type SpeakableCard = {
   register: PracticeRegister
   /** TTS text; defaults to sentence */
   speakText?: string
+  audio?: AudioRef
+  exerciseHints?: string[]
 }
+
+export type AudioRef = { src: string; durationMs?: number; speaker?: string }
 
 export type UnitPractice = {
   vocab: SpeakableCard[]

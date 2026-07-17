@@ -1,12 +1,21 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../auth/AuthProvider'
+import { ExerciseSession } from '../components/ExerciseSession'
+import { collectUnitCardIds, itemKey } from '../data/contentPack'
+import { cardsToExercises } from '../engine/exercises'
+import { dailyProgress } from '../engine/habits'
+import { buildDailyQueue } from '../engine/srs'
+import { applyExerciseSessionResult } from '../engine/sessionResults'
 import {
+  loadLearningMeta,
   loadToeicProgress,
   saveToeicProgress,
   type LangId,
+  type LearningMeta,
   type ToeicProgress,
 } from '../utils/storage'
 import { toeicCertificates } from './data/certificates'
+import { getToeicPractice } from './data/practiceContent'
 import { PhonicsLab } from './components/PhonicsLab'
 import { ToeicBuilder } from './components/ToeicBuilder'
 import { ToeicPractice } from './components/ToeicPractice'
@@ -25,11 +34,37 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
   const [practice, setPractice] = useState<
     'vocab' | 'listening' | 'grammar' | null
   >(null)
+  const [special, setSpecial] = useState<
+    'review' | 'mock' | 'placement' | 'kanji' | 'scenario' | 'speaking' | null
+  >(null)
+  const [learningMeta, setLearningMeta] = useState<LearningMeta>(() =>
+    loadLearningMeta(),
+  )
 
   const cert =
     toeicCertificates.find((c) => c.id === progress.certificateId) ??
     toeicCertificates[0]
   const unit = cert.units.find((u) => u.id === progress.unitId) ?? cert.units[0]
+  const currentPack = useMemo(
+    () => getToeicPractice(progress.certificateId, unit.id),
+    [progress.certificateId, unit.id],
+  )
+  const unitItemIds = useMemo(
+    () =>
+      currentPack
+        ? collectUnitCardIds(currentPack).map((id) => itemKey('en', id))
+        : [],
+    [currentPack],
+  )
+  const reviewQueue = useMemo(
+    () =>
+      buildDailyQueue({
+        allIds: unitItemIds,
+        items: learningMeta.items,
+      }),
+    [learningMeta.items, unitItemIds],
+  )
+  const daily = useMemo(() => dailyProgress(learningMeta), [learningMeta])
 
   const progressPct = useMemo(() => {
     const v = (progress.vocabDone / unit.words) * 100
@@ -43,7 +78,10 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
   }, [progress])
 
   useEffect(() => {
-    const onHydrated = () => setProgress(loadToeicProgress())
+    const onHydrated = () => {
+      setProgress(loadToeicProgress())
+      setLearningMeta(loadLearningMeta())
+    }
     window.addEventListener('e-learning:progress-hydrated', onHydrated)
     return () =>
       window.removeEventListener('e-learning:progress-hydrated', onHydrated)
@@ -53,12 +91,84 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
     setProgress((prev) => ({ ...prev, ...p }))
   }
 
+  function applyPracticeProgress(
+    kind: 'vocab' | 'listening' | 'grammar',
+    delta = 1,
+  ) {
+    const amount = Math.max(0, delta)
+    setLearningMeta(loadLearningMeta())
+    if (amount <= 0) return
+
+    setProgress((prev) => {
+      if (kind === 'vocab') {
+        return {
+          ...prev,
+          vocabDone: Math.min(unit.words, prev.vocabDone + amount),
+          xp: prev.xp + amount * 5,
+        }
+      }
+      if (kind === 'listening') {
+        return {
+          ...prev,
+          listeningDone: Math.min(unit.listening, prev.listeningDone + amount),
+          xp: prev.xp + amount * 8,
+        }
+      }
+      return {
+        ...prev,
+        grammarStarted: true,
+        xp: prev.xp + amount * 10,
+      }
+    })
+  }
+
+  function awardReviewXp(delta = 1) {
+    const amount = Math.max(0, delta)
+    setLearningMeta(loadLearningMeta())
+    if (amount <= 0) return
+    setProgress((prev) => ({ ...prev, xp: prev.xp + amount * 2 }))
+  }
+
   function handleNav(id: ToeicNavId) {
     setPractice(null)
+    setSpecial(null)
     setNav(id)
   }
 
-  const title = practice
+  function renderMockSession() {
+    const cards = currentPack
+      ? [...currentPack.vocab, ...currentPack.passage, ...currentPack.grammar]
+      : []
+    const exercises = cardsToExercises(cards, 'en', cards).slice(0, 15)
+    return (
+      <ExerciseSession
+        title={`Unit mock · ${unit.titleEn}`}
+        lang="en"
+        exercises={exercises}
+        onExit={() => {
+          setSpecial(null)
+          setNav('today')
+        }}
+        onComplete={(result) => {
+          const saved = applyExerciseSessionResult(result, {
+            track: 'en',
+            kind: 'mock',
+          })
+          awardReviewXp(saved.correctCards)
+          setSpecial(null)
+          setNav('today')
+        }}
+      />
+    )
+  }
+
+  const title = special
+    ? special === 'review'
+      ? '今日複習'
+      : special === 'mock'
+        ? '單元總測驗'
+        : '分級測驗'
+    : practice
     ? practice === 'vocab'
       ? '單字練習'
       : practice === 'listening'
@@ -77,6 +187,47 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
               : '今日學習'
 
   function renderContent() {
+    if (special === 'review') {
+      return (
+        <ToeicPractice
+          kind="vocab"
+          certificateId={progress.certificateId}
+          unit={unit}
+          mode="quiz"
+          reviewIds={reviewQueue.queue}
+          onBack={() => {
+            setSpecial(null)
+            setNav('today')
+          }}
+          onProgress={awardReviewXp}
+        />
+      )
+    }
+
+    if (special === 'mock') return renderMockSession()
+
+    if (special === 'placement') {
+      return (
+        <div className="result-panel">
+          <div>
+            <strong>Placement</strong>
+            <span>Coming soon</span>
+          </div>
+          <p>Use Today Review and the unit mock to calibrate your current path.</p>
+          <button
+            type="button"
+            className="primary-btn inline"
+            onClick={() => {
+              setSpecial(null)
+              setNav('today')
+            }}
+          >
+            Back to today
+          </button>
+        </div>
+      )
+    }
+
     if (practice) {
       return (
         <ToeicPractice
@@ -87,24 +238,7 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
             setPractice(null)
             setNav('today')
           }}
-          onProgress={() => {
-            if (practice === 'vocab') {
-              patch({
-                vocabDone: Math.min(unit.words, progress.vocabDone + 1),
-                xp: progress.xp + 5,
-              })
-            } else if (practice === 'listening') {
-              patch({
-                listeningDone: Math.min(
-                  unit.listening,
-                  progress.listeningDone + 1,
-                ),
-                xp: progress.xp + 8,
-              })
-            } else {
-              patch({ grammarStarted: true, xp: progress.xp + 10 })
-            }
-          }}
+          onProgress={(delta) => applyPracticeProgress(practice, delta)}
         />
       )
     }
@@ -130,24 +264,7 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
           certificateId={progress.certificateId}
           unit={unit}
           onBack={() => setNav('today')}
-          onProgress={() => {
-            if (kind === 'vocab') {
-              patch({
-                vocabDone: Math.min(unit.words, progress.vocabDone + 1),
-                xp: progress.xp + 5,
-              })
-            } else if (kind === 'listening') {
-              patch({
-                listeningDone: Math.min(
-                  unit.listening,
-                  progress.listeningDone + 1,
-                ),
-                xp: progress.xp + 8,
-              })
-            } else {
-              patch({ grammarStarted: true, xp: progress.xp + 10 })
-            }
-          }}
+          onProgress={(delta) => applyPracticeProgress(kind, delta)}
         />
       )
     }
@@ -159,9 +276,30 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
         progress={progress}
         onOpenPhonics={() => setNav('phonics')}
         onOpenBuilder={() => setNav('builder')}
-        onStartVocab={() => setPractice('vocab')}
-        onStartListening={() => setPractice('listening')}
-        onStartGrammar={() => setPractice('grammar')}
+        onStartVocab={() => {
+          setSpecial(null)
+          setPractice('vocab')
+        }}
+        onStartListening={() => {
+          setSpecial(null)
+          setPractice('listening')
+        }}
+        onStartGrammar={() => {
+          setSpecial(null)
+          setPractice('grammar')
+        }}
+        onStartReview={() => {
+          setPractice(null)
+          setSpecial('review')
+        }}
+        onStartMock={() => {
+          setPractice(null)
+          setSpecial('mock')
+        }}
+        onStartPlacement={() => {
+          setPractice(null)
+          setSpecial('placement')
+        }}
         onSelectUnit={(id) =>
           patch({
             unitId: id,
@@ -170,6 +308,10 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
             grammarStarted: false,
           })
         }
+        dueCount={reviewQueue.queue.length}
+        streak={learningMeta.streak}
+        dailyDone={daily.done}
+        dailyGoal={daily.goal}
       />
     )
   }
@@ -177,7 +319,7 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
   return (
     <main className="app-shell toeic-shell">
       <ToeicSidebar
-        nav={practice ? 'today' : nav}
+        nav={practice || special ? 'today' : nav}
         onNav={handleNav}
         cert={cert}
         unit={unit}
