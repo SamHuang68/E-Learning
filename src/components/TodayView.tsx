@@ -1,22 +1,27 @@
 import type { CSSProperties } from 'react'
 import type { JlptLevel, Unit } from '../data/course'
-import type { ProgressState } from '../utils/storage'
+import type { LearningMeta, ProgressState } from '../utils/storage'
+import { Heatmap } from './Heatmap'
 import { HeroArt } from './HeroArt'
 
 type Props = {
   level: JlptLevel
   unit: Unit
   progress: ProgressState
+  progressPct: number
+  events: LearningMeta['events']
   onOpenBuilder: () => void
   onOpenKana: () => void
   onStartVocab: () => void
   onStartReading: () => void
   onStartGrammar: () => void
   onStartReview: () => void
+  onStartWeakTask: () => void
   onStartMock: () => void
   onStartPlacement?: () => void
   onSelectUnit: (id: number) => void
   dueCount: number
+  newCount: number
   streak: number
   dailyDone: number
   dailyGoal: number
@@ -26,25 +31,27 @@ export function TodayView({
   level,
   unit,
   progress,
+  progressPct,
+  events,
   onOpenBuilder,
   onOpenKana,
   onStartVocab,
   onStartReading,
   onStartGrammar,
   onStartReview,
+  onStartWeakTask,
   onStartMock,
   onStartPlacement,
   onSelectUnit,
   dueCount,
+  newCount,
   streak,
   dailyDone,
   dailyGoal,
 }: Props) {
-  const vocabPct = Math.round((progress.vocabDone / unit.words) * 100)
-  const readingPct = Math.round((progress.readingDone / unit.reading) * 100)
-  const grammarPct = progress.grammarStarted ? 40 : 0
-  const overall = Math.round((vocabPct + readingPct + grammarPct) / 3)
+  const overall = progressPct
   const ringDeg = Math.round((overall / 100) * 360)
+  const totalQueue = dueCount + newCount
 
   return (
     <section className="study-section today-view">
@@ -86,18 +93,25 @@ export function TodayView({
             {streak} 日連續 · {dailyDone}/{dailyGoal} 張
           </h2>
           <span>
-            今日複習佇列 {dueCount} 張；完成答題會更新間隔、連續天數與成就。
+            到期複習 {dueCount} 張；新課 {newCount} 張。完成答題會更新間隔、連續天數與成就。
           </span>
         </div>
-        <button
-          type="button"
-          className="primary-btn inline"
-          disabled={dueCount <= 0}
-          onClick={onStartReview}
-        >
-          今日複習 →
-        </button>
+        <div className="flash-actions">
+          <button type="button" className="ghost" onClick={onStartWeakTask}>
+            弱項任務
+          </button>
+          <button
+            type="button"
+            className="primary-btn inline"
+            disabled={totalQueue <= 0}
+            onClick={onStartReview}
+          >
+            今日複習 →
+          </button>
+        </div>
       </div>
+
+      <Heatmap events={events} />
 
       <div className="daily-review">
         <div>

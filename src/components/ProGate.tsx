@@ -1,5 +1,10 @@
 import { useState, type ReactNode } from 'react'
-import { canAccessUnit, unlockPro, type LearningTrack } from '../engine/entitlement'
+import {
+  canAccessUnit,
+  startCheckout,
+  unlockPro,
+  type LearningTrack,
+} from '../engine/entitlement'
 import type { LearningMeta } from '../utils/storage'
 
 type Props = {
@@ -34,6 +39,11 @@ export function ProGate({
     setMessage('解鎖碼不正確。')
   }
 
+  function checkout() {
+    startCheckout()
+    setMessage('Stripe coming soon. 目前可用 AOBA-PRO demo code 試用。')
+  }
+
   if (!locked) return <>{children}</>
 
   return (
@@ -53,6 +63,9 @@ export function ProGate({
         />
         <button type="button" className="primary-btn inline" onClick={submit}>
           解鎖 Demo
+        </button>
+        <button type="button" className="ghost" onClick={checkout}>
+          Stripe checkout
         </button>
       </div>
       {message ? <p className="status-line">{message}</p> : null}

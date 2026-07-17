@@ -2043,8 +2043,152 @@ footer {
   flex-shrink: 0;
 }
 
+.coach-mission {
+  margin-bottom: 1rem;
+}
+
+.heatmap-card {
+  margin-top: 1rem;
+  padding: 1rem 1.15rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  align-items: center;
+}
+
+.heatmap-card strong {
+  display: block;
+}
+
+.heatmap-grid {
+  display: grid;
+  grid-template-columns: repeat(35, minmax(8px, 1fr));
+  gap: 0.25rem;
+}
+
+.heatmap-cell {
+  aspect-ratio: 1;
+  min-width: 8px;
+  border-radius: 4px;
+  background: #e6edf3;
+  border: 1px solid rgba(201, 214, 227, 0.65);
+}
+
+.heatmap-cell.level-1 {
+  background: color-mix(in srgb, var(--accent) 25%, white);
+}
+
+.heatmap-cell.level-2 {
+  background: color-mix(in srgb, var(--accent) 45%, white);
+}
+
+.heatmap-cell.level-3 {
+  background: color-mix(in srgb, var(--accent) 65%, white);
+}
+
+.heatmap-cell.level-4 {
+  background: var(--accent);
+}
+
+.onboarding-panel .unit-banner {
+  grid-template-columns: 1fr;
+}
+
+.onboarding-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.onboarding-card {
+  max-width: none;
+}
+
+.onboarding-field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.onboarding-field span {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.onboarding-field input,
+.onboarding-field select {
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: var(--surface-soft);
+}
+
+.goal-card-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.65rem;
+}
+
+.goal-card-row button {
+  padding: 0.9rem 0.65rem;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: var(--surface-soft);
+}
+
+.goal-card-row button.active {
+  border-color: var(--accent-border);
+  background: var(--accent-soft);
+  color: var(--navy);
+}
+
+.goal-card-row strong,
+.goal-card-row span {
+  display: block;
+}
+
+.goal-card-row span {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.keyword-checklist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  justify-content: center;
+}
+
+.keyword-checklist span {
+  padding: 0.35rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface-soft);
+  font-size: 0.85rem;
+}
+
+.keyword-checklist .matched {
+  background: var(--accent-soft);
+  border-color: var(--accent-border);
+  color: #1f6b49;
+}
+
+.keyword-checklist .missed {
+  background: #fdeeee;
+  border-color: #e7a0a0;
+  color: #8f3030;
+}
+
 @media (max-width: 1100px) {
   .kana-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .heatmap-card,
+  .onboarding-grid {
     grid-template-columns: 1fr;
   }
 }

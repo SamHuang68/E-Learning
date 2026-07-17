@@ -1,15 +1,23 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useAuth } from '../auth/AuthProvider'
 import { MockExam } from '../components/MockExam'
+import { Onboarding } from '../components/Onboarding'
 import { PlacementTest } from '../components/PlacementTest'
 import { ProGate } from '../components/ProGate'
 import { ScenarioPlayer } from '../components/ScenarioPlayer'
 import { SpeakingLab } from '../components/SpeakingLab'
 import { collectUnitCardIds, itemKey } from '../data/contentPack'
 import { track } from '../engine/analytics'
+import { buildScenarioMission, buildWeakReviewIds } from '../engine/aiCoach'
 import { dailyProgress } from '../engine/habits'
 import type { PlacementResult } from '../engine/placement'
-import { buildDailyQueue } from '../engine/srs'
+import {
+  addForcedReviewIds,
+  buildReviewQueueWithForced,
+  clearForcedReviewIds,
+  srsProgressPct,
+  weakTagsToReviewIds,
+} from '../engine/reviewPlanning'
 import {
   loadLearningMeta,
   loadToeicProgress,
@@ -27,6 +35,62 @@ import { ToeicPractice } from './components/ToeicPractice'
 import { ToeicSidebar, type ToeicNavId } from './components/ToeicSidebar'
 import { ToeicToday } from './components/ToeicToday'
 
+type ToeicPracticeKind = 'vocab' | 'listening' | 'grammar'
+type ToeicSpecial = 'review' | 'mock' | 'placement'
+type CoachMission = ReturnType<typeof buildScenarioMission>
+
+const toeicNavIds: ToeicNavId[] = [
+  'phonics',
+  'today',
+  'builder',
+  'vocab',
+  'listening',
+  'grammar',
+  'scenario',
+  'speaking',
+  'mock',
+  'placement',
+]
+const toeicPracticeIds: ToeicPracticeKind[] = ['vocab', 'listening', 'grammar']
+
+function writeToeicHash(path = 'toeic') {
+  const next = `#${path}`
+  if (window.location.hash === next) return
+  window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}${next}`)
+}
+
+function parseToeicHash(hash: string): {
+  unitId?: number
+  nav?: ToeicNavId
+  practice?: ToeicPracticeKind
+  special?: ToeicSpecial
+} | null {
+  const parts = hash.replace(/^#/, '').split('?')[0].split('/').filter(Boolean)
+  if (parts[0] !== 'toeic') return null
+  const route = parts[1]
+  if (!route) return { nav: 'today' }
+  if (route === 'unit') {
+    const unitId = Number(parts[2])
+    const section = parts[3]
+    const next = Number.isFinite(unitId) ? { unitId } : {}
+    if (toeicPracticeIds.includes(section as ToeicPracticeKind)) {
+      return { ...next, practice: section as ToeicPracticeKind }
+    }
+    if (section === 'review' || section === 'mock' || section === 'placement') {
+      return { ...next, special: section }
+    }
+    return next
+  }
+  if (route === 'review' || route === 'mock' || route === 'placement') {
+    return { special: route }
+  }
+  if (toeicPracticeIds.includes(route as ToeicPracticeKind)) {
+    return { practice: route as ToeicPracticeKind }
+  }
+  if (toeicNavIds.includes(route as ToeicNavId)) return { nav: route as ToeicNavId }
+  return null
+}
+
 type Props = {
   onBackHub: () => void
   onSwitchLang: (lang: LangId) => void
@@ -36,15 +100,13 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
   const { user, syncStatus } = useAuth()
   const [nav, setNav] = useState<ToeicNavId>('today')
   const [progress, setProgress] = useState<ToeicProgress>(() => loadToeicProgress())
-  const [practice, setPractice] = useState<
-    'vocab' | 'listening' | 'grammar' | null
-  >(null)
-  const [special, setSpecial] = useState<'review' | 'mock' | 'placement' | null>(
-    null,
-  )
+  const [practice, setPractice] = useState<ToeicPracticeKind | null>(null)
+  const [special, setSpecial] = useState<ToeicSpecial | null>(null)
   const [learningMeta, setLearningMeta] = useState<LearningMeta>(() =>
     loadLearningMeta(),
   )
+  const [activeReviewIds, setActiveReviewIds] = useState<string[] | null>(null)
+  const [coachMission, setCoachMission] = useState<CoachMission | null>(null)
 
   const cert =
     toeicCertificates.find((c) => c.id === progress.certificateId) ??
@@ -63,11 +125,11 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
   )
   const reviewQueue = useMemo(
     () =>
-      buildDailyQueue({
+      buildReviewQueueWithForced({
         allIds: unitItemIds,
-        items: learningMeta.items,
+        meta: learningMeta,
       }),
-    [learningMeta.items, unitItemIds],
+    [learningMeta, unitItemIds],
   )
   const daily = useMemo(() => dailyProgress(learningMeta), [learningMeta])
 
@@ -75,8 +137,8 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
     const v = (progress.vocabDone / Math.max(1, unit.words)) * 100
     const l = (progress.listeningDone / Math.max(1, unit.listening)) * 100
     const g = progress.grammarStarted ? 40 : 0
-    return Math.round((v + l + g) / 3)
-  }, [progress, unit])
+    return srsProgressPct(unitItemIds, learningMeta.items, Math.round((v + l + g) / 3))
+  }, [learningMeta.items, progress, unit, unitItemIds])
 
   useEffect(() => {
     saveToeicProgress(progress)
@@ -92,12 +154,88 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
       window.removeEventListener('e-learning:progress-hydrated', onHydrated)
   }, [])
 
+  useEffect(() => {
+    function applyDeepLink() {
+      const route = parseToeicHash(window.location.hash)
+      if (!route) return
+      if (route.unitId) {
+        setProgress((prev) =>
+          prev.unitId === route.unitId
+            ? prev
+            : {
+                ...prev,
+                unitId: route.unitId ?? prev.unitId,
+                vocabDone: 0,
+                listeningDone: 0,
+                grammarStarted: false,
+              },
+        )
+      }
+      setActiveReviewIds(null)
+      if (route.special) {
+        setPractice(null)
+        setSpecial(route.special)
+        setNav('today')
+        return
+      }
+      if (route.practice) {
+        setSpecial(null)
+        setPractice(route.practice)
+        setNav('today')
+        return
+      }
+      if (route.nav) {
+        setSpecial(null)
+        setPractice(null)
+        setNav(route.nav)
+      }
+    }
+
+    applyDeepLink()
+    window.addEventListener('hashchange', applyDeepLink)
+    return () => window.removeEventListener('hashchange', applyDeepLink)
+  }, [])
+
   function patch(p: Partial<ToeicProgress>) {
     setProgress((prev) => ({ ...prev, ...p }))
   }
 
   function refreshMeta() {
     setLearningMeta(loadLearningMeta())
+  }
+
+  function clearCurrentForcedReviews() {
+    const meta = loadLearningMeta()
+    const currentIds = meta.forcedReviewIds.filter((id) => unitItemIds.includes(id))
+    if (currentIds.length === 0) return
+    saveLearningMeta(clearForcedReviewIds(meta, currentIds))
+    refreshMeta()
+  }
+
+  function finishReview() {
+    clearCurrentForcedReviews()
+    setActiveReviewIds(null)
+    setSpecial(null)
+    setNav('today')
+    writeToeicHash()
+  }
+
+  function startWeakTask() {
+    const mission = buildScenarioMission('en')
+    setCoachMission(mission)
+    const weakIds = buildWeakReviewIds(learningMeta, 8).filter((id) =>
+      unitItemIds.includes(id),
+    )
+    setPractice(null)
+    if (weakIds.length > 0) {
+      setActiveReviewIds(weakIds)
+      setSpecial('review')
+      writeToeicHash('toeic/review')
+      return
+    }
+    setSpecial(null)
+    setNav('scenario')
+    writeToeicHash('toeic/scenario')
   }
 
   function applyPracticeProgress(
@@ -141,7 +279,9 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
   function handleNav(id: ToeicNavId) {
     setPractice(null)
     setSpecial(null)
+    setActiveReviewIds(null)
     setNav(id)
+    writeToeicHash(id === 'today' ? 'toeic' : `toeic/${id}`)
   }
 
   function withUnitGate(node: ReactNode) {
@@ -192,6 +332,7 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
         onExit={() => {
           setSpecial(null)
           setNav('today')
+          writeToeicHash()
         }}
         onComplete={(result) => {
           track('mock_submit', {
@@ -200,20 +341,23 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
             weakTags: result.weakTags,
           })
           const meta = loadLearningMeta()
-          saveLearningMeta({
+          const forcedIds = weakTagsToReviewIds('en', currentPack, result.weakTags)
+          const nextMeta = addForcedReviewIds({
             ...meta,
             events: [
+              ...meta.events,
               {
                 t: new Date().toISOString(),
                 type: 'mock_submit',
                 payload: { score: result.score, weakTags: result.weakTags },
               },
-              ...meta.events,
-            ].slice(0, 200),
-          })
+            ].slice(-200),
+          }, forcedIds)
+          saveLearningMeta(nextMeta)
           awardReviewXp(Math.max(1, Math.round(result.score / 2)))
           setSpecial(null)
           setNav('today')
+          writeToeicHash()
         }}
       />
     )
@@ -252,6 +396,24 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
                         : '今日學習'
 
   function renderContent() {
+    if (!learningMeta.onboardingDone) {
+      return (
+        <Onboarding
+          track="en"
+          meta={learningMeta}
+          onComplete={(meta) => {
+            saveLearningMeta(meta)
+            refreshMeta()
+          }}
+          onRunPlacement={() => {
+            setPractice(null)
+            setSpecial('placement')
+            writeToeicHash('toeic/placement')
+          }}
+        />
+      )
+    }
+
     if (special === 'review') {
       return withUnitGate(
         <ToeicPractice
@@ -259,11 +421,8 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
           certificateId={progress.certificateId}
           unit={unit}
           mode="quiz"
-          reviewIds={reviewQueue.queue}
-          onBack={() => {
-            setSpecial(null)
-            setNav('today')
-          }}
+          reviewIds={activeReviewIds ?? reviewQueue.queue}
+          onBack={finishReview}
           onProgress={awardReviewXp}
         />,
       )
@@ -280,6 +439,7 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
           onExit={() => {
             setSpecial(null)
             setNav('today')
+            writeToeicHash()
           }}
           onComplete={handlePlacementComplete}
         />
@@ -288,15 +448,30 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
 
     if (nav === 'scenario') {
       return withUnitGate(
-        <ScenarioPlayer
-          track="en"
-          onExit={() => setNav('today')}
-          onComplete={(result) => {
-            track('scenario_complete', result)
-            awardReviewXp(result.correct)
-            setNav('today')
-          }}
-        />,
+        <>
+          {coachMission ? (
+            <div className="daily-review coach-mission">
+              <div>
+                <p className="eyebrow">AI COACH · 弱項任務</p>
+                <h2>{coachMission.title}</h2>
+                <span>{coachMission.checklist.join(' · ')}</span>
+              </div>
+            </div>
+          ) : null}
+          <ScenarioPlayer
+            track="en"
+            onExit={() => {
+              setNav('today')
+              writeToeicHash()
+            }}
+            onComplete={(result) => {
+              track('scenario_complete', result)
+              awardReviewXp(result.correct)
+              setNav('today')
+              writeToeicHash()
+            }}
+          />
+        </>,
       )
     }
 
@@ -316,6 +491,7 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
             })
             awardReviewXp(count)
             setNav('today')
+            writeToeicHash()
           }}
         />,
       )
@@ -330,6 +506,7 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
           onBack={() => {
             setPractice(null)
             setNav('today')
+            writeToeicHash()
           }}
           onProgress={(delta) => applyPracticeProgress(practice, delta)}
         />,
@@ -356,7 +533,10 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
           kind={kind}
           certificateId={progress.certificateId}
           unit={unit}
-          onBack={() => setNav('today')}
+          onBack={() => {
+            setNav('today')
+            writeToeicHash()
+          }}
           onProgress={(delta) => applyPracticeProgress(kind, delta)}
         />,
       )
@@ -367,41 +547,64 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
         cert={cert}
         unit={unit}
         progress={progress}
-        onOpenPhonics={() => setNav('phonics')}
-        onOpenBuilder={() => setNav('builder')}
+        progressPct={progressPct}
+        events={learningMeta.events}
+        onOpenPhonics={() => {
+          setNav('phonics')
+          writeToeicHash('toeic/phonics')
+        }}
+        onOpenBuilder={() => {
+          setNav('builder')
+          writeToeicHash('toeic/builder')
+        }}
         onStartVocab={() => {
           setSpecial(null)
+          setActiveReviewIds(null)
           setPractice('vocab')
+          writeToeicHash(`toeic/unit/${unit.id}/vocab`)
         }}
         onStartListening={() => {
           setSpecial(null)
+          setActiveReviewIds(null)
           setPractice('listening')
+          writeToeicHash(`toeic/unit/${unit.id}/listening`)
         }}
         onStartGrammar={() => {
           setSpecial(null)
+          setActiveReviewIds(null)
           setPractice('grammar')
+          writeToeicHash(`toeic/unit/${unit.id}/grammar`)
         }}
         onStartReview={() => {
           setPractice(null)
+          setActiveReviewIds(null)
           setSpecial('review')
+          writeToeicHash('toeic/review')
         }}
+        onStartWeakTask={startWeakTask}
         onStartMock={() => {
           setPractice(null)
+          setActiveReviewIds(null)
           setSpecial('mock')
+          writeToeicHash('toeic/mock')
         }}
         onStartPlacement={() => {
           setPractice(null)
+          setActiveReviewIds(null)
           setSpecial('placement')
+          writeToeicHash('toeic/placement')
         }}
-        onSelectUnit={(id) =>
+        onSelectUnit={(id) => {
           patch({
             unitId: id,
             vocabDone: 0,
             listeningDone: 0,
             grammarStarted: false,
           })
-        }
-        dueCount={reviewQueue.queue.length}
+          writeToeicHash(`toeic/unit/${id}`)
+        }}
+        dueCount={reviewQueue.reviews.length}
+        newCount={reviewQueue.news.length}
         streak={learningMeta.streak}
         dailyDone={daily.done}
         dailyGoal={daily.goal}
@@ -447,7 +650,7 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
               <span>證書級距</span>
               <select
                 value={progress.certificateId}
-                onChange={(e) =>
+                onChange={(e) => {
                   patch({
                     certificateId: e.target
                       .value as ToeicProgress['certificateId'],
@@ -456,7 +659,8 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
                     listeningDone: 0,
                     grammarStarted: false,
                   })
-                }
+                  writeToeicHash('toeic/unit/1')
+                }}
               >
                 {toeicCertificates.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -469,14 +673,16 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
               <span>單元</span>
               <select
                 value={progress.unitId}
-                onChange={(e) =>
+                onChange={(e) => {
+                  const unitId = Number(e.target.value)
                   patch({
-                    unitId: Number(e.target.value),
+                    unitId,
                     vocabDone: 0,
                     listeningDone: 0,
                     grammarStarted: false,
                   })
-                }
+                  writeToeicHash(`toeic/unit/${unitId}`)
+                }}
               >
                 {cert.units.map((u) => (
                   <option key={u.id} value={u.id}>
