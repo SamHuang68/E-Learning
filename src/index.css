@@ -1488,6 +1488,80 @@ strong {
   margin-bottom: 0.35rem;
 }
 
+.exercise-session .practice-card {
+  max-width: 720px;
+}
+
+.progress-bar-track {
+  height: 8px;
+  max-width: 720px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e5edf4;
+}
+
+.progress-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--navy-soft), var(--accent));
+  transition: width 0.25s ease;
+}
+
+.choice-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.6rem;
+  margin: 0.9rem 0;
+}
+
+.choice-btn {
+  padding: 0.75rem 0.85rem;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease,
+    transform 0.15s ease;
+}
+
+.choice-btn:hover:not(:disabled) {
+  border-color: var(--accent-border, #3f8f7a);
+  background: var(--surface-soft, #f3f6f8);
+  transform: translateY(-1px);
+}
+
+.choice-btn:disabled {
+  cursor: not-allowed;
+}
+
+.choice-btn.correct {
+  border-color: rgba(47, 158, 107, 0.6);
+  background: #eaf7ef;
+}
+
+.choice-btn.wrong {
+  border-color: rgba(198, 74, 74, 0.55);
+  background: #fff0ee;
+}
+
+.order-bank {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  min-height: 3rem;
+  align-items: center;
+  margin: 0.75rem 0;
+  padding: 0.65rem;
+  border-radius: 14px;
+  border: 1px dashed var(--line);
+  background: var(--surface-soft, #f3f6f8);
+  color: var(--muted);
+}
+
 footer {
   margin-top: 1.5rem;
   display: flex;
