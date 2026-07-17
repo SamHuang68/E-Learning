@@ -2,7 +2,17 @@ import type { CSSProperties } from 'react'
 import type { JlptLevel, Unit } from '../data/course'
 import type { LangId } from '../utils/storage'
 
-export type NavId = 'kana' | 'today' | 'builder' | 'vocab' | 'grammar'
+export type NavId =
+  | 'kana'
+  | 'today'
+  | 'builder'
+  | 'vocab'
+  | 'grammar'
+  | 'kanji'
+  | 'scenario'
+  | 'speaking'
+  | 'mock'
+  | 'placement'
 
 type Props = {
   nav: NavId
@@ -22,6 +32,11 @@ const items: { id: NavId; icon: string; label: string }[] = [
   { id: 'builder', icon: '設', label: '課程設計器' },
   { id: 'vocab', icon: 'Aa', label: '單字練習' },
   { id: 'grammar', icon: '文', label: '文法教室' },
+  { id: 'placement', icon: '級', label: '分級測驗' },
+  { id: 'mock', icon: '模', label: '模擬測驗' },
+  { id: 'kanji', icon: '漢', label: '漢字實驗室' },
+  { id: 'scenario', icon: '場', label: '情境任務' },
+  { id: 'speaking', icon: '話', label: '口說跟讀' },
 ]
 
 export function Sidebar({

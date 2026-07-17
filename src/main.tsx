@@ -5,6 +5,13 @@ import App from './App.tsx'
 
 const rootEl = document.getElementById('root')
 
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    const base = import.meta.env.BASE_URL || '/'
+    void navigator.serviceWorker.register(`${base}sw.js`).catch(() => undefined)
+  })
+}
+
 try {
   if (!rootEl) throw new Error('找不到 #root')
   createRoot(rootEl).render(
