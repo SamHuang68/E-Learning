@@ -1,0 +1,566 @@
+{
+  "key": "n5n4:1",
+  "family": "japanese",
+  "vocab": [
+    {
+      "id": "n5n4-1-v1",
+      "head": "はじめまして",
+      "reading": "はじめまして",
+      "meaning": "初次見面（問候語）",
+      "sentence": "はじめまして、田中です。",
+      "sentenceZh": "初次見面，我是田中。",
+      "scenario": "新同學",
+      "register": "polite"
+    },
+    {
+      "id": "n5n4-1-v2",
+      "head": "よろしくおねがいします",
+      "reading": "よろしくおねがいします",
+      "meaning": "請多關照",
+      "sentence": "どうぞよろしくお願いします。",
+      "sentenceZh": "請多多關照。",
+      "scenario": "職場",
+      "register": "polite"
+    },
+    {
+      "id": "n5n4-1-v3",
+      "head": "わたし",
+      "reading": "わたし",
+      "meaning": "我",
+      "sentence": "わたしは学生です。",
+      "sentenceZh": "我是學生。",
+      "scenario": "自我介紹",
+      "register": "polite"
+    },
+    {
+      "id": "n5n4-1-v4",
+      "head": "がくせい",
+      "reading": "がくせい",
+      "meaning": "學生",
+      "sentence": "わたしは大学の学生です。",
+      "sentenceZh": "我是大學生。",
+      "scenario": "學校",
+      "register": "polite"
+    },
+    {
+      "id": "n5n4-1-v5",
+      "head": "ちゅうごく",
+      "reading": "ちゅうごく",
+      "meaning": "中國",
+      "sentence": "わたしは中国から来ました。",
+      "sentenceZh": "我從中國來。",
+      "scenario": "自我介紹",
+      "register": "polite"
+    },
+    {
+      "id": "n5n4-1-v6",
+      "head": "なまえ",
+      "reading": "なまえ",
+      "meaning": "名字",
+      "sentence": "お名前は何ですか。",
+      "sentenceZh": "請問您叫什麼名字？",
+      "scenario": "初次見面",
+      "register": "polite"
+    },
+    {
+      "head": "おはよう",
+      "meaning": "早安",
+      "sentence": "自己紹介と挨拶の場面で「おはよう」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「早安」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v7"
+    },
+    {
+      "head": "こんにちは",
+      "meaning": "午安；你好",
+      "sentence": "自己紹介と挨拶の場面で「こんにちは」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「午安；你好」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v8"
+    },
+    {
+      "head": "こんばんは",
+      "meaning": "晚上好",
+      "sentence": "自己紹介と挨拶の場面で「こんばんは」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「晚上好」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v9"
+    },
+    {
+      "head": "さようなら",
+      "meaning": "再見",
+      "sentence": "自己紹介と挨拶の場面で「さようなら」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「再見」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v10"
+    },
+    {
+      "head": "また明日",
+      "reading": "またあした",
+      "meaning": "明天見",
+      "sentence": "自己紹介と挨拶の場面で「また明日」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「明天見」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v11"
+    },
+    {
+      "head": "出身",
+      "reading": "しゅっしん",
+      "meaning": "出身地",
+      "sentence": "自己紹介と挨拶の場面で「出身」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「出身地」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v12"
+    },
+    {
+      "head": "会社員",
+      "reading": "かいしゃいん",
+      "meaning": "公司職員",
+      "sentence": "自己紹介と挨拶の場面で「会社員」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「公司職員」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v13"
+    },
+    {
+      "head": "留学生",
+      "reading": "りゅうがくせい",
+      "meaning": "留學生",
+      "sentence": "自己紹介と挨拶の場面で「留学生」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「留學生」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v14"
+    },
+    {
+      "head": "趣味",
+      "reading": "しゅみ",
+      "meaning": "興趣",
+      "sentence": "自己紹介と挨拶の場面で「趣味」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「興趣」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v15"
+    },
+    {
+      "head": "専攻",
+      "reading": "せんこう",
+      "meaning": "主修",
+      "sentence": "自己紹介と挨拶の場面で「専攻」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「主修」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v16"
+    },
+    {
+      "head": "友達",
+      "reading": "ともだち",
+      "meaning": "朋友",
+      "sentence": "自己紹介と挨拶の場面で「友達」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「朋友」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v17"
+    },
+    {
+      "head": "クラス",
+      "meaning": "班級",
+      "sentence": "自己紹介と挨拶の場面で「クラス」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「班級」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v18"
+    },
+    {
+      "head": "先生",
+      "reading": "せんせい",
+      "meaning": "老師",
+      "sentence": "自己紹介と挨拶の場面で「先生」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「老師」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v19"
+    },
+    {
+      "head": "同僚",
+      "reading": "どうりょう",
+      "meaning": "同事",
+      "sentence": "自己紹介と挨拶の場面で「同僚」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「同事」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v20"
+    },
+    {
+      "head": "名刺",
+      "reading": "めいし",
+      "meaning": "名片",
+      "sentence": "自己紹介と挨拶の場面で「名刺」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「名片」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v21"
+    },
+    {
+      "head": "初日",
+      "reading": "しょにち",
+      "meaning": "第一天",
+      "sentence": "自己紹介と挨拶の場面で「初日」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「第一天」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v22"
+    },
+    {
+      "head": "自己紹介",
+      "reading": "じこしょうかい",
+      "meaning": "自我介紹",
+      "sentence": "自己紹介と挨拶の場面で「自己紹介」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「自我介紹」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v23"
+    },
+    {
+      "head": "よろしく",
+      "meaning": "請多關照",
+      "sentence": "自己紹介と挨拶の場面で「よろしく」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「請多關照」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v24"
+    },
+    {
+      "head": "表現",
+      "reading": "ひょうげん",
+      "meaning": "表達",
+      "sentence": "自己紹介と挨拶の場面で「表現」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「表達」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v25"
+    },
+    {
+      "head": "場面",
+      "reading": "ばめん",
+      "meaning": "場景",
+      "sentence": "自己紹介と挨拶の場面で「場面」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「場景」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v26"
+    },
+    {
+      "head": "質問",
+      "reading": "しつもん",
+      "meaning": "問題",
+      "sentence": "自己紹介と挨拶の場面で「質問」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「問題」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v27"
+    },
+    {
+      "head": "答え",
+      "reading": "こたえ",
+      "meaning": "回答",
+      "sentence": "自己紹介と挨拶の場面で「答え」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「回答」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v28"
+    },
+    {
+      "head": "練習",
+      "reading": "れんしゅう",
+      "meaning": "練習",
+      "sentence": "自己紹介と挨拶の場面で「練習」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「練習」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v29"
+    },
+    {
+      "head": "確認",
+      "reading": "かくにん",
+      "meaning": "確認",
+      "sentence": "自己紹介と挨拶の場面で「確認」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「確認」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v30"
+    },
+    {
+      "head": "説明",
+      "reading": "せつめい",
+      "meaning": "說明",
+      "sentence": "自己紹介と挨拶の場面で「説明」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「說明」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v31"
+    },
+    {
+      "head": "会話",
+      "reading": "かいわ",
+      "meaning": "對話",
+      "sentence": "自己紹介と挨拶の場面で「会話」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「對話」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v32"
+    },
+    {
+      "head": "相手",
+      "reading": "あいて",
+      "meaning": "對方",
+      "sentence": "自己紹介と挨拶の場面で「相手」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「對方」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v33"
+    },
+    {
+      "head": "予定",
+      "reading": "よてい",
+      "meaning": "預定",
+      "sentence": "自己紹介と挨拶の場面で「予定」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「預定」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v34"
+    },
+    {
+      "head": "連絡",
+      "reading": "れんらく",
+      "meaning": "聯絡",
+      "sentence": "自己紹介と挨拶の場面で「連絡」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「聯絡」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v35"
+    },
+    {
+      "head": "準備",
+      "reading": "じゅんび",
+      "meaning": "準備",
+      "sentence": "自己紹介と挨拶の場面で「準備」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「準備」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v36"
+    },
+    {
+      "head": "理由",
+      "reading": "りゆう",
+      "meaning": "理由",
+      "sentence": "自己紹介と挨拶の場面で「理由」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「理由」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v37"
+    },
+    {
+      "head": "方法",
+      "reading": "ほうほう",
+      "meaning": "方法",
+      "sentence": "自己紹介と挨拶の場面で「方法」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「方法」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v38"
+    },
+    {
+      "head": "例文",
+      "reading": "れいぶん",
+      "meaning": "例句",
+      "sentence": "自己紹介と挨拶の場面で「例文」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「例句」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v39"
+    },
+    {
+      "head": "意味",
+      "reading": "いみ",
+      "meaning": "意思",
+      "sentence": "自己紹介と挨拶の場面で「意味」を自然に使います。",
+      "sentenceZh": "在「自己紹介と挨拶」情境中自然使用「意思」。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-v40"
+    }
+  ],
+  "passage": [
+    {
+      "id": "n5n4-1-p1",
+      "head": "大学での自己紹介",
+      "meaning": "大學自我介紹",
+      "sentence": "はじめまして、李です。中国から来ました。日本語を勉強しています。よろしくお願いします。",
+      "sentenceZh": "初次見面，我姓李。從中國來。正在學日語。請多關照。",
+      "scenario": "新同學",
+      "register": "polite"
+    },
+    {
+      "id": "n5n4-1-p2",
+      "head": "隣人との挨拶",
+      "meaning": "與鄰居問候",
+      "sentence": "こんにちは。隣に引っ越してきました。田中と申します。どうぞよろしく。",
+      "sentenceZh": "您好。剛搬來隔壁。我叫田中。請多關照。",
+      "scenario": "鄰居",
+      "register": "polite"
+    },
+    {
+      "id": "n5n4-1-p3",
+      "head": "初日のあいさつ",
+      "meaning": "第一天問候",
+      "sentence": "おはようございます。今日からインターンです。王と申します。よろしくお願いします。",
+      "sentenceZh": "早上好。今天開始實習。我叫王。請多關照。",
+      "scenario": "職場",
+      "register": "polite"
+    },
+    {
+      "head": "教室での挨拶",
+      "meaning": "自己紹介と挨拶の読解練習",
+      "sentence": "まず、教室での挨拶について短い文章を読みます。大切な語句を確認してから、自分の言葉で要点を伝えます。",
+      "sentenceZh": "閱讀關於「教室での挨拶」的短文。先確認重要詞語，再用自己的話說出重點。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-p4"
+    },
+    {
+      "head": "会社初日の自己紹介",
+      "meaning": "自己紹介と挨拶の読解練習",
+      "sentence": "次に、会社初日の自己紹介について短い文章を読みます。大切な語句を確認してから、自分の言葉で要点を伝えます。",
+      "sentenceZh": "閱讀關於「会社初日の自己紹介」的短文。先確認重要詞語，再用自己的話說出重點。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-p5"
+    },
+    {
+      "head": "近所への挨拶",
+      "meaning": "自己紹介と挨拶の読解練習",
+      "sentence": "そのあと、近所への挨拶について短い文章を読みます。大切な語句を確認してから、自分の言葉で要点を伝えます。",
+      "sentenceZh": "閱讀關於「近所への挨拶」的短文。先確認重要詞語，再用自己的話說出重點。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-p6"
+    },
+    {
+      "head": "名刺交換",
+      "meaning": "自己紹介と挨拶の読解練習",
+      "sentence": "最後に、名刺交換について短い文章を読みます。大切な語句を確認してから、自分の言葉で要点を伝えます。",
+      "sentenceZh": "閱讀關於「名刺交換」的短文。先確認重要詞語，再用自己的話說出重點。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-p7"
+    },
+    {
+      "head": "留学生の紹介",
+      "meaning": "自己紹介と挨拶の読解練習",
+      "sentence": "まず、留学生の紹介について短い文章を読みます。大切な語句を確認してから、自分の言葉で要点を伝えます。",
+      "sentenceZh": "閱讀關於「留学生の紹介」的短文。先確認重要詞語，再用自己的話說出重點。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-p8"
+    }
+  ],
+  "grammar": [
+    {
+      "id": "n5n4-1-g1",
+      "head": "〜です（丁寧形）",
+      "meaning": "〜是（禮貌體）",
+      "sentence": "わたしは会社員です。",
+      "sentenceZh": "我是公司職員。",
+      "scenario": "自我介紹",
+      "register": "polite"
+    },
+    {
+      "id": "n5n4-1-g2",
+      "head": "〜は〜です",
+      "meaning": "A 是 B（主題＋斷定）",
+      "sentence": "これは私の名刺です。",
+      "sentenceZh": "這是我的名片。",
+      "scenario": "商務",
+      "register": "polite"
+    },
+    {
+      "id": "n5n4-1-g3",
+      "head": "〜から来ました",
+      "meaning": "從〜來",
+      "sentence": "台湾から来ました。",
+      "sentenceZh": "我從台灣來。",
+      "scenario": "新同學",
+      "register": "polite"
+    },
+    {
+      "id": "n5n4-1-g4",
+      "head": "〜を勉強しています",
+      "meaning": "正在學習〜",
+      "sentence": "毎日日本語を勉強しています。",
+      "sentenceZh": "每天學日語。",
+      "scenario": "語言學校",
+      "register": "polite"
+    },
+    {
+      "head": "〜について",
+      "meaning": "關於〜",
+      "sentence": "今日の会議では、新しい予定について話します。",
+      "sentenceZh": "今天的會議要談關於新行程的事。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-g5"
+    },
+    {
+      "head": "〜場合は",
+      "meaning": "如果〜的情況",
+      "sentence": "時間が足りない場合は、先に要点だけ説明します。",
+      "sentenceZh": "如果時間不夠，先只說明重點。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-g6"
+    },
+    {
+      "head": "〜ながら",
+      "meaning": "一邊〜一邊〜",
+      "sentence": "資料を見ながら、説明を聞いてください。",
+      "sentenceZh": "請一邊看資料一邊聽說明。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-g7"
+    },
+    {
+      "head": "〜ために",
+      "meaning": "為了〜",
+      "sentence": "聞き取りを伸ばすために、短い文を毎日聞きます。",
+      "sentenceZh": "為了提升聽解，每天聽短句。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-g8"
+    },
+    {
+      "head": "〜かもしれません",
+      "meaning": "也許〜",
+      "sentence": "午後は雨が降るかもしれません。",
+      "sentenceZh": "下午也許會下雨。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-g9"
+    },
+    {
+      "head": "〜ようです",
+      "meaning": "似乎〜",
+      "sentence": "この表現は少し硬いようです。",
+      "sentenceZh": "這個表達似乎有點正式。",
+      "scenario": "初次見面",
+      "register": "polite",
+      "id": "n5n4-1-g10"
+    }
+  ]
+}
