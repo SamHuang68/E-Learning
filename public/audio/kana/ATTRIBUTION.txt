@@ -1,0 +1,5 @@
+Kana pronunciation MP3s sourced from Tofugu hiragana lesson assets:
+https://www.tofugu.com/japanese/learn-hiragana/
+https://files.tofugu.com/articles/japanese/2014-06-30-learn-hiragana/
+
+Used for educational playback in E-Learning Hub. Prefer linking/attributing Tofugu.

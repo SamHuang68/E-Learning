@@ -1,5 +1,5 @@
 import type { BuilderConfig } from '../data/course'
-import type { KanaScript, LearnRowId } from '../data/kana'
+import { LEARN_ORDER, type KanaScript, type LearnRowId } from '../data/kana'
 import type { ToeicBuilderConfig, ToeicCertificate } from '../toeic/data/certificates'
 
 /** Late-bound write-through hook (wired by cloudProgress to avoid circular imports). */
@@ -194,7 +194,7 @@ export function saveProgress(progress: ProgressState) {
 export function defaultKanaProgress(): KanaProgress {
   return {
     script: 'hiragana',
-    unlockedRows: ['a'],
+    unlockedRows: [...LEARN_ORDER],
     mastered: [],
     quizCorrect: 0,
     quizTotal: 0,

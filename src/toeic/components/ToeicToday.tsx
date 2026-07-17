@@ -125,8 +125,12 @@ export function ToeicToday({
         <button type="button" onClick={onStartGrammar}>
           <i>G</i>
           <span>TASK 03</span>
-          <h3>{unit.grammar}</h3>
-          <p>{progress.grammarStarted ? 'In progress' : 'Not started'}</p>
+          <h3>Polite / diplomatic｜{unit.grammar}</h3>
+          <p>
+            {progress.grammarStarted
+              ? 'In progress · register & scenarios'
+              : 'Not started · business politeness'}
+          </p>
           <b>Go →</b>
         </button>
       </div>
@@ -143,7 +147,10 @@ export function ToeicToday({
           <li>
             Listening: {progress.listeningDone}/{unit.listening}
           </li>
-          <li>Grammar: {progress.grammarStarted ? 'In progress' : 'Pending'}</li>
+          <li>
+            Polite patterns:{' '}
+            {progress.grammarStarted ? 'In progress' : 'Pending'}
+          </li>
         </ul>
         <p>{cert.audience}</p>
         <button type="button" className="text-link" onClick={onOpenBuilder}>

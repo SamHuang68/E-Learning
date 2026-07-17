@@ -1,67 +1,171 @@
+import { useEffect, useState } from 'react'
+import { SpeakButton } from '../../components/SpeakButton'
+import {
+  REGISTER_LABELS,
+  type SpeakableCard,
+} from '../../data/practiceTypes'
 import type { ToeicUnit } from '../data/certificates'
-import { speakEnglish } from '../../utils/speech'
+import { getToeicPractice } from '../data/practiceContent'
 
 type Props = {
   kind: 'vocab' | 'listening' | 'grammar'
+  certificateId: string
   unit: ToeicUnit
   onBack: () => void
   onProgress: () => void
 }
 
-export function ToeicPractice({ kind, unit, onBack, onProgress }: Props) {
-  const sample =
-    kind === 'vocab'
-      ? {
-          eyebrow: 'VOCABULARY',
-          title: 'Word Practice',
-          en: 'deadline',
-          tip: '截止日期',
-          sentence: 'The deadline is Friday.',
-        }
-      : kind === 'listening'
-        ? {
-            eyebrow: 'LISTENING',
-            title: 'Listen & Repeat',
-            en: 'Could you send the report by noon?',
-            tip: '聽完跟讀',
-            sentence: 'Focus on polite request intonation.',
-          }
-        : {
-            eyebrow: 'GRAMMAR',
-            title: 'Pattern Drill',
-            en: unit.grammar,
-            tip: '句型精練',
-            sentence: `Practice patterns for: ${unit.titleEn}`,
-          }
+const copy = {
+  vocab: {
+    eyebrow: 'VOCABULARY',
+    title: 'Word Practice',
+    action: 'Mark done +XP',
+  },
+  listening: {
+    eyebrow: 'LISTENING',
+    title: 'Listen & Repeat',
+    action: 'Mark done +XP',
+  },
+  grammar: {
+    eyebrow: 'GRAMMAR',
+    title: 'Polite Patterns',
+    action: 'Mark done +XP',
+  },
+}
+
+function cardsForKind(
+  kind: Props['kind'],
+  pack: ReturnType<typeof getToeicPractice>,
+): SpeakableCard[] {
+  if (!pack) return []
+  if (kind === 'vocab') return pack.vocab
+  if (kind === 'listening') return pack.passage
+  return pack.grammar
+}
+
+export function ToeicPractice({
+  kind,
+  certificateId,
+  unit,
+  onBack,
+  onProgress,
+}: Props) {
+  const meta = copy[kind]
+  const pack = getToeicPractice(certificateId, unit.id)
+  const cards = cardsForKind(kind, pack)
+  const [index, setIndex] = useState(0)
+
+  useEffect(() => {
+    setIndex(0)
+  }, [kind, certificateId, unit.id])
+
+  const card = cards[index]
+  const total = cards.length
+  const fallbackSpeak = unit.titleEn
 
   return (
     <section className="practice-view">
       <button type="button" className="ghost back" onClick={onBack}>
         ← Back
       </button>
-      <p className="eyebrow">{sample.eyebrow}</p>
+      <p className="eyebrow">{meta.eyebrow}</p>
       <h1>
-        {sample.title}
+        {meta.title}
         <span>Unit {unit.id}</span>
       </h1>
-      <p className="lede">{unit.titleEn}</p>
+      <p className="lede">
+        {kind === 'grammar'
+          ? `${unit.grammar} · scenario & business politeness`
+          : unit.titleEn}
+      </p>
 
       <div className="practice-card">
-        <div className="flash-face">
-          <strong>{sample.en}</strong>
-          <span>{sample.tip}</span>
-          <p>{sample.sentence}</p>
-        </div>
+        {total > 0 && (
+          <div className="practice-nav">
+            <span>
+              {index + 1} / {total}
+            </span>
+            <div className="nav-btns">
+              <button
+                type="button"
+                className="ghost"
+                disabled={index <= 0}
+                onClick={() => setIndex((i) => Math.max(0, i - 1))}
+              >
+                ← Prev
+              </button>
+              <button
+                type="button"
+                className="ghost"
+                disabled={index >= total - 1}
+                onClick={() => setIndex((i) => Math.min(total - 1, i + 1))}
+              >
+                Next →
+              </button>
+            </div>
+          </div>
+        )}
+
+        {card ? (
+          <div className="flash-face">
+            <strong>{card.head}</strong>
+            {(card.reading || card.meaning) && (
+              <span className="flash-meaning">
+                {[card.reading, card.meaning].filter(Boolean).join(' · ')}
+              </span>
+            )}
+            <p>{card.sentence}</p>
+            {card.sentenceZh && (
+              <span className="flash-sentence-zh">{card.sentenceZh}</span>
+            )}
+            <div className="flash-meta">
+              <span className="scenario-chip">{card.scenario}</span>
+              <span
+                className="register-chip"
+                data-register={card.register}
+              >
+                {REGISTER_LABELS[card.register].en}
+              </span>
+            </div>
+            <p className="flash-scenario">Scenario: {card.scenario}</p>
+          </div>
+        ) : (
+          <div className="practice-empty">
+            <strong>Content coming soon</strong>
+            <p>
+              Practice cards for “{unit.titleEn}” are not ready yet. You can still
+              hear the unit title.
+            </p>
+          </div>
+        )}
+
         <div className="flash-actions">
+          {card && kind === 'listening' && (
+            <SpeakButton
+              lang="en"
+              text={card.speakText ?? card.sentence}
+              label="Play line"
+            />
+          )}
+          {card && kind !== 'listening' && (
+            <>
+              <SpeakButton lang="en" text={card.head} label="Word" />
+              <SpeakButton
+                lang="en"
+                text={card.speakText ?? card.sentence}
+                label="Sentence"
+              />
+            </>
+          )}
+          {!card && (
+            <SpeakButton lang="en" text={fallbackSpeak} label="Unit title" />
+          )}
           <button
             type="button"
-            className="ghost"
-            onClick={() => speakEnglish(sample.en)}
+            className="primary-btn inline"
+            onClick={onProgress}
           >
-            🔊 Speak
-          </button>
-          <button type="button" className="primary-btn inline" onClick={onProgress}>
-            Mark done +XP
+            {meta.action}
           </button>
         </div>
       </div>

@@ -10,6 +10,12 @@ type SpeakOptions = {
 let jaVoice: SpeechSynthesisVoice | null = null
 let enVoice: SpeechSynthesisVoice | null = null
 let voicesReady = false
+/**
+ * Chrome/Edge often silently drops the first utterance after load (or after cancel).
+ * We queue an inaudible pad once so the real kana becomes the second item.
+ */
+let needsUtterancePad = true
+const SPEAK_AFTER_CANCEL_MS = 60
 
 function pickVoice(voices: SpeechSynthesisVoice[], langPrefix: string) {
   const matched = voices.filter((v) =>
@@ -36,21 +42,27 @@ function pickEnglishVoice(voices: SpeechSynthesisVoice[]) {
   )
 }
 
+function assignVoices(list: SpeechSynthesisVoice[]) {
+  jaVoice = pickVoice(list, 'ja')
+  enVoice = pickEnglishVoice(list)
+  voicesReady = true
+}
+
+function refreshVoicesSync() {
+  if (!isSpeechSupported()) return
+  const list = window.speechSynthesis.getVoices()
+  if (list.length) assignVoices(list)
+}
+
 export function warmVoices(): Promise<SpeechSynthesisVoice[]> {
   if (typeof window === 'undefined' || !window.speechSynthesis) {
     return Promise.resolve([])
   }
 
   const synth = window.speechSynthesis
-  const assign = (list: SpeechSynthesisVoice[]) => {
-    jaVoice = pickVoice(list, 'ja')
-    enVoice = pickEnglishVoice(list)
-    voicesReady = true
-  }
-
   const existing = synth.getVoices()
   if (existing.length) {
-    assign(existing)
+    assignVoices(existing)
     return Promise.resolve(existing)
   }
 
@@ -60,7 +72,7 @@ export function warmVoices(): Promise<SpeechSynthesisVoice[]> {
       if (settled) return
       settled = true
       const list = synth.getVoices()
-      assign(list)
+      assignVoices(list)
       resolve(list)
     }
     synth.addEventListener('voiceschanged', done, { once: true })
@@ -75,38 +87,90 @@ export function isSpeechSupported() {
 export function stopSpeaking() {
   if (!isSpeechSupported()) return
   window.speechSynthesis.cancel()
+  // After cancel, Chrome may drop the next real utterance again.
+  needsUtterancePad = true
 }
 
+function attachResumeWatchdog(
+  synth: SpeechSynthesis,
+  utter: SpeechSynthesisUtterance,
+) {
+  const watch = window.setInterval(() => {
+    if (!synth.speaking && !synth.pending) {
+      window.clearInterval(watch)
+      return
+    }
+    if (synth.paused) synth.resume()
+  }, 120)
+
+  const clear = () => window.clearInterval(watch)
+  utter.addEventListener('end', clear)
+  utter.addEventListener('error', clear)
+}
+
+function buildUtterance(
+  text: string,
+  lang: string,
+  options: SpeakOptions,
+): SpeechSynthesisUtterance {
+  const utter = new SpeechSynthesisUtterance(text)
+  utter.lang = lang
+  utter.rate = options.rate ?? (lang.startsWith('ja') ? 0.85 : 0.92)
+  utter.pitch = options.pitch ?? 1
+  const voice = lang.startsWith('ja') ? jaVoice : enVoice
+  if (voice) utter.voice = voice
+  return utter
+}
+
+/** Inaudible pad that absorbs Chrome's "drop first utterance" quirk. */
+function queuePad(synth: SpeechSynthesis, lang: string) {
+  const pad = new SpeechSynthesisUtterance(lang.startsWith('ja') ? 'あ' : 'a')
+  pad.volume = 0
+  pad.rate = 2
+  pad.pitch = 1
+  pad.lang = lang
+  const voice = lang.startsWith('ja') ? jaVoice : enVoice
+  if (voice) pad.voice = voice
+  synth.speak(pad)
+}
+
+/**
+ * Keep the first real speak() in the same turn as a user gesture when possible.
+ * Never gate the first kick behind await / .then().
+ */
 function speak(text: string, options: SpeakOptions = {}) {
   if (!isSpeechSupported() || !text.trim()) {
     options.onError?.()
     return
   }
 
+  refreshVoicesSync()
+  if (!voicesReady) void warmVoices()
+
   const lang = options.lang ?? 'ja-JP'
   const synth = window.speechSynthesis
-  synth.cancel()
+  const utter = buildUtterance(text, lang, options)
 
-  const run = () => {
-    const utter = new SpeechSynthesisUtterance(text)
-    utter.lang = lang
-    utter.rate = options.rate ?? (lang.startsWith('ja') ? 0.85 : 0.92)
-    utter.pitch = options.pitch ?? 1
-    const voice = lang.startsWith('ja') ? jaVoice : enVoice
-    if (voice) utter.voice = voice
+  utter.onstart = () => options.onStart?.()
+  utter.onend = () => options.onEnd?.()
+  utter.onerror = () => options.onError?.()
 
-    utter.onstart = () => options.onStart?.()
-    utter.onend = () => options.onEnd?.()
-    utter.onerror = () => options.onError?.()
-
+  const kick = () => {
     if (synth.paused) synth.resume()
+    if (needsUtterancePad) {
+      needsUtterancePad = false
+      queuePad(synth, lang)
+    }
+    attachResumeWatchdog(synth, utter)
     synth.speak(utter)
   }
 
-  if (!voicesReady) {
-    void warmVoices().then(run)
+  if (synth.speaking || synth.pending) {
+    synth.cancel()
+    needsUtterancePad = true
+    window.setTimeout(kick, SPEAK_AFTER_CANCEL_MS)
   } else {
-    run()
+    kick()
   }
 }
 
@@ -125,6 +189,10 @@ export async function speakSequence(
   signal?: { cancelled: boolean },
   lang: 'ja-JP' | 'en-US' = 'ja-JP',
 ) {
+  // No await before the first speak — preserves click user-activation on Chromium.
+  refreshVoicesSync()
+  void warmVoices()
+
   for (let i = 0; i < items.length; i += 1) {
     if (signal?.cancelled) break
     onIndex?.(i)
@@ -140,9 +208,11 @@ export async function speakSequence(
         onEnd: finish,
         onError: finish,
       })
-      window.setTimeout(finish, 2200)
+      window.setTimeout(finish, 2500)
     })
     if (signal?.cancelled) break
-    await new Promise((r) => setTimeout(r, gapMs))
+    if (i < items.length - 1) {
+      await new Promise((r) => setTimeout(r, gapMs))
+    }
   }
 }

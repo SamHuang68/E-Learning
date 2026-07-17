@@ -81,6 +81,7 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
       return (
         <ToeicPractice
           kind={practice}
+          certificateId={progress.certificateId}
           unit={unit}
           onBack={() => {
             setPractice(null)
@@ -126,6 +127,7 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
       return (
         <ToeicPractice
           kind={kind}
+          certificateId={progress.certificateId}
           unit={unit}
           onBack={() => setNav('today')}
           onProgress={() => {

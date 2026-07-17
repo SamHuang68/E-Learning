@@ -418,7 +418,7 @@ export function getRowById(script: KanaScript, rowId: string): KanaRow | undefin
   return getKanaRows(script, true).find((r) => r.id === rowId)
 }
 
-/** Recommended zero-to-hero unlock order */
+/** Row ids used by practice pickers (all open — no gated unlock). */
 export const LEARN_ORDER = [
   'a',
   'ka',

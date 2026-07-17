@@ -100,6 +100,7 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
       return (
         <PracticeView
           kind={practice}
+          levelId={progress.levelId}
           unit={unit}
           onBack={() => {
             setPractice(null)
@@ -141,6 +142,7 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
       return (
         <PracticeView
           kind="vocab"
+          levelId={progress.levelId}
           unit={unit}
           onBack={() => setNav('today')}
           onProgress={() =>
@@ -156,6 +158,7 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
       return (
         <PracticeView
           kind="grammar"
+          levelId={progress.levelId}
           unit={unit}
           onBack={() => setNav('today')}
           onProgress={() =>

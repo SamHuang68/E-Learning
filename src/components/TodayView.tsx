@@ -109,8 +109,12 @@ export function TodayView({
         <button type="button" onClick={onStartGrammar}>
           <i>文</i>
           <span>TASK 03</span>
-          <h3>{unit.grammar}</h3>
-          <p>{progress.grammarStarted ? '進行中' : '尚未練習'}</p>
+          <h3>場面・敬語｜{unit.grammar}</h3>
+          <p>
+            {progress.grammarStarted
+              ? '進行中・練習語域與場面'
+              : '尚未練習・場面與丁寧／敬語'}
+          </p>
           <b>前往學習 →</b>
         </button>
       </div>
@@ -127,7 +131,10 @@ export function TodayView({
           <li>
             閱讀作答：{progress.readingDone}/{unit.reading}
           </li>
-          <li>文法練習：{progress.grammarStarted ? '進行中' : '尚未開始'}</li>
+          <li>
+            場面・敬語：
+            {progress.grammarStarted ? '進行中' : '尚未開始'}
+          </li>
         </ul>
         <p>
           適合對象：{level.tier}（{level.band}）。可用課程設計器客製下一堂課。
