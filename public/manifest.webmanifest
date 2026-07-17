@@ -1,0 +1,18 @@
+{
+  "name": "あおば E-Learning",
+  "short_name": "Aoba Learn",
+  "description": "あおば日語與 TOEIC English 學習站",
+  "display": "standalone",
+  "start_url": ".",
+  "scope": ".",
+  "theme_color": "#1a3a4a",
+  "background_color": "#e7eef5",
+  "icons": [
+    {
+      "src": "icons.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

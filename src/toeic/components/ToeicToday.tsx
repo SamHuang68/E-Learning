@@ -12,7 +12,14 @@ type Props = {
   onStartVocab: () => void
   onStartListening: () => void
   onStartGrammar: () => void
+  onStartReview: () => void
+  onStartMock: () => void
+  onStartPlacement?: () => void
   onSelectUnit: (id: number) => void
+  dueCount: number
+  streak: number
+  dailyDone: number
+  dailyGoal: number
 }
 
 export function ToeicToday({
@@ -24,7 +31,14 @@ export function ToeicToday({
   onStartVocab,
   onStartListening,
   onStartGrammar,
+  onStartReview,
+  onStartMock,
+  onStartPlacement,
   onSelectUnit,
+  dueCount,
+  streak,
+  dailyDone,
+  dailyGoal,
 }: Props) {
   const vocabPct = Math.round((progress.vocabDone / unit.words) * 100)
   const listenPct = Math.round((progress.listeningDone / unit.listening) * 100)
@@ -78,6 +92,27 @@ export function ToeicToday({
         </div>
       </section>
 
+      <div className="daily-review">
+        <div>
+          <p className="eyebrow">SRS · TODAY</p>
+          <h2>
+            {streak}-day streak · {dailyDone}/{dailyGoal} cards
+          </h2>
+          <span>
+            Today review queue: {dueCount} cards. Practice saves spacing,
+            daily goal progress, and achievements.
+          </span>
+        </div>
+        <button
+          type="button"
+          className="primary-btn inline"
+          disabled={dueCount <= 0}
+          onClick={onStartReview}
+        >
+          Today Review →
+        </button>
+      </div>
+
       {cert.id === 'orange' && (
         <div className="daily-review">
           <div>
@@ -125,8 +160,12 @@ export function ToeicToday({
         <button type="button" onClick={onStartGrammar}>
           <i>G</i>
           <span>TASK 03</span>
-          <h3>{unit.grammar}</h3>
-          <p>{progress.grammarStarted ? 'In progress' : 'Not started'}</p>
+          <h3>Polite / diplomatic｜{unit.grammar}</h3>
+          <p>
+            {progress.grammarStarted
+              ? 'In progress · register, scenario, and polite choices'
+              : 'Not started · choose polite forms by scenario'}
+          </p>
           <b>Go →</b>
         </button>
       </div>
@@ -143,13 +182,30 @@ export function ToeicToday({
           <li>
             Listening: {progress.listeningDone}/{unit.listening}
           </li>
-          <li>Grammar: {progress.grammarStarted ? 'In progress' : 'Pending'}</li>
+          <li>
+            Polite patterns:{' '}
+            {progress.grammarStarted ? 'In progress' : 'Pending'}
+          </li>
         </ul>
         <p>{cert.audience}</p>
         <button type="button" className="text-link" onClick={onOpenBuilder}>
           Open lesson builder →
         </button>
+        {onStartPlacement && (
+          <button type="button" className="text-link" onClick={onStartPlacement}>
+            Retake placement →
+          </button>
+        )}
       </div>
+
+      <button type="button" className="unit-test-card" onClick={onStartMock}>
+        <span>FINAL CHECKPOINT</span>
+        <div>
+          <strong>Unit mock · 15 questions</strong>
+          <small>Vocab, listening, and polite pattern mixed review</small>
+        </div>
+        <b>Start mock →</b>
+      </button>
 
       <div className="unit-map">
         <h3>{cert.mapTitle}</h3>

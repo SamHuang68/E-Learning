@@ -9,6 +9,10 @@ export type ToeicNavId =
   | 'vocab'
   | 'listening'
   | 'grammar'
+  | 'scenario'
+  | 'speaking'
+  | 'mock'
+  | 'placement'
 
 type Props = {
   nav: ToeicNavId
@@ -28,6 +32,10 @@ const items: { id: ToeicNavId; icon: string; label: string }[] = [
   { id: 'vocab', icon: 'V', label: '單字練習' },
   { id: 'listening', icon: '♪', label: '聽力練習' },
   { id: 'grammar', icon: 'G', label: '文法教室' },
+  { id: 'placement', icon: '級', label: '分級測驗' },
+  { id: 'mock', icon: '模', label: '模擬測驗' },
+  { id: 'scenario', icon: '場', label: '情境任務' },
+  { id: 'speaking', icon: '話', label: '口說跟讀' },
 ]
 
 export function ToeicSidebar({

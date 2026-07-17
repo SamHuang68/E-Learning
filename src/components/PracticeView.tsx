@@ -1,10 +1,32 @@
+import { useEffect, useState } from 'react'
 import type { Unit } from '../data/course'
+import { itemKey } from '../data/contentPack'
+import { getJaPractice } from '../data/practiceContent'
+import {
+  REGISTER_LABELS,
+  type SpeakableCard,
+  type UnitPractice,
+} from '../data/practiceTypes'
+import {
+  cardsToExercises,
+  sessionFromUnitPractice,
+  type UnitPracticeKind,
+} from '../engine/exercises'
+import {
+  applyExerciseSessionResult,
+  type ExerciseSessionResult,
+} from '../engine/sessionResults'
+import { ExerciseSession } from './ExerciseSession'
+import { SpeakButton } from './SpeakButton'
 
 type Props = {
   kind: 'vocab' | 'grammar' | 'reading'
+  levelId: string
   unit: Unit
+  mode?: 'learn' | 'quiz'
+  reviewIds?: string[]
   onBack: () => void
-  onProgress: () => void
+  onProgress: (delta?: number) => void
 }
 
 const copy = {
@@ -20,13 +42,116 @@ const copy = {
   },
   grammar: {
     eyebrow: 'GRAMMAR',
-    title: '文法教室',
+    title: '場面・敬語',
     action: '開始練習',
   },
 }
 
-export function PracticeView({ kind, unit, onBack, onProgress }: Props) {
+function cardsForKind(
+  kind: Props['kind'],
+  pack: ReturnType<typeof getJaPractice>,
+): SpeakableCard[] {
+  if (!pack) return []
+  if (kind === 'vocab') return pack.vocab
+  if (kind === 'reading') return pack.passage
+  return pack.grammar
+}
+
+function allCards(pack: UnitPractice | null): SpeakableCard[] {
+  if (!pack) return []
+  return [...pack.vocab, ...pack.passage, ...pack.grammar]
+}
+
+function reviewFilter(cards: SpeakableCard[], reviewIds?: string[]): SpeakableCard[] {
+  if (!reviewIds) return cards
+  const wanted = new Set(reviewIds)
+  return cards.filter((card) => wanted.has(card.id) || wanted.has(itemKey('ja', card.id)))
+}
+
+function filterPack(pack: UnitPractice | null, reviewIds?: string[]): UnitPractice | null {
+  if (!pack || !reviewIds) return pack
+  return {
+    vocab: reviewFilter(pack.vocab, reviewIds),
+    passage: reviewFilter(pack.passage, reviewIds),
+    grammar: reviewFilter(pack.grammar, reviewIds),
+  }
+}
+
+export function PracticeView({
+  kind,
+  levelId,
+  unit,
+  mode,
+  reviewIds,
+  onBack,
+  onProgress,
+}: Props) {
   const meta = copy[kind]
+  const pack = getJaPractice(levelId, unit.id)
+  const isReview = Boolean(reviewIds)
+  const sourceCards = isReview ? allCards(pack) : cardsForKind(kind, pack)
+  const cards = reviewFilter(sourceCards, reviewIds)
+  const filteredPack = filterPack(pack, reviewIds)
+  const [index, setIndex] = useState(0)
+  const [activeMode, setActiveMode] = useState<'learn' | 'quiz'>(
+    mode ?? (cards.length > 0 ? 'quiz' : 'learn'),
+  )
+
+  useEffect(() => {
+    setIndex(0)
+    setActiveMode(mode ?? (cards.length > 0 ? 'quiz' : 'learn'))
+  }, [cards.length, kind, levelId, mode, unit.id])
+
+  const card = cards[index]
+  const total = cards.length
+  const fallbackSpeak = unit.titleJa
+  const exercises = isReview
+    ? cardsToExercises(cards, 'ja', allCards(pack))
+    : sessionFromUnitPractice(filteredPack, kind as UnitPracticeKind, 'ja')
+
+  const modeTabs = (
+    <div className="mode-tabs">
+      <button
+        type="button"
+        className={activeMode === 'learn' ? 'active' : ''}
+        onClick={() => setActiveMode('learn')}
+      >
+        認識閃卡
+      </button>
+      <button
+        type="button"
+        className={activeMode === 'quiz' ? 'active' : ''}
+        onClick={() => setActiveMode('quiz')}
+      >
+        答題練習
+      </button>
+    </div>
+  )
+
+  function handleQuizComplete(result: ExerciseSessionResult) {
+    const saved = applyExerciseSessionResult(result, {
+      track: 'ja',
+      kind,
+      review: isReview,
+    })
+    onProgress(saved.correctCards)
+    onBack()
+  }
+
+  if (activeMode === 'quiz') {
+    return (
+      <>
+        {modeTabs}
+        <ExerciseSession
+          title={`${isReview ? '今日複習' : meta.title} · Unit ${unit.id}`}
+          lang="ja"
+          exercises={exercises}
+          onComplete={handleQuizComplete}
+          onExit={onBack}
+        />
+      </>
+    )
+  }
 
   return (
     <section className="practice-view">
@@ -39,40 +164,96 @@ export function PracticeView({ kind, unit, onBack, onProgress }: Props) {
         <span>Unit {unit.id}</span>
       </h1>
       <p className="lede">
-        {kind === 'grammar'
-          ? `本課重點：${unit.grammar}`
+        {isReview
+          ? '根據今日 SRS 佇列複習到期與新卡。'
+          : kind === 'grammar'
+          ? `本課重點：${unit.grammar}｜練習場面與敬語／丁寧語對照`
           : `圍繞「${unit.titleJa}」建立可輸出的日語基礎。`}
       </p>
 
+      {modeTabs}
+
       <div className="practice-card">
-        <div className="flash-face">
-          {kind === 'vocab' && (
+        {total > 0 && (
+          <div className="practice-nav">
+            <span>
+              {index + 1} / {total}
+            </span>
+            <div className="nav-btns">
+              <button
+                type="button"
+                className="ghost"
+                disabled={index <= 0}
+                onClick={() => setIndex((i) => Math.max(0, i - 1))}
+              >
+                ← 上一張
+              </button>
+              <button
+                type="button"
+                className="ghost"
+                disabled={index >= total - 1}
+                onClick={() => setIndex((i) => Math.min(total - 1, i + 1))}
+              >
+                下一張 →
+              </button>
+            </div>
+          </div>
+        )}
+
+        {card ? (
+          <div className="flash-face">
+            <strong>{card.head}</strong>
+            {(card.reading || card.meaning) && (
+              <span className="flash-meaning">
+                {[card.reading, card.meaning].filter(Boolean).join(' · ')}
+              </span>
+            )}
+            <p>{card.sentence}</p>
+            {card.sentenceZh && (
+              <span className="flash-sentence-zh">{card.sentenceZh}</span>
+            )}
+            <div className="flash-meta">
+              <span className="scenario-chip">{card.scenario}</span>
+              <span
+                className="register-chip"
+                data-register={card.register}
+              >
+                {REGISTER_LABELS[card.register].ja}
+              </span>
+            </div>
+            <p className="flash-scenario">使用場景：{card.scenario}</p>
+          </div>
+        ) : (
+          <div className="practice-empty">
+            <strong>本單元內容準備中</strong>
+            <p>
+              「{unit.titleJa}」的練習卡尚未就緒，仍可先用單元標題練習發音。
+            </p>
+          </div>
+        )}
+
+        <div className="flash-actions">
+          {card && (
             <>
-              <strong>家族</strong>
-              <span>かぞく · family</span>
-              <p>わたしの家族は四人です。</p>
+              <SpeakButton lang="ja" text={card.head} label="單字播" />
+              <SpeakButton
+                lang="ja"
+                text={card.speakText ?? card.sentence}
+                label="整句播"
+              />
             </>
           )}
-          {kind === 'reading' && (
-            <>
-              <strong>{unit.titleJa}</strong>
-              <p>
-                こんにちは。わたしはアオバです。台湾から来ました。日本の旅行が好きです。今日は家族について話します。
-              </p>
-              <span>問：アオバさんはどこから来ましたか？</span>
-            </>
+          {!card && (
+            <SpeakButton lang="ja" text={fallbackSpeak} label="播放單元標題" />
           )}
-          {kind === 'grammar' && (
-            <>
-              <strong>{unit.grammar}</strong>
-              <p>把句子改成丁寧形，並大聲跟讀兩次。</p>
-              <span>例：これ／本 → これは本です。</span>
-            </>
-          )}
+          <button
+            type="button"
+            className="primary-btn inline"
+            onClick={() => onProgress()}
+          >
+            {isReview ? '標記複習 +1' : meta.action}
+          </button>
         </div>
-        <button type="button" className="primary-btn" onClick={onProgress}>
-          {meta.action}
-        </button>
       </div>
     </section>
   )

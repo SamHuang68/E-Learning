@@ -1,5 +1,6 @@
 import type { BuilderConfig } from '../data/course'
-import type { KanaScript, LearnRowId } from '../data/kana'
+import { LEARN_ORDER, type KanaScript, type LearnRowId } from '../data/kana'
+import { defaultItemState, type ItemState } from '../engine/srs'
 import type { ToeicBuilderConfig, ToeicCertificate } from '../toeic/data/certificates'
 
 /** Late-bound write-through hook (wired by cloudProgress to avoid circular imports). */
@@ -23,6 +24,8 @@ const LANG_KEY = 'e-learning-lang'
 const LEGACY_SITE_KEY = 'aoba-site'
 const TOEIC_PROGRESS_KEY = 'toeic-progress'
 const TOEIC_PRESETS_KEY = 'toeic-presets'
+const LEARNING_META_KEY = 'e-learning-meta'
+const LEARNING_EVENT_LIMIT = 200
 
 /** Learning target language modules. */
 export type LangId = 'ja' | 'en'
@@ -68,6 +71,27 @@ export type ToeicProgress = {
   listeningDone: number
   grammarStarted: boolean
   phonicsMastered: string[]
+}
+
+export type LearningMeta = {
+  items: Record<string, ItemState>
+  streak: number
+  lastActiveDate: string | null
+  dailyGoalCards: number
+  dailyDoneCards: number
+  dailyDoneDate: string | null
+  placementJa?: { levelId: string; score: number; at: string } | null
+  placementEn?: {
+    certificateId: string
+    score: number
+    band: string
+    at: string
+  } | null
+  proUnlocked: boolean
+  achievements: string[]
+  events: Array<{ t: string; type: string; payload?: Record<string, unknown> }>
+  kanjiMastered: string[]
+  speakingDone: number
 }
 
 export type ToeicSavedPreset = {
@@ -118,6 +142,175 @@ export function writeLangPreference(view: AppView) {
     localStorage.removeItem(LEGACY_SITE_KEY)
   } catch {
     /* ignore */
+  }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value)
+}
+
+function normalizeNumber(
+  value: unknown,
+  fallback: number,
+  min = 0,
+  integer = false,
+): number {
+  const parsed = Number(value)
+  if (!Number.isFinite(parsed)) return fallback
+  const bounded = Math.max(min, parsed)
+  return integer ? Math.floor(bounded) : bounded
+}
+
+function normalizeDateKey(value: unknown): string | null {
+  return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)
+    ? value
+    : null
+}
+
+function normalizeIso(value: unknown, fallback: string): string {
+  return typeof value === 'string' && Number.isFinite(Date.parse(value))
+    ? value
+    : fallback
+}
+
+function normalizeStringArray(value: unknown): string[] {
+  return Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === 'string')
+    : []
+}
+
+function normalizePayload(value: unknown): Record<string, unknown> | undefined {
+  return isRecord(value) ? value : undefined
+}
+
+const SRS_GRADES = new Set(['again', 'hard', 'good', 'easy'])
+
+function normalizeItemState(id: string, value: unknown): ItemState {
+  const raw = isRecord(value) ? value : {}
+  const fallback = defaultItemState(id)
+  const lastResult =
+    typeof raw.lastResult === 'string' && SRS_GRADES.has(raw.lastResult)
+      ? raw.lastResult
+      : undefined
+  const item: ItemState = {
+    id: typeof raw.id === 'string' ? raw.id : id,
+    ease: normalizeNumber(raw.ease, fallback.ease, 1.3),
+    intervalDays: normalizeNumber(raw.intervalDays, fallback.intervalDays),
+    dueAt: normalizeIso(raw.dueAt, fallback.dueAt),
+    correctStreak: normalizeNumber(
+      raw.correctStreak,
+      fallback.correctStreak,
+      0,
+      true,
+    ),
+    seen: normalizeNumber(raw.seen, fallback.seen, 0, true),
+    lapses: normalizeNumber(raw.lapses, fallback.lapses, 0, true),
+  }
+  if (lastResult) item.lastResult = lastResult as ItemState['lastResult']
+  return item
+}
+
+function normalizeItems(value: unknown): Record<string, ItemState> {
+  if (!isRecord(value)) return {}
+  return Object.fromEntries(
+    Object.entries(value).map(([id, item]) => [id, normalizeItemState(id, item)]),
+  )
+}
+
+function normalizeEvents(value: unknown): LearningMeta['events'] {
+  if (!Array.isArray(value)) return []
+  return value
+    .flatMap((event) => {
+      if (!isRecord(event) || typeof event.type !== 'string') return []
+      const t = normalizeIso(event.t, new Date().toISOString())
+      const payload = normalizePayload(event.payload)
+      return payload
+        ? [{ t, type: event.type, payload }]
+        : [{ t, type: event.type }]
+    })
+    .slice(-LEARNING_EVENT_LIMIT)
+}
+
+function normalizePlacementJa(value: unknown): LearningMeta['placementJa'] {
+  if (!isRecord(value) || typeof value.levelId !== 'string') return null
+  return {
+    levelId: value.levelId,
+    score: normalizeNumber(value.score, 0),
+    at: normalizeIso(value.at, new Date().toISOString()),
+  }
+}
+
+function normalizePlacementEn(value: unknown): LearningMeta['placementEn'] {
+  if (
+    !isRecord(value) ||
+    typeof value.certificateId !== 'string' ||
+    typeof value.band !== 'string'
+  ) {
+    return null
+  }
+  return {
+    certificateId: value.certificateId,
+    score: normalizeNumber(value.score, 0),
+    band: value.band,
+    at: normalizeIso(value.at, new Date().toISOString()),
+  }
+}
+
+function todayLocalKey(d = new Date()): string {
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+function previousLocalDateKey(today: string): string | null {
+  const parts = today.split('-').map(Number)
+  if (parts.length !== 3 || parts.some((part) => !Number.isFinite(part))) {
+    return null
+  }
+  const [year, month, day] = parts
+  return todayLocalKey(new Date(year, month - 1, day - 1))
+}
+
+function nextLocalStreak(
+  prevStreak: number,
+  lastActiveDate: string | null,
+  today: string,
+): number {
+  if (lastActiveDate === today) return Math.max(1, prevStreak)
+  if (lastActiveDate === previousLocalDateKey(today)) {
+    return Math.max(0, prevStreak) + 1
+  }
+  return 1
+}
+
+function normalizeLearningMeta(raw: unknown): LearningMeta {
+  const data = isRecord(raw) ? raw : {}
+  const fallback = defaultLearningMeta()
+  return {
+    items: normalizeItems(data.items),
+    streak: normalizeNumber(data.streak, fallback.streak, 0, true),
+    lastActiveDate: normalizeDateKey(data.lastActiveDate),
+    dailyGoalCards: normalizeNumber(
+      data.dailyGoalCards,
+      fallback.dailyGoalCards,
+      1,
+      true,
+    ),
+    dailyDoneCards: normalizeNumber(
+      data.dailyDoneCards,
+      fallback.dailyDoneCards,
+      0,
+      true,
+    ),
+    dailyDoneDate: normalizeDateKey(data.dailyDoneDate),
+    placementJa: normalizePlacementJa(data.placementJa),
+    placementEn: normalizePlacementEn(data.placementEn),
+    proUnlocked: Boolean(data.proUnlocked),
+    achievements: normalizeStringArray(data.achievements),
+    events: normalizeEvents(data.events),
+    kanjiMastered: normalizeStringArray(data.kanjiMastered),
+    speakingDone: normalizeNumber(data.speakingDone, fallback.speakingDone, 0, true),
   }
 }
 
@@ -194,7 +387,7 @@ export function saveProgress(progress: ProgressState) {
 export function defaultKanaProgress(): KanaProgress {
   return {
     script: 'hiragana',
-    unlockedRows: ['a'],
+    unlockedRows: [...LEARN_ORDER],
     mastered: [],
     quizCorrect: 0,
     quizTotal: 0,
@@ -247,31 +440,108 @@ export function saveToeicProgress(progress: ToeicProgress) {
   notifyProgressChanged()
 }
 
-export type ProgressExportBundle = {
+export function defaultLearningMeta(): LearningMeta {
+  return {
+    items: {},
+    streak: 0,
+    lastActiveDate: null,
+    dailyGoalCards: 20,
+    dailyDoneCards: 0,
+    dailyDoneDate: null,
+    placementJa: null,
+    placementEn: null,
+    proUnlocked: false,
+    achievements: [],
+    events: [],
+    kanjiMastered: [],
+    speakingDone: 0,
+  }
+}
+
+export function loadLearningMeta(): LearningMeta {
+  try {
+    const raw = localStorage.getItem(LEARNING_META_KEY)
+    if (raw) return normalizeLearningMeta(JSON.parse(raw))
+  } catch {
+    /* ignore */
+  }
+  return defaultLearningMeta()
+}
+
+export function saveLearningMeta(meta: LearningMeta): void {
+  localStorage.setItem(LEARNING_META_KEY, JSON.stringify(normalizeLearningMeta(meta)))
+  notifyProgressChanged()
+}
+
+export function recordActivity(cardsCompleted = 1): LearningMeta {
+  const completed = normalizeNumber(cardsCompleted, 1, 0, true)
+  const today = todayLocalKey()
+  const meta = loadLearningMeta()
+  const dailyDoneCards =
+    (meta.dailyDoneDate === today ? meta.dailyDoneCards : 0) + completed
+  const nextMeta: LearningMeta = {
+    ...meta,
+    streak: nextLocalStreak(meta.streak, meta.lastActiveDate, today),
+    lastActiveDate: today,
+    dailyDoneCards,
+    dailyDoneDate: today,
+  }
+  saveLearningMeta(nextMeta)
+  return nextMeta
+}
+
+export function appendLearningEvent(
+  type: string,
+  payload?: Record<string, unknown>,
+): void {
+  const meta = loadLearningMeta()
+  const event =
+    payload === undefined
+      ? { t: new Date().toISOString(), type }
+      : { t: new Date().toISOString(), type, payload }
+  saveLearningMeta({
+    ...meta,
+    events: [...meta.events, event].slice(-LEARNING_EVENT_LIMIT),
+  })
+}
+
+type LegacyProgressExportBundle = {
   version: 1
   exportedAt: string
   aoba: ProgressState
   kana: KanaProgress
   toeic: ToeicProgress
   lang: AppView
+  meta?: LearningMeta
+}
+
+export type ProgressExportBundle = {
+  version: 2
+  exportedAt: string
+  aoba: ProgressState
+  kana: KanaProgress
+  toeic: ToeicProgress
+  lang: AppView
+  meta: LearningMeta
 }
 
 /** Progress-only export. Never includes Groq API key or builder presets. */
 export function exportProgressBundle(): ProgressExportBundle {
   return {
-    version: 1,
+    version: 2,
     exportedAt: new Date().toISOString(),
     aoba: loadProgress(),
     kana: loadKanaProgress(),
     toeic: loadToeicProgress(),
     lang: loadLang(),
+    meta: loadLearningMeta(),
   }
 }
 
 export function importProgressBundle(raw: unknown): boolean {
   if (!raw || typeof raw !== 'object') return false
-  const data = raw as Partial<ProgressExportBundle>
-  if (data.version !== 1) return false
+  const data = raw as Partial<ProgressExportBundle | LegacyProgressExportBundle>
+  if (data.version !== 1 && data.version !== 2) return false
   if (!data.aoba || !data.kana || !data.toeic) return false
 
   applyCloudBundle({
@@ -279,6 +549,7 @@ export function importProgressBundle(raw: unknown): boolean {
     kana: { ...defaultKanaProgress(), ...data.kana },
     toeic: { ...defaultToeicProgress(), ...data.toeic },
     lang: normalizeLang(typeof data.lang === 'string' ? data.lang : null) ?? 'hub',
+    meta: normalizeLearningMeta(data.meta),
   })
   notifyProgressChanged()
   return true
@@ -290,6 +561,7 @@ export function applyCloudBundle(bundle: {
   kana: KanaProgress
   toeic: ToeicProgress
   lang: AppView
+  meta?: LearningMeta
 }) {
   localStorage.setItem(PROGRESS_KEY, JSON.stringify(migrateProgress(bundle.aoba as unknown as Record<string, unknown>)))
   localStorage.setItem(
@@ -300,6 +572,10 @@ export function applyCloudBundle(bundle: {
     TOEIC_PROGRESS_KEY,
     JSON.stringify({ ...defaultToeicProgress(), ...bundle.toeic }),
   )
+  localStorage.setItem(
+    LEARNING_META_KEY,
+    JSON.stringify(normalizeLearningMeta(bundle.meta)),
+  )
   writeLangPreference(bundle.lang)
 }
 
@@ -308,6 +584,7 @@ export function clearLocalProgressCache() {
   localStorage.removeItem(PROGRESS_KEY)
   localStorage.removeItem(KANA_KEY)
   localStorage.removeItem(TOEIC_PROGRESS_KEY)
+  localStorage.removeItem(LEARNING_META_KEY)
   localStorage.removeItem(LANG_KEY)
   try {
     localStorage.removeItem(LEGACY_SITE_KEY)

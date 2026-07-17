@@ -9,6 +9,7 @@ create table if not exists public.user_progress (
   kana jsonb not null default '{}'::jsonb,
   toeic jsonb not null default '{}'::jsonb,
   lang text not null default 'hub',
+  meta jsonb not null default '{}'::jsonb,
   updated_at timestamptz not null default now()
 );
 
@@ -38,3 +39,37 @@ create policy "user_progress_delete_own"
   on public.user_progress
   for delete
   using (auth.uid() = user_id);
+
+-- Future normalized learning progress tables (Wave 1+).
+-- create table if not exists public.item_progress (
+--   user_id uuid not null references auth.users (id) on delete cascade,
+--   item_id text not null,
+--   state jsonb not null default '{}'::jsonb,
+--   updated_at timestamptz not null default now(),
+--   primary key (user_id, item_id)
+-- );
+--
+-- create table if not exists public.learning_events (
+--   id bigint generated always as identity primary key,
+--   user_id uuid not null references auth.users (id) on delete cascade,
+--   t timestamptz not null default now(),
+--   type text not null,
+--   payload jsonb
+-- );
+
+-- Wave 4 CMS stubs.
+-- create table if not exists public.cms_courses (
+--   id text primary key,
+--   title text not null,
+--   lang text not null,
+--   payload jsonb not null default '{}'::jsonb,
+--   published_at timestamptz
+-- );
+--
+-- create table if not exists public.cms_items (
+--   id text primary key,
+--   course_id text not null references public.cms_courses (id) on delete cascade,
+--   item_type text not null,
+--   payload jsonb not null default '{}'::jsonb,
+--   updated_at timestamptz not null default now()
+-- );

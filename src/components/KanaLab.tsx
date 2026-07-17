@@ -9,12 +9,11 @@ import {
   type LearnRowId,
 } from '../data/kana'
 import {
-  isSpeechSupported,
-  speakJapanese,
-  speakSequence,
-  stopSpeaking,
-  warmVoices,
-} from '../utils/speech'
+  playKanaRomaji,
+  playKanaSequence,
+  stopKanaAudio,
+  warmKanaAudio,
+} from '../utils/kanaAudio'
 import {
   defaultKanaProgress,
   loadKanaProgress,
@@ -37,18 +36,13 @@ function shuffle<T>(arr: T[]): T[] {
   return copy
 }
 
-function nextUnlock(unlocked: LearnRowId[]): LearnRowId | null {
-  const next = LEARN_ORDER.find((id) => !unlocked.includes(id))
-  return next ?? null
-}
-
 export function KanaLab({ onXp, onProgressChange }: Props) {
   const [progress, setProgress] = useState<KanaProgress>(() => loadKanaProgress())
   const [mode, setMode] = useState<Mode>('chart')
   const [activeRow, setActiveRow] = useState<LearnRowId>('a')
   const [selected, setSelected] = useState<KanaCell | null>(null)
   const [speaking, setSpeaking] = useState(false)
-  const [voiceOk, setVoiceOk] = useState(isSpeechSupported())
+  const [voiceOk] = useState(typeof Audio !== 'undefined')
   const [flashIndex, setFlashIndex] = useState(0)
   const [flashRevealed, setFlashRevealed] = useState(false)
   const [autoPlay, setAutoPlay] = useState(true)
@@ -90,12 +84,9 @@ export function KanaLab({ onXp, onProgressChange }: Props) {
   }, [masteredCount, totalChars]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    void warmVoices().then((voices) => {
-      setVoiceOk(isSpeechSupported() && voices.some((v) => v.lang.startsWith('ja')))
-    })
     return () => {
       cancelRef.current.cancelled = true
-      stopSpeaking()
+      stopKanaAudio()
     }
   }, [])
 
@@ -107,7 +98,7 @@ export function KanaLab({ onXp, onProgressChange }: Props) {
     setQuiz(null)
     setGuideIndex(-1)
     cancelRef.current.cancelled = true
-    stopSpeaking()
+    stopKanaAudio()
     setSpeaking(false)
   }, [script, activeRow])
 
@@ -118,7 +109,8 @@ export function KanaLab({ onXp, onProgressChange }: Props) {
   function speak(cell: KanaCell) {
     setSelected(cell)
     setSpeaking(true)
-    speakJapanese(cell.char, {
+    void warmKanaAudio()
+    playKanaRomaji(cell.romaji, {
       onEnd: () => setSpeaking(false),
       onError: () => setSpeaking(false),
     })
@@ -126,15 +118,7 @@ export function KanaLab({ onXp, onProgressChange }: Props) {
 
   function markMastered(char: string) {
     if (masteredSet.has(char)) return
-    const mastered = [...progress.mastered, char]
-    const unlocked = [...progress.unlockedRows]
-    const rowCells = activeCells.map((c) => c.char)
-    const rowDone = rowCells.every((ch) => mastered.includes(ch))
-    if (rowDone) {
-      const nxt = nextUnlock(unlocked)
-      if (nxt && !unlocked.includes(nxt)) unlocked.push(nxt)
-    }
-    patch({ mastered, unlockedRows: unlocked })
+    patch({ mastered: [...progress.mastered, char] })
     onXp?.(3)
   }
 
@@ -146,7 +130,7 @@ export function KanaLab({ onXp, onProgressChange }: Props) {
     const options = shuffle([answer, ...distractors])
     setQuiz({ answer, options, feedback: 'idle' })
     setSpeaking(true)
-    speakJapanese(answer.char, {
+    playKanaRomaji(answer.romaji, {
       onEnd: () => setSpeaking(false),
       onError: () => setSpeaking(false),
     })
@@ -164,29 +148,42 @@ export function KanaLab({ onXp, onProgressChange }: Props) {
       markMastered(choice.char)
       onXp?.(5)
     }
-    speakJapanese(quiz.answer.char)
+    playKanaRomaji(quiz.answer.romaji)
   }
 
-  async function runGuide() {
+  function runGuide() {
+    const cells = activeCells
+    if (!cells.length) return
+
     cancelRef.current = { cancelled: false }
     setSpeaking(true)
     setMode('guide')
-    await speakSequence(
-      activeCells.map((c) => c.char),
-      700,
-      (i) => {
-        setGuideIndex(i)
-        setSelected(activeCells[i] ?? null)
-      },
-      cancelRef.current,
-    )
-    setSpeaking(false)
-    setGuideIndex(-1)
+    setGuideIndex(0)
+    setSelected(cells[0])
+
+    void (async () => {
+      // Unlock AudioContext in this click turn, then preload before first mora.
+      await warmKanaAudio()
+      if (cancelRef.current.cancelled) return
+      await playKanaSequence(
+        cells.map((c) => c.romaji),
+        400,
+        (i) => {
+          setGuideIndex(i)
+          setSelected(cells[i] ?? null)
+        },
+        cancelRef.current,
+      )
+      if (!cancelRef.current.cancelled) {
+        setSpeaking(false)
+        setGuideIndex(-1)
+      }
+    })()
   }
 
   function stopGuide() {
     cancelRef.current.cancelled = true
-    stopSpeaking()
+    stopKanaAudio()
     setSpeaking(false)
     setGuideIndex(-1)
   }
@@ -208,10 +205,6 @@ export function KanaLab({ onXp, onProgressChange }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode])
 
-  const unlockedLabel = progress.unlockedRows
-    .map((id) => getRowById(script, id)?.label ?? id)
-    .join(' · ')
-
   return (
     <section className="kana-lab">
       <header className="kana-hero">
@@ -220,7 +213,7 @@ export function KanaLab({ onXp, onProgressChange }: Props) {
           <h2>平假名／片假名 · 語音導讀互動</h2>
           <p className="lede">
             日文並非人人在學校必修——先打好五十音再進入 JLPT
-            級距。點字聽音、跟讀閃卡、聽音選字；建議あ行 → か行…依序解鎖。
+            級距。點字聽音、跟讀閃卡、聽音選字；可自由選任一行練習。
           </p>
           <div className="kana-stats">
             <span>
@@ -230,7 +223,7 @@ export function KanaLab({ onXp, onProgressChange }: Props) {
               聽辨 {progress.quizCorrect}/{progress.quizTotal || 0}
             </span>
             <span className={speaking ? 'live' : ''}>
-              {speaking ? '🔊 導讀中' : voiceOk ? '音訊就緒 · ja-JP' : '音訊待命（將使用系統語音）'}
+              {speaking ? '🔊 導讀中' : voiceOk ? '音訊就緒 · MP3' : '瀏覽器不支援音訊'}
             </span>
           </div>
         </div>
@@ -287,19 +280,15 @@ export function KanaLab({ onXp, onProgressChange }: Props) {
           >
             {LEARN_ORDER.map((id) => {
               const row = getRowById(script, id)
-              const locked = !progress.unlockedRows.includes(id)
               return (
-                <option key={id} value={id} disabled={locked}>
+                <option key={id} value={id}>
                   {row?.label} {row?.labelZh}
-                  {locked ? '（未解鎖）' : ''}
                 </option>
               )
             })}
           </select>
         </label>
       </div>
-
-      <p className="unlock-line">已解鎖：{unlockedLabel}</p>
 
       {mode === 'chart' && (
         <div className="kana-chart-wrap">
@@ -314,9 +303,6 @@ export function KanaLab({ onXp, onProgressChange }: Props) {
               <div className="row-label">
                 <strong>{row.label}</strong>
                 <small>{row.labelZh}</small>
-                {progress.unlockedRows.includes(row.id as LearnRowId) ? null : (
-                  <em>鎖</em>
-                )}
               </div>
               {row.cells.map((cell, idx) =>
                 cell ? (
@@ -418,7 +404,7 @@ export function KanaLab({ onXp, onProgressChange }: Props) {
               onClick={() => {
                 if (quiz) {
                   setSpeaking(true)
-                  speakJapanese(quiz.answer.char, {
+                  playKanaRomaji(quiz.answer.romaji, {
                     onEnd: () => setSpeaking(false),
                     onError: () => setSpeaking(false),
                   })
@@ -503,7 +489,7 @@ export function KanaLab({ onXp, onProgressChange }: Props) {
             <button
               type="button"
               className="primary-btn inline"
-              onClick={() => void runGuide()}
+              onClick={runGuide}
               disabled={speaking}
             >
               ▶ 開始導讀

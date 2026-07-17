@@ -1,16 +1,21 @@
 import { useRef, useState } from 'react'
 import { useAuth } from '../auth/AuthProvider'
+import { AnalyticsPanel } from './AnalyticsPanel'
 import { resetCloudProgress } from '../utils/cloudProgress'
 import {
   clearLocalProgressCache,
   exportProgressBundle,
   importProgressBundle,
+  loadLearningMeta,
 } from '../utils/storage'
 
 export function DataControls() {
   const { user } = useAuth()
   const fileRef = useRef<HTMLInputElement>(null)
   const [note, setNote] = useState<string | null>(null)
+  const [metaTick, setMetaTick] = useState(0)
+  const meta = loadLearningMeta()
+  void metaTick
 
   function downloadExport() {
     const bundle = exportProgressBundle()
@@ -108,6 +113,14 @@ export function DataControls() {
         }}
       />
       {note ? <p className="auth-message">{note}</p> : null}
+      <AnalyticsPanel meta={meta} />
+      <button
+        type="button"
+        className="ghost"
+        onClick={() => setMetaTick((n) => n + 1)}
+      >
+        重新整理事件統計
+      </button>
     </section>
   )
 }

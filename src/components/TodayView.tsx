@@ -12,7 +12,14 @@ type Props = {
   onStartVocab: () => void
   onStartReading: () => void
   onStartGrammar: () => void
+  onStartReview: () => void
+  onStartMock: () => void
+  onStartPlacement?: () => void
   onSelectUnit: (id: number) => void
+  dueCount: number
+  streak: number
+  dailyDone: number
+  dailyGoal: number
 }
 
 export function TodayView({
@@ -24,7 +31,14 @@ export function TodayView({
   onStartVocab,
   onStartReading,
   onStartGrammar,
+  onStartReview,
+  onStartMock,
+  onStartPlacement,
   onSelectUnit,
+  dueCount,
+  streak,
+  dailyDone,
+  dailyGoal,
 }: Props) {
   const vocabPct = Math.round((progress.vocabDone / unit.words) * 100)
   const readingPct = Math.round((progress.readingDone / unit.reading) * 100)
@@ -64,6 +78,26 @@ export function TodayView({
           </div>
         </div>
       </section>
+
+      <div className="daily-review">
+        <div>
+          <p className="eyebrow">SRS · TODAY</p>
+          <h2>
+            {streak} 日連續 · {dailyDone}/{dailyGoal} 張
+          </h2>
+          <span>
+            今日複習佇列 {dueCount} 張；完成答題會更新間隔、連續天數與成就。
+          </span>
+        </div>
+        <button
+          type="button"
+          className="primary-btn inline"
+          disabled={dueCount <= 0}
+          onClick={onStartReview}
+        >
+          今日複習 →
+        </button>
+      </div>
 
       <div className="daily-review">
         <div>
@@ -109,8 +143,12 @@ export function TodayView({
         <button type="button" onClick={onStartGrammar}>
           <i>文</i>
           <span>TASK 03</span>
-          <h3>{unit.grammar}</h3>
-          <p>{progress.grammarStarted ? '進行中' : '尚未練習'}</p>
+          <h3>場面・敬語｜{unit.grammar}</h3>
+          <p>
+            {progress.grammarStarted
+              ? '進行中・練習場面、語域與敬語切換'
+              : '尚未練習・從場面判斷丁寧／敬語'}
+          </p>
           <b>前往學習 →</b>
         </button>
       </div>
@@ -127,7 +165,10 @@ export function TodayView({
           <li>
             閱讀作答：{progress.readingDone}/{unit.reading}
           </li>
-          <li>文法練習：{progress.grammarStarted ? '進行中' : '尚未開始'}</li>
+          <li>
+            場面・敬語：
+            {progress.grammarStarted ? '進行中' : '尚未開始'}
+          </li>
         </ul>
         <p>
           適合對象：{level.tier}（{level.band}）。可用課程設計器客製下一堂課。
@@ -135,9 +176,14 @@ export function TodayView({
         <button type="button" className="text-link" onClick={onOpenBuilder}>
           打開課程設計器 →
         </button>
+        {onStartPlacement && (
+          <button type="button" className="text-link" onClick={onStartPlacement}>
+            重新分級測驗 →
+          </button>
+        )}
       </div>
 
-      <button type="button" className="unit-test-card">
+      <button type="button" className="unit-test-card" onClick={onStartMock}>
         <span>FINAL CHECKPOINT</span>
         <div>
           <strong>單元總測驗 · 15 題</strong>
