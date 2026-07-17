@@ -1,0 +1,134 @@
+import { useState, type FormEvent } from 'react'
+import { useAuth } from './AuthProvider'
+
+export function AuthPanel() {
+  const { configured, loading, user, syncStatus, signIn, signUp, signOut } =
+    useAuth()
+  const [mode, setMode] = useState<'signin' | 'signup'>('signin')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [message, setMessage] = useState<string | null>(null)
+
+  if (!configured) {
+    return (
+      <section className="auth-panel" aria-label="帳號">
+        <p className="auth-sync local">進度僅保存在本機（未設定雲端同步）</p>
+      </section>
+    )
+  }
+
+  if (loading) {
+    return (
+      <section className="auth-panel" aria-label="帳號">
+        <p className="auth-sync">檢查登入狀態…</p>
+      </section>
+    )
+  }
+
+  async function onSubmit(e: FormEvent) {
+    e.preventDefault()
+    setBusy(true)
+    setMessage(null)
+    const err =
+      mode === 'signin'
+        ? await signIn(email.trim(), password)
+        : await signUp(email.trim(), password)
+    setBusy(false)
+    if (err) {
+      setMessage(err)
+      return
+    }
+    if (mode === 'signup') {
+      setMessage('註冊成功。若專案需驗證信，請至信箱確認後再登入。')
+    }
+  }
+
+  const syncLabel =
+    syncStatus === 'synced'
+      ? '進度已同步'
+      : syncStatus === 'syncing'
+        ? '同步中…'
+        : syncStatus === 'error'
+          ? '同步失敗（仍可本機使用）'
+          : '僅本機'
+
+  if (user) {
+    return (
+      <section className="auth-panel signed-in" aria-label="帳號">
+        <div className="auth-user-row">
+          <div>
+            <p className="eyebrow">帳號</p>
+            <p className="auth-email">{user.email}</p>
+            <p className={`auth-sync ${syncStatus}`}>{syncLabel}</p>
+          </div>
+          <button
+            type="button"
+            className="auth-btn ghost"
+            onClick={() => void signOut()}
+          >
+            登出
+          </button>
+        </div>
+      </section>
+    )
+  }
+
+  return (
+    <section className="auth-panel" aria-label="登入或註冊">
+      <div className="auth-mode">
+        <button
+          type="button"
+          className={mode === 'signin' ? 'active' : undefined}
+          onClick={() => {
+            setMode('signin')
+            setMessage(null)
+          }}
+        >
+          登入
+        </button>
+        <button
+          type="button"
+          className={mode === 'signup' ? 'active' : undefined}
+          onClick={() => {
+            setMode('signup')
+            setMessage(null)
+          }}
+        >
+          註冊
+        </button>
+      </div>
+      <p className="auth-hint">
+        未登入可本機試用；登入後進度會同步到雲端（不含 API 金鑰與課程設計器預設）。
+      </p>
+      <form className="auth-form" onSubmit={onSubmit}>
+        <label>
+          Email
+          <input
+            type="email"
+            autoComplete="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </label>
+        <label>
+          密碼
+          <input
+            type="password"
+            autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
+            required
+            minLength={6}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </label>
+        <button type="submit" className="auth-btn" disabled={busy}>
+          {busy ? '請稍候…' : mode === 'signin' ? '登入' : '建立帳號'}
+        </button>
+      </form>
+      {message ? <p className="auth-message">{message}</p> : null}
+      <p className={`auth-sync ${syncStatus}`}>僅本機</p>
+    </section>
+  )
+}

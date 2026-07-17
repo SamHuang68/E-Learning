@@ -1,0 +1,91 @@
+import { lazy, Suspense, useEffect, useState } from 'react'
+import { AuthProvider } from './auth/AuthProvider'
+import { ErrorBoundary } from './components/ErrorBoundary'
+import { PrivacyPage } from './components/PrivacyPage'
+import { Hub } from './Hub'
+import { loadLang, saveLang, type AppView, type LangId } from './utils/storage'
+
+const AobaApp = lazy(() =>
+  import('./aoba/AobaApp').then((m) => ({ default: m.AobaApp })),
+)
+const ToeicApp = lazy(() =>
+  import('./toeic/ToeicApp').then((m) => ({ default: m.ToeicApp })),
+)
+
+type TopView = AppView | 'privacy'
+
+function readTopView(): TopView {
+  const hash = window.location.hash.replace('#', '')
+  if (hash === 'privacy') return 'privacy'
+  return loadLang()
+}
+
+function ModuleFallback() {
+  return (
+    <div className="module-fallback" role="status">
+      載入學習模組…
+    </div>
+  )
+}
+
+function AppShell() {
+  const [view, setView] = useState<TopView>(() => readTopView())
+
+  useEffect(() => {
+    const onHash = () => setView(readTopView())
+    window.addEventListener('hashchange', onHash)
+    return () => window.removeEventListener('hashchange', onHash)
+  }, [])
+
+  function choose(next: AppView) {
+    saveLang(next)
+    setView(next)
+  }
+
+  function openPrivacy() {
+    window.location.hash = 'privacy'
+    setView('privacy')
+  }
+
+  if (view === 'privacy') {
+    return <PrivacyPage onBack={() => choose('hub')} />
+  }
+
+  if (view === 'ja') {
+    return (
+      <ErrorBoundary label="日語模組">
+        <Suspense fallback={<ModuleFallback />}>
+          <AobaApp
+            onBackHub={() => choose('hub')}
+            onSwitchLang={(lang: LangId) => choose(lang)}
+          />
+        </Suspense>
+      </ErrorBoundary>
+    )
+  }
+  if (view === 'en') {
+    return (
+      <ErrorBoundary label="多益模組">
+        <Suspense fallback={<ModuleFallback />}>
+          <ToeicApp
+            onBackHub={() => choose('hub')}
+            onSwitchLang={(lang: LangId) => choose(lang)}
+          />
+        </Suspense>
+      </ErrorBoundary>
+    )
+  }
+  return (
+    <Hub onChoose={(lang) => choose(lang)} onOpenPrivacy={openPrivacy} />
+  )
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <ErrorBoundary label="應用程式">
+        <AppShell />
+      </ErrorBoundary>
+    </AuthProvider>
+  )
+}
