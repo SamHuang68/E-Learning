@@ -242,7 +242,8 @@ export function ToeicPractice({
             <SpeakButton
               lang="en"
               text={card.speakText ?? card.sentence}
-              label="Play line"
+              audioSrc={card.audio?.src}
+              label={card.audio ? 'Play clip' : 'Play line'}
             />
           )}
           {card && kind !== 'listening' && (
@@ -251,12 +252,16 @@ export function ToeicPractice({
               <SpeakButton
                 lang="en"
                 text={card.speakText ?? card.sentence}
+                audioSrc={card.audio?.src}
                 label="Sentence"
               />
             </>
           )}
           {!card && (
             <SpeakButton lang="en" text={fallbackSpeak} label="Unit title" />
+          )}
+          {card?.audio && (
+            <span className="flash-sentence-zh">Audio: {card.audio.src}</span>
           )}
           <button
             type="button"

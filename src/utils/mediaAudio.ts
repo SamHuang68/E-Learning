@@ -8,7 +8,11 @@ export function playClip(
   }
 
   let stopped = false
-  const audio = new Audio(src)
+  const resolved =
+    /^https?:\/\//i.test(src) || src.startsWith('/')
+      ? src
+      : `${(import.meta.env.BASE_URL || '/').replace(/\/?$/, '/')}${src.replace(/^\//, '')}`
+  const audio = new Audio(resolved)
 
   const cleanup = () => {
     audio.onended = null

@@ -6,6 +6,7 @@ type SimplePrompt = { id: string; text: string; lang: 'ja' | 'en' }
 
 type Props = {
   prompts: SpeakableCard[] | SimplePrompt[]
+  lang?: 'ja' | 'en'
   onComplete: (count: number) => void
 }
 
@@ -13,15 +14,18 @@ function promptText(prompt: SpeakableCard | SimplePrompt): string {
   return 'text' in prompt ? prompt.text : (prompt.speakText ?? prompt.sentence)
 }
 
-function promptLang(prompt: SpeakableCard | SimplePrompt): 'ja' | 'en' {
-  return 'lang' in prompt ? prompt.lang : 'ja'
+function promptLang(
+  prompt: SpeakableCard | SimplePrompt,
+  fallback: 'ja' | 'en',
+): 'ja' | 'en' {
+  return 'lang' in prompt ? prompt.lang : fallback
 }
 
 function promptTitle(prompt: SpeakableCard | SimplePrompt): string {
   return 'head' in prompt ? prompt.head : prompt.text
 }
 
-export function SpeakingLab({ prompts, onComplete }: Props) {
+export function SpeakingLab({ prompts, lang = 'ja', onComplete }: Props) {
   const [index, setIndex] = useState(0)
   const [recording, setRecording] = useState(false)
   const [recordingUrl, setRecordingUrl] = useState<string | null>(null)
@@ -113,7 +117,7 @@ export function SpeakingLab({ prompts, onComplete }: Props) {
           ) : null}
         </div>
         <div className="flash-actions">
-          <SpeakButton lang={promptLang(prompt)} text={promptText(prompt)} label="播放範句" />
+          <SpeakButton lang={promptLang(prompt, lang)} text={promptText(prompt)} label="播放範句" />
           {mediaSupported ? (
             recording ? (
               <button type="button" className="primary-btn inline" onClick={stopRecording}>

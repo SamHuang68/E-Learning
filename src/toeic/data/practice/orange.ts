@@ -733,6 +733,11 @@ export const orangePractice: Record<string, UnitPractice> = {
         sentenceZh: '我在哪裡可以領取訪客證？',
         scenario: 'office',
         register: 'polite',
+        audio: {
+          src: 'audio/toeic/orange-6-p1.mp3',
+          durationMs: 3200,
+          speaker: 'studio',
+        },
       },
       {
         id: 'orange-6-p2',
@@ -742,6 +747,11 @@ export const orangePractice: Record<string, UnitPractice> = {
         sentenceZh: '登機門何時開放？',
         scenario: 'travel',
         register: 'casual',
+        audio: {
+          src: 'audio/toeic/orange-6-p2.mp3',
+          durationMs: 3000,
+          speaker: 'studio',
+        },
       },
       {
         id: 'orange-6-p3',
@@ -751,6 +761,11 @@ export const orangePractice: Record<string, UnitPractice> = {
         sentenceZh: '上週為什麼延遲出貨？',
         scenario: 'client call',
         register: 'polite',
+        audio: {
+          src: 'audio/toeic/orange-6-p3.mp3',
+          durationMs: 3100,
+          speaker: 'studio',
+        },
       },
     ],
     grammar: [

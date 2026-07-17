@@ -9,9 +9,13 @@
 | Hub／語言切換 | 可用 | Hash 路由 `#hub` / `#aoba` / `#toeic` |
 | 五十音（語音／閃卡／聽辨） | 較完整 | 平／片假名導讀與練習 |
 | 發音基礎（PhonicsLab） | 較完整 | Orange 級字母／高頻字點讀 |
-| JLPT／多益單元練習 | Demo | 結構與進度有了，課綱內容仍偏示範 |
+| 練習引擎／SRS | 可用 | 多題型答題、item-level SM-2、今日複習佇列 |
+| 分級／模擬考 | 可用 | Placement + 短模考；弱項寫入事件 |
+| 漢字／場面／口說 | 可用 | KanjiLab、情境語域、跟讀錄音 |
+| Freemium／PWA | 可用 | Pro 閘道（`AOBA-PRO`）、manifest + SW |
+| JLPT／多益單元內容 | 持續加深 | 卡數已與 metadata 對齊；CMS manifest 已就緒 |
 | 課程設計器 | Demo | 提示詞組裝；日語可選 BYOK 呼叫 Groq |
-| 帳號與雲端進度 | 可用 | Email／密碼；僅同步學習進度 |
+| 帳號與雲端進度 | 可用 | Email／密碼；同步含 `meta`（SRS／習慣） |
 
 **不會上雲／不會匯出：** Groq API key、builder presets（含個人提示詞風險）。
 
@@ -21,6 +25,7 @@
 npm install
 cp .env.example .env.local   # 填入 Supabase（可選；不填則純本機）
 npm run dev
+npm test
 ```
 
 可用 hash：`#hub` / `#aoba` / `#toeic` / `#privacy`。
@@ -33,7 +38,7 @@ npm run preview
 ## Supabase 設定（一次性）
 
 1. 建立專案 → Authentication → 啟用 Email/Password  
-2. 在 SQL Editor 執行 [`supabase/schema.sql`](supabase/schema.sql)  
+2. 在 SQL Editor 執行 [`supabase/schema.sql`](supabase/schema.sql)（含 `meta` jsonb）  
 3. Authentication → URL：Site URL / Redirect 設為 Pages 網址  
    （例如 `https://<user>.github.io/<repo>/`）  
 4. 將 `VITE_SUPABASE_URL`、`VITE_SUPABASE_ANON_KEY` 填入 `.env.local` 與 GitHub repo Secrets  
@@ -42,7 +47,9 @@ npm run preview
 
 - **Write-through：** 先寫 localStorage，再 upsert 雲端  
 - **登入時：** 雲端列不存在 → 上傳本機；已存在 → 以雲端覆蓋本機  
-- **欄位：** `aoba` / `kana` / `toeic`（jsonb）、`lang`、`updated_at`
+- **欄位：** `aoba` / `kana` / `toeic` / `meta`（jsonb）、`lang`、`updated_at`
+
+Pro demo 解鎖碼：`AOBA-PRO`（免費可用五十音／Phonics 與 n5n4／orange 前兩單元）。
 
 ## GitHub Pages 部署
 
