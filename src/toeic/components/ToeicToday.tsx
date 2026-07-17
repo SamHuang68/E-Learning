@@ -1,22 +1,27 @@
 import type { CSSProperties } from 'react'
 import type { ToeicCertificate, ToeicUnit } from '../data/certificates'
-import type { ToeicProgress } from '../../utils/storage'
+import type { LearningMeta, ToeicProgress } from '../../utils/storage'
+import { Heatmap } from '../../components/Heatmap'
 import { speakEnglish } from '../../utils/speech'
 
 type Props = {
   cert: ToeicCertificate
   unit: ToeicUnit
   progress: ToeicProgress
+  progressPct: number
+  events: LearningMeta['events']
   onOpenPhonics: () => void
   onOpenBuilder: () => void
   onStartVocab: () => void
   onStartListening: () => void
   onStartGrammar: () => void
   onStartReview: () => void
+  onStartWeakTask: () => void
   onStartMock: () => void
   onStartPlacement?: () => void
   onSelectUnit: (id: number) => void
   dueCount: number
+  newCount: number
   streak: number
   dailyDone: number
   dailyGoal: number
@@ -26,25 +31,27 @@ export function ToeicToday({
   cert,
   unit,
   progress,
+  progressPct,
+  events,
   onOpenPhonics,
   onOpenBuilder,
   onStartVocab,
   onStartListening,
   onStartGrammar,
   onStartReview,
+  onStartWeakTask,
   onStartMock,
   onStartPlacement,
   onSelectUnit,
   dueCount,
+  newCount,
   streak,
   dailyDone,
   dailyGoal,
 }: Props) {
-  const vocabPct = Math.round((progress.vocabDone / unit.words) * 100)
-  const listenPct = Math.round((progress.listeningDone / unit.listening) * 100)
-  const grammarPct = progress.grammarStarted ? 40 : 0
-  const overall = Math.round((vocabPct + listenPct + grammarPct) / 3)
+  const overall = progressPct
   const ringDeg = Math.round((overall / 100) * 360)
+  const totalQueue = dueCount + newCount
 
   return (
     <section className="study-section">
@@ -99,19 +106,26 @@ export function ToeicToday({
             {streak}-day streak · {dailyDone}/{dailyGoal} cards
           </h2>
           <span>
-            Today review queue: {dueCount} cards. Practice saves spacing,
+            Due reviews: {dueCount} cards · New lesson: {newCount} cards. Practice saves spacing,
             daily goal progress, and achievements.
           </span>
         </div>
-        <button
-          type="button"
-          className="primary-btn inline"
-          disabled={dueCount <= 0}
-          onClick={onStartReview}
-        >
-          Today Review →
-        </button>
+        <div className="flash-actions">
+          <button type="button" className="ghost" onClick={onStartWeakTask}>
+            弱項任務
+          </button>
+          <button
+            type="button"
+            className="primary-btn inline"
+            disabled={totalQueue <= 0}
+            onClick={onStartReview}
+          >
+            Today Review →
+          </button>
+        </div>
       </div>
+
+      <Heatmap events={events} />
 
       {cert.id === 'orange' && (
         <div className="daily-review">

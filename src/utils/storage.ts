@@ -80,6 +80,8 @@ export type LearningMeta = {
   dailyGoalCards: number
   dailyDoneCards: number
   dailyDoneDate: string | null
+  onboardingDone: boolean
+  forcedReviewIds: string[]
   placementJa?: { levelId: string; score: number; at: string } | null
   placementEn?: {
     certificateId: string
@@ -129,9 +131,13 @@ export function saveLang(view: AppView) {
   } catch {
     /* ignore */
   }
+  const currentHash = window.location.hash.replace(/^#/, '')
   if (view === 'hub') window.location.hash = 'hub'
-  else if (view === 'en') window.location.hash = 'toeic'
-  else window.location.hash = 'aoba'
+  else if (view === 'en') {
+    if (!currentHash.startsWith('toeic')) window.location.hash = 'toeic'
+  } else if (!currentHash.startsWith('aoba') && !currentHash.startsWith('builder')) {
+    window.location.hash = 'aoba'
+  }
   notifyProgressChanged()
 }
 
@@ -304,6 +310,8 @@ function normalizeLearningMeta(raw: unknown): LearningMeta {
       true,
     ),
     dailyDoneDate: normalizeDateKey(data.dailyDoneDate),
+    onboardingDone: Boolean(data.onboardingDone),
+    forcedReviewIds: normalizeStringArray(data.forcedReviewIds),
     placementJa: normalizePlacementJa(data.placementJa),
     placementEn: normalizePlacementEn(data.placementEn),
     proUnlocked: Boolean(data.proUnlocked),
@@ -448,6 +456,8 @@ export function defaultLearningMeta(): LearningMeta {
     dailyGoalCards: 20,
     dailyDoneCards: 0,
     dailyDoneDate: null,
+    onboardingDone: false,
+    forcedReviewIds: [],
     placementJa: null,
     placementEn: null,
     proUnlocked: false,
