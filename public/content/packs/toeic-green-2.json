@@ -1,0 +1,582 @@
+{
+  "key": "green:2",
+  "family": "toeic",
+  "vocab": [
+    {
+      "id": "green-2-v1",
+      "head": "attachment",
+      "reading": "/əˈtætʃmənt/",
+      "meaning": "附件",
+      "sentence": "Please find the signed contract in the email attachment.",
+      "sentenceZh": "已簽署的合約請見郵件附件。",
+      "scenario": "email",
+      "register": "polite"
+    },
+    {
+      "id": "green-2-v2",
+      "head": "inquiry",
+      "reading": "/ɪnˈkwaɪəri/",
+      "meaning": "詢問",
+      "sentence": "Thank you for your inquiry about our shipping rates.",
+      "sentenceZh": "感謝您詢問我們的運費。",
+      "scenario": "email",
+      "register": "polite"
+    },
+    {
+      "id": "green-2-v3",
+      "head": "regarding",
+      "reading": "/rɪˈɡɑːrdɪŋ/",
+      "meaning": "關於",
+      "sentence": "I am writing regarding the invoice dated March tenth.",
+      "sentenceZh": "我寫信是關於三月十日的發票。",
+      "scenario": "email",
+      "register": "polite"
+    },
+    {
+      "id": "green-2-v4",
+      "head": "confirm",
+      "reading": "/kənˈfɜːrm/",
+      "meaning": "確認",
+      "sentence": "Could you confirm receipt of the purchase order?",
+      "sentenceZh": "能否請您確認已收到採購訂單？",
+      "scenario": "email",
+      "register": "polite"
+    },
+    {
+      "id": "green-2-v5",
+      "head": "forward",
+      "reading": "/ˈfɔːrwərd/",
+      "meaning": "轉寄",
+      "sentence": "I will forward your message to the accounting department.",
+      "sentenceZh": "我會將您的訊息轉寄給會計部門。",
+      "scenario": "email",
+      "register": "polite"
+    },
+    {
+      "id": "green-2-v6",
+      "head": "promptly",
+      "reading": "/ˈprɒmptli/",
+      "meaning": "迅速地",
+      "sentence": "We will respond to your request as promptly as possible.",
+      "sentenceZh": "我們會盡快回覆您的請求。",
+      "scenario": "email",
+      "register": "polite"
+    },
+    {
+      "head": "subject line",
+      "meaning": "主旨列",
+      "sentence": "In a email situation, \"subject line\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「主旨列」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v7"
+    },
+    {
+      "head": "recipient",
+      "meaning": "收件人",
+      "sentence": "In a email situation, \"recipient\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「收件人」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v8"
+    },
+    {
+      "head": "cc",
+      "meaning": "副本",
+      "sentence": "In a email situation, \"cc\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「副本」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v9"
+    },
+    {
+      "head": "bcc",
+      "meaning": "密件副本",
+      "sentence": "In a email situation, \"bcc\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「密件副本」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v10"
+    },
+    {
+      "head": "reply all",
+      "meaning": "全部回覆",
+      "sentence": "In a email situation, \"reply all\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「全部回覆」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v11"
+    },
+    {
+      "head": "draft",
+      "meaning": "草稿",
+      "sentence": "In a email situation, \"draft\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「草稿」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v12"
+    },
+    {
+      "head": "signature",
+      "meaning": "簽名檔",
+      "sentence": "In a email situation, \"signature\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「簽名檔」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v13"
+    },
+    {
+      "head": "attachment",
+      "meaning": "附件",
+      "sentence": "In a email situation, \"attachment\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「附件」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v14"
+    },
+    {
+      "head": "inquiry",
+      "meaning": "詢問",
+      "sentence": "In a email situation, \"inquiry\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「詢問」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v15"
+    },
+    {
+      "head": "follow-up",
+      "meaning": "後續追蹤",
+      "sentence": "In a email situation, \"follow-up\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「後續追蹤」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v16"
+    },
+    {
+      "head": "regarding",
+      "meaning": "關於",
+      "sentence": "In a email situation, \"regarding\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「關於」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v17"
+    },
+    {
+      "head": "promptly",
+      "meaning": "迅速地",
+      "sentence": "In a email situation, \"promptly\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「迅速地」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v18"
+    },
+    {
+      "head": "appreciate",
+      "meaning": "感謝",
+      "sentence": "In a email situation, \"appreciate\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「感謝」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v19"
+    },
+    {
+      "head": "convenient",
+      "meaning": "方便的",
+      "sentence": "In a email situation, \"convenient\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「方便的」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v20"
+    },
+    {
+      "head": "forward",
+      "meaning": "轉寄",
+      "sentence": "In a email situation, \"forward\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「轉寄」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v21"
+    },
+    {
+      "head": "confirm",
+      "meaning": "確認",
+      "sentence": "In a email situation, \"confirm\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「確認」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v22"
+    },
+    {
+      "head": "agenda",
+      "meaning": "議程",
+      "sentence": "In a email situation, \"agenda\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「議程」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v23"
+    },
+    {
+      "head": "deadline",
+      "meaning": "截止期限",
+      "sentence": "In a email situation, \"deadline\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「截止期限」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v24"
+    },
+    {
+      "head": "invoice",
+      "meaning": "發票",
+      "sentence": "In a email situation, \"invoice\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「發票」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v25"
+    },
+    {
+      "head": "receipt",
+      "meaning": "收據",
+      "sentence": "In a email situation, \"receipt\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「收據」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v26"
+    },
+    {
+      "head": "estimate",
+      "meaning": "估價",
+      "sentence": "In a email situation, \"estimate\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「估價」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v27"
+    },
+    {
+      "head": "schedule",
+      "meaning": "行程",
+      "sentence": "In a email situation, \"schedule\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「行程」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v28"
+    },
+    {
+      "head": "branch",
+      "meaning": "分店；分公司",
+      "sentence": "In a email situation, \"branch\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「分店；分公司」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v29"
+    },
+    {
+      "head": "department",
+      "meaning": "部門",
+      "sentence": "In a email situation, \"department\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「部門」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v30"
+    },
+    {
+      "head": "supervisor",
+      "meaning": "主管",
+      "sentence": "In a email situation, \"supervisor\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「主管」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v31"
+    },
+    {
+      "head": "vendor",
+      "meaning": "供應商",
+      "sentence": "In a email situation, \"vendor\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「供應商」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v32"
+    },
+    {
+      "head": "client",
+      "meaning": "客戶",
+      "sentence": "In a email situation, \"client\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「客戶」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v33"
+    },
+    {
+      "head": "policy",
+      "meaning": "政策",
+      "sentence": "In a email situation, \"policy\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「政策」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v34"
+    },
+    {
+      "head": "procedure",
+      "meaning": "程序",
+      "sentence": "In a email situation, \"procedure\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「程序」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v35"
+    },
+    {
+      "head": "notice",
+      "meaning": "公告",
+      "sentence": "In a email situation, \"notice\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「公告」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v36"
+    },
+    {
+      "head": "memo",
+      "meaning": "備忘錄",
+      "sentence": "In a email situation, \"memo\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「備忘錄」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v37"
+    },
+    {
+      "head": "attachment",
+      "meaning": "附件",
+      "sentence": "In a email situation, \"attachment\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「附件」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v38"
+    },
+    {
+      "head": "extension",
+      "meaning": "延期",
+      "sentence": "In a email situation, \"extension\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「延期」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v39"
+    },
+    {
+      "head": "approval",
+      "meaning": "核准",
+      "sentence": "In a email situation, \"approval\" is a key word to listen for.",
+      "sentenceZh": "在「Email Basics」情境中，「核准」是需要聽懂的關鍵字。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-v40"
+    }
+  ],
+  "passage": [
+    {
+      "id": "green-2-p1",
+      "head": "Polite request",
+      "meaning": "禮貌請求",
+      "sentence": "Would you mind sending me the updated schedule by tomorrow?",
+      "sentenceZh": "您方便在明天前把更新後的行程表寄給我嗎？",
+      "scenario": "email",
+      "register": "polite"
+    },
+    {
+      "id": "green-2-p2",
+      "head": "Direct vs polite",
+      "meaning": "直接 vs 禮貌對比",
+      "sentence": "Send me the file. → Could you please send me the file when convenient?",
+      "sentenceZh": "把檔案寄給我。→ 方便的話，能否請您把檔案寄給我？",
+      "scenario": "email",
+      "register": "polite",
+      "speakText": "Could you please send me the file when convenient?"
+    },
+    {
+      "id": "green-2-p3",
+      "head": "Softened ask",
+      "meaning": "委婉請求",
+      "sentence": "I would appreciate it if you could review the draft this week.",
+      "sentenceZh": "若您本週能審閱草稿，我將不勝感激。",
+      "scenario": "email",
+      "register": "polite"
+    },
+    {
+      "head": "polite email request",
+      "meaning": "Email Basics listening passage",
+      "sentence": "In this email passage, the speaker explains polite email request, gives one key detail, and confirms the next step.",
+      "sentenceZh": "在「Email Basics」聽力短文中，說話者說明 polite email request、提供一個重點細節，並確認下一步。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-p4"
+    },
+    {
+      "head": "attachment reminder",
+      "meaning": "Email Basics listening passage",
+      "sentence": "In this email passage, the speaker explains attachment reminder, gives one key detail, and confirms the next step.",
+      "sentenceZh": "在「Email Basics」聽力短文中，說話者說明 attachment reminder、提供一個重點細節，並確認下一步。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-p5"
+    },
+    {
+      "head": "replying to an inquiry",
+      "meaning": "Email Basics listening passage",
+      "sentence": "In this email passage, the speaker explains replying to an inquiry, gives one key detail, and confirms the next step.",
+      "sentenceZh": "在「Email Basics」聽力短文中，說話者說明 replying to an inquiry、提供一個重點細節，並確認下一步。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-p6"
+    },
+    {
+      "head": "follow-up message",
+      "meaning": "Email Basics listening passage",
+      "sentence": "In this email passage, the speaker explains follow-up message, gives one key detail, and confirms the next step.",
+      "sentenceZh": "在「Email Basics」聽力短文中，說話者說明 follow-up message、提供一個重點細節，並確認下一步。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-p7"
+    },
+    {
+      "head": "cc instruction",
+      "meaning": "Email Basics listening passage",
+      "sentence": "In this email passage, the speaker explains cc instruction, gives one key detail, and confirms the next step.",
+      "sentenceZh": "在「Email Basics」聽力短文中，說話者說明 cc instruction、提供一個重點細節，並確認下一步。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-p8"
+    },
+    {
+      "head": "rescheduling by email",
+      "meaning": "Email Basics listening passage",
+      "sentence": "In this email passage, the speaker explains rescheduling by email, gives one key detail, and confirms the next step.",
+      "sentenceZh": "在「Email Basics」聽力短文中，說話者說明 rescheduling by email、提供一個重點細節，並確認下一步。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-p9"
+    },
+    {
+      "head": "confirming receipt",
+      "meaning": "Email Basics listening passage",
+      "sentence": "In this email passage, the speaker explains confirming receipt, gives one key detail, and confirms the next step.",
+      "sentenceZh": "在「Email Basics」聽力短文中，說話者說明 confirming receipt、提供一個重點細節，並確認下一步。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-p10"
+    },
+    {
+      "head": "soft deadline",
+      "meaning": "Email Basics listening passage",
+      "sentence": "In this email passage, the speaker explains soft deadline, gives one key detail, and confirms the next step.",
+      "sentenceZh": "在「Email Basics」聽力短文中，說話者說明 soft deadline、提供一個重點細節，並確認下一步。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-p11"
+    },
+    {
+      "head": "email signature",
+      "meaning": "Email Basics listening passage",
+      "sentence": "In this email passage, the speaker explains email signature, gives one key detail, and confirms the next step.",
+      "sentenceZh": "在「Email Basics」聽力短文中，說話者說明 email signature、提供一個重點細節，並確認下一步。",
+      "scenario": "email",
+      "register": "polite",
+      "id": "green-2-p12"
+    }
+  ],
+  "grammar": [
+    {
+      "id": "green-2-g1",
+      "head": "Could you please…",
+      "meaning": "Could you please 句型",
+      "sentence": "Could you please cc my manager on all vendor emails?",
+      "sentenceZh": "能否請您在寄給供應商的所有郵件中副本給我的主管？",
+      "scenario": "email",
+      "register": "polite"
+    },
+    {
+      "id": "green-2-g2",
+      "head": "Would it be possible…",
+      "meaning": "Would it be possible 句型",
+      "sentence": "Would it be possible to reschedule our call to Thursday?",
+      "sentenceZh": "能否將我們的通話改到週四？",
+      "scenario": "email",
+      "register": "polite"
+    },
+    {
+      "id": "green-2-g3",
+      "head": "Casual vs polite",
+      "meaning": "普通 vs 禮貌對比",
+      "sentence": "I need the report today. → I was wondering if I could receive the report today.",
+      "sentenceZh": "我今天需要報告。→ 不知是否能在今天收到報告？",
+      "scenario": "email",
+      "register": "polite",
+      "speakText": "I was wondering if I could receive the report today."
+    },
+    {
+      "id": "green-2-g4",
+      "head": "I would be grateful if…",
+      "meaning": "I would be grateful if 句型",
+      "sentence": "I would be grateful if you could approve the budget by noon.",
+      "sentenceZh": "若您能在中午前核准預算，我將不勝感激。",
+      "scenario": "email",
+      "register": "polite"
+    },
+    {
+      "head": "Direct ↔ polite request",
+      "meaning": "直接要求與禮貌請求對比",
+      "sentence": "Send the file today. → Could you please send the file by the end of the day?",
+      "sentenceZh": "今天寄檔案。→ 能否請您今天下班前寄出檔案？",
+      "scenario": "email",
+      "register": "business",
+      "speakText": "Could you please send the file by the end of the day?",
+      "id": "green-2-g5"
+    },
+    {
+      "head": "Direct ↔ diplomatic disagreement",
+      "meaning": "直接反對與外交式不同意",
+      "sentence": "That is wrong. → I see your point, though I interpret the data differently.",
+      "sentenceZh": "那是錯的。→ 我理解您的觀點，但我對數據的解讀不同。",
+      "scenario": "meeting",
+      "register": "business",
+      "speakText": "I see your point, though I interpret the data differently.",
+      "id": "green-2-g6"
+    },
+    {
+      "head": "Need ↔ would appreciate",
+      "meaning": "需求改成委婉請託",
+      "sentence": "I need your approval. → I would appreciate your approval when convenient.",
+      "sentenceZh": "我需要你核准。→ 方便時若能核准，我將不勝感激。",
+      "scenario": "email",
+      "register": "business",
+      "speakText": "I would appreciate your approval when convenient.",
+      "id": "green-2-g7"
+    },
+    {
+      "head": "No ↔ may not be able to",
+      "meaning": "拒絕改成緩和表達",
+      "sentence": "We cannot accept the price. → We may not be able to accept the current price.",
+      "sentenceZh": "我們不能接受價格。→ 目前價格我們恐怕難以接受。",
+      "scenario": "negotiation",
+      "register": "business",
+      "speakText": "We may not be able to accept the current price.",
+      "id": "green-2-g8"
+    },
+    {
+      "head": "You must ↔ it would be helpful if",
+      "meaning": "命令改成合作式請求",
+      "sentence": "You must revise the report. → It would be helpful if the report could be revised.",
+      "sentenceZh": "你必須修改報告。→ 若能修改報告，會很有幫助。",
+      "scenario": "office",
+      "register": "business",
+      "speakText": "It would be helpful if the report could be revised.",
+      "id": "green-2-g9"
+    },
+    {
+      "head": "Problem ↔ concern",
+      "meaning": "問題改成關切點",
+      "sentence": "There is a problem with the plan. → I have a concern about the current plan.",
+      "sentenceZh": "這個計畫有問題。→ 我對目前計畫有一點疑慮。",
+      "scenario": "meeting",
+      "register": "business",
+      "speakText": "I have a concern about the current plan.",
+      "id": "green-2-g10"
+    }
+  ]
+}
