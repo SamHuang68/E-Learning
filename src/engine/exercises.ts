@@ -124,6 +124,7 @@ export function normalizeAnswer(s: string): string {
     .trim()
     .replace(/[\p{P}\p{S}]/gu, ' ')
     .replace(/\s+/g, ' ')
+    .trim()
 }
 
 function cardsForUnitKind(

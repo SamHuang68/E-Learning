@@ -5,6 +5,7 @@ import type { ReactNode } from 'react'
 import { KanjiLab } from '../components/KanjiLab'
 import { LessonBuilder } from '../components/LessonBuilder'
 import { MockExam } from '../components/MockExam'
+import { Onboarding } from '../components/Onboarding'
 import { PlacementTest } from '../components/PlacementTest'
 import { PracticeView } from '../components/PracticeView'
 import { ProGate } from '../components/ProGate'
@@ -17,9 +18,16 @@ import { jlptLevels, type BuilderConfig } from '../data/course'
 import { flattenKana, getKanaRows } from '../data/kana'
 import { getJaPractice } from '../data/practiceContent'
 import { track } from '../engine/analytics'
+import { buildScenarioMission, buildWeakReviewIds } from '../engine/aiCoach'
 import { dailyProgress } from '../engine/habits'
 import type { PlacementResult } from '../engine/placement'
-import { buildDailyQueue } from '../engine/srs'
+import {
+  addForcedReviewIds,
+  buildReviewQueueWithForced,
+  clearForcedReviewIds,
+  srsProgressPct,
+  weakTagsToReviewIds,
+} from '../engine/reviewPlanning'
 import { decodeShare } from '../utils/prompt'
 import {
   loadKanaProgress,
@@ -31,6 +39,65 @@ import {
   type LearningMeta,
   type ProgressState,
 } from '../utils/storage'
+
+type AobaPractice = 'vocab' | 'reading' | 'grammar'
+type AobaSpecial = 'review' | 'mock' | 'placement'
+type CoachMission = ReturnType<typeof buildScenarioMission>
+
+const aobaNavIds: NavId[] = [
+  'kana',
+  'today',
+  'builder',
+  'vocab',
+  'grammar',
+  'kanji',
+  'scenario',
+  'speaking',
+  'mock',
+  'placement',
+]
+const aobaPracticeIds: AobaPractice[] = ['vocab', 'reading', 'grammar']
+
+function writeAobaHash(path = 'aoba') {
+  const next = `#${path}`
+  if (window.location.hash === next) return
+  window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}${next}`)
+}
+
+function parseAobaHash(hash: string): {
+  unitId?: number
+  nav?: NavId
+  practice?: AobaPractice
+  special?: AobaSpecial
+} | null {
+  const clean = hash.replace(/^#/, '').split('?')[0]
+  if (!clean || clean.includes('builder=')) return null
+  const parts = clean.split('/').filter(Boolean)
+  if (parts[0] === 'builder') return { nav: 'builder' }
+  if (parts[0] !== 'aoba') return null
+  const route = parts[1]
+  if (!route) return { nav: 'today' }
+  if (route === 'unit') {
+    const unitId = Number(parts[2])
+    const section = parts[3]
+    const next = Number.isFinite(unitId) ? { unitId } : {}
+    if (aobaPracticeIds.includes(section as AobaPractice)) {
+      return { ...next, practice: section as AobaPractice }
+    }
+    if (section === 'mock' || section === 'placement') {
+      return { ...next, special: section }
+    }
+    return next
+  }
+  if (route === 'review' || route === 'mock' || route === 'placement') {
+    return { special: route }
+  }
+  if (aobaPracticeIds.includes(route as AobaPractice)) {
+    return { practice: route as AobaPractice }
+  }
+  if (aobaNavIds.includes(route as NavId)) return { nav: route as NavId }
+  return null
+}
 
 function initialKanaTotals() {
   const k = loadKanaProgress()
@@ -51,15 +118,13 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
     return 'kana'
   })
   const [progress, setProgress] = useState<ProgressState>(() => loadProgress())
-  const [practice, setPractice] = useState<'vocab' | 'reading' | 'grammar' | null>(
-    null,
-  )
-  const [special, setSpecial] = useState<
-    'review' | 'mock' | 'placement' | null
-  >(null)
+  const [practice, setPractice] = useState<AobaPractice | null>(null)
+  const [special, setSpecial] = useState<AobaSpecial | null>(null)
   const [learningMeta, setLearningMeta] = useState<LearningMeta>(() =>
     loadLearningMeta(),
   )
+  const [activeReviewIds, setActiveReviewIds] = useState<string[] | null>(null)
+  const [coachMission, setCoachMission] = useState<CoachMission | null>(null)
   const [builderSeed, setBuilderSeed] = useState<Partial<BuilderConfig>>()
   const [speakingHint, setSpeakingHint] = useState('音訊待命')
   const [kanaTotals, setKanaTotals] = useState(initialKanaTotals)
@@ -87,11 +152,11 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
   )
   const reviewQueue = useMemo(
     () =>
-      buildDailyQueue({
+      buildReviewQueueWithForced({
         allIds: unitItemIds,
-        items: learningMeta.items,
+        meta: learningMeta,
       }),
-    [learningMeta.items, unitItemIds],
+    [learningMeta, unitItemIds],
   )
   const daily = useMemo(() => dailyProgress(learningMeta), [learningMeta])
 
@@ -99,8 +164,8 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
     const v = (progress.vocabDone / Math.max(1, unit.words)) * 100
     const r = (progress.readingDone / Math.max(1, unit.reading)) * 100
     const g = progress.grammarStarted ? 40 : 0
-    return Math.round((v + r + g) / 3)
-  }, [progress, unit])
+    return srsProgressPct(unitItemIds, learningMeta.items, Math.round((v + r + g) / 3))
+  }, [learningMeta.items, progress, unit, unitItemIds])
 
   useEffect(() => {
     saveProgress(progress)
@@ -129,12 +194,88 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
     }
   }, [])
 
+  useEffect(() => {
+    function applyDeepLink() {
+      const route = parseAobaHash(window.location.hash)
+      if (!route) return
+      if (route.unitId) {
+        setProgress((prev) =>
+          prev.unitId === route.unitId
+            ? prev
+            : {
+                ...prev,
+                unitId: route.unitId ?? prev.unitId,
+                vocabDone: 0,
+                readingDone: 0,
+                grammarStarted: false,
+              },
+        )
+      }
+      setActiveReviewIds(null)
+      if (route.special) {
+        setPractice(null)
+        setSpecial(route.special)
+        setNav('today')
+        return
+      }
+      if (route.practice) {
+        setSpecial(null)
+        setPractice(route.practice)
+        setNav('today')
+        return
+      }
+      if (route.nav) {
+        setSpecial(null)
+        setPractice(null)
+        setNav(route.nav)
+      }
+    }
+
+    applyDeepLink()
+    window.addEventListener('hashchange', applyDeepLink)
+    return () => window.removeEventListener('hashchange', applyDeepLink)
+  }, [])
+
   function patchProgress(patch: Partial<ProgressState>) {
     setProgress((p) => ({ ...p, ...patch }))
   }
 
   function refreshMeta() {
     setLearningMeta(loadLearningMeta())
+  }
+
+  function clearCurrentForcedReviews() {
+    const meta = loadLearningMeta()
+    const currentIds = meta.forcedReviewIds.filter((id) => unitItemIds.includes(id))
+    if (currentIds.length === 0) return
+    saveLearningMeta(clearForcedReviewIds(meta, currentIds))
+    refreshMeta()
+  }
+
+  function finishReview() {
+    clearCurrentForcedReviews()
+    setActiveReviewIds(null)
+    setSpecial(null)
+    setNav('today')
+    writeAobaHash()
+  }
+
+  function startWeakTask() {
+    const mission = buildScenarioMission('ja')
+    setCoachMission(mission)
+    const weakIds = buildWeakReviewIds(learningMeta, 8).filter((id) =>
+      unitItemIds.includes(id),
+    )
+    setPractice(null)
+    if (weakIds.length > 0) {
+      setActiveReviewIds(weakIds)
+      setSpecial('review')
+      writeAobaHash('aoba/review')
+      return
+    }
+    setSpecial(null)
+    setNav('scenario')
+    writeAobaHash('aoba/scenario')
   }
 
   function applyPracticeProgress(
@@ -178,7 +319,9 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
   function handleNav(id: NavId) {
     setPractice(null)
     setSpecial(null)
+    setActiveReviewIds(null)
     setNav(id)
+    writeAobaHash(id === 'today' ? 'aoba' : `aoba/${id}`)
   }
 
   function withUnitGate(node: ReactNode) {
@@ -202,6 +345,7 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
         onExit={() => {
           setSpecial(null)
           setNav('today')
+          writeAobaHash()
         }}
         onComplete={(result) => {
           track('mock_submit', {
@@ -210,20 +354,23 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
             weakTags: result.weakTags,
           })
           const meta = loadLearningMeta()
-          saveLearningMeta({
+          const forcedIds = weakTagsToReviewIds('ja', currentPack, result.weakTags)
+          const nextMeta = addForcedReviewIds({
             ...meta,
             events: [
+              ...meta.events,
               {
                 t: new Date().toISOString(),
                 type: 'mock_submit',
                 payload: { score: result.score, weakTags: result.weakTags },
               },
-              ...meta.events,
-            ].slice(0, 200),
-          })
+            ].slice(-200),
+          }, forcedIds)
+          saveLearningMeta(nextMeta)
           awardReviewXp(Math.max(1, Math.round(result.score / 2)))
           setSpecial(null)
           setNav('today')
+          writeAobaHash()
         }}
       />
     )
@@ -252,6 +399,24 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
   }
 
   function renderContent() {
+    if (!learningMeta.onboardingDone) {
+      return (
+        <Onboarding
+          track="ja"
+          meta={learningMeta}
+          onComplete={(meta) => {
+            saveLearningMeta(meta)
+            refreshMeta()
+          }}
+          onRunPlacement={() => {
+            setPractice(null)
+            setSpecial('placement')
+            writeAobaHash('aoba/placement')
+          }}
+        />
+      )
+    }
+
     if (special === 'review') {
       return withUnitGate(
         <PracticeView
@@ -259,11 +424,8 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
           levelId={progress.levelId}
           unit={unit}
           mode="quiz"
-          reviewIds={reviewQueue.queue}
-          onBack={() => {
-            setSpecial(null)
-            setNav('today')
-          }}
+          reviewIds={activeReviewIds ?? reviewQueue.queue}
+          onBack={finishReview}
           onProgress={awardReviewXp}
         />,
       )
@@ -280,6 +442,7 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
           onExit={() => {
             setSpecial(null)
             setNav('today')
+            writeAobaHash()
           }}
           onComplete={handlePlacementComplete}
         />
@@ -306,15 +469,30 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
 
     if (nav === 'scenario') {
       return withUnitGate(
-        <ScenarioPlayer
-          track="ja"
-          onExit={() => setNav('today')}
-          onComplete={(result) => {
-            track('scenario_complete', result)
-            awardReviewXp(result.correct)
-            setNav('today')
-          }}
-        />,
+        <>
+          {coachMission ? (
+            <div className="daily-review coach-mission">
+              <div>
+                <p className="eyebrow">AI COACH · 弱項任務</p>
+                <h2>{coachMission.title}</h2>
+                <span>{coachMission.checklist.join(' · ')}</span>
+              </div>
+            </div>
+          ) : null}
+          <ScenarioPlayer
+            track="ja"
+            onExit={() => {
+              setNav('today')
+              writeAobaHash()
+            }}
+            onComplete={(result) => {
+              track('scenario_complete', result)
+              awardReviewXp(result.correct)
+              setNav('today')
+              writeAobaHash()
+            }}
+          />
+        </>,
       )
     }
 
@@ -334,6 +512,7 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
             })
             awardReviewXp(count)
             setNav('today')
+            writeAobaHash()
           }}
         />,
       )
@@ -348,6 +527,7 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
           onBack={() => {
             setPractice(null)
             setNav('today')
+            writeAobaHash()
           }}
           onProgress={(delta) => applyPracticeProgress(practice, delta)}
         />,
@@ -373,7 +553,10 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
           kind="vocab"
           levelId={progress.levelId}
           unit={unit}
-          onBack={() => setNav('today')}
+          onBack={() => {
+            setNav('today')
+            writeAobaHash()
+          }}
           onProgress={(delta) => applyPracticeProgress('vocab', delta)}
         />,
       )
@@ -384,7 +567,10 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
           kind="grammar"
           levelId={progress.levelId}
           unit={unit}
-          onBack={() => setNav('today')}
+          onBack={() => {
+            setNav('today')
+            writeAobaHash()
+          }}
           onProgress={(delta) => applyPracticeProgress('grammar', delta)}
         />,
       )
@@ -395,41 +581,64 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
         level={level}
         unit={unit}
         progress={progress}
-        onOpenBuilder={() => setNav('builder')}
-        onOpenKana={() => setNav('kana')}
+        progressPct={progressPct}
+        events={learningMeta.events}
+        onOpenBuilder={() => {
+          setNav('builder')
+          writeAobaHash('aoba/builder')
+        }}
+        onOpenKana={() => {
+          setNav('kana')
+          writeAobaHash('aoba/kana')
+        }}
         onStartVocab={() => {
           setSpecial(null)
+          setActiveReviewIds(null)
           setPractice('vocab')
+          writeAobaHash(`aoba/unit/${unit.id}/vocab`)
         }}
         onStartReading={() => {
           setSpecial(null)
+          setActiveReviewIds(null)
           setPractice('reading')
+          writeAobaHash(`aoba/unit/${unit.id}/reading`)
         }}
         onStartGrammar={() => {
           setSpecial(null)
+          setActiveReviewIds(null)
           setPractice('grammar')
+          writeAobaHash(`aoba/unit/${unit.id}/grammar`)
         }}
         onStartReview={() => {
           setPractice(null)
+          setActiveReviewIds(null)
           setSpecial('review')
+          writeAobaHash('aoba/review')
         }}
+        onStartWeakTask={startWeakTask}
         onStartMock={() => {
           setPractice(null)
+          setActiveReviewIds(null)
           setSpecial('mock')
+          writeAobaHash('aoba/mock')
         }}
         onStartPlacement={() => {
           setPractice(null)
+          setActiveReviewIds(null)
           setSpecial('placement')
+          writeAobaHash('aoba/placement')
         }}
-        onSelectUnit={(id) =>
+        onSelectUnit={(id) => {
           patchProgress({
             unitId: id,
             vocabDone: 0,
             readingDone: 0,
             grammarStarted: false,
           })
-        }
-        dueCount={reviewQueue.queue.length}
+          writeAobaHash(`aoba/unit/${id}`)
+        }}
+        dueCount={reviewQueue.reviews.length}
+        newCount={reviewQueue.news.length}
         streak={learningMeta.streak}
         dailyDone={daily.done}
         dailyGoal={daily.goal}
@@ -511,7 +720,7 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
                   <span>JLPT 級距</span>
                   <select
                     value={progress.levelId}
-                    onChange={(e) =>
+                    onChange={(e) => {
                       patchProgress({
                         levelId: e.target.value,
                         unitId: 1,
@@ -519,7 +728,8 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
                         readingDone: 0,
                         grammarStarted: false,
                       })
-                    }
+                      writeAobaHash('aoba/unit/1')
+                    }}
                   >
                     {jlptLevels.map((l) => (
                       <option key={l.id} value={l.id}>
@@ -532,14 +742,16 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
                   <span>選擇單元</span>
                   <select
                     value={progress.unitId}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      const unitId = Number(e.target.value)
                       patchProgress({
-                        unitId: Number(e.target.value),
+                        unitId,
                         vocabDone: 0,
                         readingDone: 0,
                         grammarStarted: false,
                       })
-                    }
+                      writeAobaHash(`aoba/unit/${unitId}`)
+                    }}
                   >
                     {level.units.map((u) => (
                       <option key={u.id} value={u.id}>

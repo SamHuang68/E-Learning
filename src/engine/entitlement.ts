@@ -18,6 +18,7 @@ export function canAccessUnit(
 ): boolean {
   if (isPro(meta)) return true
 
+  // Free tier: foundation content plus the first 2 units of the starter track.
   if (track === 'ja') {
     if (levelOrCert === 'kana' || unitId === 'kana') return true
     return levelOrCert === 'n5n4' && Number(unitId) >= 1 && Number(unitId) <= 2
@@ -38,4 +39,14 @@ export function unlockPro(code?: string): boolean {
     // Demo unlock should not crash non-browser tests or private browsing contexts.
   }
   return true
+}
+
+export function startCheckout(): boolean {
+  try {
+    if (typeof window === 'undefined') return false
+    window.open('https://example.com/aoba-pro-stripe-coming-soon', '_blank', 'noopener,noreferrer')
+    return true
+  } catch {
+    return false
+  }
 }
