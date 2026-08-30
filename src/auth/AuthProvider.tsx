@@ -8,7 +8,12 @@ import {
   type ReactNode,
 } from 'react'
 import type { Session, User } from '@supabase/supabase-js'
-import { getSupabase, isSupabaseConfigured } from '../lib/supabase'
+import {
+  getBackendKind,
+  getSupabase,
+  isSupabaseConfigured,
+  type BackendKind,
+} from '../lib/supabase'
 import {
   flushCloudPush,
   hydrateFromCloud,
@@ -19,6 +24,7 @@ import {
 
 type AuthContextValue = {
   configured: boolean
+  backendKind: BackendKind
   loading: boolean
   session: Session | null
   user: User | null
@@ -85,6 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value = useMemo<AuthContextValue>(
     () => ({
       configured,
+      backendKind: getBackendKind(),
       loading,
       session,
       user: session?.user ?? null,

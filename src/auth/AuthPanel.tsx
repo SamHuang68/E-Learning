@@ -2,8 +2,9 @@ import { useState, type FormEvent } from 'react'
 import { useAuth } from './AuthProvider'
 
 export function AuthPanel() {
-  const { configured, loading, user, syncStatus, signIn, signUp, signOut } =
+  const { configured, backendKind, loading, user, syncStatus, signIn, signUp, signOut } =
     useAuth()
+  const isLocal = backendKind === 'local'
   const [mode, setMode] = useState<'signin' | 'signup'>('signin')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -46,11 +47,15 @@ export function AuthPanel() {
 
   const syncLabel =
     syncStatus === 'synced'
-      ? '進度已同步'
+      ? isLocal
+        ? '進度已保存（本機帳號）'
+        : '進度已同步'
       : syncStatus === 'syncing'
-        ? '同步中…'
+        ? isLocal
+          ? '保存中…'
+          : '同步中…'
         : syncStatus === 'error'
-          ? '同步失敗（仍可本機使用）'
+          ? '保存失敗（仍可本機使用）'
           : '僅本機'
 
   if (user) {
@@ -99,7 +104,9 @@ export function AuthPanel() {
         </button>
       </div>
       <p className="auth-hint">
-        未登入可本機試用；登入後進度會同步到雲端（不含 API 金鑰與課程設計器預設）。
+        {isLocal
+          ? '未登入可本機試用；登入後進度會保存在此瀏覽器的本機帳號（不含 API 金鑰與課程設計器預設）。'
+          : '未登入可本機試用；登入後進度會同步到雲端（不含 API 金鑰與課程設計器預設）。'}
       </p>
       <form className="auth-form" onSubmit={onSubmit}>
         <label>

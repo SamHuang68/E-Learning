@@ -35,6 +35,17 @@ npm run build
 npm run preview
 ```
 
+## 本機（離線）帳號後端
+
+未設定 Supabase 時，App 會自動改用**純本機後端**（`src/lib/localBackend.ts`），以 `localStorage` 實作 Email／密碼登入與 `user_progress` 進度表：
+
+- **無需任何雲端／伺服器**：完全在瀏覽器端執行，與 GitHub Pages 靜態託管相容。
+- **登入後進度會保存在該瀏覽器的本機帳號**（每個瀏覽器獨立，不跨裝置同步）。
+- 一旦填入有效的 `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`，會自動切回雲端，程式碼不需更動。
+- 後端種類可由 `getBackendKind()`（`'cloud' | 'local'`）或 `useAuth().backendKind` 得知；UI 文案會依模式調整。
+
+> 注意：本機後端僅為離線／示範用途，密碼以雜湊存於 `localStorage`，並非安全邊界；請勿使用真實密碼。
+
 ## Supabase 設定（一次性）
 
 1. 建立專案 → Authentication → 啟用 Email/Password  

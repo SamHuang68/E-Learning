@@ -10,7 +10,8 @@ import {
 } from '../utils/storage'
 
 export function DataControls() {
-  const { user } = useAuth()
+  const { user, backendKind } = useAuth()
+  const isLocal = backendKind === 'local'
   const fileRef = useRef<HTMLInputElement>(null)
   const [note, setNote] = useState<string | null>(null)
   const [metaTick, setMetaTick] = useState(0)
@@ -61,15 +62,16 @@ export function DataControls() {
   }
 
   async function resetCloud() {
+    const scope = isLocal ? '帳號' : '雲端'
     if (
       !confirm(
-        '確定重設雲端進度？將恢復預設進度並覆寫本機進度快取。',
+        `確定重設${scope}進度？將恢復預設進度並覆寫本機進度快取。`,
       )
     ) {
       return
     }
     const ok = await resetCloudProgress()
-    setNote(ok ? '已重設雲端進度' : '重設雲端進度失敗')
+    setNote(ok ? `已重設${scope}進度` : `重設${scope}進度失敗`)
     if (ok) {
       window.dispatchEvent(new CustomEvent('e-learning:progress-hydrated'))
     }
@@ -98,7 +100,7 @@ export function DataControls() {
         </button>
         {user ? (
           <button type="button" className="auth-btn danger" onClick={() => void resetCloud()}>
-            重設雲端進度
+            {isLocal ? '重設帳號進度' : '重設雲端進度'}
           </button>
         ) : null}
       </div>

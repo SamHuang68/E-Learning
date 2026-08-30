@@ -6,7 +6,8 @@ This is a single Vite + React 19 + TypeScript static app (npm). Standard command
 
 - Dependencies are refreshed automatically on startup via the update script (`npm install`). No extra system dependencies are needed.
 - Run the app in dev mode with `npm run dev` (Vite, serves on `http://localhost:5173/`). Use this, not `npm run build`/`preview`, for development.
-- The app runs fully offline/local without Supabase: `.env.local` (`VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`) is optional. Without it, progress is stored only in `localStorage` and auth/cloud-sync features are simply disabled — the learning flows still work end-to-end.
+- The app runs fully offline/local without Supabase: `.env.local` (`VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`) is optional.
+- Backend selection lives in `src/lib/supabase.ts`. When valid hosted Supabase env vars are present, `getSupabase()` returns the real cloud client. Otherwise it returns a fully local, offline shim (`src/lib/localBackend.ts`) that implements the small slice of the supabase-js API this app uses (email/password auth + the `user_progress` table) on top of `localStorage`. So login and progress "sync" work with no cloud project — data is per-browser. `getBackendKind()` reports `'cloud' | 'local'`; UI copy adapts via `useAuth().backendKind`. The local shim is client-only, so it is fully compatible with static GitHub Pages hosting.
 - Navigation uses hash routes: `#hub`, `#aoba` (Japanese), `#toeic` (English), `#privacy`.
 - Pro-gated content demo unlock code: `AOBA-PRO`.
 - Lint: `npm run lint` (oxlint). Tests: `npm test` (vitest, unit tests under `src/engine/*.test.ts`).
