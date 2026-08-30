@@ -77,9 +77,20 @@ export function ToeicSidebar({
         </button>
       </div>
 
-      <button type="button" className="hub-back" onClick={onBackHub}>
-        ← 選擇學習語言
-      </button>
+      <div className="sidebar-top-actions">
+        <button type="button" className="hub-back" onClick={onBackHub}>
+          ← 回學習總覽 (Hub)
+        </button>
+        <a
+          href="https://samhuang68.github.io/"
+          className="portal-back-link"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="前往 Sam Huang 專案總入口"
+        >
+          🏛️ 專案總入口 ↗
+        </a>
+      </div>
 
       <nav aria-label="TOEIC menu">
         {items.map((item) => (

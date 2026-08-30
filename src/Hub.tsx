@@ -10,6 +10,30 @@ type Props = {
 export function Hub({ onChoose, onOpenPrivacy }: Props) {
   return (
     <div className="hub">
+      <nav className="hub-portal-bar" aria-label="全域專案入口導覽">
+        <a
+          href="https://samhuang68.github.io/"
+          className="portal-brand-link"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span className="portal-monogram">SH</span>
+          <span className="portal-title-text">
+            <strong>Sam Huang</strong> · PROJECT PORTAL ↗
+          </span>
+        </a>
+        <div className="portal-links-right">
+          <a
+            href="https://github.com/SamHuang68/E-Learning"
+            className="portal-sublink"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            GitHub Repo ↗
+          </a>
+        </div>
+      </nav>
+
       <header className="hub-hero">
         <p className="eyebrow">E-LEARNING HUB</p>
         <h1>選擇學習軌道</h1>
@@ -86,10 +110,18 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
       <DataControls />
 
       <footer className="hub-footer">
+        <a
+          href="https://samhuang68.github.io/"
+          className="hub-link portal-footer-link"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          🏛️ Sam Huang 專案總入口 ↗
+        </a>
         <button type="button" className="hub-link" onClick={onOpenPrivacy}>
           隱私與資料說明
         </button>
-        <span>MIT License</span>
+        <span>MIT License · Sam Huang</span>
       </footer>
     </div>
   )

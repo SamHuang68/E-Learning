@@ -142,6 +142,15 @@ export const MathSidebar: React.FC<Props> = ({
         <button type="button" className="btn-sidebar-link" onClick={onBackHub}>
           ← 返回學習中心 (Hub)
         </button>
+        <a
+          href="https://samhuang68.github.io/"
+          className="portal-back-link math-portal-link"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="前往 Sam Huang 專案總入口"
+        >
+          🏛️ Sam Huang 專案總入口 ↗
+        </a>
         <div className="track-switchers">
           <span>切換語言軌道：</span>
           <button type="button" onClick={() => onSwitchLang('ja')}>日語</button>
