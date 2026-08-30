@@ -6,6 +6,7 @@ import {
   saveMathProgress,
   type MathProgressState,
 } from './utils/mathStorage'
+import { Breadcrumbs } from '../components/Breadcrumbs'
 import { MathSidebar, type MathNavId } from './components/MathSidebar'
 import { MathToday } from './components/MathToday'
 import { MathPractice } from './components/MathPractice'
@@ -234,6 +235,32 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
       />
 
       <section className="content math-content">
+        <Breadcrumbs
+          items={[
+            { label: '學習總覽 (Hub)', onClick: onBackHub },
+            { label: '臺灣數學 108課綱', onClick: () => setActiveNav('today') },
+            { label: `${gradeInfo.name} (${gradeInfo.band})`, onClick: () => setActiveNav('today') },
+            { label: `單元 ${currentUnit.id} · ${currentUnit.title}`, active: activeNav === 'today' },
+            ...(activeNav !== 'today'
+              ? [
+                  {
+                    label:
+                      activeNav === 'practice'
+                        ? '題庫練習'
+                        : activeNav === 'mock'
+                          ? '模考測驗'
+                          : activeNav === 'vault'
+                            ? '錯題本'
+                            : activeNav === 'visual'
+                              ? '幾何圖示'
+                              : '互動教具',
+                    active: true,
+                  },
+                ]
+              : []),
+          ]}
+        />
+
         <header className="topbar">
           <div>
             <p className="eyebrow">

@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useAuth } from '../auth/AuthProvider'
-import { KanaLab } from '../components/KanaLab'
 import type { ReactNode } from 'react'
+import { useAuth } from '../auth/AuthProvider'
+import { Breadcrumbs } from '../components/Breadcrumbs'
+import { KanaLab } from '../components/KanaLab'
 import { KanjiLab } from '../components/KanjiLab'
 import { LessonBuilder } from '../components/LessonBuilder'
 import { MockExam } from '../components/MockExam'
@@ -494,6 +495,16 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
       />
 
       <section className="content">
+        <Breadcrumbs
+          items={[
+            { label: '學習總覽 (Hub)', onClick: onBackHub },
+            { label: 'あおば日語', onClick: () => handleNav('today') },
+            { label: `${level.band} (${level.tier})`, onClick: () => handleNav('today') },
+            { label: `單元 ${unit.id} · ${unit.title}`, active: nav === 'today' && !practice && !special },
+            ...(nav !== 'today' || practice || special ? [{ label: title, active: true }] : []),
+          ]}
+        />
+
         <div className="mobile-brand">
           <div className="brand-mark">あ</div>
           <strong>あおば Aoba</strong>

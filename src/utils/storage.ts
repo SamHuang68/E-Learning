@@ -10,7 +10,7 @@ export function setProgressChangeHook(fn: (() => void) | null) {
   progressChangeHook = fn
 }
 
-function notifyProgressChanged() {
+export function notifyProgressChanged() {
   progressChangeHook?.()
 }
 
@@ -454,6 +454,7 @@ export function defaultLearningMeta(): LearningMeta {
 }
 
 export function loadLearningMeta(): LearningMeta {
+  if (typeof localStorage === 'undefined') return defaultLearningMeta()
   try {
     const raw = localStorage.getItem(LEARNING_META_KEY)
     if (raw) return normalizeLearningMeta(JSON.parse(raw))
@@ -464,7 +465,13 @@ export function loadLearningMeta(): LearningMeta {
 }
 
 export function saveLearningMeta(meta: LearningMeta): void {
-  localStorage.setItem(LEARNING_META_KEY, JSON.stringify(normalizeLearningMeta(meta)))
+  if (typeof localStorage !== 'undefined') {
+    try {
+      localStorage.setItem(LEARNING_META_KEY, JSON.stringify(normalizeLearningMeta(meta)))
+    } catch {
+      /* ignore */
+    }
+  }
   notifyProgressChanged()
 }
 

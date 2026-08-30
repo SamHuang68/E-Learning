@@ -5282,20 +5282,112 @@ footer {
 /* 3. 深色模式變數支援 (Dark Theme) */
 [data-theme="dark"] {
   --bg: #090d16;
+  --bg-deep: #05080e;
   --surface: #111827;
+  --surface-soft: #172033;
   --surface-alt: #1f2937;
   --ink: #f3f4f6;
-  --ink-muted: #9ca3af;
+  --muted: #9ca3af;
+  --line: #2d3748;
+  --line-strong: #4b5563;
+  --navy: #38bdf8;
+  --navy-soft: #7dd3fc;
+  --accent: #34d399;
+  --accent-soft: rgba(16, 185, 129, 0.15);
+  --accent-border: #059669;
+  --warm: #f87171;
   --border: #374151;
-  --shadow: rgba(0, 0, 0, 0.4);
+  --shadow: rgba(0, 0, 0, 0.55);
 }
+
+/* 4. 認知雷達弱點調度卡片樣式 */
+.radar-weakness-plan {
+  margin-top: 1.25rem;
+  padding: 1.15rem 1.35rem;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(16, 185, 129, 0.08));
+  border: 1px solid rgba(37, 99, 235, 0.25);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.06);
+}
+
+.radar-weakness-plan .plan-icon {
+  font-size: 2.2rem;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--surface);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
+}
+
+.radar-weakness-plan .plan-info {
+  flex: 1;
+  min-width: 260px;
+}
+
+.radar-weakness-plan .plan-tag {
+  display: inline-block;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--navy);
+  letter-spacing: 0.04em;
+  margin-bottom: 0.25rem;
+}
+
+.radar-weakness-plan strong {
+  display: block;
+  font-size: 1.05rem;
+  color: var(--ink);
+  margin-bottom: 0.25rem;
+}
+
+.radar-weakness-plan p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.radar-weakness-plan .btn-plan-action {
+  padding: 0.65rem 1.2rem;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  flex-shrink: 0;
+}
+
+.radar-weakness-plan .btn-plan-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+}
+
+button:active:not(:disabled),
+.hub-card:active,
+.btn-plan-action:active,
+.pill-btn:active {
+  transform: scale(0.97) !important;
+}
+
 [data-theme="dark"] .balance-solver-card,
 [data-theme="dark"] .bar-model-card,
 [data-theme="dark"] .algebra-tiles-card,
 [data-theme="dark"] .matrix-transform-card,
 [data-theme="dark"] .riemann-calculus-card,
 [data-theme="dark"] .geometric-proofs-card,
-[data-theme="dark"] .knowledge-radar-card {
+[data-theme="dark"] .knowledge-radar-card,
+[data-theme="dark"] .radar-weakness-plan {
   background: #111827;
   border-color: #374151;
 }

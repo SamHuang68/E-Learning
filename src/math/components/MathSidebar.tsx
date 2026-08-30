@@ -57,6 +57,35 @@ export const MathSidebar: React.FC<Props> = ({
         </div>
       </div>
 
+      {/* 三軌切換膠囊 */}
+      <div className="lang-switch three-ways" role="group" aria-label="學習軌道切換">
+        <button type="button" onClick={() => onSwitchLang('ja')}>
+          あ 日本語
+        </button>
+        <button type="button" onClick={() => onSwitchLang('en')}>
+          T 多益
+        </button>
+        <button type="button" className="active" aria-current="true" disabled>
+          ∑ 數學
+        </button>
+      </div>
+
+      {/* 頂部全域入口與 Sam Huang 專案連結 */}
+      <div className="sidebar-top-actions">
+        <button type="button" className="hub-back" onClick={onBackHub}>
+          ← 回學習總覽 (Hub)
+        </button>
+        <a
+          href="https://samhuang68.github.io/"
+          className="portal-back-link"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="前往 Sam Huang 專案總入口"
+        >
+          🏛️ 專案總入口 ↗
+        </a>
+      </div>
+
       {/* 主功能導覽 */}
       <nav className="nav-group">
         <p className="nav-heading">學習功能</p>

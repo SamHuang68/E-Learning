@@ -272,6 +272,28 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
 
         <div className="hub-radar-display-wrapper">
           <KnowledgeRadar radar={activeRadar} size={340} />
+          
+          <div className="radar-weakness-plan">
+            <div className="plan-icon">🎯</div>
+            <div className="plan-info">
+              <span className="plan-tag">AI 認知調度 · 今日優先補強計畫</span>
+              <strong>當前建議精進：{activeRadar.weakestDimension.label} ({activeRadar.weakestDimension.score}/100)</strong>
+              <p>
+                {activeRadarTab === 'math'
+                  ? `系統分析您的作答軌跡，建議前往強化「${activeRadar.weakestDimension.label}」專屬具象教具與階梯式題庫。`
+                  : activeRadarTab === 'ja'
+                    ? `系統分析您的日語反應速率，建議前往「${activeRadar.weakestDimension.label}」透過動作訊號樹與跟讀深化記憶。`
+                    : `系統分析您的英語語塊熟練度，建議前往「${activeRadar.weakestDimension.label}」進行 4 國口音沉浸跟讀。`}
+              </p>
+            </div>
+            <button
+              type="button"
+              className="btn-plan-action"
+              onClick={() => onChoose(activeRadarTab)}
+            >
+              啟動{activeRadarTab === 'math' ? '數學' : activeRadarTab === 'ja' ? '日語' : '多益'}專屬特訓 →
+            </button>
+          </div>
         </div>
       </section>
 
@@ -286,7 +308,19 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
           {BADGE_CATALOG.map((badge) => {
             const isUnlocked =
               learningMeta.achievements.includes(badge.id) ||
-              (badge.id === 'badge-first-step' && totalXp > 0)
+              (badge.id === 'badge-first-step' && totalXp > 0) ||
+              (badge.id === 'badge-streak-7' && learningMeta.streak >= 7) ||
+              (badge.id === 'badge-combo-10' && (learningMeta.streak >= 3 || totalXp >= 80)) ||
+              (badge.id === 'badge-fsrs-master' && Object.keys(learningMeta.items).length >= 5) ||
+              (badge.id === 'badge-math-balance' && mathDoneCount >= 3) ||
+              (badge.id === 'badge-math-algebra-tiles' && (mathProgress.labCompleted.length > 0 || mathDoneCount >= 5)) ||
+              (badge.id === 'badge-math-matrix-warp' && (mathProgress.stage === 'senior' || mathDoneCount >= 8)) ||
+              (badge.id === 'badge-math-riemann-limit' && (mathProgress.labCompleted.includes('calculus') || mathProgress.stage === 'senior')) ||
+              (badge.id === 'badge-ja-kana-pro' && kanaCount >= 15) ||
+              (badge.id === 'badge-ja-signals-ace' && (jaProgress.readingDone >= 2 || jaProgress.grammarStarted)) ||
+              (badge.id === 'badge-toeic-chunk-master' && toeicDoneCount >= 3) ||
+              (badge.id === 'badge-toeic-gold-seeker' && (toeicProgress.certificateId === 'gold' || toeicProgress.certificateId === 'blue'))
+
             return (
               <div
                 key={badge.id}

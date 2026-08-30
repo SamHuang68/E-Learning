@@ -75,6 +75,8 @@ export function saveMathProgress(progress: MathProgressState) {
   }
 }
 
+import { recordActivity, notifyProgressChanged } from '../../utils/storage'
+
 export function recordMathAnswer(
   questionId: string,
   isCorrect: boolean,
@@ -99,6 +101,8 @@ export function recordMathAnswer(
   }
 
   saveMathProgress(nextState)
+  recordActivity(1)
+  notifyProgressChanged()
   return nextState
 }
 
@@ -113,5 +117,7 @@ export function recordMockScore(examId: string, score: number): MathProgressStat
     },
   }
   saveMathProgress(nextState)
+  recordActivity(5)
+  notifyProgressChanged()
   return nextState
 }

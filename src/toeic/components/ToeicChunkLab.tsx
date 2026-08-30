@@ -38,23 +38,39 @@ export const ToeicChunkLab: React.FC<Props> = ({ onBack, onOpenStoryReview }) =>
     window.speechSynthesis.cancel()
     setIsSpeaking(true)
 
-    // 第一遍：抓重音 (慢速)
+    // 第一遍：抓重音 (0.8x 慢速)
     const u1 = new SpeechSynthesisUtterance(activeChunk.chunk)
     u1.lang = 'en-US'
     u1.rate = 0.8
-    // 第二遍：正常跟讀
+
+    // 第二遍：正常跟讀 (1.0x)
     const u2 = new SpeechSynthesisUtterance(activeChunk.chunk)
     u2.lang = 'en-US'
     u2.rate = 1.0
-    // 第三遍：留白後再說
+
+    // 第三遍：沉浸朗讀 (1.0x)
     const u3 = new SpeechSynthesisUtterance(activeChunk.chunk)
     u3.lang = 'en-US'
     u3.rate = 1.0
+
+    u1.onend = () => {
+      setTimeout(() => {
+        if ('speechSynthesis' in window) window.speechSynthesis.speak(u2)
+      }, 500)
+    }
+    u1.onerror = () => setIsSpeaking(false)
+
+    u2.onend = () => {
+      setTimeout(() => {
+        if ('speechSynthesis' in window) window.speechSynthesis.speak(u3)
+      }, 600)
+    }
+    u2.onerror = () => setIsSpeaking(false)
+
     u3.onend = () => setIsSpeaking(false)
+    u3.onerror = () => setIsSpeaking(false)
 
     window.speechSynthesis.speak(u1)
-    setTimeout(() => window.speechSynthesis.speak(u2), 1200)
-    setTimeout(() => window.speechSynthesis.speak(u3), 2400)
   }
 
   return (

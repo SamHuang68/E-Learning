@@ -122,83 +122,105 @@ export const BalanceScaleSolver: React.FC = () => {
             <rect x="246" y="100" width="8" height="160" fill="#64748b" rx="4" />
             <circle cx="250" cy="100" r="10" fill="#334155" />
 
-            {/* 旋轉橫梁 */}
-            <g transform={`rotate(${tiltAngle}, 250, 100)`}>
-              <rect x="50" y="96" width="400" height="8" rx="4" fill="#1e293b" />
-              {/* 支點 */}
-              <circle cx="70" cy="100" r="5" fill="#e2e8f0" />
-              <circle cx="430" cy="100" r="5" fill="#e2e8f0" />
+            {/* 動態計算支點位置 (半徑 180, 中心 250, 100) */}
+            {(() => {
+              const rad = (tiltAngle * Math.PI) / 180
+              const leftPivotX = 250 - 180 * Math.cos(rad)
+              const leftPivotY = 100 - 180 * Math.sin(rad)
+              const rightPivotX = 250 + 180 * Math.cos(rad)
+              const rightPivotY = 100 + 180 * Math.sin(rad)
 
-              {/* 左吊盤 */}
-              <line x1="70" y1="100" x2="40" y2="180" stroke="#94a3b8" strokeWidth="2" />
-              <line x1="70" y1="100" x2="100" y2="180" stroke="#94a3b8" strokeWidth="2" />
-              <path d="M 30,180 Q 70,195 110,180 Z" fill="#cbd5e1" stroke="#64748b" strokeWidth="2" />
+              return (
+                <>
+                  {/* 旋轉橫梁 */}
+                  <g transform={`rotate(${tiltAngle}, 250, 100)`}>
+                    <rect x="50" y="96" width="400" height="8" rx="4" fill="#1e293b" />
+                    <circle cx="70" cy="100" r="5" fill="#e2e8f0" />
+                    <circle cx="430" cy="100" r="5" fill="#e2e8f0" />
+                  </g>
 
-              {/* 右吊盤 */}
-              <line x1="430" y1="100" x2="400" y2="180" stroke="#94a3b8" strokeWidth="2" />
-              <line x1="430" y1="100" x2="460" y2="180" stroke="#94a3b8" strokeWidth="2" />
-              <path d="M 390,180 Q 430,195 470,180 Z" fill="#cbd5e1" stroke="#64748b" strokeWidth="2" />
-            </g>
+                  {/* 左吊盤與物品 (重力垂直懸掛) */}
+                  <g className="left-pan-assembly">
+                    <line x1={leftPivotX} y1={leftPivotY} x2={leftPivotX - 30} y2={leftPivotY + 75} stroke="#94a3b8" strokeWidth="2" />
+                    <line x1={leftPivotX} y1={leftPivotY} x2={leftPivotX + 30} y2={leftPivotY + 75} stroke="#94a3b8" strokeWidth="2" />
+                    <path
+                      d={`M ${leftPivotX - 40},${leftPivotY + 75} Q ${leftPivotX},${leftPivotY + 90} ${leftPivotX + 40},${leftPivotY + 75} Z`}
+                      fill="#cbd5e1"
+                      stroke="#64748b"
+                      strokeWidth="2"
+                    />
 
-            {/* 左盤物品 (X 箱子 與 砝碼) */}
-            <g className="left-items-group">
-              {Array.from({ length: leftX }).map((_, i) => (
-                <rect
-                  key={`lx-${i}`}
-                  x={45 + i * 26}
-                  y="145"
-                  width="24"
-                  height="28"
-                  rx="4"
-                  fill="#3b82f6"
-                  stroke="#1d4ed8"
-                  strokeWidth="2"
-                />
-              ))}
-              {Array.from({ length: Math.min(leftConst, 12) }).map((_, i) => (
-                <circle
-                  key={`lc-${i}`}
-                  cx={45 + (i % 6) * 10}
-                  cy={135 - Math.floor(i / 6) * 12}
-                  r="5"
-                  fill="#f59e0b"
-                  stroke="#d97706"
-                />
-              ))}
-              <text x="70" y="215" textAnchor="middle" fontSize="12" fill="#334155" fontWeight="bold">
-                左盤: {leftX > 0 ? `${leftX}個 x` : ''} {leftConst > 0 ? `+ ${leftConst}砝碼` : ''}
-              </text>
-            </g>
+                    {/* 左盤物品 (X 箱子 與 砝碼) */}
+                    {Array.from({ length: leftX }).map((_, i) => (
+                      <rect
+                        key={`lx-${i}`}
+                        x={leftPivotX - 25 + i * 24}
+                        y={leftPivotY + 75 - 28}
+                        width="22"
+                        height="26"
+                        rx="4"
+                        fill="#3b82f6"
+                        stroke="#1d4ed8"
+                        strokeWidth="2"
+                      />
+                    ))}
+                    {Array.from({ length: Math.min(leftConst, 12) }).map((_, i) => (
+                      <circle
+                        key={`lc-${i}`}
+                        cx={leftPivotX - 20 + (i % 5) * 10}
+                        cy={leftPivotY + 75 - 35 - Math.floor(i / 5) * 11}
+                        r="5"
+                        fill="#f59e0b"
+                        stroke="#d97706"
+                      />
+                    ))}
+                    <text x={leftPivotX} y={leftPivotY + 105} textAnchor="middle" fontSize="12" fill="#334155" fontWeight="bold">
+                      左盤: {leftX > 0 ? `${leftX}個 x` : ''} {leftConst > 0 ? `+ ${leftConst}` : ''}
+                    </text>
+                  </g>
 
-            {/* 右盤物品 */}
-            <g className="right-items-group">
-              {Array.from({ length: rightX }).map((_, i) => (
-                <rect
-                  key={`rx-${i}`}
-                  x={405 + i * 26}
-                  y="145"
-                  width="24"
-                  height="28"
-                  rx="4"
-                  fill="#3b82f6"
-                  stroke="#1d4ed8"
-                  strokeWidth="2"
-                />
-              ))}
-              {Array.from({ length: Math.min(rightConst, 15) }).map((_, i) => (
-                <circle
-                  key={`rc-${i}`}
-                  cx={405 + (i % 6) * 10}
-                  cy={150 - Math.floor(i / 6) * 12}
-                  r="5"
-                  fill="#f59e0b"
-                  stroke="#d97706"
-                />
-              ))}
-              <text x="430" y="215" textAnchor="middle" fontSize="12" fill="#334155" fontWeight="bold">
-                右盤: {rightX > 0 ? `${rightX}個 x` : ''} {rightConst > 0 ? `${rightConst}砝碼` : ''}
-              </text>
-            </g>
+                  {/* 右吊盤與物品 (重力垂直懸掛) */}
+                  <g className="right-pan-assembly">
+                    <line x1={rightPivotX} y1={rightPivotY} x2={rightPivotX - 30} y2={rightPivotY + 75} stroke="#94a3b8" strokeWidth="2" />
+                    <line x1={rightPivotX} y1={rightPivotY} x2={rightPivotX + 30} y2={rightPivotY + 75} stroke="#94a3b8" strokeWidth="2" />
+                    <path
+                      d={`M ${rightPivotX - 40},${rightPivotY + 75} Q ${rightPivotX},${rightPivotY + 90} ${rightPivotX + 40},${rightPivotY + 75} Z`}
+                      fill="#cbd5e1"
+                      stroke="#64748b"
+                      strokeWidth="2"
+                    />
+
+                    {/* 右盤物品 */}
+                    {Array.from({ length: rightX }).map((_, i) => (
+                      <rect
+                        key={`rx-${i}`}
+                        x={rightPivotX - 25 + i * 24}
+                        y={rightPivotY + 75 - 28}
+                        width="22"
+                        height="26"
+                        rx="4"
+                        fill="#3b82f6"
+                        stroke="#1d4ed8"
+                        strokeWidth="2"
+                      />
+                    ))}
+                    {Array.from({ length: Math.min(rightConst, 15) }).map((_, i) => (
+                      <circle
+                        key={`rc-${i}`}
+                        cx={rightPivotX - 20 + (i % 5) * 10}
+                        cy={rightPivotY + 75 - 35 - Math.floor(i / 5) * 11}
+                        r="5"
+                        fill="#f59e0b"
+                        stroke="#d97706"
+                      />
+                    ))}
+                    <text x={rightPivotX} y={rightPivotY + 105} textAnchor="middle" fontSize="12" fill="#334155" fontWeight="bold">
+                      右盤: {rightX > 0 ? `${rightX}個 x` : ''} {rightConst > 0 ? `${rightConst}` : ''}
+                    </text>
+                  </g>
+                </>
+              )
+            })()}
           </svg>
 
           {isSolved && (
