@@ -64,12 +64,12 @@ export function PrivacyPage({ onBack }: Props) {
       </section>
 
       <section className="privacy-block">
-        <h2>開發者與專案入口</h2>
+        <h2>開發者與專案授權</h2>
         <p>
-          本 E-Learning 平台為 Sam Huang 開發之開源教育科技專案。更多半導體 IP、安全儲存與系統專案，請訪問：
+          本 E-Learning 平台為 Sam Huang 開發之開源教育科技專案（MIT License）。源碼庫請訪問：
         </p>
         <p>
-          👉 <a href="https://samhuang68.github.io/" target="_blank" rel="noopener noreferrer"><strong>Sam Huang 專案總入口 (samhuang68.github.io) ↗</strong></a>
+          👉 <a href="https://github.com/SamHuang68/E-Learning" target="_blank" rel="noopener noreferrer"><strong>GitHub 專案開源庫 (SamHuang68/E-Learning) ↗</strong></a>
         </p>
       </section>
     </div>

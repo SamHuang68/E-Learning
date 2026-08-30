@@ -76,35 +76,9 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
 
   return (
     <div className="hub unified-hub">
-      {/* 頂部全域入口導覽列 */}
-      <nav className="hub-portal-bar" aria-label="全域專案入口導覽">
-        <a
-          href="https://samhuang68.github.io/"
-          className="portal-brand-link"
-          target="_blank"
-          rel="noopener noreferrer"
-          title="前往 Sam Huang 矽智財與系統專案總入口"
-        >
-          <span className="portal-monogram">SH</span>
-          <span className="portal-title-text">
-            <strong>Sam Huang</strong> · PROJECT PORTAL ↗
-          </span>
-        </a>
-        <div className="portal-links-right">
-          <a
-            href="https://github.com/SamHuang68/E-Learning"
-            className="portal-sublink"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            GitHub Repository ↗
-          </a>
-        </div>
-      </nav>
-
       {/* 主頁 Hero 標題與簡介 */}
       <header className="hub-hero">
-        <p className="eyebrow">UNIFIED E-LEARNING PORTAL</p>
+        <p className="eyebrow">UNIFIED E-LEARNING PLATFORM</p>
         <h1>統一學習主頁 · 三大專業學術軌道</h1>
         <p className="lede">
           同一個學習系統，三大專業軌道。臺灣 108 課綱數學（國小／國中／高中）、日語 JLPT 與多益商務英語。離線優先、FSRS 間隔重複、2PL 自適應選題與抽象視覺圖解。
@@ -345,12 +319,12 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
       {/* 頁尾資訊 */}
       <footer className="hub-footer">
         <a
-          href="https://samhuang68.github.io/"
-          className="hub-link portal-footer-link"
+          href="https://github.com/SamHuang68/E-Learning"
+          className="hub-link"
           target="_blank"
           rel="noopener noreferrer"
         >
-          🏛️ Sam Huang 專案總入口 (samhuang68.github.io) ↗
+          GitHub 專案開源庫 ↗
         </a>
         <button type="button" className="hub-link" onClick={onOpenPrivacy}>
           隱私與資料說明
