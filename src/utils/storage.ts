@@ -102,7 +102,7 @@ export type ToeicSavedPreset = {
 }
 
 export function loadLang(): AppView {
-  const hash = window.location.hash.replace('#', '')
+  const hash = window.location.hash.replace('#', '').trim()
   if (hash === 'en' || hash.startsWith('toeic')) return 'en'
   if (hash === 'math' || hash.startsWith('math')) return 'math'
   if (
@@ -112,15 +112,7 @@ export function loadLang(): AppView {
   ) {
     return 'ja'
   }
-  if (hash === 'hub') return 'hub'
-  try {
-    const saved =
-      normalizeLang(localStorage.getItem(LANG_KEY)) ??
-      normalizeLang(localStorage.getItem(LEGACY_SITE_KEY))
-    if (saved) return saved
-  } catch {
-    /* ignore */
-  }
+  // 預設進入 E-Learning 統一學習主頁 (Hub)
   return 'hub'
 }
 
