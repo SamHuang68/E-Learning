@@ -171,13 +171,13 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
             <p className="eyebrow">TAIWAN · 108 CURRICULUM</p>
             <h2>臺灣數學 (K-12)</h2>
             <p className="track-desc">
-              國小 1~6 年級、國中三年、高中三年全學段。含 KaTeX 算式、6 大抽象圖示解題器、7 大幾何實驗室與會考／學測模擬考。
+              國小 1~6 年級、國中三年、高中三年全學段。含 KaTeX 算式、6 大幾何解題器、全新微積分互動專題 (Calculus Studio) 與會考／學測模擬考。
             </p>
             <div className="track-highlight-badges">
-              <span>📐 畢氏定理</span>
-              <span>🧩 代數拼圖</span>
+              <span>∫ 微積分專題</span>
+              <span>📐 幾何解題</span>
               <span>⚖️ 天平公理</span>
-              <span>📈 黎曼定積分</span>
+              <span>📊 黎曼定積分</span>
             </div>
             <div className="track-user-progress">
               <span>進度：已解 <strong>{mathDoneCount}</strong> 題 · 當前階段 <strong>{mathProgress.stage.toUpperCase()}</strong></span>
