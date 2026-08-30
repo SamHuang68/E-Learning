@@ -11,6 +11,9 @@ const AobaApp = lazy(() =>
 const ToeicApp = lazy(() =>
   import('./toeic/ToeicApp').then((m) => ({ default: m.ToeicApp })),
 )
+const MathApp = lazy(() =>
+  import('./math/MathApp').then((m) => ({ default: m.MathApp })),
+)
 
 type TopView = AppView | 'privacy'
 
@@ -70,6 +73,20 @@ function AppShell() {
           <ToeicApp
             onBackHub={() => choose('hub')}
             onSwitchLang={(lang: LangId) => choose(lang)}
+          />
+        </Suspense>
+      </ErrorBoundary>
+    )
+  }
+  if (view === 'math') {
+    return (
+      <ErrorBoundary label="臺灣數學模組">
+        <Suspense fallback={<ModuleFallback />}>
+          <MathApp
+            onBackHub={() => choose('hub')}
+            onSwitchLang={(lang: LangId) => {
+              if (lang === 'ja' || lang === 'en') choose(lang)
+            }}
           />
         </Suspense>
       </ErrorBoundary>

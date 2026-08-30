@@ -27,15 +27,16 @@ const TOEIC_PRESETS_KEY = 'toeic-presets'
 const LEARNING_META_KEY = 'e-learning-meta'
 const LEARNING_EVENT_LIMIT = 200
 
-/** Learning target language modules. */
-export type LangId = 'ja' | 'en'
-/** Top-level app view: language picker or a language module. */
+/** Learning target language/subject modules. */
+export type LangId = 'ja' | 'en' | 'math'
+/** Top-level app view: language/subject picker or a learning module. */
 export type AppView = 'hub' | LangId
 
 function normalizeLang(value: string | null | undefined): AppView | null {
   if (value === 'hub') return 'hub'
   if (value === 'ja' || value === 'aoba') return 'ja'
   if (value === 'en' || value === 'toeic') return 'en'
+  if (value === 'math') return 'math'
   return null
 }
 
@@ -103,6 +104,7 @@ export type ToeicSavedPreset = {
 export function loadLang(): AppView {
   const hash = window.location.hash.replace('#', '')
   if (hash === 'en' || hash.startsWith('toeic')) return 'en'
+  if (hash === 'math' || hash.startsWith('math')) return 'math'
   if (
     hash === 'ja' ||
     hash.startsWith('aoba') ||
@@ -131,6 +133,7 @@ export function saveLang(view: AppView) {
   }
   if (view === 'hub') window.location.hash = 'hub'
   else if (view === 'en') window.location.hash = 'toeic'
+  else if (view === 'math') window.location.hash = 'math'
   else window.location.hash = 'aoba'
   notifyProgressChanged()
 }

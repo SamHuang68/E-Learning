@@ -2372,3 +2372,907 @@ footer {
     grid-template-columns: 1fr 1fr;
   }
 }
+
+/* ==========================================================================
+   臺灣 108 課綱 數學學習平台 (Math Track) 專屬樣式
+   ========================================================================== */
+
+/* Hub 卡片樣式 */
+.hub-card.math {
+  border-top: 4px solid #3b82f6;
+}
+.hub-card.math:hover {
+  border-color: #2563eb;
+  box-shadow: 0 12px 24px -4px rgba(37, 99, 235, 0.15);
+}
+.hub-card-mark.math-mark,
+.brand-mark.math-mark {
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: #fff;
+  font-family: 'KaTeX_Math', serif, sans-serif;
+  font-weight: bold;
+}
+
+/* 數學外殼與側邊欄 */
+.math-shell {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+.math-sidebar {
+  background: var(--surface);
+  border-right: 1px solid var(--line);
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  overflow-y: auto;
+  max-height: 100vh;
+  position: sticky;
+  top: 0;
+}
+
+.stage-block {
+  margin-bottom: 0.75rem;
+}
+
+.stage-title {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.35rem;
+}
+
+.grades-pill-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.35rem;
+}
+
+.grade-pill-btn {
+  padding: 0.4rem 0.25rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+}
+
+.grade-pill-btn:hover {
+  background: var(--surface-soft);
+  border-color: #93c5fd;
+}
+
+.grade-pill-btn.selected {
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+}
+
+/* 數學今日儀表板 (MathToday) */
+.math-hero-card {
+  background: linear-gradient(135deg, #1e3a8a, #2563eb);
+  color: #fff;
+  border-radius: 20px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 10px 25px -5px rgba(30, 58, 138, 0.25);
+}
+
+.math-hero-card h2 {
+  font-size: 1.75rem;
+  margin: 0.5rem 0;
+  color: #fff;
+}
+
+.math-hero-card .hero-desc {
+  font-size: 1rem;
+  color: #bfdbfe;
+  max-width: 700px;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.hero-badge-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.stage-pill {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.exam-target-pill {
+  background: #fbbf24;
+  color: #78350f;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.hero-quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.btn-hero-primary {
+  background: #fff;
+  color: #1e3a8a;
+  border: none;
+  padding: 0.65rem 1.25rem;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-hero-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-hero-secondary {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0.65rem 1rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-hero-secondary:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* 單元地圖 Unit Cards */
+.unit-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0 2rem;
+}
+
+.unit-map-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.unit-map-card:hover {
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.unit-map-card.active {
+  border-color: #2563eb;
+  background: #f8faff;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+}
+
+.unit-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.unit-seq {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #2563eb;
+}
+
+.unit-strand {
+  font-size: 0.75rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+  background: var(--surface-soft);
+  color: var(--muted);
+}
+
+.unit-map-card h4 {
+  margin: 0 0 0.35rem;
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+
+.unit-sub {
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.4;
+  flex-grow: 1;
+  margin: 0 0 1rem;
+}
+
+.unit-progress-bar-wrap {
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.unit-progress-bar-fill {
+  height: 100%;
+  background: #10b981;
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.unit-meta-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.current-indicator {
+  color: #2563eb;
+  font-weight: 700;
+}
+
+/* 核心概念卡片 (Concepts) */
+.concept-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0 2rem;
+}
+
+.concept-item-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 1rem;
+  border-left: 4px solid #3b82f6;
+}
+
+.concept-idx {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #2563eb;
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+.concept-text {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+/* 實驗室卡片 (Labs) */
+.labs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.lab-entry-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lab-entry-card:hover {
+  border-color: #8b5cf6;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px -4px rgba(139, 92, 246, 0.15);
+}
+
+.lab-icon {
+  font-size: 2rem;
+  background: #f5f3ff;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+}
+
+.lab-info h4 {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+  color: var(--ink);
+}
+
+.lab-info p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.btn-enter-lab {
+  margin-left: auto;
+  padding: 0.45rem 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1px solid #ddd6fe;
+  background: #faf5ff;
+  color: #6d28d9;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* 數學公式渲染器 (KaTeX) */
+.math-formula {
+  font-family: 'KaTeX_Main', 'Times New Roman', serif;
+}
+.katex-block-wrapper {
+  margin: 0.75rem 0;
+  overflow-x: auto;
+  padding: 0.5rem 0;
+}
+
+/* 練習題作答引擎 (MathPractice) */
+.math-practice-shell {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.practice-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.practice-progress-pill {
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+}
+
+.practice-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: var(--shadow);
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.diff-badge {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #d97706;
+  background: #fef3c7;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+}
+
+.question-body {
+  font-size: 1.25rem;
+  line-height: 1.7;
+  color: var(--ink);
+  margin-bottom: 2rem;
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+.option-btn {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  border: 2px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 1.05rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.option-btn:hover:not(:disabled) {
+  border-color: #93c5fd;
+  background: #f8faff;
+}
+
+.option-btn.selected {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.option-btn.correct-opt {
+  border-color: #10b981;
+  background: #ecfdf5;
+  color: #065f46;
+}
+
+.option-btn.wrong-opt {
+  border-color: #ef4444;
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.opt-letter {
+  font-weight: 700;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--surface-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+}
+
+.fill-text-input {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.2rem;
+  border-radius: 12px;
+  border: 2px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  outline: none;
+}
+
+.fill-text-input:focus {
+  border-color: #2563eb;
+}
+
+.action-buttons-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.btn-hint-toggle {
+  background: none;
+  border: 1px solid #fde68a;
+  background: #fffbeb;
+  color: #b45309;
+  padding: 0.6rem 1rem;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-submit-answer,
+.btn-next-question {
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 12px;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-submit-answer:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.hint-card {
+  margin-top: 1.25rem;
+  padding: 1rem;
+  border-radius: 12px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.solution-card {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+}
+
+.solution-card.sol-correct {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+}
+
+.solution-card.sol-wrong {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.solution-status {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.solution-content {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--ink);
+}
+
+.competency-note {
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  border-top: 1px dashed var(--line);
+  padding-top: 0.5rem;
+}
+
+/* 模擬考 (MockExam) */
+.math-mock-shell {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.mock-nav-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid var(--line);
+  padding-bottom: 0.5rem;
+}
+
+.mock-tab {
+  padding: 0.6rem 1.25rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.mock-tab.active {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.mock-intro-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 2rem;
+}
+
+.exam-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: var(--surface-soft);
+  border-radius: 12px;
+}
+
+.meta-cell span {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.meta-cell strong {
+  font-size: 1rem;
+  color: var(--ink);
+}
+
+.mock-q-item {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.mock-q-num {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #2563eb;
+  margin-bottom: 0.5rem;
+}
+
+.mock-q-text {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.mock-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.mock-opt-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  cursor: pointer;
+  text-align: left;
+}
+
+.mock-opt-btn.selected {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.score-hero {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem;
+  background: #f8faff;
+  border-radius: 16px;
+  margin: 1.5rem 0;
+}
+
+.score-circle {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: #2563eb;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.scale-badge {
+  display: inline-block;
+  background: #dbeafe;
+  color: #1e40af;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+/* 錯題筆記本 (Error Vault) */
+.vault-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.vault-item-card {
+  background: var(--surface);
+  border: 1px solid #fecaca;
+  border-radius: 16px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal-content {
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 2rem;
+  max-width: 600px;
+  width: 90%;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+/* 實驗室通用容器 */
+.math-lab {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 1.5rem;
+  margin-top: 1rem;
+}
+
+.lab-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 1rem;
+}
+
+.lab-header h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1.25rem;
+}
+
+.lab-desc {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.labs-sub-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+}
+
+.pill-btn {
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.pill-btn.active {
+  background: #8b5cf6;
+  color: #fff;
+  border-color: #8b5cf6;
+}
+
+/* BlocksLab */
+.blocks-canvas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.place-column {
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 1rem;
+}
+.tens-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  min-height: 120px;
+}
+.block-ten {
+  display: flex;
+  flex-direction: column;
+  width: 18px;
+  height: 120px;
+  background: #3b82f6;
+  border-radius: 4px;
+  border: 1px solid #1d4ed8;
+}
+.block-ten .segment {
+  flex: 1;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+}
+.ones-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  min-height: 120px;
+  align-content: flex-start;
+}
+.block-one {
+  width: 18px;
+  height: 18px;
+  background: #10b981;
+  border-radius: 4px;
+  border: 1px solid #047857;
+}
+
+/* MultiplicationLab */
+.mult-table-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 2px;
+  background: #cbd5e1;
+  padding: 2px;
+  border-radius: 8px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+.mult-cell, .mult-header-cell, .mult-corner-cell {
+  background: #fff;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+}
+.mult-header-cell {
+  background: #f1f5f9;
+  font-weight: 700;
+  color: #475569;
+}
+.mult-cell.selected {
+  background: #3b82f6;
+  color: #fff;
+}
+.mult-cell.highlighted {
+  background: #eff6ff;
+}
+
+/* FractionLab */
+.fraction-layout, .coord-layout, .pythagoras-layout, .unit-circle-layout, .calculus-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.fraction-math-box {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+.fraction-bar {
+  width: 60px;
+  height: 4px;
+  background: var(--ink);
+  margin: 2px 0;
+}
+
