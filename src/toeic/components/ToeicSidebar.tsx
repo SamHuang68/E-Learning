@@ -68,12 +68,15 @@ export function ToeicSidebar({
         </div>
       </div>
 
-      <div className="lang-switch" role="group" aria-label="學習語言">
+      <div className="lang-switch three-ways" role="group" aria-label="學習軌道切換">
         <button type="button" onClick={() => onSwitchLang('ja')}>
-          日本語
+          あ 日本語
         </button>
         <button type="button" className="active" aria-current="true" disabled>
-          English
+          T 多益
+        </button>
+        <button type="button" onClick={() => onSwitchLang('math')}>
+          ∑ 數學
         </button>
       </div>
 

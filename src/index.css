@@ -466,14 +466,67 @@ strong {
   background: var(--surface-soft);
   border: 1px solid var(--line);
 }
+.lang-switch.three-ways {
+  grid-template-columns: 1fr 1fr 1fr;
+}
 
 .lang-switch button {
-  padding: 0.45rem 0.35rem;
-  border-radius: 9px;
-  font-size: 0.82rem;
-  font-weight: 600;
+  padding: 0.42rem 0.35rem;
+  border-radius: 8px;
+  font-size: 0.76rem;
+  font-weight: 700;
   color: var(--muted);
-  border: 1px solid transparent;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+/* 統一階層麵包屑導覽列 */
+.unified-breadcrumbs {
+  padding: 0.4rem 0.8rem;
+  margin-bottom: 0.85rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-size: 0.82rem;
+}
+.breadcrumbs-list {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.crumb-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--muted);
+}
+.crumb-item.active .crumb-current {
+  color: var(--ink);
+  font-weight: 700;
+}
+.crumb-link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: inherit;
+  color: #2563eb;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.crumb-link-btn:hover {
+  color: #1d4ed8;
+}
+.crumb-separator {
+  color: var(--line-strong, #cbd5e1);
+  font-size: 0.75rem;
 }
 
 .lang-switch button:hover:not(:disabled) {
