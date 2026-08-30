@@ -16,16 +16,30 @@ import {
   type ProgressState,
   type ToeicProgress,
 } from './storage'
+import {
+  loadMathProgress,
+  saveMathProgress,
+  defaultMathProgress,
+  type MathProgressState,
+} from '../math/utils/mathStorage'
 
 setProgressChangeHook(() => {
   scheduleCloudPush()
 })
+
+// 數學軌道進度變更時也觸發雲端同步推送
+if (typeof window !== 'undefined') {
+  window.addEventListener('math:progress-updated', () => {
+    scheduleCloudPush()
+  })
+}
 
 export type CloudProgressRow = {
   user_id: string
   aoba: ProgressState
   kana: KanaProgress
   toeic: ToeicProgress
+  math: MathProgressState
   lang: AppView
   meta: LearningMeta
   updated_at: string
@@ -79,6 +93,7 @@ function localBundle() {
     aoba: loadProgress(),
     kana: loadKanaProgress(),
     toeic: loadToeicProgress(),
+    math: loadMathProgress(),
     lang: loadLang(),
     meta: loadLearningMeta(),
   }
@@ -96,6 +111,7 @@ function normalizeRow(data: Record<string, unknown>): Omit<CloudProgressRow, 'us
     aoba: (data.aoba as ProgressState) ?? loadProgress(),
     kana: (data.kana as KanaProgress) ?? defaultKanaProgress(),
     toeic: (data.toeic as ToeicProgress) ?? defaultToeicProgress(),
+    math: (data.math as MathProgressState) ?? defaultMathProgress(),
     lang: normalizeLang(data.lang),
     meta: (data.meta as LearningMeta) ?? defaultLearningMeta(),
     updated_at:
@@ -132,6 +148,7 @@ export async function hydrateFromCloud(userId: string): Promise<SyncOutcome> {
         aoba: bundle.aoba,
         kana: bundle.kana,
         toeic: bundle.toeic,
+        math: bundle.math,
         lang: bundle.lang,
         meta: bundle.meta,
         updated_at: new Date().toISOString(),
@@ -150,6 +167,7 @@ export async function hydrateFromCloud(userId: string): Promise<SyncOutcome> {
       lang: row.lang,
       meta: row.meta,
     })
+    saveMathProgress(row.math)
     allowPush = true
     emit('synced')
     return 'pulled'
@@ -172,6 +190,7 @@ export async function pushProgressNow(): Promise<boolean> {
       aoba: bundle.aoba,
       kana: bundle.kana,
       toeic: bundle.toeic,
+      math: bundle.math,
       lang: bundle.lang,
       meta: bundle.meta,
       updated_at: new Date().toISOString(),
