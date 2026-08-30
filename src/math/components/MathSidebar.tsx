@@ -3,7 +3,7 @@ import type { MathGradeId, MathStage } from '../data/curriculum'
 import { ALL_MATH_GRADES } from '../data/gradeStore'
 import type { MathProgressState } from '../utils/mathStorage'
 
-export type MathNavId = 'today' | 'practice' | 'mock' | 'vault' | 'labs' | 'visual'
+export type MathNavId = 'today' | 'practice' | 'mock' | 'vault' | 'labs' | 'visual' | 'calculus'
 
 type Props = {
   activeNav: MathNavId
@@ -136,6 +136,14 @@ export const MathSidebar: React.FC<Props> = ({
         >
           <span className="nav-icon">🧪</span>
           <span>互動教具實驗室</span>
+        </button>
+        <button
+          type="button"
+          className={`nav-item ${activeNav === 'calculus' ? 'active' : ''}`}
+          onClick={() => onNav('calculus')}
+        >
+          <span className="nav-icon">∫</span>
+          <span>微積分專題 (Studio)</span>
         </button>
       </nav>
 

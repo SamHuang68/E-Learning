@@ -21,7 +21,7 @@ import { FractionLab } from './labs/FractionLab'
 import { CoordinateLab } from './labs/CoordinateLab'
 import { PythagorasLab } from './labs/PythagorasLab'
 import { UnitCircleLab } from './labs/UnitCircleLab'
-import { CalculusLab } from './labs/CalculusLab'
+import { CalculusStudio } from './calculus/CalculusStudio'
 
 type Props = {
   onBackHub: () => void
@@ -100,7 +100,7 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
       case 'unitcircle':
         return <UnitCircleLab />
       case 'calculus':
-        return <CalculusLab />
+        return <CalculusStudio />
       default:
         // 預設依學段展示適合的教具
         if (gradeInfo.stage === 'elementary') {
@@ -108,12 +108,16 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         } else if (gradeInfo.stage === 'junior') {
           return <CoordinateLab />
         } else {
-          return <UnitCircleLab />
+          return <CalculusStudio />
         }
     }
   }
 
   function renderMainContent() {
+    if (activeNav === 'calculus') {
+      return <CalculusStudio />
+    }
+
     if (activeNav === 'practice') {
       return (
         <MathPractice
@@ -253,7 +257,9 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
                             ? '錯題本'
                             : activeNav === 'visual'
                               ? '幾何圖示'
-                              : '互動教具',
+                              : activeNav === 'calculus'
+                                ? '微積分專題'
+                                : '互動教具',
                     active: true,
                   },
                 ]
