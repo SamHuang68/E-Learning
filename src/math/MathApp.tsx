@@ -11,6 +11,7 @@ import { MathToday } from './components/MathToday'
 import { MathPractice } from './components/MathPractice'
 import { MathMockExam } from './components/MathMockExam'
 import { MathErrorVault } from './components/MathErrorVault'
+import { MathVisualHub } from './components/MathVisualHub'
 
 // 實驗室教具
 import { BlocksLab } from './labs/BlocksLab'
@@ -201,6 +202,10 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
       )
     }
 
+    if (activeNav === 'visual') {
+      return <MathVisualHub onBack={() => setActiveNav('today')} />
+    }
+
     return (
       <MathToday
         gradeInfo={gradeInfo}
@@ -211,6 +216,7 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         onOpenLab={handleOpenLab}
         onOpenMock={() => setActiveNav('mock')}
         onOpenVault={() => setActiveNav('vault')}
+        onOpenVisual={() => setActiveNav('visual')}
       />
     )
   }

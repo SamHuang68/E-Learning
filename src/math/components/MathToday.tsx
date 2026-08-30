@@ -13,6 +13,7 @@ type Props = {
   onOpenLab: (labId: string) => void
   onOpenMock: () => void
   onOpenVault: () => void
+  onOpenVisual: () => void
 }
 
 /**
@@ -28,6 +29,7 @@ export const MathToday: React.FC<Props> = ({
   onOpenLab,
   onOpenMock,
   onOpenVault,
+  onOpenVisual,
 }) => {
   return (
     <div className="math-today-view">
@@ -45,6 +47,13 @@ export const MathToday: React.FC<Props> = ({
         <div className="hero-quick-actions">
           <button type="button" className="btn-hero-primary" onClick={onStartPractice}>
             ▶ 開始單元練習 ({currentUnit.title})
+          </button>
+          <button
+            type="button"
+            className="btn-hero-secondary"
+            onClick={onOpenVisual}
+          >
+            🎨 幾何圖示解題
           </button>
           {currentUnit.suggestedLab && (
             <button

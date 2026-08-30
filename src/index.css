@@ -4117,4 +4117,668 @@ footer {
   margin-top: 0.25rem;
 }
 
+/* ==========================================================================
+   數學抽象圖示解題系統樣式 (Visual Diagrammatic Math Solvers)
+   ========================================================================== */
+
+.math-visual-hub {
+  animation: rise 0.35s ease both;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.hub-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.hub-tag {
+  background: #fdf2f8;
+  color: #be185d;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  border: 1px solid #fbcfe8;
+}
+
+.visual-nav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+.visual-tab-card {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.visual-tab-card:hover {
+  border-color: #93c5fd;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+.visual-tab-card.active {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+.tab-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.tab-icon {
+  font-size: 1.4rem;
+}
+.tab-name {
+  font-size: 0.95rem;
+  color: #0f172a;
+}
+.visual-tab-card.active .tab-name {
+  color: #1d4ed8;
+}
+.tab-desc {
+  font-size: 0.78rem;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+/* 通用 Solver 卡片 */
+.balance-solver-card, .bar-model-card, .algebra-tiles-card,
+.matrix-transform-card, .riemann-calculus-card, .geometric-proofs-card {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+}
+
+.solver-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.solver-title-block h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1.25rem;
+  color: #0f172a;
+}
+.solver-title-block p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #64748b;
+}
+
+.preset-tabs {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+/* 1. 天平平衡求解器 */
+.solver-main-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 1.5rem;
+}
+@media (max-width: 768px) {
+  .solver-main-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.balance-visual-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+.current-eq-badge {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+.balance-svg {
+  width: 100%;
+  max-width: 460px;
+  height: auto;
+}
+.solved-banner {
+  margin-top: 0.5rem;
+  background: #dcfce7;
+  color: #15803d;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 700;
+  border: 1px solid #86efac;
+}
+.balance-controls-panel {
+  background: #fafaf9;
+  border: 1px solid #e7e5e4;
+  border-radius: 10px;
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+.action-buttons-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.op-btn {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 0.55rem 0.85rem;
+  font-size: 0.88rem;
+  cursor: pointer;
+  text-align: left;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+.op-btn:hover:not(:disabled) {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+}
+.op-btn.highlight {
+  background: #f0fdf4;
+  border-color: #86efac;
+  color: #166534;
+}
+.op-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.steps-history-box {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 0.75rem;
+  font-size: 0.82rem;
+  max-height: 140px;
+  overflow-y: auto;
+}
+.steps-history-box h5 {
+  margin: 0 0 0.4rem;
+}
+.steps-history-box ol {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+/* 2. 長條模型 Bar Model */
+.story-question-banner {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  padding: 0.85rem 1.2rem;
+}
+.story-badge {
+  font-size: 0.75rem;
+  color: #166534;
+  font-weight: 800;
+}
+.story-text {
+  margin: 0.25rem 0 0;
+  font-size: 0.95rem;
+  color: #14532d;
+  font-weight: 600;
+}
+.bar-model-workspace-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 1.5rem;
+}
+@media (max-width: 768px) {
+  .bar-model-workspace-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.bar-visual-container {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.bars-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.person-label {
+  width: 90px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #334155;
+}
+.bar-track {
+  flex: 1;
+  display: flex;
+  height: 36px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid #cbd5e1;
+}
+.bar-segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.8rem;
+  transition: all 0.3s ease;
+}
+.bar-segment.ghost {
+  background: repeating-linear-gradient(
+    45deg,
+    #f1f5f9,
+    #f1f5f9 6px,
+    #e2e8f0 6px,
+    #e2e8f0 12px
+  );
+  border-left: 2px dashed #94a3b8;
+  color: #64748b;
+}
+.total-bracket-box {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  padding: 0.5rem;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 0.95rem;
+}
+.solution-steps-panel {
+  background: #fafaf9;
+  border: 1px solid #e7e5e4;
+  border-radius: 10px;
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.steps-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.step-flow-item {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.75rem;
+}
+.step-flow-item.locked {
+  opacity: 0.5;
+}
+.step-flow-item.active {
+  border-color: #3b82f6;
+  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.1);
+}
+.step-badge {
+  font-size: 0.75rem;
+  background: #eff6ff;
+  color: #1d4ed8;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 700;
+}
+.step-exp {
+  margin: 0.25rem 0 0.5rem;
+  font-size: 0.85rem;
+  color: #334155;
+}
+.step-actions-row {
+  display: flex;
+  gap: 0.5rem;
+}
+.btn-next-step {
+  flex: 1;
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  padding: 0.6rem;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.btn-next-step:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+/* 3. 代數拼圖 Algebra Tiles */
+.tiles-header-box {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  padding: 0.75rem 1.25rem;
+}
+.formula-display {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-size: 1.1rem;
+}
+.arrow-sep {
+  color: #64748b;
+  font-weight: 700;
+}
+.factored-highlight {
+  color: #15803d;
+}
+.tiles-workspace-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 1.5rem;
+}
+@media (max-width: 768px) {
+  .tiles-workspace-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.tiles-canvas-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+.tiles-legend {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.85rem;
+}
+.legend-item i {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+.color-x2 { background: #3b82f6; }
+.color-x { background: #10b981; }
+.color-1 { background: #f59e0b; }
+
+.puzzle-grid-layout {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.dim-label {
+  font-weight: 700;
+  color: #1e40af;
+  font-size: 0.9rem;
+}
+.top-dim {
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+.tile-assembly-quad {
+  display: grid;
+  grid-template-columns: 120px auto;
+  grid-template-rows: 120px auto;
+  gap: 4px;
+  background: #e2e8f0;
+  padding: 4px;
+  border-radius: 8px;
+}
+.tile-block {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 700;
+  border-radius: 4px;
+}
+.tile-x2 {
+  background: #3b82f6;
+  width: 120px;
+  height: 120px;
+  font-size: 1.2rem;
+}
+.tile-col-x {
+  display: flex;
+  gap: 4px;
+}
+.tile-x-vert {
+  background: #10b981;
+  width: 24px;
+  height: 120px;
+  font-size: 0.85rem;
+}
+.tile-row-x {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.tile-x-horiz {
+  background: #10b981;
+  width: 120px;
+  height: 24px;
+  font-size: 0.85rem;
+}
+.tile-grid-units {
+  display: grid;
+  gap: 4px;
+}
+.tile-unit {
+  background: #f59e0b;
+  width: 24px;
+  height: 24px;
+  font-size: 0.75rem;
+}
+.tiles-explanation-panel {
+  background: #fafaf9;
+  border: 1px solid #e7e5e4;
+  border-radius: 10px;
+  padding: 1.2rem;
+}
+.parts-sum-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 0.75rem;
+  margin: 1rem 0;
+  font-size: 0.85rem;
+}
+.parts-sum-card ul {
+  margin: 0.25rem 0 0;
+  padding-left: 1.2rem;
+}
+
+/* 4. 矩陣變換 MatrixTransformLab */
+.matrix-workspace-grid, .riemann-workspace-grid, .proof-workspace-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 1.5rem;
+}
+@media (max-width: 768px) {
+  .matrix-workspace-grid, .riemann-workspace-grid, .proof-workspace-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.canvas-container {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+.canvas-badges, .riemann-badges {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.badge-i { color: #dc2626; background: #fee2e2; padding: 0.2rem 0.5rem; border-radius: 4px; }
+.badge-j { color: #16a34a; background: #dcfce7; padding: 0.2rem 0.5rem; border-radius: 4px; }
+.badge-det { color: #2563eb; background: #eff6ff; padding: 0.2rem 0.5rem; border-radius: 4px; }
+.badge-det.flipped { color: #b91c1c; background: #fef2f2; }
+.matrix-canvas, .riemann-canvas {
+  width: 100%;
+  max-width: 450px;
+  height: auto;
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+}
+.matrix-controls-panel, .riemann-controls-panel, .proof-controls-panel {
+  background: #fafaf9;
+  border: 1px solid #e7e5e4;
+  border-radius: 10px;
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.matrix-display-box {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.75rem;
+}
+.matrix-bracket {
+  display: inline-flex;
+  align-items: center;
+  font-family: monospace;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-top: 0.25rem;
+}
+.m-values {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 6px;
+}
+.m-values div {
+  display: flex;
+  gap: 1.2rem;
+}
+.sliders-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.slider-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.det-insight-card, .convergence-card, .values-comparison-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.75rem;
+  font-size: 0.85rem;
+}
+
+/* 5. 黎曼和與無字證明 */
+.btn-group {
+  display: flex;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+}
+.btn-mode {
+  flex: 1;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  padding: 0.4rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+.btn-mode.active {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+.stat-row, .val-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.35rem;
+}
+.err-pill {
+  color: #dc2626;
+  font-weight: 700;
+}
+.err-pill.good {
+  color: #16a34a;
+}
+.proof-svg-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.proof-svg {
+  width: 100%;
+  max-width: 480px;
+  height: auto;
+}
+.optimal-banner {
+  margin-top: 0.5rem;
+  background: #dcfce7;
+  color: #15803d;
+  padding: 0.45rem 0.85rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.proof-explanation-box {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  padding: 0.85rem;
+  font-size: 0.85rem;
+}
+
+
 
