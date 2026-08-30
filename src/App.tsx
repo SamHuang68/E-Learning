@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useState } from 'react'
 import { AuthProvider } from './auth/AuthProvider'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { PrivacyPage } from './components/PrivacyPage'
+import { AccessibilityControls } from './components/AccessibilityControls'
 import { Hub } from './Hub'
 import { loadLang, saveLang, type AppView, type LangId } from './utils/storage'
 
@@ -102,6 +103,7 @@ export default function App() {
     <AuthProvider>
       <ErrorBoundary label="應用程式">
         <AppShell />
+        <AccessibilityControls />
       </ErrorBoundary>
     </AuthProvider>
   )
