@@ -1,18 +1,19 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { AuthProvider } from './auth/AuthProvider'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { PrivacyPage } from './components/PrivacyPage'
 import { AccessibilityControls } from './components/AccessibilityControls'
 import { Hub } from './Hub'
 import { loadLang, saveLang, type AppView, type LangId } from './utils/storage'
+import { lazyWithRetry } from './utils/lazyWithRetry'
 
-const AobaApp = lazy(() =>
+const AobaApp = lazyWithRetry(() =>
   import('./aoba/AobaApp').then((m) => ({ default: m.AobaApp })),
 )
-const ToeicApp = lazy(() =>
+const ToeicApp = lazyWithRetry(() =>
   import('./toeic/ToeicApp').then((m) => ({ default: m.ToeicApp })),
 )
-const MathApp = lazy(() =>
+const MathApp = lazyWithRetry(() =>
   import('./math/MathApp').then((m) => ({ default: m.MathApp })),
 )
 
