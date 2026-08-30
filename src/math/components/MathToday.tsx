@@ -2,6 +2,7 @@ import React from 'react'
 import type { MathGradeInfo, MathUnit } from '../data/curriculum'
 import type { MathProgressState } from '../utils/mathStorage'
 import { MathFormula } from './MathFormula'
+import { SolvingSignalCards } from './SolvingSignalCards'
 
 type Props = {
   gradeInfo: MathGradeInfo
@@ -146,6 +147,11 @@ export const MathToday: React.FC<Props> = ({
           </div>
         </section>
       )}
+
+      {/* 3 秒解題破題訊號卡 */}
+      <section className="signals-section">
+        <SolvingSignalCards initialStage={gradeInfo.stage} />
+      </section>
     </div>
   )
 }

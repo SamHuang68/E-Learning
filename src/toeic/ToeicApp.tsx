@@ -26,6 +26,8 @@ import { ToeicBuilder } from './components/ToeicBuilder'
 import { ToeicPractice } from './components/ToeicPractice'
 import { ToeicSidebar, type ToeicNavId } from './components/ToeicSidebar'
 import { ToeicToday } from './components/ToeicToday'
+import { ToeicChunkLab } from './components/ToeicChunkLab'
+import { ToeicStoryReview } from './components/ToeicStoryReview'
 
 type Props = {
   onBackHub: () => void
@@ -231,25 +233,29 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
         : practice === 'listening'
           ? '聽力練習'
           : '文法教室'
-      : nav === 'phonics'
-        ? '發音基礎'
-        : nav === 'builder'
-          ? '課程設計器'
-          : nav === 'vocab'
-            ? '單字練習'
-            : nav === 'listening'
-              ? '聽力練習'
-              : nav === 'grammar'
-                ? '文法教室'
-                : nav === 'scenario'
-                  ? '情境任務'
-                  : nav === 'speaking'
-                    ? '口說跟讀'
-                    : nav === 'mock'
-                      ? '模擬測驗'
-                      : nav === 'placement'
-                        ? '分級測驗'
-                        : '今日學習'
+      : nav === 'chunks'
+        ? '商務語塊 (Business Chunks)'
+        : nav === 'story'
+          ? '微故事對照複習'
+          : nav === 'phonics'
+            ? '發音基礎'
+            : nav === 'builder'
+              ? '課程設計器'
+              : nav === 'vocab'
+                ? '單字練習'
+                : nav === 'listening'
+                  ? '聽力練習'
+                  : nav === 'grammar'
+                    ? '文法教室'
+                    : nav === 'scenario'
+                      ? '情境任務'
+                      : nav === 'speaking'
+                        ? '口說跟讀'
+                        : nav === 'mock'
+                          ? '模擬測驗'
+                          : nav === 'placement'
+                            ? '分級測驗'
+                            : '今日學習'
 
   function renderContent() {
     if (special === 'review') {
@@ -333,6 +339,22 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
           }}
           onProgress={(delta) => applyPracticeProgress(practice, delta)}
         />,
+      )
+    }
+    if (nav === 'chunks') {
+      return (
+        <ToeicChunkLab
+          onBack={() => setNav('today')}
+          onOpenStoryReview={() => setNav('story')}
+        />
+      )
+    }
+    if (nav === 'story') {
+      return (
+        <ToeicStoryReview
+          onBack={() => setNav('today')}
+          onOpenChunkLab={() => setNav('chunks')}
+        />
       )
     }
     if (nav === 'phonics') {

@@ -4,6 +4,8 @@ import type { LangId } from '../../utils/storage'
 
 export type ToeicNavId =
   | 'phonics'
+  | 'chunks'
+  | 'story'
   | 'today'
   | 'builder'
   | 'vocab'
@@ -26,8 +28,10 @@ type Props = {
 }
 
 const items: { id: ToeicNavId; icon: string; label: string }[] = [
-  { id: 'phonics', icon: 'Aa', label: '發音基礎' },
   { id: 'today', icon: '★', label: '今日學習' },
+  { id: 'chunks', icon: '⚡', label: '商務語塊 (Chunks)' },
+  { id: 'story', icon: '📖', label: '情境微故事' },
+  { id: 'phonics', icon: 'Aa', label: '發音基礎' },
   { id: 'builder', icon: '✎', label: '課程設計器' },
   { id: 'vocab', icon: 'V', label: '單字練習' },
   { id: 'listening', icon: '♪', label: '聽力練習' },
