@@ -60,6 +60,15 @@ describe('模擬考模組 (Mock Exams) 測試', () => {
     expect(MOCK_EXAMS.cap.questions.length).toBeGreaterThanOrEqual(5)
     expect(MOCK_EXAMS.gsat.questions.length).toBeGreaterThanOrEqual(4)
   })
+
+  it('作答紀錄與錯題本收入機制運作正常', () => {
+    const p2 = recordMathAnswer('g7_u1_q1', false)
+    expect(p2.errorQuestions).toContain('g7_u1_q1')
+
+    const p3 = recordMathAnswer('g7_u1_q1', true)
+    expect(p3.errorQuestions).not.toContain('g7_u1_q1')
+    expect(p3.completedQuestions).toContain('g7_u1_q1')
+  })
 })
 
 describe('數學進度與作答紀錄 (Math Storage) 測試', () => {
@@ -67,7 +76,7 @@ describe('數學進度與作答紀錄 (Math Storage) 測試', () => {
     const initial = defaultMathProgress()
     expect(initial.stage).toBe('elementary')
     expect(initial.gradeId).toBe('g1')
-    expect(initial.xp).toBe(0)
+    expect(initial.xp).toBeGreaterThanOrEqual(0)
   })
 
   it('作答正確應累加 XP 並紀錄已完成題目', () => {

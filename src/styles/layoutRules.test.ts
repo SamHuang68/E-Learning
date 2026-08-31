@@ -24,4 +24,15 @@ describe('CSS Layout & Sidebar Overflow Regression Guard', () => {
     expect(cssContent).toMatch(/\.calculus-sidebar\s*\{[^}]*overflow-y:\s*auto/s)
     expect(cssContent).toMatch(/\.calculus-sidebar\s*\{[^}]*max-height:\s*100vh/s)
   })
+
+  it('ensures sidebar nav labels are not squished and allow normal text wrapping', () => {
+    expect(cssContent).toContain('.sidebar nav button .nav-label')
+    expect(cssContent).toMatch(/\.sidebar nav button \.nav-label[^}]*white-space:\s*normal/s)
+  })
+
+  it('ensures solution card and content have word-break and overflow-wrap', () => {
+    expect(cssContent).toContain('.solution-card {')
+    expect(cssContent).toMatch(/\.solution-card\s*\{[^}]*overflow-wrap:\s*break-word/s)
+    expect(cssContent).toMatch(/\.solution-content\s*\{[^}]*word-break:\s*break-word/s)
+  })
 })

@@ -90,7 +90,7 @@ export const MathSidebar: React.FC<Props> = ({
           onClick={() => onNav('today')}
         >
           <span className="nav-icon">📅</span>
-          <span>今日學習 (課程首頁)</span>
+          <span className="nav-label">今日學習 (課程首頁)</span>
         </button>
         <button
           type="button"
@@ -98,7 +98,7 @@ export const MathSidebar: React.FC<Props> = ({
           onClick={() => onNav('practice')}
         >
           <span className="nav-icon">✏️</span>
-          <span>單元題庫練習</span>
+          <span className="nav-label">單元題庫練習</span>
         </button>
         <button
           type="button"
@@ -106,7 +106,7 @@ export const MathSidebar: React.FC<Props> = ({
           onClick={() => onNav('mock')}
         >
           <span className="nav-icon">📝</span>
-          <span>會考／學測模考</span>
+          <span className="nav-label">會考／學測模考</span>
         </button>
         <button
           type="button"
@@ -114,7 +114,7 @@ export const MathSidebar: React.FC<Props> = ({
           onClick={() => onNav('vault')}
         >
           <span className="nav-icon">📖</span>
-          <span>錯題本 ({progress.errorQuestions.length})</span>
+          <span className="nav-label">錯題本 ({progress.errorQuestions.length})</span>
         </button>
         <button
           type="button"
@@ -122,7 +122,7 @@ export const MathSidebar: React.FC<Props> = ({
           onClick={() => onNav('visual')}
         >
           <span className="nav-icon">🎨</span>
-          <span>幾何圖示解題 (Visual)</span>
+          <span className="nav-label">幾何圖示解題 (Visual)</span>
         </button>
         <button
           type="button"
@@ -130,7 +130,7 @@ export const MathSidebar: React.FC<Props> = ({
           onClick={() => onNav('labs')}
         >
           <span className="nav-icon">🧪</span>
-          <span>互動教具實驗室</span>
+          <span className="nav-label">互動教具實驗室</span>
         </button>
         <button
           type="button"
@@ -138,7 +138,7 @@ export const MathSidebar: React.FC<Props> = ({
           onClick={() => onNav('calculus')}
         >
           <span className="nav-icon">∫</span>
-          <span>微積分專題 (Studio)</span>
+          <span className="nav-label">微積分專題 (Studio)</span>
         </button>
       </nav>
 

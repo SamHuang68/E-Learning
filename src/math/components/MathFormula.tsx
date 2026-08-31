@@ -20,16 +20,22 @@ export type MathFormulaProps = {
 function renderMathContent(content: string, isBlockDefault = false): string {
   if (!content) return ''
 
-  // 如果整個字串沒有 $ 符號，且指定為 block 模式，直接將整個字串視為 LaTeX
+  // 如果整個字串沒有 $ 符號，且指定為 block 模式：
+  // 只有當字串確實為純 LaTeX 指令公式（含 \\ 指令）時才整體交由 KaTeX 渲染；
+  // 自然語言詳解文字直接回傳，保留瀏覽器原生自動換行特性。
   if (!content.includes('$') && isBlockDefault) {
-    try {
-      return katex.renderToString(content, {
-        displayMode: true,
-        throwOnError: false,
-      })
-    } catch {
-      return content
+    const isPureLatexFormula = /^\s*(\\[a-zA-Z]+|[0-9a-zA-Z\s+\-*/=^_()]+$)/.test(content) && content.includes('\\')
+    if (isPureLatexFormula) {
+      try {
+        return `<div class="katex-block-wrapper">${katex.renderToString(content.trim(), {
+          displayMode: true,
+          throwOnError: false,
+        })}</div>`
+      } catch {
+        return content
+      }
     }
+    return content
   }
 
   // 處理區塊公式 $$...$$ 與行內公式 $...$

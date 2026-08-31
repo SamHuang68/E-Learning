@@ -123,16 +123,16 @@ export const CalculusSidebar: React.FC<Props> = ({
         </button>
       </div>
 
-      {/* 核心工作台功能 */}
-      <nav className="nav-group" aria-label="微積分工作台選單">
-        <p className="nav-heading">工作台功能</p>
+      {/* 主功能導覽 */}
+      <nav className="nav-group">
+        <p className="nav-heading">微積分工作台</p>
         <button
           type="button"
           className={`nav-item ${activeNav === 'canvas_lab' ? 'active' : ''}`}
           onClick={() => onNav('canvas_lab')}
         >
           <span className="nav-icon">🎨</span>
-          <span>幾何動態實驗室 (Canvas)</span>
+          <span className="nav-label">幾何動態實驗室 (Canvas)</span>
         </button>
         <button
           type="button"
@@ -140,7 +140,7 @@ export const CalculusSidebar: React.FC<Props> = ({
           onClick={() => onNav('step_solver')}
         >
           <span className="nav-icon">📝</span>
-          <span>步驟式推導解題器</span>
+          <span className="nav-label">步驟式推導解題器</span>
         </button>
         <button
           type="button"
@@ -148,7 +148,7 @@ export const CalculusSidebar: React.FC<Props> = ({
           onClick={() => onNav('adaptive_practice')}
         >
           <span className="nav-icon">🎯</span>
-          <span>4 階能力挑戰 (θ: {currentTheta >= 0 ? `+${currentTheta.toFixed(2)}` : currentTheta.toFixed(2)})</span>
+          <span className="nav-label">4 階能力挑戰 (θ: {currentTheta >= 0 ? `+${currentTheta.toFixed(2)}` : currentTheta.toFixed(2)})</span>
         </button>
         <button
           type="button"
@@ -156,7 +156,7 @@ export const CalculusSidebar: React.FC<Props> = ({
           onClick={() => onNav('badges')}
         >
           <span className="nav-icon">🏆</span>
-          <span>微認證成就館 ({unlockedBadgeCount}/{totalBadgeCount})</span>
+          <span className="nav-label">微認證成就館 ({unlockedBadgeCount}/{totalBadgeCount})</span>
         </button>
       </nav>
 
