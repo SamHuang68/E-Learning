@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import type { PhysicsUnit } from '../data/curriculum'
 import { MathFormula } from '../../math/components/MathFormula'
+import { playCorrectSound } from '../../engine/audioSynthesizer'
 
 type Props = {
   unit: PhysicsUnit
@@ -36,6 +37,7 @@ export const PhysicsPractice: React.FC<Props> = ({
     if (selectedOption === null) return
     setIsSubmitted(true)
     if (selectedOption === q.answer) {
+      playCorrectSound()
       onAnswerCorrect(q.id, q.difficulty * 10)
     } else {
       onAnswerWrong(q.id)

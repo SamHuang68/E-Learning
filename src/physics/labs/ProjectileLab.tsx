@@ -88,6 +88,42 @@ export const ProjectileLab: React.FC = () => {
         </div>
       </div>
 
+      {/* 經典拋體物理情境快照切換 */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem', marginBottom: '0.55rem' }}>
+        <button
+          type="button"
+          className="pill-btn"
+          style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', background: angleDeg === 45 ? 'rgba(56, 189, 248, 0.2)' : undefined }}
+          onClick={() => { setV0(20); setAngleDeg(45); setG(9.8); }}
+        >
+          🎯 45° 最大射程 (Max Range)
+        </button>
+        <button
+          type="button"
+          className="pill-btn"
+          style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', background: angleDeg === 60 ? 'rgba(56, 189, 248, 0.2)' : undefined }}
+          onClick={() => { setV0(25); setAngleDeg(60); setG(9.8); }}
+        >
+          🚀 60° 高拋滯空 (High Apex)
+        </button>
+        <button
+          type="button"
+          className="pill-btn"
+          style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', background: angleDeg === 30 ? 'rgba(56, 189, 248, 0.2)' : undefined }}
+          onClick={() => { setV0(20); setAngleDeg(30); setG(9.8); }}
+        >
+          📐 30° 快速低射 (Low Angle)
+        </button>
+        <button
+          type="button"
+          className="pill-btn"
+          style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', background: g === 1.62 ? 'rgba(56, 189, 248, 0.2)' : undefined }}
+          onClick={() => { setV0(20); setAngleDeg(45); setG(1.62); }}
+        >
+          🪐 月球重力 (Moon g=1.62)
+        </button>
+      </div>
+
       {/* 雙欄響應式工作台 */}
       <div
         className="lab-workspace-grid"
