@@ -5,6 +5,7 @@ import {
   type ExerciseKind,
 } from '../engine/exercises'
 import { SpeakButton } from './SpeakButton'
+import { playCorrectSound } from '../engine/audioSynthesizer'
 
 type ItemResult = { id: string; cardId: string; correct: boolean }
 
@@ -71,6 +72,9 @@ export function ExerciseSession({
 
     const isCorrect = gradeAnswer(exercise, answer)
     setFeedback(isCorrect)
+    if (isCorrect) {
+      playCorrectSound()
+    }
     setSelectedChoice(answer)
     setResults((previous) => {
       const next = [...previous]

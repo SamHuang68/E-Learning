@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { FormulaStepCard } from './FormulaStepCard'
 import type { DerivationStep } from '../../types'
+import { playCorrectSound, playBadgeUnlockedSound } from '../../../../engine/audioSynthesizer'
 
 interface Props {
   problemTitle: string
@@ -22,8 +23,12 @@ export const StepByStepSolver: React.FC<Props> = ({
 
   const handleRevealNext = () => {
     if (revealedCount < steps.length) {
-      setRevealedCount(revealedCount + 1)
+      const next = revealedCount + 1
+      setRevealedCount(next)
       onStepChange(revealedCount)
+      if (next >= steps.length) {
+        playBadgeUnlockedSound()
+      }
     }
   }
 
@@ -47,7 +52,10 @@ export const StepByStepSolver: React.FC<Props> = ({
             isActive={currentStepIndex === idx}
             isCompleted={idx < revealedCount - 1}
             onSelect={() => onStepChange(idx)}
-            onCheckpointComplete={(isCorrect) => onCheckpointAnswer?.(isCorrect, step.stepNumber)}
+            onCheckpointComplete={(isCorrect) => {
+              if (isCorrect) playCorrectSound()
+              onCheckpointAnswer?.(isCorrect, step.stepNumber)
+            }}
           />
         ))}
       </div>

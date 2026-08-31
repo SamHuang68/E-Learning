@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { JAPANESE_SIGNAL_GROUPS, type GrammarSignalGroup, type JapaneseGrammarSignal } from '../data/grammarSignals'
+import { playCorrectSound } from '../../engine/audioSynthesizer'
 
 type Props = {
   onBack: () => void
@@ -21,6 +22,10 @@ export const SignalDecisionView: React.FC<Props> = ({ onBack }) => {
   function handleSelectOption(signalId: string, optionIdx: number) {
     setQuizAnswers((prev) => ({ ...prev, [signalId]: optionIdx }))
     setShowSolutions((prev) => ({ ...prev, [signalId]: true }))
+    const targetSig = currentGroup.signals.find((s) => s.id === signalId)
+    if (targetSig && targetSig.quiz.correctIndex === optionIdx) {
+      playCorrectSound()
+    }
   }
 
   return (
