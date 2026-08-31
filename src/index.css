@@ -843,28 +843,50 @@ strong {
 }
 
 .content {
-  padding: 1.25rem 1.75rem 2rem;
+  height: 100vh;
+  max-height: 100vh;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  box-sizing: border-box;
+  padding: 0.75rem 1.25rem 1.5rem;
   min-width: 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
+}
+
+.content::-webkit-scrollbar {
+  width: 6px;
+}
+.content::-webkit-scrollbar-track {
+  background: transparent;
+}
+.content::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.4);
+  border-radius: 999px;
+}
+.content::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.7);
 }
 
 .mobile-brand {
   display: none;
   align-items: center;
   gap: 0.65rem;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
 .topbar {
   display: flex;
   justify-content: space-between;
-  gap: 1rem;
-  align-items: flex-start;
-  margin-bottom: 0.9rem;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 0.6rem;
 }
 
 .topbar h1 {
   margin: 0;
-  font-size: clamp(1.7rem, 2.4vw, 2.25rem);
+  font-size: clamp(1.25rem, 1.6vw, 1.55rem);
+  line-height: 1.2;
 }
 
 .header-actions {
@@ -2846,80 +2868,80 @@ footer {
 .math-hero-card {
   background: linear-gradient(135deg, #1e3a8a, #2563eb);
   color: #fff;
-  border-radius: 20px;
-  padding: 2rem;
-  margin-bottom: 2rem;
-  box-shadow: 0 10px 25px -5px rgba(30, 58, 138, 0.25);
+  border-radius: 14px;
+  padding: 0.85rem 1.25rem;
+  margin-bottom: 0.85rem;
+  box-shadow: 0 4px 12px rgba(30, 58, 138, 0.15);
 }
 
 .math-hero-card h2 {
-  font-size: 1.75rem;
-  margin: 0.5rem 0;
+  font-size: 1.2rem;
+  margin: 0.25rem 0 0.2rem;
   color: #fff;
 }
 
 .math-hero-card .hero-desc {
-  font-size: 1rem;
+  font-size: 0.82rem;
   color: #bfdbfe;
   max-width: 700px;
-  margin-bottom: 1.5rem;
-  line-height: 1.6;
+  margin-bottom: 0.65rem;
+  line-height: 1.4;
 }
 
 .hero-badge-row {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.4rem;
   align-items: center;
 }
 
 .stage-pill {
   background: rgba(255, 255, 255, 0.2);
-  padding: 0.25rem 0.75rem;
+  padding: 0.15rem 0.55rem;
   border-radius: 999px;
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   font-weight: 600;
 }
 
 .exam-target-pill {
   background: #fbbf24;
   color: #78350f;
-  padding: 0.25rem 0.75rem;
+  padding: 0.15rem 0.55rem;
   border-radius: 999px;
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   font-weight: 700;
 }
 
 .hero-quick-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: 0.45rem;
 }
 
 .btn-hero-primary {
   background: #fff;
   color: #1e3a8a;
   border: none;
-  padding: 0.65rem 1.25rem;
-  border-radius: 12px;
+  padding: 0.42rem 0.85rem;
+  border-radius: 8px;
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 0.84rem;
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .btn-hero-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 .btn-hero-secondary {
   background: rgba(255, 255, 255, 0.15);
   color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.3);
-  padding: 0.65rem 1rem;
-  border-radius: 12px;
+  padding: 0.42rem 0.75rem;
+  border-radius: 8px;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.82rem;
   cursor: pointer;
   transition: background 0.15s ease;
 }
@@ -2929,77 +2951,103 @@ footer {
 }
 
 /* 單元地圖 Unit Cards */
+.unit-map-section {
+  margin-bottom: 0.75rem;
+}
+
+.section-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.35rem;
+}
+
+.section-title-row h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
+.unit-count-badge {
+  font-size: 0.72rem;
+  color: var(--muted);
+  background: var(--surface-soft);
+  padding: 0.12rem 0.45rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+}
+
 .unit-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 1rem;
-  margin: 1rem 0 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 0.6rem;
+  margin: 0.35rem 0 0.65rem;
 }
 
 .unit-map-card {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 1.25rem;
+  border-radius: 12px;
+  padding: 0.7rem 0.85rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   display: flex;
   flex-direction: column;
 }
 
 .unit-map-card:hover {
   border-color: #3b82f6;
-  transform: translateY(-2px);
-  box-shadow: var(--shadow);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
 .unit-map-card.active {
   border-color: #2563eb;
   background: #f8faff;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 3px 8px rgba(37, 99, 235, 0.1);
 }
 
 .unit-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.35rem;
 }
 
 .unit-seq {
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: #2563eb;
 }
 
 .unit-strand {
-  font-size: 0.75rem;
-  padding: 0.15rem 0.5rem;
+  font-size: 0.7rem;
+  padding: 0.1rem 0.45rem;
   border-radius: 6px;
   background: var(--surface-soft);
   color: var(--muted);
 }
 
 .unit-map-card h4 {
-  margin: 0 0 0.35rem;
-  font-size: 1.05rem;
+  margin: 0 0 0.15rem;
+  font-size: 0.92rem;
   color: var(--ink);
 }
 
 .unit-sub {
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   color: var(--muted);
-  line-height: 1.4;
+  line-height: 1.35;
   flex-grow: 1;
-  margin: 0 0 1rem;
+  margin: 0 0 0.45rem;
 }
 
 .unit-progress-bar-wrap {
-  height: 6px;
+  height: 4px;
   background: #e2e8f0;
   border-radius: 999px;
   overflow: hidden;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.35rem;
 }
 
 .unit-progress-bar-fill {
@@ -3012,7 +3060,7 @@ footer {
 .unit-meta-footer {
   display: flex;
   justify-content: space-between;
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   color: var(--muted);
 }
 
@@ -3022,70 +3070,104 @@ footer {
 }
 
 /* 核心概念卡片 (Concepts) */
+.concepts-section h3,
+.labs-section h3 {
+  margin: 0.45rem 0 0.35rem;
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
 .concept-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1rem;
-  margin: 1rem 0 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 0.5rem;
+  margin: 0.35rem 0 0.65rem;
 }
 
 .concept-item-card {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 1rem;
-  border-left: 4px solid #3b82f6;
+  border-radius: 10px;
+  padding: 0.55rem 0.75rem;
+  border-left: 3px solid #3b82f6;
 }
 
 .concept-idx {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 700;
   color: #2563eb;
   display: block;
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.15rem;
 }
 
 .concept-text {
-  font-size: 0.95rem;
-  line-height: 1.5;
+  font-size: 0.84rem;
+  line-height: 1.4;
   color: var(--ink);
 }
 
 /* 實驗室卡片 (Labs) */
 .labs-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1rem;
-  margin-top: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.35rem;
 }
 
 .lab-entry-card {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 1.25rem;
+  border-radius: 12px;
+  padding: 0.65rem 0.85rem;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.65rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .lab-entry-card:hover {
   border-color: #8b5cf6;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px -4px rgba(139, 92, 246, 0.15);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(139, 92, 246, 0.12);
 }
 
 .lab-icon {
-  font-size: 2rem;
+  font-size: 1.35rem;
   background: #f5f3ff;
-  width: 50px;
-  height: 50px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.lab-info h4 {
+  margin: 0 0 0.1rem;
+  font-size: 0.86rem;
+  color: var(--ink);
+}
+
+.lab-info p {
+  margin: 0;
+  font-size: 0.74rem;
+  color: var(--muted);
+  line-height: 1.3;
+}
+
+.btn-enter-lab {
+  margin-left: auto;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: #8b5cf6;
+  cursor: pointer;
+  flex-shrink: 0;
 }
 
 .lab-info h4 {

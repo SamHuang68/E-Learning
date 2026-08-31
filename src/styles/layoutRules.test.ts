@@ -42,4 +42,10 @@ describe('CSS Layout & Sidebar Overflow Regression Guard', () => {
     expect(cssContent).toMatch(/\.math-shell\s*\{[^}]*height:\s*100vh/s)
     expect(cssContent).toMatch(/\.math-shell\s*\{[^}]*overflow:\s*hidden/s)
   })
+
+  it('ensures .content has overflow-y: auto and max-height: 100vh as scroll safety net', () => {
+    expect(cssContent).toContain('.content {')
+    expect(cssContent).toMatch(/\.content\s*\{[^}]*overflow-y:\s*auto/s)
+    expect(cssContent).toMatch(/\.content\s*\{[^}]*max-height:\s*100vh/s)
+  })
 })
