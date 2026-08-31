@@ -229,6 +229,103 @@ export const OpticsLab: React.FC = () => {
             minWidth: 0,
           }}
         >
+          {/* 經典光學折射與全反射快照 */}
+          <div>
+            <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--muted)', display: 'block', marginBottom: '0.25rem' }}>
+              ⚡ 經典幾何光學與全反射快照：
+            </span>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.3rem' }}>
+              <button
+                type="button"
+                className="lab-snapshot-btn"
+                onClick={() => {
+                  setN1(1.33)
+                  setN2(1.0)
+                  setTheta1Deg(55)
+                }}
+                style={{
+                  padding: '0.25rem 0.4rem',
+                  fontSize: '0.68rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--line)',
+                  background: 'var(--surface-soft)',
+                  color: 'var(--text-main)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                🌊 <strong>水入空氣全反射</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>臨界角 48.8° · θ1=55° 100%全反射</div>
+              </button>
+              <button
+                type="button"
+                className="lab-snapshot-btn"
+                onClick={() => {
+                  setN1(2.42)
+                  setN2(1.0)
+                  setTheta1Deg(30)
+                }}
+                style={{
+                  padding: '0.25rem 0.4rem',
+                  fontSize: '0.68rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--line)',
+                  background: 'var(--surface-soft)',
+                  color: 'var(--text-main)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                💎 <strong>鑽石璀璨全反射</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>臨界角僅 24.4° · 閃爍耀眼</div>
+              </button>
+              <button
+                type="button"
+                className="lab-snapshot-btn"
+                onClick={() => {
+                  setN1(1.5)
+                  setN2(1.33)
+                  setTheta1Deg(70)
+                }}
+                style={{
+                  padding: '0.25rem 0.4rem',
+                  fontSize: '0.68rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--line)',
+                  background: 'var(--surface-soft)',
+                  color: 'var(--text-main)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                📡 <strong>光纖導光全反射</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>纖芯 n=1.5 ➜ 包層 n=1.33</div>
+              </button>
+              <button
+                type="button"
+                className="lab-snapshot-btn"
+                onClick={() => {
+                  setN1(1.0)
+                  setN2(1.5)
+                  setTheta1Deg(45)
+                }}
+                style={{
+                  padding: '0.25rem 0.4rem',
+                  fontSize: '0.68rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--line)',
+                  background: 'var(--surface-soft)',
+                  color: 'var(--text-main)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                📐 <strong>空氣射入玻璃折射</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>θ1=45° ➜ θ2=28.1° 偏向法線</div>
+              </button>
+            </div>
+          </div>
+
           {/* 介質 1 折射率 */}
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem', fontWeight: 600, marginBottom: '0.15rem' }}>

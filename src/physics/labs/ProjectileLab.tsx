@@ -229,7 +229,7 @@ export const ProjectileLab: React.FC = () => {
           </svg>
         </div>
 
-        {/* 右側控制面板與即時數據分析 */}
+        {/* 右側控制面板 */}
         <div
           className="lab-controls-panel"
           style={{
@@ -243,6 +243,107 @@ export const ProjectileLab: React.FC = () => {
             minWidth: 0,
           }}
         >
+          {/* 經典拋體快照 */}
+          <div>
+            <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--muted)', display: 'block', marginBottom: '0.25rem' }}>
+              ⚡ 經典斜拋與運動學快照：
+            </span>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.3rem' }}>
+              <button
+                type="button"
+                className="lab-snapshot-btn"
+                onClick={() => {
+                  setV0(25)
+                  setAngleDeg(45)
+                  setG(9.8)
+                  setTimeProbe(0.5)
+                }}
+                style={{
+                  padding: '0.25rem 0.4rem',
+                  fontSize: '0.68rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--line)',
+                  background: 'var(--surface-soft)',
+                  color: 'var(--text-main)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                🎯 <strong>45° 最大水平射程</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>v0=25 ➜ 射程 63.8m</div>
+              </button>
+              <button
+                type="button"
+                className="lab-snapshot-btn"
+                onClick={() => {
+                  setV0(25)
+                  setAngleDeg(30)
+                  setG(9.8)
+                  setTimeProbe(0.5)
+                }}
+                style={{
+                  padding: '0.25rem 0.4rem',
+                  fontSize: '0.68rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--line)',
+                  background: 'var(--surface-soft)',
+                  color: 'var(--text-main)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                📐 <strong>30°/60° 互補角射程</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>射程相等 · 滯空與高點不同</div>
+              </button>
+              <button
+                type="button"
+                className="lab-snapshot-btn"
+                onClick={() => {
+                  setV0(40)
+                  setAngleDeg(45)
+                  setG(9.8)
+                  setTimeProbe(0.5)
+                }}
+                style={{
+                  padding: '0.25rem 0.4rem',
+                  fontSize: '0.68rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--line)',
+                  background: 'var(--surface-soft)',
+                  color: 'var(--text-main)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                🚀 <strong>高速強投 (40 m/s)</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>射程突破 163m · 頂點 40.8m</div>
+              </button>
+              <button
+                type="button"
+                className="lab-snapshot-btn"
+                onClick={() => {
+                  setV0(20)
+                  setAngleDeg(45)
+                  setG(1.62)
+                  setTimeProbe(0.5)
+                }}
+                style={{
+                  padding: '0.25rem 0.4rem',
+                  fontSize: '0.68rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--line)',
+                  background: 'var(--surface-soft)',
+                  color: 'var(--text-main)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                🌕 <strong>月球低重力漫遊</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>g=1.62 ➜ 射程 246m 滯空 17.5s</div>
+              </button>
+            </div>
+          </div>
+
           {/* 初速度滑桿 */}
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem', fontWeight: 600, marginBottom: '0.15rem' }}>

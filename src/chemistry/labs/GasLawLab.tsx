@@ -225,6 +225,107 @@ export const GasLawLab: React.FC = () => {
             minWidth: 0,
           }}
         >
+          {/* 經典氣體定律快照 */}
+          <div>
+            <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--muted)', display: 'block', marginBottom: '0.25rem' }}>
+              ⚡ 經典氣體定律情境快照：
+            </span>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.3rem' }}>
+              <button
+                type="button"
+                className="lab-snapshot-btn"
+                onClick={() => {
+                  setLawMode('ideal')
+                  setMolN(1.0)
+                  setTempK(273)
+                  setVolL(22.4)
+                }}
+                style={{
+                  padding: '0.25rem 0.4rem',
+                  fontSize: '0.68rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--line)',
+                  background: 'var(--surface-soft)',
+                  color: 'var(--text-main)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                🧊 <strong>STP 標準溫壓 (22.4L)</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>0°C · 1.00 atm · 1 mol</div>
+              </button>
+              <button
+                type="button"
+                className="lab-snapshot-btn"
+                onClick={() => {
+                  setLawMode('ideal')
+                  setMolN(1.0)
+                  setTempK(298)
+                  setVolL(24.5)
+                }}
+                style={{
+                  padding: '0.25rem 0.4rem',
+                  fontSize: '0.68rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--line)',
+                  background: 'var(--surface-soft)',
+                  color: 'var(--text-main)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                🌡️ <strong>NTP 常溫常壓 (24.5L)</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>25°C · 1.00 atm · 1 mol</div>
+              </button>
+              <button
+                type="button"
+                className="lab-snapshot-btn"
+                onClick={() => {
+                  setLawMode('boyle')
+                  setMolN(1.0)
+                  setTempK(300)
+                  setVolL(12.0)
+                }}
+                style={{
+                  padding: '0.25rem 0.4rem',
+                  fontSize: '0.68rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--line)',
+                  background: 'var(--surface-soft)',
+                  color: 'var(--text-main)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                📉 <strong>等溫壓縮 (壓力加倍)</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>定溫 300K · V=12L ➜ P=2.05 atm</div>
+              </button>
+              <button
+                type="button"
+                className="lab-snapshot-btn"
+                onClick={() => {
+                  setLawMode('charles')
+                  setMolN(1.0)
+                  setTempK(400)
+                  setVolL(32.8)
+                }}
+                style={{
+                  padding: '0.25rem 0.4rem',
+                  fontSize: '0.68rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--line)',
+                  background: 'var(--surface-soft)',
+                  color: 'var(--text-main)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                🔥 <strong>查理定律 (等壓膨脹)</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>加熱 400K · 體積膨脹至 32.8L</div>
+              </button>
+            </div>
+          </div>
+
           {/* 實驗定律模式切換 */}
           <div>
             <label style={{ fontSize: '0.74rem', fontWeight: 600, display: 'block', marginBottom: '0.2rem' }}>

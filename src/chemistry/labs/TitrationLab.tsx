@@ -270,6 +270,103 @@ export const TitrationLab: React.FC = () => {
             minWidth: 0,
           }}
         >
+          {/* 經典酸鹼滴定快照 */}
+          <div>
+            <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--muted)', display: 'block', marginBottom: '0.25rem' }}>
+              ⚡ 經典酸鹼滴定情境快照：
+            </span>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.3rem' }}>
+              <button
+                type="button"
+                className="lab-snapshot-btn"
+                onClick={() => {
+                  setAcidType('strong')
+                  setIndicator('btb')
+                  setVTitrant(25.0)
+                }}
+                style={{
+                  padding: '0.25rem 0.4rem',
+                  fontSize: '0.68rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--line)',
+                  background: 'var(--surface-soft)',
+                  color: 'var(--text-main)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                ⚖️ <strong>強酸強鹼當量點</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>HCl + NaOH · pH=7.00 中性</div>
+              </button>
+              <button
+                type="button"
+                className="lab-snapshot-btn"
+                onClick={() => {
+                  setAcidType('weak')
+                  setIndicator('phenolphthalein')
+                  setVTitrant(25.0)
+                }}
+                style={{
+                  padding: '0.25rem 0.4rem',
+                  fontSize: '0.68rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--line)',
+                  background: 'var(--surface-soft)',
+                  color: 'var(--text-main)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                🌸 <strong>弱酸滴定酚酞變色</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>CH₃COOH · pH=8.72 弱鹼性</div>
+              </button>
+              <button
+                type="button"
+                className="lab-snapshot-btn"
+                onClick={() => {
+                  setAcidType('weak')
+                  setIndicator('phenolphthalein')
+                  setVTitrant(12.5)
+                }}
+                style={{
+                  padding: '0.25rem 0.4rem',
+                  fontSize: '0.68rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--line)',
+                  background: 'var(--surface-soft)',
+                  color: 'var(--text-main)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                🧪 <strong>半中和點 (pH = pKa)</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>V=12.5mL · pH=4.74 最佳緩衝</div>
+              </button>
+              <button
+                type="button"
+                className="lab-snapshot-btn"
+                onClick={() => {
+                  setAcidType('strong')
+                  setIndicator('methyl_orange')
+                  setVTitrant(0.0)
+                }}
+                style={{
+                  padding: '0.25rem 0.4rem',
+                  fontSize: '0.68rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--line)',
+                  background: 'var(--surface-soft)',
+                  color: 'var(--text-main)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                🔴 <strong>初始強酸狀態 (pH=1)</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>0.1M HCl 未加入滴定液</div>
+              </button>
+            </div>
+          </div>
+
           {/* 酸液種類 */}
           <div>
             <label style={{ fontSize: '0.74rem', fontWeight: 600, display: 'block', marginBottom: '0.2rem' }}>

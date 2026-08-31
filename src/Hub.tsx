@@ -678,6 +678,77 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
             </button>
           </div>
         </div>
+
+        {/* 🎓 全域能力診斷與升學落點預測卡 */}
+        <div
+          className="hub-cognitive-placement-card"
+          style={{
+            marginTop: '1rem',
+            background: 'var(--surface)',
+            border: '1px solid var(--line)',
+            borderRadius: '14px',
+            padding: '1rem 1.2rem',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: '1rem',
+            alignItems: 'center',
+          }}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span style={{ fontSize: '1.4rem' }}>🎓</span>
+              <strong style={{ fontSize: '0.95rem' }}>AI 全域能力診斷與升學目標落點</strong>
+              <span
+                style={{
+                  fontSize: '0.68rem',
+                  padding: '0.12rem 0.45rem',
+                  borderRadius: '999px',
+                  background: 'rgba(59, 130, 246, 0.12)',
+                  color: '#2563eb',
+                  fontWeight: 700,
+                }}
+              >
+                108 課綱 × 大考模型
+              </span>
+            </div>
+            <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.5 }}>
+              整合數理四軌（數學、微積分、物理、化學）與語文雙軌（日語、多益）之即時作答表現、錯題修復率與 FSRS 留存率，動態預測學習潛力指標。
+            </p>
+          </div>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: '0.5rem',
+              background: 'var(--surface-soft)',
+              padding: '0.75rem',
+              borderRadius: '10px',
+              border: '1px solid var(--line)',
+            }}
+          >
+            <div>
+              <span style={{ fontSize: '0.7rem', color: 'var(--muted)', display: 'block' }}>⚡ 數理自然綜合落點</span>
+              <strong style={{ fontSize: '0.82rem', color: '#2563eb' }}>
+                {mathRadar.averageScore + calculusRadar.averageScore + physicsRadar.averageScore + chemistryRadar.averageScore >= 160
+                  ? '頂標潛力 · 頂尖理工/醫資'
+                  : mathRadar.averageScore + physicsRadar.averageScore >= 80
+                    ? '前標優勢 · 國立電資工程'
+                    : '均標成長 · 穩步建立基礎'}
+              </strong>
+            </div>
+            <div>
+              <span style={{ fontSize: '0.7rem', color: 'var(--muted)', display: 'block' }}>🌐 雙語國際溝通實力</span>
+              <strong style={{ fontSize: '0.82rem', color: '#10b981' }}>
+                {jaRadar.averageScore + toeicRadar.averageScore >= 100
+                  ? '高階商務 · 金證 (860+) / N1'
+                  : jaRadar.averageScore + toeicRadar.averageScore >= 50
+                    ? '進階應用 · 藍證 (730+) / N2'
+                    : '基礎養成 · 循序語塊積累'}
+              </strong>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* 微認證勳章展覽室 */}
