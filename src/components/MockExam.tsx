@@ -175,6 +175,7 @@ export function MockExam({
               type="button"
               key={choice}
               className={answers[question.id] === choice ? 'choice-btn selected' : 'choice-btn'}
+              aria-pressed={answers[question.id] === choice}
               onClick={() =>
                 setAnswers((previous) => ({ ...previous, [question.id]: choice }))
               }

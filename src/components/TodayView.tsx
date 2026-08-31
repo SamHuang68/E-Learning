@@ -40,6 +40,7 @@ export function TodayView({
   dailyDone,
   dailyGoal,
 }: Props) {
+  const srsGuideUrl = `${import.meta.env.BASE_URL}srs-review.html`
   const vocabPct = Math.round((progress.vocabDone / unit.words) * 100)
   const readingPct = Math.round((progress.readingDone / unit.reading) * 100)
   const grammarPct = progress.grammarStarted ? 40 : 0
@@ -86,17 +87,29 @@ export function TodayView({
             {streak} 日連續 · {dailyDone}/{dailyGoal} 張
           </h2>
           <span>
-            今日複習佇列 {dueCount} 張；完成答題會更新間隔、連續天數與成就。
+            今日候選佇列 {dueCount} 張；開始練習時會匹配目前單元，完成本輪後更新排程、連續天數與成就。
           </span>
         </div>
-        <button
-          type="button"
-          className="primary-btn inline"
-          disabled={dueCount <= 0}
-          onClick={onStartReview}
-        >
-          今日複習 →
-        </button>
+        <div className="daily-review-actions">
+          <button
+            type="button"
+            className="primary-btn inline"
+            disabled={dueCount <= 0}
+            onClick={onStartReview}
+          >
+            今日複習 →
+          </button>
+          <a
+            className="srs-guide-link"
+            href={srsGuideUrl}
+            target="_blank"
+            rel="noreferrer"
+            aria-label="了解複習機制（另開新分頁，建議使用桌面）"
+          >
+            了解複習機制（桌面）↗
+          </a>
+          <span className="srs-guide-mobile-note">互動圖請用桌面開啟</span>
+        </div>
       </div>
 
       <div className="daily-review">

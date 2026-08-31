@@ -9,7 +9,7 @@ type Props = {
 
 export function Hub({ onChoose, onOpenPrivacy }: Props) {
   return (
-    <div className="hub">
+    <main className="hub">
       <header className="hub-hero">
         <p className="eyebrow">E-LEARNING HUB</p>
         <h1>選擇學習語言</h1>
@@ -17,8 +17,6 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
           同一個學習殼，兩條語言軌道。選日語走 JLPT 級距，選英語走多益證書色帶；未登入可本機試用，登入後進度各自雲端同步。
         </p>
       </header>
-
-      <AuthPanel />
 
       <div className="hub-grid">
         <button
@@ -63,6 +61,8 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
         </button>
       </div>
 
+      <AuthPanel />
+
       <DataControls />
 
       <footer className="hub-footer">
@@ -71,6 +71,6 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
         </button>
         <span>MIT License</span>
       </footer>
-    </div>
+    </main>
   )
 }

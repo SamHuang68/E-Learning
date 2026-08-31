@@ -113,6 +113,7 @@ export function PlacementTest({ lang, onComplete, onExit }: Props) {
               type="button"
               key={choice}
               className={choice === answered ? 'choice-btn selected' : 'choice-btn'}
+              aria-pressed={choice === answered}
               onClick={() => choose(choice)}
             >
               {choice}

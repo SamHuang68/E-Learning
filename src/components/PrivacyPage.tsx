@@ -4,7 +4,7 @@ type Props = {
 
 export function PrivacyPage({ onBack }: Props) {
   return (
-    <div className="privacy-page">
+    <main className="privacy-page">
       <button type="button" className="hub-back privacy-back" onClick={onBack}>
         ← 回 Hub
       </button>
@@ -62,6 +62,6 @@ export function PrivacyPage({ onBack }: Props) {
           在 Hub 可匯出／匯入進度 JSON、清除本機進度快取；登入使用者可重設雲端進度。
         </p>
       </section>
-    </div>
+    </main>
   )
 }

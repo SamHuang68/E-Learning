@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "今日複習：卡片為什麼會再次出現",
+    "subtitle": "目前程式行為｜完成本輪後批次更新排程",
+    "locale": "zh-CN",
+    "animation": "none",
+    "quality_profile": "showcase",
+    "viewBox": [980, 566],
+    "legend": {
+      "mode": "auto",
+      "entries": {
+        "start": { "label": "今日候選" },
+        "active": { "label": "進行中／排程" },
+        "waiting": { "label": "等待到期" },
+        "decision": { "label": "逐題判定" },
+        "success": { "label": "答對／完成" },
+        "failure": { "label": "答錯結果" }
+      }
+    },
+    "views": [
+      {
+        "id": "today-queue",
+        "label": "今日候選",
+        "focus": ["candidates", "unit_match", "answer"],
+        "note": "到期候選來自所有已追蹤項目；新卡來自目前單元。開始練習時只保留目前單元卡包可匹配的卡。"
+      },
+      {
+        "id": "correct-path",
+        "label": "答對後",
+        "focus": ["answer", "good", "finish", "schedule", "saved", "waiting", "candidates"],
+        "note": "答對先暫存 good；按下完成後才批次更新排程。首次間隔 1 天、第二次 3 天，之後依 ease 延長。"
+      },
+      {
+        "id": "incorrect-path",
+        "label": "答錯後",
+        "focus": ["answer", "again", "finish", "schedule", "saved", "waiting", "candidates"],
+        "note": "答錯先暫存 again；按下完成後把下次到期重設為 0.01 天後，約 14.4 分鐘。"
+      }
+    ]
+  },
+  "lanes": [
+    { "id": "main", "label": "候選與本輪作答" },
+    { "id": "results", "label": "結果、排程與回流" },
+    { "id": "terminal", "label": "本輪完成" }
+  ],
+  "states": [
+    {
+      "id": "candidates",
+      "type": "start",
+      "label": "到期＋新卡候選",
+      "lane": "main",
+      "col": 0,
+      "step": "01",
+      "tag": "reviews + news"
+    },
+    {
+      "id": "unit_match",
+      "type": "active",
+      "label": "匹配目前單元",
+      "lane": "main",
+      "col": 1,
+      "step": "02",
+      "tag": "reviewFilter"
+    },
+    {
+      "id": "answer",
+      "type": "decision",
+      "label": "逐題作答並記錄",
+      "lane": "main",
+      "col": 2,
+      "step": "03",
+      "tag": "good / again"
+    },
+    {
+      "id": "finish",
+      "type": "active",
+      "label": "完成本輪並儲存",
+      "lane": "main",
+      "col": 3,
+      "step": "04",
+      "tag": "onComplete"
+    },
+    {
+      "id": "schedule",
+      "type": "active",
+      "label": "批次更新排程",
+      "lane": "main",
+      "col": 4,
+      "step": "05",
+      "tag": "reviewItem"
+    },
+    {
+      "id": "good",
+      "type": "success",
+      "label": "答對 → good",
+      "lane": "results",
+      "col": 0,
+      "tag": "correct"
+    },
+    {
+      "id": "again",
+      "type": "failure",
+      "label": "答錯 → again",
+      "lane": "results",
+      "col": 1,
+      "tag": "incorrect"
+    },
+    {
+      "id": "waiting",
+      "type": "waiting",
+      "label": "等待至再次到期",
+      "lane": "results",
+      "col": 2,
+      "tag": "dueAt ≤ now"
+    },
+    {
+      "id": "saved",
+      "type": "success",
+      "label": "本輪結果已保存",
+      "lane": "terminal",
+      "col": 0,
+      "tag": "session saved",
+      "height": 36,
+      "yOffset": -60
+    }
+  ],
+  "transitions": [
+    { "id": "candidate-match", "from": "candidates", "to": "unit_match", "route": "straight" },
+    { "id": "match-answer", "from": "unit_match", "to": "answer" },
+    { "id": "answer-good", "from": "answer", "to": "good", "variant": "emphasis" },
+    { "id": "answer-again", "from": "answer", "to": "again", "variant": "security" },
+    { "id": "good-finish", "from": "good", "to": "finish", "variant": "emphasis" },
+    { "id": "again-finish", "from": "again", "to": "finish", "variant": "security" },
+    { "id": "finish-schedule", "from": "finish", "to": "schedule" },
+    { "id": "schedule-wait", "from": "schedule", "to": "waiting" },
+    { "id": "schedule-saved", "from": "schedule", "to": "saved", "variant": "emphasis", "route": "right-channel" },
+    { "id": "due-candidate", "from": "waiting", "to": "candidates", "route": "bottom-channel" }
+  ]
+}

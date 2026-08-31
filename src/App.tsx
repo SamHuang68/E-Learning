@@ -37,6 +37,17 @@ function AppShell() {
     return () => window.removeEventListener('hashchange', onHash)
   }, [])
 
+  useEffect(() => {
+    const titles: Record<TopView, string> = {
+      hub: 'E-Learning Hub',
+      ja: '日本語學習｜E-Learning Hub',
+      en: 'TOEIC 英語學習｜E-Learning Hub',
+      privacy: '隱私與資料說明｜E-Learning Hub',
+    }
+    document.title = titles[view]
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+  }, [view])
+
   function choose(next: AppView) {
     saveLang(next)
     setView(next)

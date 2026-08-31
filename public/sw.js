@@ -1,10 +1,11 @@
-const CACHE_NAME = 'aoba-e-learning-v1'
+const CACHE_NAME = 'aoba-e-learning-v2'
 const STATIC_ASSETS = [
   './',
   './index.html',
   './favicon.svg',
   './icons.svg',
   './manifest.webmanifest',
+  './srs-review.html',
   './content/manifest.json',
 ]
 

@@ -352,7 +352,7 @@ export function KanaLab({ onXp, onProgressChange }: Props) {
             >
               {activeCells[flashIndex]?.char ?? '—'}
             </button>
-            <div className={`flash-meta ${flashRevealed ? 'show' : ''}`}>
+            <div className={`kana-flash-meta ${flashRevealed ? 'show' : ''}`}>
               <strong>{activeCells[flashIndex]?.romaji}</strong>
               <span>{activeCells[flashIndex]?.tip ?? '點字重播語音'}</span>
             </div>
