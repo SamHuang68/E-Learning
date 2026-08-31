@@ -49,8 +49,6 @@ export function ToeicSidebar({
   unit,
   progressPct,
   phonicsCount,
-  onBackHub,
-  onSwitchLang,
 }: Props) {
   return (
     <aside className="sidebar">
@@ -66,27 +64,6 @@ export function ToeicSidebar({
           <strong>TOEIC Path</strong>
           <span>多益證書級距</span>
         </div>
-      </div>
-
-      <div className="lang-switch four-ways" role="group" aria-label="四大學習軌道切換">
-        <button type="button" onClick={() => onSwitchLang('ja')}>
-          あ 日本語
-        </button>
-        <button type="button" className="active" aria-current="true" disabled>
-          T 多益
-        </button>
-        <button type="button" onClick={() => onSwitchLang('math')}>
-          ∑ 數學
-        </button>
-        <button type="button" onClick={() => onSwitchLang('calculus')}>
-          ∫ 微積分
-        </button>
-      </div>
-
-      <div className="sidebar-top-actions">
-        <button type="button" className="hub-back" onClick={onBackHub}>
-          ← 回學習總覽 (Hub)
-        </button>
       </div>
 
       <nav aria-label="TOEIC menu">

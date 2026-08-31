@@ -35,4 +35,11 @@ describe('CSS Layout & Sidebar Overflow Regression Guard', () => {
     expect(cssContent).toMatch(/\.solution-card\s*\{[^}]*overflow-wrap:\s*break-word/s)
     expect(cssContent).toMatch(/\.solution-content\s*\{[^}]*word-break:\s*break-word/s)
   })
+
+  it('ensures .app-shell and .math-shell enforce 100vh single-page principle', () => {
+    expect(cssContent).toMatch(/\.app-shell\s*\{[^}]*height:\s*100vh/s)
+    expect(cssContent).toMatch(/\.app-shell\s*\{[^}]*overflow:\s*hidden/s)
+    expect(cssContent).toMatch(/\.math-shell\s*\{[^}]*height:\s*100vh/s)
+    expect(cssContent).toMatch(/\.math-shell\s*\{[^}]*overflow:\s*hidden/s)
+  })
 })

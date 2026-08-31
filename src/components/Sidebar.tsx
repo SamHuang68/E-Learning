@@ -49,8 +49,6 @@ export function Sidebar({
   progressPct,
   kanaMastered,
   kanaTotal,
-  onBackHub,
-  onSwitchLang,
 }: Props) {
   return (
     <aside className="sidebar">
@@ -62,27 +60,6 @@ export function Sidebar({
           <strong>あおば Aoba</strong>
           <span>JLPT 級距學習</span>
         </div>
-      </div>
-
-      <div className="lang-switch four-ways" role="group" aria-label="四大學習軌道切換">
-        <button type="button" className="active" aria-current="true" disabled>
-          あ 日本語
-        </button>
-        <button type="button" onClick={() => onSwitchLang('en')}>
-          T 多益
-        </button>
-        <button type="button" onClick={() => onSwitchLang('math')}>
-          ∑ 數學
-        </button>
-        <button type="button" onClick={() => onSwitchLang('calculus')}>
-          ∫ 微積分
-        </button>
-      </div>
-
-      <div className="sidebar-top-actions">
-        <button type="button" className="hub-back" onClick={onBackHub}>
-          ← 回學習總覽 (Hub)
-        </button>
       </div>
 
       <nav aria-label="主選單">

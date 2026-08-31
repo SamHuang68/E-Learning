@@ -105,7 +105,6 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         {/* 頂部導航軌跡麵包屑 */}
         <Breadcrumbs
           items={[
-            { label: '學習總覽 (Hub)', onClick: onBackHub },
             { label: '∫ 微積分互動專題', onClick: () => setActiveNav('canvas_lab') },
             { label: navLabelMap[activeNav], active: true },
           ]}

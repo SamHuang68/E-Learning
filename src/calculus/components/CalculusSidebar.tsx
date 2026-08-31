@@ -12,8 +12,8 @@ type Props = {
   currentTheta: number
   unlockedBadgeCount: number
   totalBadgeCount: number
-  onBackHub: () => void
-  onSwitchLang: (lang: LangId) => void
+  onBackHub?: () => void
+  onSwitchLang?: (lang: LangId) => void
 }
 
 const CALCULUS_UNITS: Array<{
@@ -76,7 +76,7 @@ const CALCULUS_UNITS: Array<{
 
 /**
  * 微積分專屬左側導覽列 (CalculusSidebar)
- * 提供四軌快速切換、功能導航與 7 大微積分核心課題跳轉。
+ * 專注模式：僅包含微積分工作台功能與 7 大核心課題，無跳轉干擾。
  */
 export const CalculusSidebar: React.FC<Props> = ({
   activeNav,
@@ -86,8 +86,6 @@ export const CalculusSidebar: React.FC<Props> = ({
   currentTheta,
   unlockedBadgeCount,
   totalBadgeCount,
-  onBackHub,
-  onSwitchLang,
 }) => {
   return (
     <aside className="sidebar calculus-sidebar">
@@ -100,31 +98,8 @@ export const CalculusSidebar: React.FC<Props> = ({
         </div>
       </div>
 
-      {/* 四軌切換膠囊 */}
-      <div className="lang-switch four-ways" role="group" aria-label="四大學習軌道切換">
-        <button type="button" onClick={() => onSwitchLang('ja')}>
-          あ 日本語
-        </button>
-        <button type="button" onClick={() => onSwitchLang('en')}>
-          T 多益
-        </button>
-        <button type="button" onClick={() => onSwitchLang('math')}>
-          ∑ 數學
-        </button>
-        <button type="button" className="active" aria-current="true" disabled>
-          ∫ 微積分
-        </button>
-      </div>
-
-      {/* 返回學習總覽 */}
-      <div className="sidebar-top-actions">
-        <button type="button" className="hub-back" onClick={onBackHub}>
-          ← 回學習總覽 (Hub)
-        </button>
-      </div>
-
       {/* 主功能導覽 */}
-      <nav className="nav-group">
+      <nav className="nav-group" aria-label="微積分核心功能">
         <p className="nav-heading">微積分工作台</p>
         <button
           type="button"
@@ -184,11 +159,6 @@ export const CalculusSidebar: React.FC<Props> = ({
           )
         })}
       </nav>
-
-      {/* 底部簡易版本標記 */}
-      <div className="sidebar-footer" style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', color: 'var(--muted)' }}>
-        <span>MIT License · Calculus Studio</span>
-      </div>
     </aside>
   )
 }

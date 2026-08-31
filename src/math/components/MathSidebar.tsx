@@ -12,13 +12,13 @@ type Props = {
   currentGradeId: MathGradeId
   onSelectGrade: (gradeId: MathGradeId) => void
   progress: MathProgressState
-  onBackHub: () => void
-  onSwitchLang: (lang: LangId) => void
+  onBackHub?: () => void
+  onSwitchLang?: (lang: LangId) => void
 }
 
 /**
- * 數學模組左側導覽列 (MathSidebar)
- * 提供 12 個年級（國小 G1~G6、國中 G7~G9、高中 G10~G12）階層切換與功能跳轉。
+ * 數學模組專注側邊欄 (MathSidebar)
+ * 專注模式：僅包含臺灣數學 108 課綱導覽與 12 年級快速切換，無跳轉干擾，版面收緊於一頁。
  */
 export const MathSidebar: React.FC<Props> = ({
   activeNav,
@@ -26,8 +26,6 @@ export const MathSidebar: React.FC<Props> = ({
   currentGradeId,
   onSelectGrade,
   progress,
-  onBackHub,
-  onSwitchLang,
 }) => {
   const stages: Array<{ id: MathStage; title: string; grades: MathGradeId[] }> = [
     {
@@ -58,31 +56,8 @@ export const MathSidebar: React.FC<Props> = ({
         </div>
       </div>
 
-      {/* 四軌切換膠囊 */}
-      <div className="lang-switch four-ways" role="group" aria-label="四大學習軌道切換">
-        <button type="button" onClick={() => onSwitchLang('ja')}>
-          あ 日本語
-        </button>
-        <button type="button" onClick={() => onSwitchLang('en')}>
-          T 多益
-        </button>
-        <button type="button" className="active" aria-current="true" disabled>
-          ∑ 數學
-        </button>
-        <button type="button" onClick={() => onSwitchLang('calculus')}>
-          ∫ 微積分
-        </button>
-      </div>
-
-      {/* 頂部全域入口導覽 */}
-      <div className="sidebar-top-actions">
-        <button type="button" className="hub-back" onClick={onBackHub}>
-          ← 回學習總覽 (Hub)
-        </button>
-      </div>
-
       {/* 主功能導覽 */}
-      <nav className="nav-group">
+      <nav className="nav-group" aria-label="數學核心功能">
         <p className="nav-heading">學習功能</p>
         <button
           type="button"
@@ -90,7 +65,7 @@ export const MathSidebar: React.FC<Props> = ({
           onClick={() => onNav('today')}
         >
           <span className="nav-icon">📅</span>
-          <span className="nav-label">今日學習 (課程首頁)</span>
+          <span className="nav-label">今日學習 (首頁)</span>
         </button>
         <button
           type="button"
@@ -122,7 +97,7 @@ export const MathSidebar: React.FC<Props> = ({
           onClick={() => onNav('visual')}
         >
           <span className="nav-icon">🎨</span>
-          <span className="nav-label">幾何圖示解題 (Visual)</span>
+          <span className="nav-label">幾何圖示解題</span>
         </button>
         <button
           type="button"
@@ -138,12 +113,12 @@ export const MathSidebar: React.FC<Props> = ({
           onClick={() => onNav('calculus')}
         >
           <span className="nav-icon">∫</span>
-          <span className="nav-label">微積分專題 (Studio)</span>
+          <span className="nav-label">微積分專題</span>
         </button>
       </nav>
 
       {/* 12 年級快速切換 */}
-      <nav className="nav-group grades-nav-group">
+      <nav className="nav-group grades-nav-group" aria-label="年級切換">
         <p className="nav-heading">年級與學段切換</p>
         {stages.map((stg) => (
           <div key={stg.id} className="stage-block">
@@ -168,19 +143,8 @@ export const MathSidebar: React.FC<Props> = ({
           </div>
         ))}
       </nav>
-
-      {/* 底部按鈕 */}
-      <div className="sidebar-footer">
-        <button type="button" className="btn-sidebar-link" onClick={onBackHub}>
-          ← 返回學習中心 (Hub)
-        </button>
-        <div className="track-switchers">
-          <span>切換其他軌道：</span>
-          <button type="button" onClick={() => onSwitchLang('calculus')}>微積分</button>
-          <button type="button" onClick={() => onSwitchLang('ja')}>日語</button>
-          <button type="button" onClick={() => onSwitchLang('en')}>多益</button>
-        </div>
-      </div>
     </aside>
   )
 }
+export default MathSidebar
+

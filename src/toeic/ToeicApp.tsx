@@ -457,7 +457,6 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
       <section className="content">
         <Breadcrumbs
           items={[
-            { label: '學習總覽 (Hub)', onClick: onBackHub },
             { label: 'TOEIC 多益', onClick: () => setNav('today') },
             { label: `${cert.name} (${cert.scoreMin}–${cert.scoreMax})`, onClick: () => setNav('today') },
             { label: `單元 ${unit.id} · ${unit.title}`, active: nav === 'today' && !practice && !special },

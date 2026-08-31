@@ -497,7 +497,6 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
       <section className="content">
         <Breadcrumbs
           items={[
-            { label: '學習總覽 (Hub)', onClick: onBackHub },
             { label: 'あおば日語', onClick: () => handleNav('today') },
             { label: `${level.band} (${level.tier})`, onClick: () => handleNav('today') },
             { label: `單元 ${unit.id} · ${unit.title}`, active: nav === 'today' && !practice && !special },
