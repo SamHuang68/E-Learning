@@ -14,6 +14,7 @@ export const ToeicChunkLab: React.FC<Props> = ({ onBack, onOpenStoryReview }) =>
   const currentWeek = TOEIC_CHUNK_WEEKS[0]
   const [selectedChunkId, setSelectedChunkId] = useState<string>(currentWeek.chunks[0].id)
   const [speechRate, setSpeechRate] = useState<number>(1.0)
+  const [selectedAccent, setSelectedAccent] = useState<string>('en-US')
   const [shadowStep, setShadowStep] = useState<1 | 2 | 3>(1)
   const [isSpeaking, setIsSpeaking] = useState(false)
 
@@ -25,7 +26,7 @@ export const ToeicChunkLab: React.FC<Props> = ({ onBack, onOpenStoryReview }) =>
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
     window.speechSynthesis.cancel()
     const utterance = new SpeechSynthesisUtterance(text)
-    utterance.lang = 'en-US'
+    utterance.lang = selectedAccent
     utterance.rate = speechRate * rateMultiplier
     utterance.onstart = () => setIsSpeaking(true)
     utterance.onend = () => setIsSpeaking(false)
@@ -40,17 +41,17 @@ export const ToeicChunkLab: React.FC<Props> = ({ onBack, onOpenStoryReview }) =>
 
     // 第一遍：抓重音 (0.8x 慢速)
     const u1 = new SpeechSynthesisUtterance(activeChunk.chunk)
-    u1.lang = 'en-US'
+    u1.lang = selectedAccent
     u1.rate = 0.8
 
     // 第二遍：正常跟讀 (1.0x)
     const u2 = new SpeechSynthesisUtterance(activeChunk.chunk)
-    u2.lang = 'en-US'
+    u2.lang = selectedAccent
     u2.rate = 1.0
 
     // 第三遍：沉浸朗讀 (1.0x)
     const u3 = new SpeechSynthesisUtterance(activeChunk.chunk)
-    u3.lang = 'en-US'
+    u3.lang = selectedAccent
     u3.rate = 1.0
 
     u1.onend = () => {
@@ -140,21 +141,57 @@ export const ToeicChunkLab: React.FC<Props> = ({ onBack, onOpenStoryReview }) =>
               <h3>一個 Chunk，練三次 (3-Step Shadowing)</h3>
               <p>每一輪只做一件事：先聽抓連音 ➜ 看著跟 ➜ 留白自己說</p>
             </div>
-            <div className="audio-speed-controls">
-              <button
-                type="button"
-                className={`btn-speed ${speechRate === 0.8 ? 'active' : ''}`}
-                onClick={() => setSpeechRate(0.8)}
-              >
-                0.8× 慢速
-              </button>
-              <button
-                type="button"
-                className={`btn-speed ${speechRate === 1.0 ? 'active' : ''}`}
-                onClick={() => setSpeechRate(1.0)}
-              >
-                1.0× 原速
-              </button>
+            <div className="audio-speed-controls" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.3rem', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '0.2rem' }}>
+                <button
+                  type="button"
+                  className={`btn-speed ${selectedAccent === 'en-US' ? 'active' : ''}`}
+                  style={{ fontSize: '0.7rem', padding: '0.15rem 0.35rem' }}
+                  onClick={() => setSelectedAccent('en-US')}
+                >
+                  🇺🇸 美
+                </button>
+                <button
+                  type="button"
+                  className={`btn-speed ${selectedAccent === 'en-GB' ? 'active' : ''}`}
+                  style={{ fontSize: '0.7rem', padding: '0.15rem 0.35rem' }}
+                  onClick={() => setSelectedAccent('en-GB')}
+                >
+                  🇬🇧 英
+                </button>
+                <button
+                  type="button"
+                  className={`btn-speed ${selectedAccent === 'en-AU' ? 'active' : ''}`}
+                  style={{ fontSize: '0.7rem', padding: '0.15rem 0.35rem' }}
+                  onClick={() => setSelectedAccent('en-AU')}
+                >
+                  🇦🇺 澳
+                </button>
+                <button
+                  type="button"
+                  className={`btn-speed ${selectedAccent === 'en-CA' ? 'active' : ''}`}
+                  style={{ fontSize: '0.7rem', padding: '0.15rem 0.35rem' }}
+                  onClick={() => setSelectedAccent('en-CA')}
+                >
+                  🇨🇦 加
+                </button>
+              </div>
+              <div style={{ display: 'flex', gap: '0.2rem' }}>
+                <button
+                  type="button"
+                  className={`btn-speed ${speechRate === 0.8 ? 'active' : ''}`}
+                  onClick={() => setSpeechRate(0.8)}
+                >
+                  0.8× 慢速
+                </button>
+                <button
+                  type="button"
+                  className={`btn-speed ${speechRate === 1.0 ? 'active' : ''}`}
+                  onClick={() => setSpeechRate(1.0)}
+                >
+                  1.0× 原速
+                </button>
+              </div>
             </div>
           </div>
 

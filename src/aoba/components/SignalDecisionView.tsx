@@ -15,9 +15,21 @@ export const SignalDecisionView: React.FC<Props> = ({ onBack }) => {
   const [selectedGroupId, setSelectedGroupId] = useState<string>(JAPANESE_SIGNAL_GROUPS[0].id)
   const [quizAnswers, setQuizAnswers] = useState<Record<string, number>>({})
   const [showSolutions, setShowSolutions] = useState<Record<string, boolean>>({})
+  const [searchTerm, setSearchTerm] = useState<string>('')
 
   const currentGroup: GrammarSignalGroup =
     JAPANESE_SIGNAL_GROUPS.find((g) => g.id === selectedGroupId) ?? JAPANESE_SIGNAL_GROUPS[0]
+
+  const filteredSignals = currentGroup.signals.filter((s) => {
+    if (!searchTerm.trim()) return true
+    const term = searchTerm.toLowerCase()
+    return (
+      s.pattern.toLowerCase().includes(term) ||
+      s.meaningZh.toLowerCase().includes(term) ||
+      s.signalTrigger.toLowerCase().includes(term) ||
+      s.threeSecondRule.toLowerCase().includes(term)
+    )
+  })
 
   function handleSelectOption(signalId: string, optionIdx: number) {
     setQuizAnswers((prev) => ({ ...prev, [signalId]: optionIdx }))
@@ -48,6 +60,35 @@ export const SignalDecisionView: React.FC<Props> = ({ onBack }) => {
         </div>
       </div>
 
+      {/* 搜尋過濾列 */}
+      <div style={{ margin: '0.6rem 0', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+        <input
+          type="text"
+          placeholder="🔍 搜尋文法訊號（如：〜ておく、準備、授受、完了…）"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{
+            flex: 1,
+            padding: '0.45rem 0.8rem',
+            borderRadius: '8px',
+            border: '1px solid var(--line)',
+            background: 'var(--surface)',
+            color: 'var(--text-main)',
+            fontSize: '0.82rem',
+          }}
+        />
+        {searchTerm && (
+          <button
+            type="button"
+            className="pill-btn"
+            style={{ fontSize: '0.75rem', padding: '0.35rem 0.6rem' }}
+            onClick={() => setSearchTerm('')}
+          >
+            ✕ 清除
+          </button>
+        )}
+      </div>
+
       {/* 標頭卡片 */}
       <div className="signal-hero-card">
         <span className="signal-badge">文法動作判準 · 3 秒決策樹</span>
@@ -57,7 +98,7 @@ export const SignalDecisionView: React.FC<Props> = ({ onBack }) => {
 
       {/* 3 秒判斷對照表 */}
       <div className="signal-table-card">
-        <h3>🎯 看到什麼情境訊號？3 秒快速判別表</h3>
+        <h3>🎯 看到什麼情境訊號？3 秒快速判別表 ({filteredSignals.length} 組)</h3>
         <div className="table-responsive">
           <table className="decision-table">
             <thead>
@@ -69,7 +110,7 @@ export const SignalDecisionView: React.FC<Props> = ({ onBack }) => {
               </tr>
             </thead>
             <tbody>
-              {currentGroup.signals.map((sig) => (
+              {filteredSignals.map((sig) => (
                 <tr key={sig.id}>
                   <td className="pattern-cell">
                     <strong>{sig.pattern}</strong>
@@ -89,7 +130,7 @@ export const SignalDecisionView: React.FC<Props> = ({ onBack }) => {
 
       {/* 各句型深度解析與對比例句 */}
       <div className="signals-deep-list">
-        {currentGroup.signals.map((sig: JapaneseGrammarSignal) => {
+        {filteredSignals.map((sig: JapaneseGrammarSignal) => {
           const userAnswer = quizAnswers[sig.id]
           const isSubmitted = showSolutions[sig.id]
           const isCorrect = isSubmitted && userAnswer === sig.quiz.correctIndex

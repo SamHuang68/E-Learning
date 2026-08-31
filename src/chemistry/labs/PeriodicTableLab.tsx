@@ -101,8 +101,93 @@ export const PeriodicTableLab: React.FC = () => {
         </div>
       </div>
 
-      {/* 元素類別過濾器 */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem', marginBottom: '0.55rem' }}>
+      {/* 經典族群與週期性快照 */}
+      <div style={{ marginBottom: '0.6rem' }}>
+        <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--muted)', display: 'block', marginBottom: '0.25rem' }}>
+          ⚡ 經典主族與週期規律快照：
+        </span>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.3rem' }}>
+          <button
+            type="button"
+            className="lab-snapshot-btn"
+            onClick={() => setSelectedZ(11)} // Na
+            style={{
+              padding: '0.25rem 0.4rem',
+              fontSize: '0.68rem',
+              borderRadius: '6px',
+              border: '1px solid #ef4444',
+              background: 'rgba(239, 68, 68, 0.08)',
+              color: '#ef4444',
+              cursor: 'pointer',
+              textAlign: 'left',
+              fontWeight: 700,
+            }}
+          >
+            🔥 <strong>1A 鹼金屬族 (Na)</strong>
+            <div style={{ fontSize: '0.62rem', color: 'var(--muted)', fontWeight: 400 }}>價電子 1 · 還原力強</div>
+          </button>
+          <button
+            type="button"
+            className="lab-snapshot-btn"
+            onClick={() => setSelectedZ(9)} // F
+            style={{
+              padding: '0.25rem 0.4rem',
+              fontSize: '0.68rem',
+              borderRadius: '6px',
+              border: '1px solid #10b981',
+              background: 'rgba(16, 185, 129, 0.08)',
+              color: '#10b981',
+              cursor: 'pointer',
+              textAlign: 'left',
+              fontWeight: 700,
+            }}
+          >
+            ⚡ <strong>7A 鹵素族 (F)</strong>
+            <div style={{ fontSize: '0.62rem', color: 'var(--muted)', fontWeight: 400 }}>電負度 3.98 · 氧化力極強</div>
+          </button>
+          <button
+            type="button"
+            className="lab-snapshot-btn"
+            onClick={() => setSelectedZ(10)} // Ne
+            style={{
+              padding: '0.25rem 0.4rem',
+              fontSize: '0.68rem',
+              borderRadius: '6px',
+              border: '1px solid #6366f1',
+              background: 'rgba(99, 102, 241, 0.08)',
+              color: '#6366f1',
+              cursor: 'pointer',
+              textAlign: 'left',
+              fontWeight: 700,
+            }}
+          >
+            👑 <strong>8A 鈍氣族 (Ne)</strong>
+            <div style={{ fontSize: '0.62rem', color: 'var(--muted)', fontWeight: 400 }}>八隅體滿殼層 · 穩定極高</div>
+          </button>
+          <button
+            type="button"
+            className="lab-snapshot-btn"
+            onClick={() => setSelectedZ(6)} // C
+            style={{
+              padding: '0.25rem 0.4rem',
+              fontSize: '0.68rem',
+              borderRadius: '6px',
+              border: '1px solid #38bdf8',
+              background: 'rgba(56, 189, 248, 0.08)',
+              color: '#38bdf8',
+              cursor: 'pointer',
+              textAlign: 'left',
+              fontWeight: 700,
+            }}
+          >
+            💎 <strong>第二週期核心 (C)</strong>
+            <div style={{ fontSize: '0.62rem', color: 'var(--muted)', fontWeight: 400 }}>價電子 4 · 共價有機核心</div>
+          </button>
+        </div>
+      </div>
+
+      {/* 屬性熱力圖切換與種類過濾標籤列 */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
         <button
           type="button"
           className={`pill-btn ${filterType === 'all' ? 'active' : ''}`}

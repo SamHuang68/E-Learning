@@ -147,6 +147,15 @@ export const PhysicsPractice: React.FC<Props> = ({
         )}
 
         <div className="action-buttons-row">
+          <button
+            type="button"
+            className="btn-hint-toggle"
+            style={{ borderColor: showScratchpad ? '#38bdf8' : undefined, color: showScratchpad ? '#38bdf8' : undefined }}
+            onClick={() => setShowScratchpad((prev) => !prev)}
+          >
+            ✏️ {showScratchpad ? '收起草稿' : '草稿紙'}
+          </button>
+
           {q.hint && !isSubmitted && (
             <button
               type="button"
@@ -220,6 +229,8 @@ export const PhysicsPractice: React.FC<Props> = ({
             )}
           </div>
         )}
+
+        <Scratchpad isOpen={showScratchpad} onClose={() => setShowScratchpad(false)} />
       </div>
     </div>
   )
