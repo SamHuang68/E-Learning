@@ -34,26 +34,28 @@ export const MathToday: React.FC<Props> = ({
   return (
     <div className="math-today-view">
       {/* 頂部年級 Banner */}
-      <section className="math-hero-card">
-        <div className="hero-badge-row">
-          <span className="stage-pill">{gradeInfo.band}</span>
-          {gradeInfo.targetExam && (
-            <span className="exam-target-pill">🎯 對齊：{gradeInfo.targetExam}</span>
-          )}
+      <section className="math-hero-card compact-hero">
+        <div className="hero-header-line">
+          <div className="hero-title-group">
+            <span className="stage-pill">{gradeInfo.band}</span>
+            <h2>{gradeInfo.name} · 數學素養教室</h2>
+            {gradeInfo.targetExam && (
+              <span className="exam-target-pill">🎯 {gradeInfo.targetExam}</span>
+            )}
+          </div>
+          <span className="hero-desc-inline">{gradeInfo.description}</span>
         </div>
-        <h2>{gradeInfo.name} · 數學素養教室</h2>
-        <p className="hero-desc">{gradeInfo.description}</p>
 
         <div className="hero-quick-actions">
           <button type="button" className="btn-hero-primary" onClick={onStartPractice}>
-            ▶ 開始單元練習 ({currentUnit.title})
+            ▶ 單元練習 ({currentUnit.title})
           </button>
           <button
             type="button"
             className="btn-hero-secondary"
             onClick={onOpenVisual}
           >
-            🎨 幾何圖示解題
+            🎨 幾何圖示
           </button>
           {currentUnit.suggestedLab && (
             <button
@@ -61,7 +63,7 @@ export const MathToday: React.FC<Props> = ({
               className="btn-hero-secondary"
               onClick={() => onOpenLab(currentUnit.suggestedLab!)}
             >
-              🧪 探索專屬動態教具
+              🧪 專屬教具
             </button>
           )}
           <button type="button" className="btn-hero-secondary" onClick={onOpenMock}>
