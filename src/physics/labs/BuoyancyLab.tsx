@@ -213,6 +213,99 @@ export const BuoyancyLab: React.FC = () => {
             minWidth: 0,
           }}
         >
+          {/* 經典浮力情境快照 */}
+          <div>
+            <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--muted)', display: 'block', marginBottom: '0.25rem' }}>
+              ⚡ 經典浮沉與阿基米德快照：
+            </span>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.3rem' }}>
+              <button
+                type="button"
+                className="lab-snapshot-btn"
+                onClick={() => {
+                  setObjectDensity(0.92)
+                  setLiquidDensity(1.0)
+                }}
+                style={{
+                  padding: '0.25rem 0.4rem',
+                  fontSize: '0.68rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--line)',
+                  background: 'var(--surface-soft)',
+                  color: 'var(--text-main)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                🧊 <strong>冰山一角 (92% 浸入)</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>水面露 8% · D物 0.92</div>
+              </button>
+              <button
+                type="button"
+                className="lab-snapshot-btn"
+                onClick={() => {
+                  setObjectDensity(0.85)
+                  setLiquidDensity(1.24)
+                }}
+                style={{
+                  padding: '0.25rem 0.4rem',
+                  fontSize: '0.68rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--line)',
+                  background: 'var(--surface-soft)',
+                  color: 'var(--text-main)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                🌊 <strong>死海漂浮 (大浮力)</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>濃鹽水 D=1.24 · 露 31%</div>
+              </button>
+              <button
+                type="button"
+                className="lab-snapshot-btn"
+                onClick={() => {
+                  setObjectDensity(1.0)
+                  setLiquidDensity(1.0)
+                }}
+                style={{
+                  padding: '0.25rem 0.4rem',
+                  fontSize: '0.68rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--line)',
+                  background: 'var(--surface-soft)',
+                  color: 'var(--text-main)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                ⚖️ <strong>完全懸浮 (B = W)</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>D物 = D液 = 1.0</div>
+              </button>
+              <button
+                type="button"
+                className="lab-snapshot-btn"
+                onClick={() => {
+                  setObjectDensity(2.7)
+                  setLiquidDensity(1.0)
+                }}
+                style={{
+                  padding: '0.25rem 0.4rem',
+                  fontSize: '0.68rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--line)',
+                  background: 'var(--surface-soft)',
+                  color: 'var(--text-main)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                ⚓ <strong>鋁塊沉底 (有正向力)</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>D物 2.70 · N=170 gw</div>
+              </button>
+            </div>
+          </div>
+
           {/* 物體密度 */}
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem', fontWeight: 600, marginBottom: '0.15rem' }}>

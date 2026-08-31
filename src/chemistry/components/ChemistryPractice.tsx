@@ -211,6 +211,26 @@ export const ChemistryPractice: React.FC<Props> = ({
                 <strong>108 課綱核心素養：</strong> {q.competency}
               </div>
             )}
+            {!isCorrect && (
+              <div
+                style={{
+                  marginTop: '0.5rem',
+                  padding: '0.45rem 0.65rem',
+                  borderRadius: '6px',
+                  background: 'rgba(239, 68, 68, 0.08)',
+                  border: '1px solid rgba(239, 68, 68, 0.25)',
+                  fontSize: '0.74rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: '0.35rem',
+                }}
+              >
+                <span>🎯 <b>弱點診斷：</b>此題已自動收錄至化學錯題本，建議搭配 3 秒破題訊號卡強化觀念！</span>
+                <span style={{ color: '#ef4444', fontWeight: 700 }}>需補強觀念</span>
+              </div>
+            )}
           </div>
         )}
       </div>

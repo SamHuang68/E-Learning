@@ -7,13 +7,22 @@ import {
   warmVoices,
 } from '../../utils/speech'
 import { alphabet, starterWords, type PhonicsItem } from '../data/phonics'
+import { TOEIC_ACCENTS, type ToeicAccent } from '../data/accents'
+import { playCorrectSound, playWrongSound } from '../../engine/audioSynthesizer'
 
-type Mode = 'alphabet' | 'words' | 'listen' | 'guide'
+type Mode = 'alphabet' | 'words' | 'listen' | 'accent' | 'guide'
 
 type Props = {
   mastered: string[]
   onMaster: (id: string) => void
   onXp?: (amount: number) => void
+}
+
+type AccentQuiz = {
+  item: PhonicsItem
+  accent: ToeicAccent
+  userChoice: string | null
+  feedback: 'idle' | 'correct' | 'wrong'
 }
 
 function shuffle<T>(arr: T[]): T[] {
@@ -36,6 +45,7 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
     options: PhonicsItem[]
     feedback: 'idle' | 'correct' | 'wrong'
   } | null>(null)
+  const [accentQuiz, setAccentQuiz] = useState<AccentQuiz | null>(null)
   const [guideIndex, setGuideIndex] = useState(-1)
   const [cancel, setCancel] = useState({ cancelled: false })
 
@@ -106,6 +116,34 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
     speakEnglish(quiz.answer.speak)
   }
 
+  function startAccentQuiz() {
+    const item = starterWords[Math.floor(Math.random() * starterWords.length)]
+    const accent = TOEIC_ACCENTS[Math.floor(Math.random() * TOEIC_ACCENTS.length)]
+    setAccentQuiz({
+      item,
+      accent,
+      userChoice: null,
+      feedback: 'idle',
+    })
+    speakEnglish(item.speak, { lang: accent.code })
+  }
+
+  function answerAccentQuiz(choiceCode: string) {
+    if (!accentQuiz || accentQuiz.feedback !== 'idle') return
+    const isCorrect = choiceCode === accentQuiz.accent.code
+    setAccentQuiz({
+      ...accentQuiz,
+      userChoice: choiceCode,
+      feedback: isCorrect ? 'correct' : 'wrong',
+    })
+    if (isCorrect) {
+      playCorrectSound()
+      onXp?.(10)
+    } else {
+      playWrongSound()
+    }
+  }
+
   async function runGuide() {
     const signal = { cancelled: false }
     setCancel(signal)
@@ -130,9 +168,9 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
       <header className="kana-hero">
         <div>
           <p className="eyebrow">ORANGE · PHONICS</p>
-          <h2>字母／常用字 · en-US 點讀</h2>
+          <h2>字母／常用字 · 4 國口音盲測</h2>
           <p className="lede">
-            橘／棕證書打底：點字母聽音、跟讀高頻字，再用聽音選字確認。
+            橘／棕證書打底：點字母聽音、跟讀高頻字，再用 4 國口音盲測強化英澳加美聽辨力。
           </p>
           <div className="kana-stats">
             <span>
@@ -142,7 +180,7 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
               {speaking
                 ? '🔊 導讀中'
                 : voiceOk
-                  ? '音訊就緒 · en-US'
+                  ? '音訊就緒 · 多國口音'
                   : '音訊待命'}
             </span>
           </div>
@@ -156,6 +194,7 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
               ['alphabet', '字母表'],
               ['words', '常用字'],
               ['listen', '聽音選字'],
+              ['accent', '4國口音盲測'],
               ['guide', '字母導讀'],
             ] as const
           ).map(([id, label]) => (
@@ -168,6 +207,7 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
                 setMode(id)
                 setFlashIndex(0)
                 if (id === 'listen') startListen()
+                if (id === 'accent') startAccentQuiz()
               }}
             >
               {label}
@@ -285,6 +325,144 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
             style={{ maxWidth: 280, marginTop: '0.75rem' }}
           >
             下一題
+          </button>
+        </div>
+      )}
+
+      {mode === 'accent' && (
+        <div className="kana-listen" style={{ maxWidth: '520px', margin: '0 auto' }}>
+          <p className="lede">
+            🎧 盲測挑戰：仔細聆聽發音，辨析這屬於美式、英式、澳式或加拿大口音！
+          </p>
+
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '0.5rem',
+              margin: '1rem 0',
+              padding: '1rem',
+              background: 'var(--surface-soft)',
+              borderRadius: '12px',
+              border: '1px solid var(--line)',
+            }}
+          >
+            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--primary)' }}>
+              「{accentQuiz?.item.label || 'office'}」
+            </div>
+            <div style={{ fontSize: '0.82rem', color: 'var(--muted)' }}>
+              {accentQuiz?.item.tip || '商業高頻字'}
+            </div>
+
+            <button
+              type="button"
+              className="primary-btn"
+              onClick={() => {
+                if (accentQuiz) {
+                  speakEnglish(accentQuiz.item.speak, { lang: accentQuiz.accent.code })
+                }
+              }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                padding: '0.45rem 1rem',
+                fontSize: '0.85rem',
+                marginTop: '0.3rem',
+              }}
+            >
+              🔊 重複播放口音
+            </button>
+          </div>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: '0.5rem',
+              marginBottom: '0.85rem',
+            }}
+          >
+            {TOEIC_ACCENTS.map((acc) => {
+              const isSelected = accentQuiz?.userChoice === acc.code
+              const isTarget = accentQuiz?.accent.code === acc.code
+              let btnBg = 'var(--surface)'
+              let btnBorder = '1px solid var(--line)'
+              let btnColor = 'var(--text-main)'
+
+              if (accentQuiz && accentQuiz.feedback !== 'idle') {
+                if (isTarget) {
+                  btnBg = 'rgba(16, 185, 129, 0.15)'
+                  btnBorder = '1.5px solid #10b981'
+                  btnColor = '#059669'
+                } else if (isSelected && !isTarget) {
+                  btnBg = 'rgba(239, 68, 68, 0.15)'
+                  btnBorder = '1.5px solid #ef4444'
+                  btnColor = '#dc2626'
+                }
+              }
+
+              return (
+                <button
+                  key={acc.code}
+                  type="button"
+                  onClick={() => answerAccentQuiz(acc.code)}
+                  disabled={!accentQuiz || accentQuiz.feedback !== 'idle'}
+                  style={{
+                    padding: '0.65rem 0.5rem',
+                    borderRadius: '8px',
+                    border: btnBorder,
+                    background: btnBg,
+                    color: btnColor,
+                    fontSize: '0.82rem',
+                    fontWeight: 700,
+                    cursor: accentQuiz && accentQuiz.feedback === 'idle' ? 'pointer' : 'default',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '0.2rem',
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  <span style={{ fontSize: '1.25rem' }}>{acc.flag}</span>
+                  <span>{acc.name}</span>
+                </button>
+              )
+            })}
+          </div>
+
+          {accentQuiz && accentQuiz.feedback !== 'idle' && (
+            <div
+              style={{
+                padding: '0.65rem 0.85rem',
+                borderRadius: '8px',
+                background: accentQuiz.feedback === 'correct' ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)',
+                border: `1px solid ${accentQuiz.feedback === 'correct' ? '#10b981' : '#ef4444'}`,
+                color: accentQuiz.feedback === 'correct' ? '#047857' : '#b91c1c',
+                fontSize: '0.78rem',
+                lineHeight: 1.5,
+                marginBottom: '0.85rem',
+              }}
+            >
+              <strong>
+                {accentQuiz.feedback === 'correct'
+                  ? `🎉 辨析正確！(+10 XP) 這是 ${accentQuiz.accent.flag} ${accentQuiz.accent.name}`
+                  : `❌ 這是 ${accentQuiz.accent.flag} ${accentQuiz.accent.name}`}
+              </strong>
+              <div style={{ marginTop: '0.25rem', fontSize: '0.72rem' }}>
+                💡 <b>口音特徵：</b>{accentQuiz.accent.features}（{accentQuiz.accent.testWeight}）
+              </div>
+            </div>
+          )}
+
+          <button
+            type="button"
+            className="primary-btn"
+            onClick={startAccentQuiz}
+            style={{ maxWidth: 280, margin: '0 auto', display: 'block' }}
+          >
+            ➡️ 下一題盲測
           </button>
         </div>
       )}

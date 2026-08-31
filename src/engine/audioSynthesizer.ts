@@ -149,3 +149,29 @@ export function playBadgeUnlockedSound(): void {
     osc.stop(noteStart + 0.45)
   })
 }
+
+/**
+ * 播放答錯提示音效 (低音鋸齒波雙音)
+ */
+export function playWrongSound(): void {
+  if (isAudioMuted()) return
+  const ctx = getAudioContext()
+  if (!ctx) return
+
+  const now = ctx.currentTime
+  const osc = ctx.createOscillator()
+  const gain = ctx.createGain()
+
+  osc.type = 'sawtooth'
+  osc.frequency.setValueAtTime(220, now) // A3
+  osc.frequency.setValueAtTime(196, now + 0.1) // G3
+
+  gain.gain.setValueAtTime(0.06, now)
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25)
+
+  osc.connect(gain)
+  gain.connect(ctx.destination)
+
+  osc.start(now)
+  osc.stop(now + 0.25)
+}

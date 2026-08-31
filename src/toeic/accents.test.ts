@@ -46,4 +46,12 @@ describe('TOEIC Accents Configuration & Voice Matching', () => {
     const fallbackAU = findBestVoiceForAccent(mockVoices, 'en-AU')
     expect(fallbackAU?.lang.startsWith('en')).toBe(true)
   })
+
+  it('provides complete linguistic guidance for each accent', () => {
+    TOEIC_ACCENTS.forEach((acc) => {
+      expect(acc.flag).toBeTruthy()
+      expect(acc.features.length).toBeGreaterThan(10)
+      expect(acc.testWeight).toContain('%')
+    })
+  })
 })

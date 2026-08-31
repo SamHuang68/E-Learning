@@ -52,10 +52,22 @@ export function KanaLab({ onXp, onProgressChange }: Props) {
     feedback: 'idle' | 'correct' | 'wrong'
   } | null>(null)
   const [guideIndex, setGuideIndex] = useState(-1)
+  const [showDual, setShowDual] = useState(false)
   const cancelRef = useRef({ cancelled: false })
 
   const script = progress.script
   const rows = useMemo(() => getKanaRows(script, true), [script])
+  const otherScript = script === 'hiragana' ? 'katakana' : 'hiragana'
+  const otherRows = useMemo(() => getKanaRows(otherScript, true), [otherScript])
+  const otherCellMap = useMemo(() => {
+    const map = new Map<string, string>()
+    otherRows.forEach((r) => {
+      r.cells.forEach((c) => {
+        if (c) map.set(c.romaji, c.char)
+      })
+    })
+    return map
+  }, [otherRows])
   const basicRows = useMemo(() => getKanaRows(script, false), [script])
   const activeCells = useMemo(() => {
     const row = getRowById(script, activeRow)
@@ -244,6 +256,16 @@ export function KanaLab({ onXp, onProgressChange }: Props) {
             <strong>ア</strong>
             <span>片假名</span>
           </button>
+          <button
+            type="button"
+            className={showDual ? 'active' : ''}
+            style={{ borderColor: showDual ? '#f59e0b' : undefined }}
+            onClick={() => setShowDual(!showDual)}
+            title="同時顯示平假名與片假名對照"
+          >
+            <strong style={{ color: showDual ? '#f59e0b' : undefined }}>あ/ア</strong>
+            <span>雙向對照</span>
+          </button>
         </div>
       </header>
 
@@ -324,6 +346,11 @@ export function KanaLab({ onXp, onProgressChange }: Props) {
                     aria-label={`${cell.char} ${cell.romaji}`}
                   >
                     <b>{cell.char}</b>
+                    {showDual && (
+                      <small style={{ fontSize: '0.68rem', color: '#f59e0b', fontWeight: 700, margin: '-2px 0 1px' }}>
+                        {otherCellMap.get(cell.romaji) || ''}
+                      </small>
+                    )}
                     <span>{cell.romaji}</span>
                   </button>
                 ) : (

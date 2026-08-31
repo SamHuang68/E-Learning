@@ -214,7 +214,7 @@ export const SolubilityLab: React.FC = () => {
           </svg>
         </div>
 
-        {/* 右側控制面板 */}
+        {/* 右側控制面板與數據 */}
         <div
           className="lab-controls-panel"
           style={{
@@ -228,6 +228,107 @@ export const SolubilityLab: React.FC = () => {
             minWidth: 0,
           }}
         >
+          {/* 經典溶解與結晶快照 */}
+          <div>
+            <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--muted)', display: 'block', marginBottom: '0.25rem' }}>
+              ⚡ 經典溶解度與結晶快照：
+            </span>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.3rem' }}>
+              <button
+                type="button"
+                className="lab-snapshot-btn"
+                onClick={() => {
+                  setSoluteId('kno3')
+                  setTempC(20)
+                  setWaterG(100)
+                  setSoluteAdded(160)
+                }}
+                style={{
+                  padding: '0.25rem 0.4rem',
+                  fontSize: '0.68rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--line)',
+                  background: 'var(--surface-soft)',
+                  color: 'var(--text-main)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                ❄️ <strong>KNO₃ 降溫大量析出</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>20°C · 析出 128.4g</div>
+              </button>
+              <button
+                type="button"
+                className="lab-snapshot-btn"
+                onClick={() => {
+                  setSoluteId('nacl')
+                  setTempC(20)
+                  setWaterG(100)
+                  setSoluteAdded(50)
+                }}
+                style={{
+                  padding: '0.25rem 0.4rem',
+                  fontSize: '0.68rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--line)',
+                  background: 'var(--surface-soft)',
+                  color: 'var(--text-main)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                🧂 <strong>NaCl 食鹽飽和</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>溶解度平坦 · 析 13.5g</div>
+              </button>
+              <button
+                type="button"
+                className="lab-snapshot-btn"
+                onClick={() => {
+                  setSoluteId('cuso4')
+                  setTempC(60)
+                  setWaterG(100)
+                  setSoluteAdded(41)
+                }}
+                style={{
+                  padding: '0.25rem 0.4rem',
+                  fontSize: '0.68rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--line)',
+                  background: 'var(--surface-soft)',
+                  color: 'var(--text-main)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                💙 <strong>CuSO₄ 恰好飽和</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>60°C · 剛好完全溶解</div>
+              </button>
+              <button
+                type="button"
+                className="lab-snapshot-btn"
+                onClick={() => {
+                  setSoluteId('ce2so4')
+                  setTempC(80)
+                  setWaterG(100)
+                  setSoluteAdded(20)
+                }}
+                style={{
+                  padding: '0.25rem 0.4rem',
+                  fontSize: '0.68rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--line)',
+                  background: 'var(--surface-soft)',
+                  color: 'var(--text-main)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                🌡️ <strong>Ce₂(SO₄)₃ 逆溶解</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>升溫反而析出更多</div>
+              </button>
+            </div>
+          </div>
+
           {/* 溶液溫度 */}
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem', fontWeight: 600, marginBottom: '0.15rem' }}>
