@@ -108,6 +108,8 @@ export function loadLang(): AppView {
   const hash = window.location.hash.replace('#', '').trim()
   if (hash === 'en' || hash.startsWith('toeic')) return 'en'
   if (hash === 'calculus' || hash.startsWith('calc')) return 'calculus'
+  if (hash === 'physics' || hash.startsWith('phys')) return 'physics'
+  if (hash === 'chemistry' || hash.startsWith('chem')) return 'chemistry'
   if (hash === 'math' || hash.startsWith('math')) return 'math'
   if (
     hash === 'ja' ||
@@ -131,7 +133,10 @@ export function saveLang(view: AppView) {
   else if (view === 'en') window.location.hash = 'toeic'
   else if (view === 'math') window.location.hash = 'math'
   else if (view === 'calculus') window.location.hash = 'calculus'
-  else window.location.hash = 'aoba'
+  else if (view === 'physics') window.location.hash = 'physics'
+  else if (view === 'chemistry') window.location.hash = 'chemistry'
+  else if (view === 'ja') window.location.hash = 'aoba'
+  else window.location.hash = 'hub'
   notifyProgressChanged()
 }
 
