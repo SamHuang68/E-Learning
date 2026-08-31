@@ -42,8 +42,8 @@ export const UnitCircleLab: React.FC = () => {
       </div>
 
       <div className="unit-circle-layout">
-        <div className="circle-canvas-box">
-          <svg width="280" height="280" className="unit-circle-svg">
+        <div className="circle-canvas-box" style={{ display: 'flex', justifyContent: 'center' }}>
+          <svg viewBox="0 0 280 280" className="unit-circle-svg" style={{ width: '100%', maxWidth: '280px', height: 'auto' }}>
             {/* 坐標軸 */}
             <line x1="20" y1={cy} x2="260" y2={cy} stroke="#94a3b8" strokeWidth="1.5" />
             <line x1={cx} y1="20" x2={cx} y2="260" stroke="#94a3b8" strokeWidth="1.5" />

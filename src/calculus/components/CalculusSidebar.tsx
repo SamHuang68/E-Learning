@@ -185,17 +185,9 @@ export const CalculusSidebar: React.FC<Props> = ({
         })}
       </nav>
 
-      {/* 底部導覽 */}
-      <div className="sidebar-footer">
-        <button type="button" className="btn-sidebar-link" onClick={onBackHub}>
-          ← 返回學習中心 (Hub)
-        </button>
-        <div className="track-switchers">
-          <span>切換其他軌道：</span>
-          <button type="button" onClick={() => onSwitchLang('math')}>臺灣數學</button>
-          <button type="button" onClick={() => onSwitchLang('ja')}>日語</button>
-          <button type="button" onClick={() => onSwitchLang('en')}>多益</button>
-        </div>
+      {/* 底部簡易版本標記 */}
+      <div className="sidebar-footer" style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', color: 'var(--muted)' }}>
+        <span>MIT License · Calculus Studio</span>
       </div>
     </aside>
   )

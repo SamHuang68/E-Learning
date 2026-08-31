@@ -75,9 +75,11 @@ export const MathFormula: React.FC<MathFormulaProps> = ({
   block = false,
   className = '',
 }) => {
-  const html = useMemo(() => renderMathContent(math, block), [math, block])
+  const hasBlockMath = Boolean(math && math.includes('$$'))
+  const isEffectiveBlock = block || hasBlockMath
+  const html = useMemo(() => renderMathContent(math, isEffectiveBlock), [math, isEffectiveBlock])
 
-  if (block) {
+  if (isEffectiveBlock) {
     return (
       <div
         className={`math-formula block-mode ${className}`}

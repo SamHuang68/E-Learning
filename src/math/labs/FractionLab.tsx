@@ -92,7 +92,7 @@ export const FractionLab: React.FC<Props> = () => {
 
         <div className="fraction-visuals">
           <div className="pie-visual-box">
-            <svg width="220" height="220" className="pie-svg">
+            <svg viewBox="0 0 220 220" className="pie-svg" style={{ width: '100%', maxWidth: '220px', height: 'auto' }}>
               {renderPieSlices()}
             </svg>
             <span className="visual-caption">圓盤切分成 {denominator} 等份，選取 {numerator} 份</span>

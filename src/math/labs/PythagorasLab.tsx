@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { MathFormula } from '../components/MathFormula'
 
 /**
  * 國中八年級「畢氏定理幾何證明實驗室 (PythagorasLab)」
@@ -13,22 +14,37 @@ export const PythagorasLab: React.FC = () => {
   const areaB = legB * legB
   const areaC = Math.round(hypC * hypC * 10) / 10
 
+  const handleReset = () => {
+    setLegA(3)
+    setLegB(4)
+  }
+
+  const applyTriple = (a: number, b: number) => {
+    setLegA(a)
+    setLegB(b)
+  }
+
   return (
     <div className="math-lab pythagoras-lab">
       <div className="lab-header">
         <div>
           <h3>畢氏定理幾何證明實驗室 (Pythagorean Theorem)</h3>
           <p className="lab-desc">
-            直角三角形中：兩股的平方和等於斜邊的平方（$a^2 + b^2 = c^2$）。
+            直角三角形中：兩股平方和等於斜邊平方（<MathFormula math="$a^2 + b^2 = c^2$" />）。
           </p>
+        </div>
+        <div className="lab-header-actions">
+          <button type="button" className="btn-lab-reset" onClick={handleReset}>
+            🔄 重設預設 (3-4-5)
+          </button>
         </div>
       </div>
 
       <div className="pythagoras-layout">
         <div className="pythagoras-visual-box">
-          <svg width="320" height="320" viewBox="0 0 320 320" className="pyth-svg">
-            {/* 繪製直角三角形與三邊正方形 */}
-            <g transform="translate(100, 160)">
+          <svg width="340" height="340" viewBox="0 0 340 340" className="pyth-svg">
+            {/* 繪製直角三角形與三邊正方形，原點平移至 (145, 155) 防裁切 */}
+            <g transform="translate(145, 155)">
               {/* 三角形 */}
               <polygon
                 points={`0,0 ${legA * 20},0 0,${-legB * 20}`}
@@ -49,7 +65,7 @@ export const PythagorasLab: React.FC = () => {
                 stroke="#2563eb"
                 strokeWidth="2"
               />
-              <text x={legA * 10} y={legA * 10 + 5} textAnchor="middle" fill="#1e3a8a" fontWeight="bold">
+              <text x={legA * 10} y={legA * 10 + 5} textAnchor="middle" fill="#1e3a8a" fontWeight="bold" fontSize="13">
                 a² = {areaA}
               </text>
 
@@ -63,7 +79,7 @@ export const PythagorasLab: React.FC = () => {
                 stroke="#059669"
                 strokeWidth="2"
               />
-              <text x={-legB * 10} y={-legB * 10 + 5} textAnchor="middle" fill="#064e3b" fontWeight="bold">
+              <text x={-legB * 10} y={-legB * 10 + 5} textAnchor="middle" fill="#064e3b" fontWeight="bold" fontSize="13">
                 b² = {areaB}
               </text>
             </g>
@@ -72,25 +88,34 @@ export const PythagorasLab: React.FC = () => {
 
         <div className="pythagoras-calc-card">
           <div className="calc-row">
-            <span>股 $a$ 長度：</span>
-            <strong>{legA}</strong> ➜ 面積 $a^2 = {areaA}$
+            <span>股 <MathFormula math="$a$" /> 長度：</span>
+            <strong>{legA}</strong> ➜ 面積 <MathFormula math={`$a^2 = ${areaA}$`} />
           </div>
           <div className="calc-row">
-            <span>股 $b$ 長度：</span>
-            <strong>{legB}</strong> ➜ 面積 $b^2 = {areaB}$
+            <span>股 <MathFormula math="$b$" /> 長度：</span>
+            <strong>{legB}</strong> ➜ 面積 <MathFormula math={`$b^2 = ${areaB}$`} />
           </div>
           <div className="calc-divider" />
           <div className="calc-sum-row">
-            <span>兩股平方和 ($a^2 + b^2$)：</span>
+            <span>兩股平方和 (<MathFormula math="$a^2 + b^2$" />)：</span>
             <strong>{areaA + areaB}</strong>
           </div>
           <div className="calc-sum-row">
-            <span>斜邊 $c$ 長度：</span>
-            <strong>{hypC.toFixed(2)}</strong> ➜ 面積 $c^2 = {areaC}$
+            <span>斜邊 <MathFormula math="$c$" /> 長度：</span>
+            <strong>{hypC.toFixed(2)}</strong> ➜ 面積 <MathFormula math={`$c^2 = ${areaC}$`} />
+          </div>
+
+          <div className="quick-triples-row" style={{ marginTop: '0.75rem', display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '0.78rem', color: 'var(--muted)', alignSelf: 'center' }}>常用勾股數：</span>
+            <button type="button" className="btn-preset-pill" onClick={() => applyTriple(3, 4)}>3-4-5</button>
+            <button type="button" className="btn-preset-pill" onClick={() => applyTriple(6, 8)}>6-8-10</button>
+            <button type="button" className="btn-preset-pill" onClick={() => applyTriple(5, 12)}>5-12-13</button>
           </div>
 
           <div className="slider-item">
-            <label>調整股 $a$: {legA}</label>
+            <label>
+              <span>調整股 <MathFormula math={`$a$: ${legA}`} /></span>
+            </label>
             <input
               type="range"
               min="2"
@@ -102,7 +127,9 @@ export const PythagorasLab: React.FC = () => {
           </div>
 
           <div className="slider-item">
-            <label>調整股 $b$: {legB}</label>
+            <label>
+              <span>調整股 <MathFormula math={`$b$: ${legB}`} /></span>
+            </label>
             <input
               type="range"
               min="2"

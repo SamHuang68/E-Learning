@@ -125,11 +125,18 @@ export const CalculusCanvas: React.FC<CalculusCanvasProps> = ({
 
       <div className="canvas-svg-container">
         <svg viewBox={`0 0 ${width} ${height}`} className="calc-interactive-svg">
+          <defs>
+            <clipPath id="calculus-viewport-clip">
+              <rect x="0" y="0" width={width} height={height} />
+            </clipPath>
+          </defs>
+
           {/* 坐標軸與網格 */}
           <line x1={vp.toScreenX(transform.minX)} y1={vp.toScreenY(0)} x2={vp.toScreenX(transform.maxX)} y2={vp.toScreenY(0)} stroke="#475569" strokeWidth="1.5" />
           <line x1={vp.toScreenX(0)} y1={vp.toScreenY(transform.minY)} x2={vp.toScreenX(0)} y2={vp.toScreenY(transform.maxY)} stroke="#475569" strokeWidth="1.5" />
-          <text x={width - 24} y={vp.toScreenY(0) - 8} fill="#94a3b8" fontSize="12">x</text>
-          <text x={vp.toScreenX(0) + 8} y={20} fill="#94a3b8" fontSize="12">y</text>
+
+          {/* 所有曲線、切線、割線、矩形在 clip-path 內渲染 */}
+          <g clipPath="url(#calculus-viewport-clip)">
 
           {/* 1. 極限與 Epsilon-Delta 容忍帶 */}
           {mode === 'limit_epsilon' && (
@@ -249,6 +256,11 @@ export const CalculusCanvas: React.FC<CalculusCanvasProps> = ({
           {/* 切點/探針焦點 P(x0, y0) */}
           <line x1={vp.toScreenX(x0)} y1={vp.toScreenY(0)} x2={vp.toScreenX(x0)} y2={vp.toScreenY(y0)} stroke="#38bdf8" strokeWidth="1" strokeDasharray="3 3" />
           <circle cx={vp.toScreenX(x0)} cy={vp.toScreenY(y0)} r="6" fill="#38bdf8" stroke="#ffffff" strokeWidth="2" />
+          </g>
+
+          {/* 坐標軸標籤位於頂層 */}
+          <text x={width - 24} y={vp.toScreenY(0) - 8} fill="#94a3b8" fontSize="12" fontWeight="bold">x</text>
+          <text x={vp.toScreenX(0) + 8} y={20} fill="#94a3b8" fontSize="12" fontWeight="bold">y</text>
         </svg>
       </div>
 
