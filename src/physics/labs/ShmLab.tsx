@@ -266,7 +266,7 @@ export const ShmLab: React.FC = () => {
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: 'var(--muted)' }}>單擺週期 $T = 2\pi\sqrt{L/g}$：</span>
+              <span style={{ color: 'var(--muted)' }}>{'單擺週期 T = 2π√(L/g)：'}</span>
               <strong style={{ fontFamily: 'monospace' }}>{period.toFixed(2)} s ({frequency.toFixed(2)} Hz)</strong>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

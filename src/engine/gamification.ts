@@ -3,7 +3,7 @@
  * 實作難度加權 XP、Combo 連擊倍率、等級進階、連勝保護 (Streak Freeze) 與三軌微認證徽章。
  */
 
-export type BadgeCategory = 'math' | 'ja' | 'en' | 'universal'
+export type BadgeCategory = 'math' | 'calculus' | 'physics' | 'chemistry' | 'ja' | 'en' | 'universal'
 
 export type Badge = {
   id: string
@@ -84,7 +84,69 @@ export const BADGE_CATALOG: Badge[] = [
     xpReward: 200,
   },
 
-  // 3. あおば日語模組徽章
+  // 3. 微積分專題徽章
+  {
+    id: 'badge-calc-riemann-pro',
+    title: '黎曼和連續切片宗師',
+    description: '透過無限細分切片逼近定積分極限',
+    icon: '🍩',
+    category: 'calculus',
+    xpReward: 200,
+  },
+
+  // 4. 物理模組徽章
+  {
+    id: 'badge-phys-projectile',
+    title: '力學拋體領航者',
+    description: '成功模擬斜拋運動並解開力學運動定律題目',
+    icon: '🚀',
+    category: 'physics',
+    xpReward: 150,
+  },
+  {
+    id: 'badge-phys-optics-master',
+    title: '光學司乃耳之眼',
+    description: '完成司乃耳折射實驗並掌握全反射臨界角',
+    icon: '🌈',
+    category: 'physics',
+    xpReward: 150,
+  },
+  {
+    id: 'badge-phys-circuit-pro',
+    title: '歐姆與電磁探索家',
+    description: '完成直流電路實驗與電磁感應分析',
+    icon: '⚡',
+    category: 'physics',
+    xpReward: 180,
+  },
+
+  // 5. 化學模組徽章
+  {
+    id: 'badge-chem-periodic-explorer',
+    title: '週期表元素探測手',
+    description: '探索元素週期律並掌握族群電子排列',
+    icon: '🔬',
+    category: 'chemistry',
+    xpReward: 150,
+  },
+  {
+    id: 'badge-chem-vsepr-architect',
+    title: 'VSEPR 空間幾何建築師',
+    description: '建立 3D 分子空間模型並掌握混成軌域幾何',
+    icon: '📐',
+    category: 'chemistry',
+    xpReward: 160,
+  },
+  {
+    id: 'badge-chem-titration-pro',
+    title: '酸鹼滴定鍊金術士',
+    description: '完成 pH 滴定曲線模擬與緩衝溶液計算',
+    icon: '🧪',
+    category: 'chemistry',
+    xpReward: 180,
+  },
+
+  // 6. あおば日語模組徽章
   {
     id: 'badge-ja-kana-pro',
     title: '五十音無雙',
@@ -102,7 +164,7 @@ export const BADGE_CATALOG: Badge[] = [
     xpReward: 150,
   },
 
-  // 4. 多益英語模組徽章
+  // 7. 多益英語模組徽章
   {
     id: 'badge-toeic-chunk-master',
     title: '商務語塊直覺大師',

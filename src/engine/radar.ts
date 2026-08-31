@@ -339,22 +339,38 @@ export function computeCalculusRadar(
 }
 
 /**
- * 計算高中物理多維能力雷達 (力學、熱學、波動光學、電磁學、近代物理)
+ * 物理題目前綴與領域分類器
+ */
+function classifyPhysicsQuestion(qId: string): 'mechanics' | 'thermo' | 'waves' | 'electromagnetism' | 'modern' {
+  if (qId.includes('g7-u2') || qId.includes('g8-u1') || qId.includes('g8-u2') || qId.includes('optics') || qId.includes('wave') || qId.includes('sound') || qId.includes('light') || qId.includes('lens') || qId.includes('slit')) return 'waves'
+  if (qId.includes('g7-u3') || qId.includes('thermo') || qId.includes('heat') || qId.includes('gas-law') || qId.includes('g12-u1')) return 'thermo'
+  if (qId.includes('g9-u2') || qId.includes('g12-u2') || qId.includes('g12-u3') || qId.includes('circuit') || qId.includes('ohm') || qId.includes('em') || qId.includes('magnetic') || qId.includes('induction')) return 'electromagnetism'
+  if (qId.includes('g12-u4') || qId.includes('g12-u5') || qId.includes('g12-u6') || qId.includes('modern') || qId.includes('quantum') || qId.includes('photoelectric') || qId.includes('bohr')) return 'modern'
+  return 'mechanics'
+}
+
+/**
+ * 計算臺灣物理多維能力雷達 (力學、熱學、波動光學、電磁學、近代物理)
  */
 export function computePhysicsRadar(
   completedQuestions: string[] = [],
   examScores: Record<string, number> = {},
   labCompleted: string[] = [],
 ): TrackRadar {
-  const totalCompleted = completedQuestions.length
-  const totalLabs = labCompleted.length
-  const examBonus = Object.values(examScores).length > 0 ? 5 : 0
+  const counts = { mechanics: 0, thermo: 0, waves: 0, electromagnetism: 0, modern: 0 }
+  completedQuestions.forEach((qid) => {
+    counts[classifyPhysicsQuestion(qid)]++
+  })
 
-  const mechanicsBase = Math.min(100, Math.max(35, 45 + totalCompleted * 4 + totalLabs * 3 + examBonus + (labCompleted.includes('projectile') || labCompleted.includes('shm') ? 20 : 0)))
-  const thermoBase = Math.min(100, Math.max(30, 40 + totalCompleted * 3 + totalLabs * 2 + examBonus + (labCompleted.includes('gas-law') ? 20 : 0)))
-  const wavesBase = Math.min(100, Math.max(30, 40 + totalCompleted * 3 + totalLabs * 2 + examBonus + (labCompleted.includes('optics') ? 20 : 0)))
-  const emBase = Math.min(100, Math.max(25, 35 + totalCompleted * 4 + totalLabs * 2 + examBonus + (labCompleted.includes('circuit') ? 20 : 0)))
-  const modernBase = Math.min(100, Math.max(20, 30 + totalCompleted * 3 + examBonus))
+  const examValues = Object.values(examScores)
+  const examAvg = examValues.length > 0 ? examValues.reduce((a, b) => a + b, 0) / examValues.length : 0
+  const examScoreBonus = Math.round((examAvg / 100) * 25)
+
+  const mechanicsBase = Math.min(100, Math.max(25, 35 + counts.mechanics * 8 + (labCompleted.includes('projectile') || labCompleted.includes('shm') ? 20 : 0) + examScoreBonus))
+  const thermoBase = Math.min(100, Math.max(20, 30 + counts.thermo * 10 + (labCompleted.includes('buoyancy') ? 15 : 0) + examScoreBonus))
+  const wavesBase = Math.min(100, Math.max(20, 30 + counts.waves * 10 + (labCompleted.includes('optics') ? 20 : 0) + examScoreBonus))
+  const emBase = Math.min(100, Math.max(20, 30 + counts.electromagnetism * 10 + (labCompleted.includes('circuit') ? 20 : 0) + examScoreBonus))
+  const modernBase = Math.min(100, Math.max(15, 25 + counts.modern * 12 + examScoreBonus))
 
   const dimensions: RadarDimension[] = [
     {
@@ -406,7 +422,7 @@ export function computePhysicsRadar(
 
   return {
     track: 'physics',
-    trackName: '⚛️ 高中物理 108 課綱',
+    trackName: '⚛️ 臺灣物理 (國中+高中)',
     dimensions,
     averageScore,
     strongestDimension: sorted[0],
@@ -415,22 +431,39 @@ export function computePhysicsRadar(
 }
 
 /**
- * 計算高中化學多維能力雷達 (物質構造、化學計量、化學平衡與動力學、酸鹼電化學、有機化學)
+ * 化學題目前綴與領域分類器
+ */
+function classifyChemistryQuestion(qId: string): 'structure' | 'stoichiometry' | 'equilibrium' | 'acid_redox' | 'organic' {
+  if (qId.includes('g7-u1') || qId.includes('g8-u1') || qId.includes('g10-u1') || qId.includes('g11-u3') || qId.includes('periodic') || qId.includes('vsepr') || qId.includes('hybrid')) return 'structure'
+  if (qId.includes('g7-u2') || qId.includes('g8-u2') || qId.includes('g10-u2') || qId.includes('g11-u1') || qId.includes('g11-u2') || qId.includes('gas') || qId.includes('solubility')) return 'stoichiometry'
+  if (qId.includes('g11-u4') || qId.includes('g11-u5') || qId.includes('rate') || qId.includes('equilibrium') || qId.includes('lechatelier') || qId.includes('ksp')) return 'equilibrium'
+  if (qId.includes('g8-u4') || qId.includes('g9-u1') || qId.includes('g10-u4') || qId.includes('g12-u1') || qId.includes('g12-u2') || qId.includes('g12-u4') || qId.includes('g12-u5') || qId.includes('acid') || qId.includes('titration') || qId.includes('buffer') || qId.includes('redox') || qId.includes('faraday') || qId.includes('battery')) return 'acid_redox'
+  if (qId.includes('g9-u2') || qId.includes('g9-u3') || qId.includes('g12-u6') || qId.includes('organic') || qId.includes('polymer') || qId.includes('ester')) return 'organic'
+  return 'structure'
+}
+
+/**
+ * 計算臺灣化學多維能力雷達 (物質構造、化學計量、化學平衡與動力學、酸鹼電化學、有機化學)
  */
 export function computeChemistryRadar(
   completedQuestions: string[] = [],
   examScores: Record<string, number> = {},
   labCompleted: string[] = [],
 ): TrackRadar {
-  const totalCompleted = completedQuestions.length
-  const totalLabs = labCompleted.length
-  const examBonus = Object.values(examScores).length > 0 ? 5 : 0
+  const counts = { structure: 0, stoichiometry: 0, equilibrium: 0, acid_redox: 0, organic: 0 }
+  completedQuestions.forEach((qid) => {
+    counts[classifyChemistryQuestion(qid)]++
+  })
 
-  const structureBase = Math.min(100, Math.max(35, 45 + totalCompleted * 4 + totalLabs * 2 + examBonus + (labCompleted.includes('periodic-table') || labCompleted.includes('vsepr') ? 20 : 0)))
-  const stoichiometryBase = Math.min(100, Math.max(30, 40 + totalCompleted * 3 + totalLabs * 2 + examBonus + (labCompleted.includes('gas-law') ? 20 : 0)))
-  const equilibriumBase = Math.min(100, Math.max(30, 35 + totalCompleted * 4 + examBonus))
-  const acidRedoxBase = Math.min(100, Math.max(25, 35 + totalCompleted * 4 + totalLabs * 2 + examBonus + (labCompleted.includes('titration') ? 20 : 0)))
-  const organicBase = Math.min(100, Math.max(20, 30 + totalCompleted * 4 + examBonus))
+  const examValues = Object.values(examScores)
+  const examAvg = examValues.length > 0 ? examValues.reduce((a, b) => a + b, 0) / examValues.length : 0
+  const examScoreBonus = Math.round((examAvg / 100) * 25)
+
+  const structureBase = Math.min(100, Math.max(25, 35 + counts.structure * 8 + (labCompleted.includes('periodic') || labCompleted.includes('vsepr') ? 20 : 0) + examScoreBonus))
+  const stoichiometryBase = Math.min(100, Math.max(20, 30 + counts.stoichiometry * 8 + (labCompleted.includes('gas') || labCompleted.includes('solubility') ? 20 : 0) + examScoreBonus))
+  const equilibriumBase = Math.min(100, Math.max(20, 30 + counts.equilibrium * 10 + examScoreBonus))
+  const acidRedoxBase = Math.min(100, Math.max(20, 30 + counts.acid_redox * 8 + (labCompleted.includes('titration') ? 20 : 0) + examScoreBonus))
+  const organicBase = Math.min(100, Math.max(15, 25 + counts.organic * 10 + examScoreBonus))
 
   const dimensions: RadarDimension[] = [
     {
@@ -482,7 +515,7 @@ export function computeChemistryRadar(
 
   return {
     track: 'chemistry',
-    trackName: '🧪 高中化學 108 課綱',
+    trackName: '🧪 臺灣化學 (國中+高中)',
     dimensions,
     averageScore,
     strongestDimension: sorted[0],

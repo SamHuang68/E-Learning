@@ -137,7 +137,7 @@ export const VseprGeometryLab: React.FC = () => {
             <span>📐</span> VSEPR 分子空間幾何與混成軌域實驗室 (VSEPR Theory)
           </h3>
           <p className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            空間位阻數 $\text{SN} = \text{BP} + \text{LP}$。孤對電子 (LP) 斥力大於鍵結對 (BP)，使鍵角受到壓縮。
+            {'空間位阻數 SN = BP + LP。孤對電子 (LP) 斥力大於鍵結對 (BP)，使鍵角受到壓縮。'}
           </p>
         </div>
       </div>

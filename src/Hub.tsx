@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { AuthPanel } from './auth/AuthPanel'
 import { DataControls } from './components/DataControls'
 import { KnowledgeRadar } from './components/KnowledgeRadar'
@@ -40,8 +40,24 @@ type RadarTab = 'math' | 'calculus' | 'physics' | 'chemistry' | 'ja' | 'en'
  */
 export function Hub({ onChoose, onOpenPrivacy }: Props) {
   const [activeRadarTab, setActiveRadarTab] = useState<RadarTab>('math')
+  const [tick, setTick] = useState(0)
 
-  // 讀取六軌與全域學習進度
+  useEffect(() => {
+    const handleUpdate = () => setTick((t) => t + 1)
+    window.addEventListener('physics:progress-updated', handleUpdate)
+    window.addEventListener('chemistry:progress-updated', handleUpdate)
+    window.addEventListener('math:progress-updated', handleUpdate)
+    window.addEventListener('storage', handleUpdate)
+    return () => {
+      window.removeEventListener('physics:progress-updated', handleUpdate)
+      window.removeEventListener('chemistry:progress-updated', handleUpdate)
+      window.removeEventListener('math:progress-updated', handleUpdate)
+      window.removeEventListener('storage', handleUpdate)
+    }
+  }, [])
+
+  // 讀取六軌與全域學習進度 (依 tick 響應式重新讀取)
+  void tick
   const mathProgress = loadMathProgress()
   const physicsProgress = loadPhysicsProgress()
   const chemistryProgress = loadChemistryProgress()
@@ -80,14 +96,14 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
   )
   const kanaCount = Object.keys(kanaProgress.mastered).length
   const jaRadar = computeAobaRadar(
-    daily.done,
+    Math.max(daily.done, jaProgress.readingDone || 0),
     learningMeta.kanjiMastered.length,
     learningMeta.speakingDone,
     learningMeta.streak,
   )
   const toeicDoneCount = (toeicProgress.vocabDone || 0) + (toeicProgress.listeningDone || 0)
   const toeicRadar = computeToeicRadar(
-    daily.done,
+    Math.max(daily.done, toeicDoneCount),
     toeicDoneCount,
     750,
   )
@@ -419,7 +435,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
       <section className="hub-section-block" aria-labelledby="badges-title">
         <div className="section-header-row">
           <h2 id="badges-title">微認證與成就勳章</h2>
-          <span className="section-subtext">12 MICRO-CREDENTIALS</span>
+          <span className="section-subtext">18 MICRO-CREDENTIALS</span>
         </div>
 
         <div className="hub-badges-grid">
@@ -434,6 +450,13 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
               (badge.id === 'badge-math-algebra-tiles' && (mathProgress.labCompleted.length > 0 || mathDoneCount >= 5)) ||
               (badge.id === 'badge-math-matrix-warp' && (mathProgress.stage === 'senior' || mathDoneCount >= 8)) ||
               (badge.id === 'badge-math-riemann-limit' && (mathProgress.labCompleted.includes('calculus') || mathProgress.stage === 'senior')) ||
+              (badge.id === 'badge-calc-riemann-pro' && (calculusRadar.averageScore >= 45 || mathProgress.labCompleted.includes('calculus'))) ||
+              (badge.id === 'badge-phys-projectile' && (physicsDoneCount >= 3 || physicsProgress.labCompleted.includes('projectile'))) ||
+              (badge.id === 'badge-phys-optics-master' && (physicsProgress.labCompleted.includes('optics') || physicsDoneCount >= 5)) ||
+              (badge.id === 'badge-phys-circuit-pro' && (physicsProgress.labCompleted.includes('circuit') || physicsDoneCount >= 8)) ||
+              (badge.id === 'badge-chem-periodic-explorer' && (chemistryProgress.labCompleted.includes('periodic') || chemistryDoneCount >= 3)) ||
+              (badge.id === 'badge-chem-vsepr-architect' && (chemistryProgress.labCompleted.includes('vsepr') || chemistryDoneCount >= 5)) ||
+              (badge.id === 'badge-chem-titration-pro' && (chemistryProgress.labCompleted.includes('titration') || chemistryDoneCount >= 8)) ||
               (badge.id === 'badge-ja-kana-pro' && kanaCount >= 15) ||
               (badge.id === 'badge-ja-signals-ace' && (jaProgress.readingDone >= 2 || jaProgress.grammarStarted)) ||
               (badge.id === 'badge-toeic-chunk-master' && toeicDoneCount >= 3) ||

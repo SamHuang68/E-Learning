@@ -48,4 +48,22 @@ describe('CSS Layout & Sidebar Overflow Regression Guard', () => {
     expect(cssContent).toMatch(/\.content\s*\{[^}]*overflow-y:\s*auto/s)
     expect(cssContent).toMatch(/\.content\s*\{[^}]*max-height:\s*100vh/s)
   })
+
+  it('ensures KaTeX equations and display wrappers have overflow-x: auto and max-width protections', () => {
+    expect(cssContent).toContain('.katex-block-wrapper {')
+    expect(cssContent).toMatch(/\.katex-block-wrapper\s*\{[^}]*overflow-x:\s*auto/s)
+    expect(cssContent).toMatch(/\.katex-display\s*\{[^}]*overflow-x:\s*auto/s)
+  })
+
+  it('ensures option-btn and opt-content have min-width: 0 and word-break for anti-collision', () => {
+    expect(cssContent).toContain('.opt-content {')
+    expect(cssContent).toMatch(/\.opt-content\s*\{[^}]*min-width:\s*0/s)
+    expect(cssContent).toMatch(/\.opt-content\s*\{[^}]*word-break:\s*break-word/s)
+  })
+
+  it('ensures @media (max-width: 860px) responsive override exists for all shells', () => {
+    expect(cssContent).toContain('.math-shell,')
+    expect(cssContent).toContain('.physics-shell,')
+    expect(cssContent).toContain('.chemistry-shell,')
+  })
 })

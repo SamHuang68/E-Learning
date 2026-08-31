@@ -6,6 +6,8 @@ export type MathFormulaProps = {
   math: string
   /** 是否為區塊獨立顯示模式 (預設 false) */
   block?: boolean
+  /** 是否為行內模式 (預設 true) */
+  inline?: boolean
   /** 自訂 CSS 類別名稱 */
   className?: string
 }

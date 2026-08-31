@@ -512,34 +512,44 @@ export function appendLearningEvent(
   })
 }
 
-type LegacyProgressExportBundle = {
-  version: 1
-  exportedAt: string
-  aoba: ProgressState
-  kana: KanaProgress
-  toeic: ToeicProgress
-  lang: AppView
-  meta?: LearningMeta
-}
-
 export type ProgressExportBundle = {
-  version: 2
+  version: 2 | 3
   exportedAt: string
   aoba: ProgressState
   kana: KanaProgress
   toeic: ToeicProgress
+  math?: unknown
+  physics?: unknown
+  chemistry?: unknown
   lang: AppView
   meta: LearningMeta
 }
 
 /** Progress-only export. Never includes Groq API key or builder presets. */
 export function exportProgressBundle(): ProgressExportBundle {
+  let mathData: unknown = null
+  let physicsData: unknown = null
+  let chemistryData: unknown = null
+  try {
+    const rawM = localStorage.getItem('math_108_progress_v1')
+    if (rawM) mathData = JSON.parse(rawM)
+    const rawP = localStorage.getItem('physics_108_progress_v1')
+    if (rawP) physicsData = JSON.parse(rawP)
+    const rawC = localStorage.getItem('chemistry_108_progress_v1')
+    if (rawC) chemistryData = JSON.parse(rawC)
+  } catch {
+    /* ignore */
+  }
+
   return {
-    version: 2,
+    version: 3,
     exportedAt: new Date().toISOString(),
     aoba: loadProgress(),
     kana: loadKanaProgress(),
     toeic: loadToeicProgress(),
+    math: mathData,
+    physics: physicsData,
+    chemistry: chemistryData,
     lang: loadLang(),
     meta: loadLearningMeta(),
   }
@@ -547,14 +557,18 @@ export function exportProgressBundle(): ProgressExportBundle {
 
 export function importProgressBundle(raw: unknown): boolean {
   if (!raw || typeof raw !== 'object') return false
-  const data = raw as Partial<ProgressExportBundle | LegacyProgressExportBundle>
-  if (data.version !== 1 && data.version !== 2) return false
+  const data = raw as Record<string, unknown>
+  const version = data.version
+  if (version !== 1 && version !== 2 && version !== 3) return false
   if (!data.aoba || !data.kana || !data.toeic) return false
 
   applyCloudBundle({
-    aoba: migrateProgress(data.aoba as unknown as Record<string, unknown>),
-    kana: { ...defaultKanaProgress(), ...data.kana },
-    toeic: { ...defaultToeicProgress(), ...data.toeic },
+    aoba: migrateProgress(data.aoba as Record<string, unknown>),
+    kana: { ...defaultKanaProgress(), ...(data.kana as KanaProgress) },
+    toeic: { ...defaultToeicProgress(), ...(data.toeic as ToeicProgress) },
+    math: data.math,
+    physics: data.physics,
+    chemistry: data.chemistry,
     lang: normalizeLang(typeof data.lang === 'string' ? data.lang : null) ?? 'hub',
     meta: normalizeLearningMeta(data.meta),
   })
@@ -567,6 +581,9 @@ export function applyCloudBundle(bundle: {
   aoba: ProgressState
   kana: KanaProgress
   toeic: ToeicProgress
+  math?: unknown
+  physics?: unknown
+  chemistry?: unknown
   lang: AppView
   meta?: LearningMeta
 }) {
@@ -579,6 +596,15 @@ export function applyCloudBundle(bundle: {
     TOEIC_PROGRESS_KEY,
     JSON.stringify({ ...defaultToeicProgress(), ...bundle.toeic }),
   )
+  if (bundle.math) {
+    localStorage.setItem('math_108_progress_v1', JSON.stringify(bundle.math))
+  }
+  if (bundle.physics) {
+    localStorage.setItem('physics_108_progress_v1', JSON.stringify(bundle.physics))
+  }
+  if (bundle.chemistry) {
+    localStorage.setItem('chemistry_108_progress_v1', JSON.stringify(bundle.chemistry))
+  }
   localStorage.setItem(
     LEARNING_META_KEY,
     JSON.stringify(normalizeLearningMeta(bundle.meta)),

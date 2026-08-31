@@ -120,7 +120,7 @@ export const TitrationLab: React.FC = () => {
             <span>🧪</span> 酸鹼滴定與 pH 曲線實驗室 (Acid-Base Titration)
           </h3>
           <p className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            滴定當量點分析：強酸強鹼當量點 $\text{pH}=7.0$；弱酸強鹼半當量點 $\text{pH} = \text{p}K_a = 4.74$，當量點弱鹼水解 $\text{pH}=8.72$。
+            {'滴定當量點分析：強酸強鹼當量點 pH=7.0；弱酸強鹼半當量點 pH = pKa = 4.74，當量點弱鹼水解 pH=8.72。'}
           </p>
         </div>
       </div>
