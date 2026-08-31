@@ -90,6 +90,86 @@ export const UnitCircleLab: React.FC = () => {
             </div>
           </div>
 
+          <div style={{ marginBottom: '0.6rem' }}>
+            <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--muted)', display: 'block', marginBottom: '0.25rem' }}>
+              ⚡ 經典特別角快照：
+            </span>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.3rem' }}>
+              <button
+                type="button"
+                className="lab-snapshot-btn"
+                onClick={() => setAngleDeg(30)}
+                style={{
+                  padding: '0.25rem 0.4rem',
+                  fontSize: '0.68rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--line)',
+                  background: 'var(--surface-soft)',
+                  color: 'var(--text-main)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                📐 <strong>30° (π/6)</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>sin=1/2 · cos=√3/2</div>
+              </button>
+              <button
+                type="button"
+                className="lab-snapshot-btn"
+                onClick={() => setAngleDeg(45)}
+                style={{
+                  padding: '0.25rem 0.4rem',
+                  fontSize: '0.68rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--line)',
+                  background: 'var(--surface-soft)',
+                  color: 'var(--text-main)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                📐 <strong>45° (π/4)</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>sin=cos=√2/2 · tan=1</div>
+              </button>
+              <button
+                type="button"
+                className="lab-snapshot-btn"
+                onClick={() => setAngleDeg(60)}
+                style={{
+                  padding: '0.25rem 0.4rem',
+                  fontSize: '0.68rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--line)',
+                  background: 'var(--surface-soft)',
+                  color: 'var(--text-main)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                📐 <strong>60° (π/3)</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>sin=√3/2 · cos=1/2</div>
+              </button>
+              <button
+                type="button"
+                className="lab-snapshot-btn"
+                onClick={() => setAngleDeg(90)}
+                style={{
+                  padding: '0.25rem 0.4rem',
+                  fontSize: '0.68rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--line)',
+                  background: 'var(--surface-soft)',
+                  color: 'var(--text-main)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                ⭕ <strong>90° (π/2) 頂點</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>sin=1 · cos=0 · tan無窮</div>
+              </button>
+            </div>
+          </div>
+
           <div className="slider-item">
             <label>調整旋轉角度: {angleDeg}°</label>
             <input

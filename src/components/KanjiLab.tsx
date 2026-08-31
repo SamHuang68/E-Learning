@@ -88,24 +88,50 @@ export function KanjiLab({ entries = n5Kanji, mastered, onMaster }: Props) {
         </div>
       </header>
 
-      <div className="kana-toolbar">
-        <div className="mode-tabs">
-          {(
-            [
-              ['chart', '漢字表'],
-              ['flash', '閃卡'],
-              ['quiz', '意思選擇'],
-            ] as const
-          ).map(([id, label]) => (
-            <button
-              key={id}
-              type="button"
-              className={mode === id ? 'active' : ''}
-              onClick={() => setMode(id)}
-            >
-              {label}
-            </button>
-          ))}
+      <div className="kana-toolbar" style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignItems: 'stretch' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.4rem' }}>
+          <div className="mode-tabs">
+            {(
+              [
+                ['chart', '漢字表'],
+                ['flash', '閃卡'],
+                ['quiz', '意思選擇'],
+              ] as const
+            ).map(([id, label]) => (
+              <button
+                key={id}
+                type="button"
+                className={mode === id ? 'active' : ''}
+                onClick={() => setMode(id)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          <div style={{ display: 'flex', gap: '0.25rem', alignItems: 'center', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '0.72rem', color: 'var(--muted)' }}>高頻直通：</span>
+            {entries.slice(0, 8).map((k, idx) => (
+              <button
+                key={k.id}
+                type="button"
+                className="pill-btn"
+                style={{
+                  fontSize: '0.72rem',
+                  padding: '0.15rem 0.35rem',
+                  fontWeight: 700,
+                  borderColor: flashIndex === idx ? '#38bdf8' : undefined,
+                }}
+                onClick={() => {
+                  setFlashIndex(idx)
+                  setRevealed(false)
+                  setMode('flash')
+                }}
+              >
+                {k.char}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
