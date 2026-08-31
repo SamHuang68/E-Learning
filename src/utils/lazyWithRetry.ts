@@ -6,25 +6,37 @@ import { lazy, type ComponentType } from 'react'
  */
 export function lazyWithRetry<T extends ComponentType<any>>(
   factory: () => Promise<{ default: T }>,
+  retryId = 'module',
 ) {
   return lazy(async () => {
-    const sessionKey = 'e-learning:chunk-retry-refreshed'
-    const alreadyRefreshed =
-      typeof window !== 'undefined' &&
-      window.sessionStorage.getItem(sessionKey) === 'true'
+    const sessionKey = `e-learning:chunk-retry-refreshed:${retryId}`
+    let alreadyRefreshed = false
+    try {
+      alreadyRefreshed =
+        typeof window !== 'undefined' &&
+        window.sessionStorage.getItem(sessionKey) === 'true'
+    } catch {
+      // Storage can be unavailable in privacy modes; recovery still fails
+      // safely into the error boundary rather than bypassing the import.
+    }
 
     try {
       const component = await factory()
-      if (typeof window !== 'undefined') {
-        window.sessionStorage.removeItem(sessionKey)
+      try {
+        if (typeof window !== 'undefined') window.sessionStorage.removeItem(sessionKey)
+      } catch {
+        /* storage is optional */
       }
       return component
     } catch (error) {
       // 若尚未重載過，執行一次強制頁面重新整理以載入最新版本的 index.html 與 chunk hashes
       if (!alreadyRefreshed && typeof window !== 'undefined') {
-        window.sessionStorage.setItem(sessionKey, 'true')
-        window.location.reload()
-        return new Promise(() => {}) // 阻止後續拋錯，等待 reload 完成
+        try {
+          window.sessionStorage.setItem(sessionKey, 'true')
+          window.location.reload()
+        } catch {
+          // Fall through and reject to the module error boundary.
+        }
       }
       throw error
     }

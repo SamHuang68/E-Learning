@@ -105,6 +105,8 @@ export const GeometricProofsLab: React.FC = () => {
             <label>拖曳直徑分割比 ($a$ vs $b$)：</label>
             <input
               type="range"
+              aria-label="直徑分割比"
+              aria-valuetext={`a 佔 ${(splitRatio * 100).toFixed(0)}%，b 佔 ${((1 - splitRatio) * 100).toFixed(0)}%`}
               min="0.1"
               max="0.9"
               step="0.01"

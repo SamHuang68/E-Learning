@@ -231,6 +231,8 @@ export const CircuitLab: React.FC = () => {
             </div>
             <input
               type="range"
+              aria-label="電源電壓"
+              aria-valuetext={`${voltage} 伏特`}
               min="1"
               max="24"
               step="1"
@@ -249,6 +251,8 @@ export const CircuitLab: React.FC = () => {
             <div style={{ display: 'flex', gap: '0.4rem' }}>
               <input
                 type="range"
+                aria-label="電阻一"
+                aria-valuetext={`${r1} 歐姆`}
                 min="1"
                 max="20"
                 step="1"
@@ -258,6 +262,8 @@ export const CircuitLab: React.FC = () => {
               />
               <input
                 type="range"
+                aria-label="電阻二"
+                aria-valuetext={`${r2} 歐姆`}
                 min="1"
                 max="20"
                 step="1"

@@ -130,8 +130,9 @@ export const CalculusLabPanel: React.FC<Props> = ({
       </div>
 
       <div className="form-group expr-input-group">
-        <label>自訂函數表達式 f(x)：</label>
+        <label htmlFor="calculus-expression">自訂函數表達式 f(x)：</label>
         <input
+          id="calculus-expression"
           type="text"
           value={expression}
           onChange={(e) => onExpressionChange(e.target.value)}
@@ -144,11 +145,13 @@ export const CalculusLabPanel: React.FC<Props> = ({
         {/* 切點 x0 */}
         <div className="slider-item">
           <div className="slider-label-row">
-            <span>探索焦點 / 切點 x₀:</span>
+            <span id="calculus-x0-label">探索焦點 / 切點 x₀:</span>
             <strong>{x0.toFixed(2)}</strong>
           </div>
           <input
             type="range"
+            aria-labelledby="calculus-x0-label"
+            aria-valuetext={`${x0.toFixed(2)} x 座標`}
             min="-1"
             max="4"
             step="0.1"
@@ -161,11 +164,13 @@ export const CalculusLabPanel: React.FC<Props> = ({
         {(mode === 'tangent_secant' || mode === 'limit_epsilon') && (
           <div className="slider-item">
             <div className="slider-label-row">
-              <span>微元步長 Δx:</span>
+              <span id="calculus-dx-label">微元步長 Δx:</span>
               <strong className={deltaX < 0.1 ? 'highlight-green' : ''}>{deltaX.toFixed(3)}</strong>
             </div>
             <input
               type="range"
+              aria-labelledby="calculus-dx-label"
+              aria-valuetext={`${deltaX.toFixed(3)} x 單位`}
               min="0.005"
               max="2.0"
               step="0.005"
@@ -179,11 +184,13 @@ export const CalculusLabPanel: React.FC<Props> = ({
         {mode === 'limit_epsilon' && (
           <div className="slider-item">
             <div className="slider-label-row">
-              <span>目標容忍誤差 ε:</span>
+              <span id="calculus-epsilon-label">目標容忍誤差 ε:</span>
               <strong>{epsilon.toFixed(2)}</strong>
             </div>
             <input
               type="range"
+              aria-labelledby="calculus-epsilon-label"
+              aria-valuetext={`${epsilon.toFixed(2)} 函數值單位`}
               min="0.1"
               max="2.0"
               step="0.05"
@@ -198,11 +205,13 @@ export const CalculusLabPanel: React.FC<Props> = ({
           <>
             <div className="slider-item">
               <div className="slider-label-row">
-                <span>積分下限 a:</span>
+                <span id="calculus-int-a-label">積分下限 a:</span>
                 <strong>{intA.toFixed(1)}</strong>
               </div>
               <input
                 type="range"
+                aria-labelledby="calculus-int-a-label"
+                aria-valuetext={`${intA.toFixed(1)} x 座標`}
                 min="-1"
                 max={intB - 0.5}
                 step="0.5"
@@ -213,11 +222,13 @@ export const CalculusLabPanel: React.FC<Props> = ({
 
             <div className="slider-item">
               <div className="slider-label-row">
-                <span>積分上限 b:</span>
+                <span id="calculus-int-b-label">積分上限 b:</span>
                 <strong>{intB.toFixed(1)}</strong>
               </div>
               <input
                 type="range"
+                aria-labelledby="calculus-int-b-label"
+                aria-valuetext={`${intB.toFixed(1)} x 座標`}
                 min={intA + 0.5}
                 max="5"
                 step="0.5"
@@ -233,11 +244,13 @@ export const CalculusLabPanel: React.FC<Props> = ({
           <>
             <div className="slider-item">
               <div className="slider-label-row">
-                <span>黎曼和切片數 N:</span>
+                <span id="calculus-slices-label">黎曼和切片數 N:</span>
                 <strong>{slicesN}</strong>
               </div>
               <input
                 type="range"
+                aria-labelledby="calculus-slices-label"
+                aria-valuetext={`${slicesN} 個切片`}
                 min="2"
                 max="80"
                 step="2"
@@ -279,11 +292,13 @@ export const CalculusLabPanel: React.FC<Props> = ({
         {mode === 'taylor_series' && (
           <div className="slider-item">
             <div className="slider-label-row">
-              <span>泰勒展開多項式階數 N:</span>
+              <span id="calculus-order-label">泰勒展開多項式階數 N:</span>
               <strong>{taylorOrder} 階</strong>
             </div>
             <input
               type="range"
+              aria-labelledby="calculus-order-label"
+              aria-valuetext={`${taylorOrder} 階`}
               min="0"
               max="8"
               step="1"

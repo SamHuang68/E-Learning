@@ -1,3 +1,5 @@
+import { LOCAL_PREFERENCE_KEYS } from '../utils/progressKeys'
+
 /**
  * Web Audio API 輕量音效合成器 (AudioSynthesizer)
  *
@@ -7,7 +9,7 @@
  * 3. 內建靜音開關與音量保護機制，支援 LocalStorage 持久化保存使用者靜音偏好。
  */
 
-const STORAGE_KEY_MUTED = 'learning_audio_muted_v1'
+const STORAGE_KEY_MUTED = LOCAL_PREFERENCE_KEYS.audioMuted
 
 let audioCtx: AudioContext | null = null
 

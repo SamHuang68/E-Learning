@@ -10,6 +10,7 @@
 
 import type { PhysicsGradeId, PhysicsStage } from '../data/curriculum'
 import { recordActivity, notifyProgressChanged } from '../../utils/storage'
+import { PROGRESS_STORAGE_KEYS } from '../../utils/progressKeys'
 
 export type PhysicsProgressState = {
   stage: PhysicsStage
@@ -22,7 +23,7 @@ export type PhysicsProgressState = {
   labCompleted: string[]
 }
 
-const PHYSICS_PROGRESS_KEY = 'physics-learning-progress'
+const PHYSICS_PROGRESS_KEY = PROGRESS_STORAGE_KEYS.physics
 
 // 記憶體備援（用於 SSR 或 Node/Vitest 測試環境）
 let memoryStorage: Record<string, string> = {}

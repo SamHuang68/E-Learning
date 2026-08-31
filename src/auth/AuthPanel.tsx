@@ -1,8 +1,8 @@
 import { useState, type FormEvent } from 'react'
-import { useAuth } from './AuthProvider'
+import { useAuth } from './AuthContext'
 
 export function AuthPanel() {
-  const { configured, backendKind, loading, user, syncStatus, signIn, signUp, signOut } =
+  const { configured, backendKind, loading, user, syncStatus, signIn, signUp, signOut, deleteAccount } =
     useAuth()
   const isLocal = backendKind === 'local'
   const [mode, setMode] = useState<'signin' | 'signup'>('signin')
@@ -59,6 +59,12 @@ export function AuthPanel() {
           : '僅本機'
 
   if (user) {
+    async function removeLocalAccount() {
+      if (!confirm('確定刪除此瀏覽器中的本機帳號、密碼驗證資料與帳號進度？此動作無法復原。')) return
+      const error = await deleteAccount()
+      if (error) setMessage(error)
+    }
+
     return (
       <section className="auth-panel signed-in" aria-label="帳號">
         <div className="auth-user-row">
@@ -74,6 +80,15 @@ export function AuthPanel() {
           >
             登出
           </button>
+          {isLocal ? (
+            <button
+              type="button"
+              className="auth-btn danger"
+              onClick={() => void removeLocalAccount()}
+            >
+              刪除本機帳號
+            </button>
+          ) : null}
         </div>
       </section>
     )
@@ -119,6 +134,11 @@ export function AuthPanel() {
             onChange={(e) => setEmail(e.target.value)}
           />
         </label>
+        {isLocal && mode === 'signup' ? (
+          <p className="auth-warning" role="note">
+            本機帳號只保存在此瀏覽器，密碼驗證不等同雲端安全服務；請勿重複使用任何真實帳號密碼。
+          </p>
+        ) : null}
         <label>
           密碼
           <input

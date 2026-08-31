@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest'
 import {
   computeMathRadar,
   computeCalculusRadar,
+  computePhysicsRadar,
+  computeChemistryRadar,
   computeAobaRadar,
   computeToeicRadar,
 } from './radar'
@@ -29,6 +31,24 @@ describe('Knowledge Radar Engine & Four Tracks Ability Model', () => {
       'taylor',
     ])
     expect(radar.averageScore).toBeGreaterThanOrEqual(40)
+  })
+
+  it('does not invent calculus ability without saved evidence', () => {
+    const radar = computeCalculusRadar(0, 0, 0)
+    expect(radar.averageScore).toBe(0)
+    expect(radar.dimensions.every((dimension) => dimension.score === 0)).toBe(true)
+  })
+
+  it('keeps every track at zero when there is no saved practice evidence', () => {
+    const radars = [
+      computeMathRadar([], {}, []),
+      computeCalculusRadar(0, 0, 0),
+      computePhysicsRadar([], {}, []),
+      computeChemistryRadar([], {}, []),
+      computeAobaRadar(0, 0, 0, 0),
+      computeToeicRadar(0, 0, 0),
+    ]
+    expect(radars.every((radar) => radar.averageScore === 0)).toBe(true)
   })
 
   it('computes 5-dimension radar for Aoba Japanese track', () => {

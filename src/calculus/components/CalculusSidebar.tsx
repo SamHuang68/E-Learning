@@ -1,6 +1,7 @@
 import React from 'react'
 import type { LangId } from '../../utils/storage'
 import type { CalculusLabMode } from '../../math/calculus/types'
+import { TrackSwitcher } from '../../components/TrackSwitcher'
 
 export type CalculusNavId = 'canvas_lab' | 'step_solver' | 'adaptive_practice' | 'badges'
 
@@ -12,8 +13,8 @@ type Props = {
   currentTheta: number
   unlockedBadgeCount: number
   totalBadgeCount: number
-  onBackHub?: () => void
-  onSwitchLang?: (lang: LangId) => void
+  onBackHub: () => void
+  onSwitchLang: (lang: LangId) => void
 }
 
 const CALCULUS_UNITS: Array<{
@@ -86,17 +87,20 @@ export const CalculusSidebar: React.FC<Props> = ({
   currentTheta,
   unlockedBadgeCount,
   totalBadgeCount,
+  onBackHub,
+  onSwitchLang,
 }) => {
   return (
     <aside className="sidebar calculus-sidebar">
+      <TrackSwitcher current="calculus" onBackHub={onBackHub} onSwitchLang={onSwitchLang} />
       {/* 品牌標誌 */}
-      <div className="brand" onClick={() => onNav('canvas_lab')} role="button" tabIndex={0}>
+      <button type="button" className="brand brand-button" onClick={() => onNav('canvas_lab')} aria-label="返回微積分幾何實驗室">
         <div className="brand-mark calculus-mark">∫</div>
         <div>
           <strong>微積分互動專題</strong>
           <span className="brand-sub">Calculus Studio</span>
         </div>
-      </div>
+      </button>
 
       {/* 主功能導覽 */}
       <nav className="nav-group" aria-label="微積分核心功能">
@@ -105,6 +109,7 @@ export const CalculusSidebar: React.FC<Props> = ({
           type="button"
           className={`nav-item ${activeNav === 'canvas_lab' ? 'active' : ''}`}
           onClick={() => onNav('canvas_lab')}
+          aria-current={activeNav === 'canvas_lab' ? 'page' : undefined}
         >
           <span className="nav-icon">🎨</span>
           <span className="nav-label">幾何動態實驗室 (Canvas)</span>
@@ -113,6 +118,7 @@ export const CalculusSidebar: React.FC<Props> = ({
           type="button"
           className={`nav-item ${activeNav === 'step_solver' ? 'active' : ''}`}
           onClick={() => onNav('step_solver')}
+          aria-current={activeNav === 'step_solver' ? 'page' : undefined}
         >
           <span className="nav-icon">📝</span>
           <span className="nav-label">步驟式推導解題器</span>
@@ -121,6 +127,7 @@ export const CalculusSidebar: React.FC<Props> = ({
           type="button"
           className={`nav-item ${activeNav === 'adaptive_practice' ? 'active' : ''}`}
           onClick={() => onNav('adaptive_practice')}
+          aria-current={activeNav === 'adaptive_practice' ? 'page' : undefined}
         >
           <span className="nav-icon">🎯</span>
           <span className="nav-label">4 階能力挑戰 (θ: {currentTheta >= 0 ? `+${currentTheta.toFixed(2)}` : currentTheta.toFixed(2)})</span>
@@ -129,6 +136,7 @@ export const CalculusSidebar: React.FC<Props> = ({
           type="button"
           className={`nav-item ${activeNav === 'badges' ? 'active' : ''}`}
           onClick={() => onNav('badges')}
+          aria-current={activeNav === 'badges' ? 'page' : undefined}
         >
           <span className="nav-icon">🏆</span>
           <span className="nav-label">微認證成就館 ({unlockedBadgeCount}/{totalBadgeCount})</span>
@@ -149,6 +157,7 @@ export const CalculusSidebar: React.FC<Props> = ({
                 onSelectMode(u.id)
                 onNav('canvas_lab')
               }}
+              aria-current={isSelected ? 'page' : undefined}
             >
               <span className="nav-icon">{u.icon}</span>
               <div className="unit-nav-label">

@@ -2,6 +2,8 @@ import React from 'react'
 import type { PhysicsGradeId, PhysicsStage } from '../data/curriculum'
 import { getPhysicsGradeInfo } from '../data/curriculum'
 import type { PhysicsProgressState } from '../utils/physicsStorage'
+import type { LangId } from '../../utils/storage'
+import { TrackSwitcher } from '../../components/TrackSwitcher'
 
 export type PhysicsNavId = 'today' | 'practice' | 'mock' | 'vault' | 'labs' | 'signals'
 
@@ -11,6 +13,8 @@ type Props = {
   currentGradeId: PhysicsGradeId
   onSelectGrade: (gradeId: PhysicsGradeId) => void
   progress: PhysicsProgressState
+  onBackHub: () => void
+  onSwitchLang: (lang: LangId) => void
 }
 
 export const PhysicsSidebar: React.FC<Props> = ({
@@ -19,6 +23,8 @@ export const PhysicsSidebar: React.FC<Props> = ({
   currentGradeId,
   onSelectGrade,
   progress,
+  onBackHub,
+  onSwitchLang,
 }) => {
   const stages: Array<{ id: PhysicsStage; title: string; grades: PhysicsGradeId[] }> = [
     {
@@ -35,14 +41,15 @@ export const PhysicsSidebar: React.FC<Props> = ({
 
   return (
     <aside className="sidebar math-sidebar physics-sidebar">
+      <TrackSwitcher current="physics" onBackHub={onBackHub} onSwitchLang={onSwitchLang} />
       {/* 品牌商標 */}
-      <div className="brand" onClick={() => onNav('today')} role="button" tabIndex={0}>
+      <button type="button" className="brand brand-button" onClick={() => onNav('today')} aria-label="返回物理今日學習">
         <div className="brand-mark math-mark" style={{ background: 'linear-gradient(135deg, #0284c7, #38bdf8)' }}>⚛️</div>
         <div>
           <strong>高中/國中物理 108課綱</strong>
           <span className="brand-sub">物理素養與探究實作</span>
         </div>
-      </div>
+      </button>
 
       {/* 主功能導覽 */}
       <nav className="nav-group" aria-label="物理核心功能">
@@ -50,6 +57,7 @@ export const PhysicsSidebar: React.FC<Props> = ({
           type="button"
           className={activeNav === 'today' ? 'active' : ''}
           onClick={() => onNav('today')}
+          aria-current={activeNav === 'today' ? 'page' : undefined}
         >
           <span className="nav-icon">📅</span>
           <span className="nav-label">今日學習 (首頁)</span>
@@ -58,6 +66,7 @@ export const PhysicsSidebar: React.FC<Props> = ({
           type="button"
           className={activeNav === 'practice' ? 'active' : ''}
           onClick={() => onNav('practice')}
+          aria-current={activeNav === 'practice' ? 'page' : undefined}
         >
           <span className="nav-icon">✏️</span>
           <span className="nav-label">單元題庫練習</span>
@@ -66,6 +75,7 @@ export const PhysicsSidebar: React.FC<Props> = ({
           type="button"
           className={activeNav === 'mock' ? 'active' : ''}
           onClick={() => onNav('mock')}
+          aria-current={activeNav === 'mock' ? 'page' : undefined}
         >
           <span className="nav-icon">🎯</span>
           <span className="nav-label">會考/學測/分科模考</span>
@@ -74,6 +84,7 @@ export const PhysicsSidebar: React.FC<Props> = ({
           type="button"
           className={activeNav === 'vault' ? 'active' : ''}
           onClick={() => onNav('vault')}
+          aria-current={activeNav === 'vault' ? 'page' : undefined}
         >
           <span className="nav-icon">📖</span>
           <span className="nav-label">錯題本 ({progress.errorQuestions.length})</span>
@@ -82,6 +93,7 @@ export const PhysicsSidebar: React.FC<Props> = ({
           type="button"
           className={activeNav === 'signals' ? 'active' : ''}
           onClick={() => onNav('signals')}
+          aria-current={activeNav === 'signals' ? 'page' : undefined}
         >
           <span className="nav-icon">⚡</span>
           <span className="nav-label">3秒破題訊號卡</span>
@@ -90,6 +102,7 @@ export const PhysicsSidebar: React.FC<Props> = ({
           type="button"
           className={activeNav === 'labs' ? 'active' : ''}
           onClick={() => onNav('labs')}
+          aria-current={activeNav === 'labs' ? 'page' : undefined}
         >
           <span className="nav-icon">🧪</span>
           <span className="nav-label">動態物理實驗室</span>
@@ -113,6 +126,7 @@ export const PhysicsSidebar: React.FC<Props> = ({
                     className={`grade-pill-btn ${isSelected ? 'selected' : ''}`}
                     onClick={() => onSelectGrade(gid)}
                     title={info.name}
+                    aria-pressed={isSelected}
                   >
                     {gid.toUpperCase()}
                   </button>

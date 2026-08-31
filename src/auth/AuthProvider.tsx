@@ -1,19 +1,17 @@
 import {
-  createContext,
-  useContext,
   useEffect,
   useMemo,
   useRef,
   useState,
   type ReactNode,
 } from 'react'
-import type { Session, User } from '@supabase/supabase-js'
+import type { Session } from '@supabase/supabase-js'
 import {
   getBackendKind,
   getSupabase,
   isSupabaseConfigured,
-  type BackendKind,
 } from '../lib/supabase'
+import { deleteLocalProfile } from './deleteLocalProfile'
 import {
   flushCloudPush,
   hydrateFromCloud,
@@ -21,20 +19,7 @@ import {
   subscribeSyncStatus,
   type SyncUiStatus,
 } from '../utils/cloudProgress'
-
-type AuthContextValue = {
-  configured: boolean
-  backendKind: BackendKind
-  loading: boolean
-  session: Session | null
-  user: User | null
-  syncStatus: SyncUiStatus
-  signIn: (email: string, password: string) => Promise<string | null>
-  signUp: (email: string, password: string) => Promise<string | null>
-  signOut: () => Promise<void>
-}
-
-const AuthContext = createContext<AuthContextValue | null>(null)
+import { AuthContext, type AuthContextValue } from './AuthContext'
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const configured = isSupabaseConfigured()
@@ -115,15 +100,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (sb) await sb.auth.signOut()
         setSession(null)
       },
+      async deleteAccount() {
+        if (getBackendKind() !== 'local') {
+          return '雲端帳號刪除需由 Supabase 帳號管理流程處理。'
+        }
+        const userId = session?.user?.id
+        if (!userId) return '目前沒有已登入的本機帳號。'
+        const deleted = deleteLocalProfile(userId)
+        if (!deleted) return '找不到可刪除的本機帳號。'
+        setCloudUserId(null)
+        setSession(null)
+        return null
+      },
     }),
     [configured, loading, session, syncStatus],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-}
-
-export function useAuth(): AuthContextValue {
-  const ctx = useContext(AuthContext)
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider')
-  return ctx
 }

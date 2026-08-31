@@ -154,6 +154,8 @@ export const RiemannCalculusLab: React.FC = () => {
             </div>
             <input
               type="range"
+              aria-label="黎曼和切片細分數"
+              aria-valuetext={`${slicesN} 個切片`}
               min="4"
               max="100"
               step="2"

@@ -7,7 +7,7 @@ type Props = {
 }
 
 /**
- * 多維度知識與能力雷達圖元件 (KnowledgeRadar)
+ * 多維度練習紀錄雷達圖元件 (KnowledgeRadar)
  * 輕量級純 SVG 繪製五邊形蜘蛛網雷達圖，零第三方圖表庫依賴。
  */
 export const KnowledgeRadar: React.FC<Props> = ({ radar, size = 320 }) => {
@@ -44,12 +44,23 @@ export const KnowledgeRadar: React.FC<Props> = ({ radar, size = 320 }) => {
   return (
     <div className="knowledge-radar-card">
       <div className="radar-header">
-        <h4>📊 {radar.trackName} · 能力雷達</h4>
-        <span className="radar-avg-badge">綜合戰力：{radar.averageScore} 分</span>
+        <h4>📊 {radar.trackName} · 練習紀錄雷達</h4>
+        <span className="radar-avg-badge">紀錄指標：{radar.averageScore} / 100</span>
       </div>
 
       <div className="radar-svg-container">
-        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="radar-svg">
+        <svg
+          width={size}
+          height={size}
+          viewBox={`0 0 ${size} ${size}`}
+          className="radar-svg"
+          role="img"
+          aria-labelledby="knowledge-radar-title knowledge-radar-desc"
+        >
+          <title id="knowledge-radar-title">{radar.trackName}練習紀錄雷達</title>
+          <desc id="knowledge-radar-desc">
+            本機紀錄指標 {radar.averageScore}。{dimensions.map((dimension) => `${dimension.label} ${dimension.score}`).join('；')}。此圖不是能力診斷。
+          </desc>
           {/* 背景同心五邊形網格 */}
           {gridLevels.map((lvl) => {
             const points = Array.from({ length: count })
@@ -135,13 +146,19 @@ export const KnowledgeRadar: React.FC<Props> = ({ radar, size = 320 }) => {
         </svg>
       </div>
 
+      <ul className="sr-only">
+        {dimensions.map((dimension) => (
+          <li key={dimension.key}>{dimension.label}：{dimension.score} / {dimension.fullMark}</li>
+        ))}
+      </ul>
+
       <div className="radar-insights-row">
         <div className="insight-badge strong">
-          <span>🌟 最強項：</span>
+          <span>🌟 目前較多紀錄：</span>
           <strong>{radar.strongestDimension.label} ({radar.strongestDimension.score}分)</strong>
         </div>
         <div className="insight-badge weak">
-          <span>🎯 優先補強：</span>
+          <span>🎯 可先探索：</span>
           <strong>{radar.weakestDimension.label} ({radar.weakestDimension.score}分)</strong>
         </div>
       </div>

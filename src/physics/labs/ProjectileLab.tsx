@@ -352,6 +352,8 @@ export const ProjectileLab: React.FC = () => {
             </div>
             <input
               type="range"
+              aria-label="拋體初速度"
+              aria-valuetext={`${v0} 公尺每秒`}
               min="5"
               max="45"
               step="1"
@@ -369,6 +371,8 @@ export const ProjectileLab: React.FC = () => {
             </div>
             <input
               type="range"
+              aria-label="拋體發射仰角"
+              aria-valuetext={`${angleDeg} 度`}
               min="5"
               max="85"
               step="1"
@@ -386,6 +390,8 @@ export const ProjectileLab: React.FC = () => {
             </div>
             <input
               type="range"
+              aria-label="拋體動態時間探針"
+              aria-valuetext={`${currentTime.toFixed(2)} 秒`}
               min="0"
               max="1"
               step="0.01"

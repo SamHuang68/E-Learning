@@ -308,6 +308,8 @@ export const VseprGeometryLab: React.FC = () => {
             </div>
             <input
               type="range"
+              aria-label="鍵結電子對數量"
+              aria-valuetext={`${bp} 對`}
               min="1"
               max="6"
               step="1"
@@ -329,6 +331,8 @@ export const VseprGeometryLab: React.FC = () => {
             </div>
             <input
               type="range"
+              aria-label="孤對電子數量"
+              aria-valuetext={`${lp} 對`}
               min="0"
               max={Math.max(0, 6 - bp)}
               step="1"

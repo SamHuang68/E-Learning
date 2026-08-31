@@ -89,7 +89,7 @@ export const MathPractice: React.FC<Props> = ({ unit, onBack, onComplete }) => {
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [submitted, selectedOption, fillInput, currentQ, currentIndex])
+  })
 
   if (!currentQ) {
     return (

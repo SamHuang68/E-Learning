@@ -8,10 +8,19 @@ create table if not exists public.user_progress (
   aoba jsonb not null default '{}'::jsonb,
   kana jsonb not null default '{}'::jsonb,
   toeic jsonb not null default '{}'::jsonb,
+  math jsonb not null default '{}'::jsonb,
+  physics jsonb not null default '{}'::jsonb,
+  chemistry jsonb not null default '{}'::jsonb,
   lang text not null default 'hub',
   meta jsonb not null default '{}'::jsonb,
   updated_at timestamptz not null default now()
 );
+
+-- Additive migration for projects created from an earlier schema revision.
+alter table public.user_progress
+  add column if not exists math jsonb not null default '{}'::jsonb,
+  add column if not exists physics jsonb not null default '{}'::jsonb,
+  add column if not exists chemistry jsonb not null default '{}'::jsonb;
 
 alter table public.user_progress enable row level security;
 

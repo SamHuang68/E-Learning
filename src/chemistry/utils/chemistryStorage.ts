@@ -1,5 +1,6 @@
 import type { ChemistryGradeId, ChemistryStage } from '../data/curriculum'
 import { recordActivity, notifyProgressChanged } from '../../utils/storage'
+import { PROGRESS_STORAGE_KEYS } from '../../utils/progressKeys'
 
 /**
  * 臺灣 108 課綱化學學習狀態資料結構
@@ -25,7 +26,7 @@ export interface ChemistryProgressState {
   bookmarkedSignals: string[]
 }
 
-const CHEMISTRY_PROGRESS_KEY = 'chemistry-learning-progress'
+const CHEMISTRY_PROGRESS_KEY = PROGRESS_STORAGE_KEYS.chemistry
 
 // 記憶體備援（用於 SSR 或 Node 測試環境）
 let memoryStorage: Record<string, string> = {}

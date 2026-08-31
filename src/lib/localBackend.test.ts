@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { createLocalBackend } from './localBackend'
+import { createLocalBackend, deleteLocalAccount } from './localBackend'
+import { deleteLocalProfile } from '../auth/deleteLocalProfile'
 import { getBackendKind, getSupabase, isSupabaseCloudConfigured } from './supabase'
 import {
   hydrateFromCloud,
@@ -14,6 +15,10 @@ import {
   loadToeicProgress,
   saveToeicProgress,
 } from '../utils/storage'
+import { defaultMathProgress, loadMathProgress, saveMathProgress } from '../math/utils/mathStorage'
+import { defaultPhysicsProgress, loadPhysicsProgress, savePhysicsProgress } from '../physics/utils/physicsStorage'
+import { defaultChemistryProgress, loadChemistryProgress, saveChemistryProgress } from '../chemistry/utils/chemistryStorage'
+import { LOCAL_PREFERENCE_KEYS, PROGRESS_STORAGE_KEYS } from '../utils/progressKeys'
 
 class MemoryStorage {
   private store = new Map<string, string>()
@@ -126,6 +131,71 @@ describe('local backend auth', () => {
     expect(events).toEqual(['SIGNED_IN', 'SIGNED_OUT'])
     data.subscription.unsubscribe()
   })
+
+  it('deletes a browser-local account, its session, and its progress row', async () => {
+    const sb = createLocalBackend()
+    const signUp = await sb.auth.signUp({ email: 'delete@local.test', password: 'local123' })
+    const userId = signUp.data.session!.user.id
+    await sb.from('user_progress').upsert({ user_id: userId, aoba: { xp: 9 } })
+
+    expect(deleteLocalAccount(userId)).toBe(true)
+    expect((await sb.auth.getSession()).data.session).toBeNull()
+    expect((await sb.from('user_progress').select('*').eq('user_id', userId).maybeSingle()).data).toBeNull()
+
+    const signIn = await sb.auth.signInWithPassword({ email: 'delete@local.test', password: 'local123' })
+    expect(signIn.error).not.toBeNull()
+  })
+
+  it('deletes the shared progress mirror so a later local account cannot inherit it', async () => {
+    const sb = createLocalBackend()
+    const first = await sb.auth.signUp({ email: 'first@local.test', password: 'local123' })
+    const firstUserId = first.data.session!.user.id
+    await sb.from('user_progress').upsert({ user_id: firstUserId, aoba: { xp: 91 } })
+
+    applyCloudBundle({
+      aoba: {
+        levelId: 'n5n4',
+        unitId: 1,
+        xp: 91,
+        vocabDone: 7,
+        readingDone: 3,
+        grammarStarted: true,
+      },
+      kana: defaultKanaProgress(),
+      toeic: { ...defaultToeicProgress(), xp: 92 },
+      math: { ...defaultMathProgress(), xp: 93 },
+      physics: { ...defaultPhysicsProgress(), xp: 94 },
+      chemistry: { ...defaultChemistryProgress(), xp: 95 },
+      lang: 'chemistry',
+      meta: { ...defaultLearningMeta(), streak: 96 },
+    })
+    localStorage.setItem(PROGRESS_STORAGE_KEYS.mathSignals, '{"seen":true}')
+    localStorage.setItem(PROGRESS_STORAGE_KEYS.physicsSignals, '{"seen":true}')
+    localStorage.setItem(PROGRESS_STORAGE_KEYS.chemistrySignals, '{"seen":true}')
+    localStorage.setItem(LOCAL_PREFERENCE_KEYS.accessibility, '{"darkMode":true}')
+
+    expect(deleteLocalProfile(firstUserId)).toBe(true)
+    expect((await sb.auth.getSession()).data.session).toBeNull()
+    expect(loadToeicProgress().xp).toBe(0)
+    expect(loadMathProgress().xp).toBe(0)
+    expect(loadPhysicsProgress().xp).toBe(0)
+    expect(loadChemistryProgress().xp).toBe(0)
+    expect(Object.values(PROGRESS_STORAGE_KEYS).every((key) => localStorage.getItem(key) === null)).toBe(true)
+    expect(localStorage.getItem(LOCAL_PREFERENCE_KEYS.accessibility)).toBe('{"darkMode":true}')
+
+    const second = await sb.auth.signUp({ email: 'second@local.test', password: 'local123' })
+    const secondUserId = second.data.session!.user.id
+    expect(await hydrateFromCloud(secondUserId)).toBe('migrated')
+    const secondRow = await sb.from('user_progress').select('*').eq('user_id', secondUserId).maybeSingle()
+    expect(secondRow.data).toMatchObject({
+      user_id: secondUserId,
+      aoba: { xp: 0 },
+      toeic: { xp: 0 },
+      math: { xp: 0 },
+      physics: { xp: 0 },
+      chemistry: { xp: 0 },
+    })
+  })
 })
 
 describe('local user_progress table', () => {
@@ -163,6 +233,9 @@ describe('progress sync via cloudProgress (offline)', () => {
 
     // Seed some local progress (as if earned while signed out).
     saveToeicProgress({ ...defaultToeicProgress(), xp: 50, vocabDone: 4 })
+    saveMathProgress({ ...defaultMathProgress(), xp: 31 })
+    savePhysicsProgress({ ...defaultPhysicsProgress(), xp: 32 })
+    saveChemistryProgress({ ...defaultChemistryProgress(), xp: 33 })
     expect(loadToeicProgress().xp).toBe(50)
 
     // First login: no cloud row yet -> migrate local up to the backend.
@@ -185,6 +258,9 @@ describe('progress sync via cloudProgress (offline)', () => {
       },
       kana: defaultKanaProgress(),
       toeic: defaultToeicProgress(),
+      math: defaultMathProgress(),
+      physics: defaultPhysicsProgress(),
+      chemistry: defaultChemistryProgress(),
       lang: 'hub',
       meta: defaultLearningMeta(),
     })
@@ -194,5 +270,8 @@ describe('progress sync via cloudProgress (offline)', () => {
     const second = await hydrateFromCloud(userId)
     expect(second).toBe('pulled')
     expect(loadToeicProgress().xp).toBe(75)
+    expect(loadMathProgress().xp).toBe(31)
+    expect(loadPhysicsProgress().xp).toBe(32)
+    expect(loadChemistryProgress().xp).toBe(33)
   })
 })

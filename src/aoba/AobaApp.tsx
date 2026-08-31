@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
-import { useAuth } from '../auth/AuthProvider'
+import { useAuth } from '../auth/AuthContext'
 import { Breadcrumbs } from '../components/Breadcrumbs'
 import { KanaLab } from '../components/KanaLab'
 import { KanjiLab } from '../components/KanjiLab'

@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useState } from 'react'
+import { Suspense, useEffect, useRef, useState } from 'react'
 import { AuthProvider } from './auth/AuthProvider'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { PrivacyPage } from './components/PrivacyPage'
@@ -6,38 +6,35 @@ import { AccessibilityControls } from './components/AccessibilityControls'
 import { Hub } from './Hub'
 import { saveLang, type AppView, type LangId } from './utils/storage'
 import { lazyWithRetry } from './utils/lazyWithRetry'
+import { parseTopViewHash, type TopView } from './utils/topRoute'
 
-const AobaApp = lazyWithRetry(() =>
-  import('./aoba/AobaApp').then((m) => ({ default: m.AobaApp })),
+const AobaApp = lazyWithRetry(
+  () => import('./aoba/AobaApp').then((m) => ({ default: m.AobaApp })),
+  'aoba',
 )
-const ToeicApp = lazyWithRetry(() =>
-  import('./toeic/ToeicApp').then((m) => ({ default: m.ToeicApp })),
+const ToeicApp = lazyWithRetry(
+  () => import('./toeic/ToeicApp').then((m) => ({ default: m.ToeicApp })),
+  'toeic',
 )
-const MathApp = lazyWithRetry(() =>
-  import('./math/MathApp').then((m) => ({ default: m.MathApp })),
+const MathApp = lazyWithRetry(
+  () => import('./math/MathApp').then((m) => ({ default: m.MathApp })),
+  'math',
 )
-const CalculusApp = lazyWithRetry(() =>
-  import('./calculus/CalculusApp').then((m) => ({ default: m.CalculusApp })),
+const CalculusApp = lazyWithRetry(
+  () => import('./calculus/CalculusApp').then((m) => ({ default: m.CalculusApp })),
+  'calculus',
 )
-const PhysicsApp = lazyWithRetry(() =>
-  import('./physics/PhysicsApp').then((m) => ({ default: m.PhysicsApp })),
+const PhysicsApp = lazyWithRetry(
+  () => import('./physics/PhysicsApp').then((m) => ({ default: m.PhysicsApp })),
+  'physics',
 )
-const ChemistryApp = lazyWithRetry(() =>
-  import('./chemistry/ChemistryApp').then((m) => ({ default: m.ChemistryApp })),
+const ChemistryApp = lazyWithRetry(
+  () => import('./chemistry/ChemistryApp').then((m) => ({ default: m.ChemistryApp })),
+  'chemistry',
 )
-
-type TopView = AppView | 'privacy'
 
 function readTopView(): TopView {
-  const hash = window.location.hash.replace('#', '').trim()
-  if (hash === 'privacy') return 'privacy'
-  if (hash === 'en' || hash.startsWith('toeic')) return 'en'
-  if (hash === 'calculus' || hash.startsWith('calc')) return 'calculus'
-  if (hash === 'physics' || hash.startsWith('phys')) return 'physics'
-  if (hash === 'chemistry' || hash.startsWith('chem')) return 'chemistry'
-  if (hash === 'math' || hash.startsWith('math')) return 'math'
-  if (hash === 'ja' || hash.startsWith('aoba') || hash.startsWith('builder')) return 'ja'
-  return 'hub'
+  return parseTopViewHash(window.location.hash)
 }
 
 function ModuleFallback() {
@@ -50,9 +47,13 @@ function ModuleFallback() {
 
 function AppShell() {
   const [view, setView] = useState<TopView>(() => readTopView())
+  const focusRoute = useRef(false)
 
   useEffect(() => {
-    const onHash = () => setView(readTopView())
+    const onHash = () => {
+      focusRoute.current = true
+      setView(readTopView())
+    }
     window.addEventListener('hashchange', onHash)
     return () => window.removeEventListener('hashchange', onHash)
   }, [])
@@ -70,14 +71,46 @@ function AppShell() {
     }
     document.title = titles[view]
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+
+    let observer: MutationObserver | null = null
+    let timeoutId = 0
+    const prepareMain = () => {
+      const main = document.querySelector<HTMLElement>('main')
+      if (!main) return false
+      main.id = 'main-content'
+      if (focusRoute.current) {
+        main.tabIndex = -1
+        main.focus({ preventScroll: true })
+        focusRoute.current = false
+      }
+      return true
+    }
+
+    if (!prepareMain()) {
+      observer = new MutationObserver(() => {
+        if (prepareMain()) observer?.disconnect()
+      })
+      observer.observe(document.getElementById('root') ?? document.body, {
+        childList: true,
+        subtree: true,
+      })
+      timeoutId = window.setTimeout(() => observer?.disconnect(), 5000)
+    }
+
+    return () => {
+      observer?.disconnect()
+      if (timeoutId) window.clearTimeout(timeoutId)
+    }
   }, [view])
 
   function choose(next: AppView) {
+    focusRoute.current = true
     saveLang(next)
     setView(next)
   }
 
   function openPrivacy() {
+    focusRoute.current = true
     window.location.hash = 'privacy'
     setView('privacy')
   }
@@ -167,8 +200,23 @@ export default function App() {
   return (
     <AuthProvider>
       <ErrorBoundary label="應用程式">
-        <AppShell />
+        <a
+          className="skip-link"
+          href="#main-content"
+          onClick={(event) => {
+            event.preventDefault()
+            const main = document.querySelector<HTMLElement>('main')
+            if (main) {
+              main.id = 'main-content'
+              main.tabIndex = -1
+              main.focus()
+            }
+          }}
+        >
+          跳到主要內容
+        </a>
         <AccessibilityControls />
+        <AppShell />
       </ErrorBoundary>
     </AuthProvider>
   )

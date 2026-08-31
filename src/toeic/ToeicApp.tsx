@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
-import { useAuth } from '../auth/AuthProvider'
+import { useAuth } from '../auth/AuthContext'
 import { Breadcrumbs } from '../components/Breadcrumbs'
 import { MockExam } from '../components/MockExam'
 import { PlacementTest } from '../components/PlacementTest'

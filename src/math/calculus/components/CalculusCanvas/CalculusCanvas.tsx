@@ -114,6 +114,22 @@ export const CalculusCanvas: React.FC<CalculusCanvasProps> = ({
     return `M ${points.join(' L ')}`
   }, [mode, f, x0, taylorOrder, vp, transform])
 
+  const graphSummary = useMemo(() => {
+    const base = `函數 f(x)=${expression}，顯示範圍 x 從 ${transform.minX.toFixed(1)} 到 ${transform.maxX.toFixed(1)}，y 從 ${transform.minY.toFixed(1)} 到 ${transform.maxY.toFixed(1)}。探索點 x=${x0.toFixed(2)}，f(x)=${y0.toFixed(2)}。`
+    if (mode === 'tangent_secant' || mode === 'optimization_mvt') {
+      return `${base} 切線斜率 ${slope.toFixed(2)}；割線斜率 ${secantSlope.toFixed(2)}。`
+    }
+    if (mode === 'riemann_sum' || mode === 'ftc_accumulation') {
+      return `${base} 積分區間 ${intA.toFixed(1)} 到 ${(mode === 'ftc_accumulation' ? x0 : intB).toFixed(1)}，使用 ${slicesN} 個切片。`
+    }
+    if (mode === 'taylor_series') return `${base} 顯示 ${taylorOrder} 階泰勒多項式近似。`
+    if (mode === 'limit_epsilon') return `${base} epsilon 容忍度 ${epsilon.toFixed(2)}，delta x ${deltaX.toFixed(3)}。`
+    if (mode === 'newton_slope_field' && newtonResult) {
+      return `${base} 牛頓法完成 ${newtonResult.iterations.length} 次迭代。`
+    }
+    return base
+  }, [deltaX, epsilon, expression, intA, intB, mode, newtonResult, secantSlope, slicesN, slope, taylorOrder, transform, x0, y0])
+
   return (
     <div className={`calculus-canvas-card ${className}`}>
       <div className="canvas-header-bar">
@@ -124,7 +140,16 @@ export const CalculusCanvas: React.FC<CalculusCanvasProps> = ({
       </div>
 
       <div className="canvas-svg-container" style={{ width: '100%', overflow: 'hidden' }}>
-        <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid meet" className="calc-interactive-svg" style={{ width: '100%', height: 'auto', display: 'block' }}>
+        <svg
+          viewBox={`0 0 ${width} ${height}`}
+          preserveAspectRatio="xMidYMid meet"
+          className="calc-interactive-svg"
+          style={{ width: '100%', height: 'auto', display: 'block' }}
+          role="img"
+          aria-labelledby="calculus-graph-title calculus-graph-desc"
+        >
+          <title id="calculus-graph-title">互動函數圖：{expression}</title>
+          <desc id="calculus-graph-desc">{graphSummary}</desc>
           <defs>
             <clipPath id="calculus-viewport-clip">
               <rect x="0" y="0" width={width} height={height} />
@@ -263,6 +288,8 @@ export const CalculusCanvas: React.FC<CalculusCanvasProps> = ({
           <text x={vp.toScreenX(0) + 8} y={20} fill="#94a3b8" fontSize="12" fontWeight="bold">y</text>
         </svg>
       </div>
+
+      <p className="sr-only" aria-live="polite">{graphSummary}</p>
 
       <div className="canvas-footer-legend">
         <span className="legend-item"><span className="dot blue" /> 原函數 f(x)</span>

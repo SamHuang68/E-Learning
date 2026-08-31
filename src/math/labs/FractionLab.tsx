@@ -124,11 +124,13 @@ export const FractionLab: React.FC<Props> = () => {
 
       <div className="lab-sliders-row">
         <div className="slider-control">
-          <label>
+          <label htmlFor="fraction-numerator">
             分子 (Numerator): <strong>{numerator}</strong>
           </label>
           <input
+            id="fraction-numerator"
             type="range"
+            aria-valuetext={`${numerator}，分數 ${denominator} 分之 ${numerator}`}
             min="0"
             max="12"
             value={numerator}
@@ -137,11 +139,13 @@ export const FractionLab: React.FC<Props> = () => {
         </div>
 
         <div className="slider-control">
-          <label>
+          <label htmlFor="fraction-denominator">
             分母 (Denominator): <strong>{denominator}</strong>
           </label>
           <input
+            id="fraction-denominator"
             type="range"
+            aria-valuetext={`${denominator}，分數 ${denominator} 分之 ${numerator}`}
             min="1"
             max="12"
             value={denominator}

@@ -301,6 +301,8 @@ export const ShmLab: React.FC = () => {
             </div>
             <input
               type="range"
+              aria-label="單擺擺長"
+              aria-valuetext={`${length.toFixed(2)} 公尺`}
               min="0.2"
               max="2.5"
               step="0.05"
@@ -318,6 +320,8 @@ export const ShmLab: React.FC = () => {
             </div>
             <input
               type="range"
+              aria-label="單擺最大擺角"
+              aria-valuetext={`${thetaMaxDeg} 度`}
               min="5"
               max="35"
               step="1"
@@ -339,6 +343,8 @@ export const ShmLab: React.FC = () => {
             </div>
             <input
               type="range"
+              aria-label="單擺目前擺角"
+              aria-valuetext={`${angleNowDeg} 度`}
               min={-thetaMaxDeg}
               max={thetaMaxDeg}
               step="1"

@@ -2,6 +2,7 @@ import type { BuilderConfig } from '../data/course'
 import { LEARN_ORDER, type KanaScript, type LearnRowId } from '../data/kana'
 import { defaultItemState, type ItemState } from '../engine/srs'
 import type { ToeicBuilderConfig, ToeicCertificate } from '../toeic/data/certificates'
+import { PROGRESS_STORAGE_KEYS } from './progressKeys'
 
 /** Late-bound write-through hook (wired by cloudProgress to avoid circular imports). */
 let progressChangeHook: (() => void) | null = null
@@ -536,11 +537,11 @@ export function exportProgressBundle(): ProgressExportBundle {
   let physicsData: unknown = null
   let chemistryData: unknown = null
   try {
-    const rawM = localStorage.getItem('math_108_progress_v1')
+    const rawM = localStorage.getItem(PROGRESS_STORAGE_KEYS.math)
     if (rawM) mathData = JSON.parse(rawM)
-    const rawP = localStorage.getItem('physics_108_progress_v1')
+    const rawP = localStorage.getItem(PROGRESS_STORAGE_KEYS.physics)
     if (rawP) physicsData = JSON.parse(rawP)
-    const rawC = localStorage.getItem('chemistry_108_progress_v1')
+    const rawC = localStorage.getItem(PROGRESS_STORAGE_KEYS.chemistry)
     if (rawC) chemistryData = JSON.parse(rawC)
   } catch {
     /* ignore */
@@ -602,13 +603,13 @@ export function applyCloudBundle(bundle: {
     JSON.stringify({ ...defaultToeicProgress(), ...bundle.toeic }),
   )
   if (bundle.math) {
-    localStorage.setItem('math_108_progress_v1', JSON.stringify(bundle.math))
+    localStorage.setItem(PROGRESS_STORAGE_KEYS.math, JSON.stringify(bundle.math))
   }
   if (bundle.physics) {
-    localStorage.setItem('physics_108_progress_v1', JSON.stringify(bundle.physics))
+    localStorage.setItem(PROGRESS_STORAGE_KEYS.physics, JSON.stringify(bundle.physics))
   }
   if (bundle.chemistry) {
-    localStorage.setItem('chemistry_108_progress_v1', JSON.stringify(bundle.chemistry))
+    localStorage.setItem(PROGRESS_STORAGE_KEYS.chemistry, JSON.stringify(bundle.chemistry))
   }
   localStorage.setItem(
     LEARNING_META_KEY,
@@ -624,6 +625,7 @@ export function clearLocalProgressCache() {
   localStorage.removeItem(TOEIC_PROGRESS_KEY)
   localStorage.removeItem(LEARNING_META_KEY)
   localStorage.removeItem(LANG_KEY)
+  Object.values(PROGRESS_STORAGE_KEYS).forEach((key) => localStorage.removeItem(key))
   try {
     localStorage.removeItem(LEGACY_SITE_KEY)
   } catch {

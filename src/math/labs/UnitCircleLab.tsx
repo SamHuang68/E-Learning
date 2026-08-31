@@ -174,6 +174,8 @@ export const UnitCircleLab: React.FC = () => {
             <label>調整旋轉角度: {angleDeg}°</label>
             <input
               type="range"
+              aria-label="單位圓旋轉角度"
+              aria-valuetext={`${angleDeg} 度`}
               min="0"
               max="360"
               step="5"

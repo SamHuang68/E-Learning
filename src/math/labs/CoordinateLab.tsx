@@ -167,6 +167,8 @@ export const CoordinateLab: React.FC = () => {
                 </label>
                 <input
                   type="range"
+                  aria-label="一次函數斜率 a"
+                  aria-valuetext={`${linearA}`}
                   min="-5"
                   max="5"
                   step="0.5"
@@ -181,6 +183,8 @@ export const CoordinateLab: React.FC = () => {
                 </label>
                 <input
                   type="range"
+                  aria-label="一次函數截距 b"
+                  aria-valuetext={`${linearB}`}
                   min="-8"
                   max="8"
                   step="1"
@@ -208,6 +212,8 @@ export const CoordinateLab: React.FC = () => {
                 </label>
                 <input
                   type="range"
+                  aria-label="二次函數開口係數 a"
+                  aria-valuetext={`${quadA}`}
                   min="-3"
                   max="3"
                   step="0.5"
@@ -225,6 +231,8 @@ export const CoordinateLab: React.FC = () => {
                 </label>
                 <input
                   type="range"
+                  aria-label="二次函數水平平移 h"
+                  aria-valuetext={`${quadH}`}
                   min="-6"
                   max="6"
                   step="1"
@@ -239,6 +247,8 @@ export const CoordinateLab: React.FC = () => {
                 </label>
                 <input
                   type="range"
+                  aria-label="二次函數鉛直平移 k"
+                  aria-valuetext={`${quadK}`}
                   min="-6"
                   max="6"
                   step="1"

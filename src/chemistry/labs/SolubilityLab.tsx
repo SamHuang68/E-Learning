@@ -337,6 +337,8 @@ export const SolubilityLab: React.FC = () => {
             </div>
             <input
               type="range"
+              aria-label="溶液溫度"
+              aria-valuetext={`${tempC} 攝氏度`}
               min="0"
               max="100"
               step="5"
@@ -372,6 +374,8 @@ export const SolubilityLab: React.FC = () => {
             </div>
             <input
               type="range"
+              aria-label={`加入${activeSolute.name}的重量`}
+              aria-valuetext={`${soluteAdded} 克`}
               min="10"
               max="200"
               step="5"
@@ -389,6 +393,8 @@ export const SolubilityLab: React.FC = () => {
             </div>
             <input
               type="range"
+              aria-label="溶劑水重量"
+              aria-valuetext={`${waterG} 克`}
               min="50"
               max="200"
               step="10"

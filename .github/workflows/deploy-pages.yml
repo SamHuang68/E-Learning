@@ -30,12 +30,21 @@ jobs:
       - name: Install
         run: npm ci
 
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm test
+
       - name: Build
         env:
           VITE_BASE_PATH: /${{ github.event.repository.name }}/
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
         run: npm run build
+
+      - name: Verify production and offline assets
+        run: npm run verify:dist
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import {
   type PhysicsGradeId,
+  PHYSICS_GRADES,
   getPhysicsGradeInfo,
   getPhysicsUnit,
 } from './data/curriculum'
@@ -9,6 +10,7 @@ import {
   recordPhysicsAnswer,
   recordPhysicsMockScore,
   recordPhysicsLabCompletion,
+  savePhysicsProgress,
 } from './utils/physicsStorage'
 import { PhysicsSidebar, type PhysicsNavId } from './components/PhysicsSidebar'
 import { PhysicsToday } from './components/PhysicsToday'
@@ -25,32 +27,56 @@ import { Breadcrumbs } from '../components/Breadcrumbs'
 import type { LangId } from '../utils/storage'
 
 type Props = {
-  onBackHub?: () => void
-  onSwitchLang?: (lang: LangId) => void
+  onBackHub: () => void
+  onSwitchLang: (lang: LangId) => void
 }
 
-export const PhysicsApp: React.FC<Props> = () => {
-  const [currentGradeId, setCurrentGradeId] = useState<PhysicsGradeId>('g10')
-  const [currentUnitId, setCurrentUnitId] = useState<number>(1)
+export const PhysicsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
+  const [currentGradeId, setCurrentGradeId] = useState<PhysicsGradeId>(() => {
+    const stored = loadPhysicsProgress().gradeId
+    return PHYSICS_GRADES[stored] ? stored : 'g10'
+  })
+  const [currentUnitId, setCurrentUnitId] = useState<number>(() => {
+    const stored = loadPhysicsProgress()
+    return getPhysicsUnit(stored.gradeId, stored.unitId)?.id ?? 1
+  })
   const [activeNav, setActiveNav] = useState<PhysicsNavId>('today')
   const [activeLabId, setActiveLabId] = useState<string | null>(null)
   const [progress, setProgress] = useState(loadPhysicsProgress())
 
   useEffect(() => {
-    setProgress(loadPhysicsProgress())
-  }, [currentGradeId, activeNav])
+    const refresh = () => {
+      const stored = loadPhysicsProgress()
+      const gradeId = PHYSICS_GRADES[stored.gradeId] ? stored.gradeId : 'g10'
+      const unitId = getPhysicsUnit(gradeId, stored.unitId)?.id ?? 1
+      setProgress(stored)
+      setCurrentGradeId(gradeId)
+      setCurrentUnitId(unitId)
+    }
+    window.addEventListener('e-learning:progress-hydrated', refresh)
+    return () => window.removeEventListener('e-learning:progress-hydrated', refresh)
+  }, [])
 
   const gradeInfo = getPhysicsGradeInfo(currentGradeId)
   const currentUnit = getPhysicsUnit(currentGradeId, currentUnitId) || gradeInfo.units[0]
 
-  function handleSelectGrade(gid: PhysicsGradeId) {
+  function persistSelection(gid: PhysicsGradeId, requestedUnitId: number) {
+    const info = getPhysicsGradeInfo(gid)
+    const unitId = getPhysicsUnit(gid, requestedUnitId)?.id ?? info.units[0].id
+    const updated = { ...progress, stage: info.stage, gradeId: gid, unitId }
+    savePhysicsProgress(updated)
+    setProgress(updated)
     setCurrentGradeId(gid)
-    setCurrentUnitId(1)
+    setCurrentUnitId(unitId)
+  }
+
+  function handleSelectGrade(gid: PhysicsGradeId) {
+    persistSelection(gid, 1)
     setActiveNav('today')
   }
 
   function handleSelectUnit(uId: number) {
-    setCurrentUnitId(uId)
+    persistSelection(currentGradeId, uId)
     setActiveNav('practice')
   }
 
@@ -107,6 +133,8 @@ export const PhysicsApp: React.FC<Props> = () => {
         currentGradeId={currentGradeId}
         onSelectGrade={handleSelectGrade}
         progress={progress}
+        onBackHub={onBackHub}
+        onSwitchLang={onSwitchLang}
       />
 
       <main className="content math-content physics-content">
@@ -140,7 +168,7 @@ export const PhysicsApp: React.FC<Props> = () => {
               <span>切換單元</span>
               <select
                 value={currentUnitId}
-                onChange={(e) => setCurrentUnitId(Number(e.target.value))}
+                onChange={(e) => persistSelection(currentGradeId, Number(e.target.value))}
               >
                 {gradeInfo.units.map((u) => (
                   <option key={u.id} value={u.id}>
@@ -180,7 +208,7 @@ export const PhysicsApp: React.FC<Props> = () => {
             onAnswerWrong={handleAnswerWrong}
             onNextUnit={() => {
               if (currentUnitId < gradeInfo.units.length) {
-                setCurrentUnitId(currentUnitId + 1)
+                persistSelection(currentGradeId, currentUnitId + 1)
               } else {
                 setActiveNav('today')
               }

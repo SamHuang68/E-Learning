@@ -1,7 +1,7 @@
 {
-  "name": "あおば E-Learning",
-  "short_name": "Aoba Learn",
-  "description": "あおば日語與 TOEIC English 學習站",
+  "name": "E-Learning Hub 六軌學習平台",
+  "short_name": "E-Learning",
+  "description": "日語、多益、數學、微積分、物理與化學的離線優先互動學習平台",
   "display": "standalone",
   "start_url": ".",
   "scope": ".",

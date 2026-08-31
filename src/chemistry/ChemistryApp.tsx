@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import {
   type ChemistryGradeId,
+  CHEMISTRY_GRADES,
   getChemistryGradeInfo,
 } from './data/curriculum'
 import {
@@ -8,6 +9,7 @@ import {
   recordChemistryAnswer,
   recordChemistryMockScore,
   recordChemistryLabCompletion,
+  saveChemistryProgress,
 } from './utils/chemistryStorage'
 import { ChemistrySidebar, type ChemistryNavId } from './components/ChemistrySidebar'
 import { ChemistryToday } from './components/ChemistryToday'
@@ -24,32 +26,62 @@ import { Breadcrumbs } from '../components/Breadcrumbs'
 import type { LangId } from '../utils/storage'
 
 type Props = {
-  onBackHub?: () => void
-  onSwitchLang?: (lang: LangId) => void
+  onBackHub: () => void
+  onSwitchLang: (lang: LangId) => void
 }
 
-export const ChemistryApp: React.FC<Props> = () => {
-  const [currentGradeId, setCurrentGradeId] = useState<ChemistryGradeId>('g10')
-  const [currentUnitId, setCurrentUnitId] = useState<number>(1)
+export const ChemistryApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
+  const [currentGradeId, setCurrentGradeId] = useState<ChemistryGradeId>(() => {
+    const stored = loadChemistryProgress().gradeId
+    return CHEMISTRY_GRADES[stored] ? stored : 'g10'
+  })
+  const [currentUnitId, setCurrentUnitId] = useState<number>(() => {
+    const stored = loadChemistryProgress()
+    return CHEMISTRY_GRADES[stored.gradeId]?.units.some((unit) => unit.id === stored.unitId)
+      ? stored.unitId
+      : 1
+  })
   const [activeNav, setActiveNav] = useState<ChemistryNavId>('today')
   const [activeLabId, setActiveLabId] = useState<string | null>(null)
   const [progress, setProgress] = useState(loadChemistryProgress())
 
   useEffect(() => {
-    setProgress(loadChemistryProgress())
-  }, [currentGradeId, activeNav])
+    const refresh = () => {
+      const stored = loadChemistryProgress()
+      const gradeId = CHEMISTRY_GRADES[stored.gradeId] ? stored.gradeId : 'g10'
+      const unitId = CHEMISTRY_GRADES[gradeId].units.some((unit) => unit.id === stored.unitId)
+        ? stored.unitId
+        : 1
+      setProgress(stored)
+      setCurrentGradeId(gradeId)
+      setCurrentUnitId(unitId)
+    }
+    window.addEventListener('e-learning:progress-hydrated', refresh)
+    return () => window.removeEventListener('e-learning:progress-hydrated', refresh)
+  }, [])
 
   const gradeInfo = getChemistryGradeInfo(currentGradeId)
   const currentUnit = gradeInfo.units.find((u) => u.id === currentUnitId) || gradeInfo.units[0]
 
-  function handleSelectGrade(gid: ChemistryGradeId) {
+  function persistSelection(gid: ChemistryGradeId, requestedUnitId: number) {
+    const info = getChemistryGradeInfo(gid)
+    const unitId = info.units.some((unit) => unit.id === requestedUnitId)
+      ? requestedUnitId
+      : info.units[0].id
+    const updated = { ...progress, stage: info.stage, gradeId: gid, unitId }
+    saveChemistryProgress(updated)
+    setProgress(updated)
     setCurrentGradeId(gid)
-    setCurrentUnitId(1)
+    setCurrentUnitId(unitId)
+  }
+
+  function handleSelectGrade(gid: ChemistryGradeId) {
+    persistSelection(gid, 1)
     setActiveNav('today')
   }
 
   function handleSelectUnit(uId: number) {
-    setCurrentUnitId(uId)
+    persistSelection(currentGradeId, uId)
     setActiveNav('practice')
   }
 
@@ -106,6 +138,8 @@ export const ChemistryApp: React.FC<Props> = () => {
         currentGradeId={currentGradeId}
         onSelectGrade={handleSelectGrade}
         progress={progress}
+        onBackHub={onBackHub}
+        onSwitchLang={onSwitchLang}
       />
 
       <main className="content math-content chemistry-content">
@@ -139,7 +173,7 @@ export const ChemistryApp: React.FC<Props> = () => {
               <span>切換單元</span>
               <select
                 value={currentUnitId}
-                onChange={(e) => setCurrentUnitId(Number(e.target.value))}
+                onChange={(e) => persistSelection(currentGradeId, Number(e.target.value))}
               >
                 {gradeInfo.units.map((u) => (
                   <option key={u.id} value={u.id}>
@@ -179,7 +213,7 @@ export const ChemistryApp: React.FC<Props> = () => {
             onAnswerWrong={handleAnswerWrong}
             onNextUnit={() => {
               if (currentUnitId < gradeInfo.units.length) {
-                setCurrentUnitId(currentUnitId + 1)
+                persistSelection(currentGradeId, currentUnitId + 1)
               } else {
                 setActiveNav('today')
               }

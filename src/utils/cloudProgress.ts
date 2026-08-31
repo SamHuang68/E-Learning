@@ -22,15 +22,30 @@ import {
   defaultMathProgress,
   type MathProgressState,
 } from '../math/utils/mathStorage'
+import {
+  defaultPhysicsProgress,
+  loadPhysicsProgress,
+  savePhysicsProgress,
+  type PhysicsProgressState,
+} from '../physics/utils/physicsStorage'
+import {
+  defaultChemistryProgress,
+  loadChemistryProgress,
+  saveChemistryProgress,
+  type ChemistryProgressState,
+} from '../chemistry/utils/chemistryStorage'
 
 setProgressChangeHook(() => {
   scheduleCloudPush()
 })
 
-// 數學軌道進度變更時也觸發雲端同步推送
+// Canonical STEM progress stores emit track-specific events; route all of them
+// through the same debounced cloud writer.
 if (typeof window !== 'undefined') {
-  window.addEventListener('math:progress-updated', () => {
-    scheduleCloudPush()
+  ;['math', 'physics', 'chemistry'].forEach((track) => {
+    window.addEventListener(`${track}:progress-updated`, () => {
+      scheduleCloudPush()
+    })
   })
 }
 
@@ -40,6 +55,8 @@ export type CloudProgressRow = {
   kana: KanaProgress
   toeic: ToeicProgress
   math: MathProgressState
+  physics: PhysicsProgressState
+  chemistry: ChemistryProgressState
   lang: AppView
   meta: LearningMeta
   updated_at: string
@@ -94,24 +111,47 @@ function localBundle() {
     kana: loadKanaProgress(),
     toeic: loadToeicProgress(),
     math: loadMathProgress(),
+    physics: loadPhysicsProgress(),
+    chemistry: loadChemistryProgress(),
     lang: loadLang(),
     meta: loadLearningMeta(),
   }
 }
 
 function normalizeLang(value: unknown): AppView {
-  if (value === 'ja' || value === 'en' || value === 'hub') return value
+  if (
+    value === 'ja' ||
+    value === 'en' ||
+    value === 'math' ||
+    value === 'calculus' ||
+    value === 'physics' ||
+    value === 'chemistry' ||
+    value === 'hub'
+  ) return value
   if (value === 'aoba') return 'ja'
   if (value === 'toeic') return 'en'
+  if (value === 'calc') return 'calculus'
   return 'hub'
 }
 
 function normalizeRow(data: Record<string, unknown>): Omit<CloudProgressRow, 'user_id'> {
+  const math = data.math && typeof data.math === 'object' && Object.keys(data.math).length > 0
+    ? { ...defaultMathProgress(), ...(data.math as Partial<MathProgressState>) }
+    : loadMathProgress()
+  const physics = data.physics && typeof data.physics === 'object' && Object.keys(data.physics).length > 0
+    ? { ...defaultPhysicsProgress(), ...(data.physics as Partial<PhysicsProgressState>) }
+    : loadPhysicsProgress()
+  const chemistry = data.chemistry && typeof data.chemistry === 'object' && Object.keys(data.chemistry).length > 0
+    ? { ...defaultChemistryProgress(), ...(data.chemistry as Partial<ChemistryProgressState>) }
+    : loadChemistryProgress()
+
   return {
     aoba: (data.aoba as ProgressState) ?? loadProgress(),
     kana: (data.kana as KanaProgress) ?? defaultKanaProgress(),
     toeic: (data.toeic as ToeicProgress) ?? defaultToeicProgress(),
-    math: (data.math as MathProgressState) ?? defaultMathProgress(),
+    math,
+    physics,
+    chemistry,
     lang: normalizeLang(data.lang),
     meta: (data.meta as LearningMeta) ?? defaultLearningMeta(),
     updated_at:
@@ -135,7 +175,7 @@ export async function hydrateFromCloud(userId: string): Promise<SyncOutcome> {
   try {
     const { data, error } = await sb
       .from('user_progress')
-      .select('user_id, aoba, kana, toeic, lang, meta, updated_at')
+      .select('user_id, aoba, kana, toeic, math, physics, chemistry, lang, meta, updated_at')
       .eq('user_id', userId)
       .maybeSingle()
 
@@ -149,6 +189,8 @@ export async function hydrateFromCloud(userId: string): Promise<SyncOutcome> {
         kana: bundle.kana,
         toeic: bundle.toeic,
         math: bundle.math,
+        physics: bundle.physics,
+        chemistry: bundle.chemistry,
         lang: bundle.lang,
         meta: bundle.meta,
         updated_at: new Date().toISOString(),
@@ -164,15 +206,22 @@ export async function hydrateFromCloud(userId: string): Promise<SyncOutcome> {
       aoba: row.aoba,
       kana: row.kana,
       toeic: row.toeic,
+      math: row.math,
+      physics: row.physics,
+      chemistry: row.chemistry,
       lang: row.lang,
       meta: row.meta,
     })
     saveMathProgress(row.math)
+    savePhysicsProgress(row.physics)
+    saveChemistryProgress(row.chemistry)
     allowPush = true
     emit('synced')
     return 'pulled'
   } catch {
-    allowPush = Boolean(cloudUserId)
+    // A failed pull must never unlock write-through: stale local state could
+    // overwrite a cloud row that we were unable to read.
+    allowPush = false
     emit('error')
     return 'error'
   }
@@ -191,6 +240,8 @@ export async function pushProgressNow(): Promise<boolean> {
       kana: bundle.kana,
       toeic: bundle.toeic,
       math: bundle.math,
+      physics: bundle.physics,
+      chemistry: bundle.chemistry,
       lang: bundle.lang,
       meta: bundle.meta,
       updated_at: new Date().toISOString(),
@@ -240,6 +291,9 @@ export async function resetCloudProgress(): Promise<boolean> {
     } satisfies ProgressState,
     kana: defaultKanaProgress(),
     toeic: defaultToeicProgress(),
+    math: defaultMathProgress(),
+    physics: defaultPhysicsProgress(),
+    chemistry: defaultChemistryProgress(),
     lang: 'hub' as AppView,
     meta: defaultLearningMeta(),
   }
@@ -253,6 +307,9 @@ export async function resetCloudProgress(): Promise<boolean> {
     })
     if (error) throw error
     applyCloudBundle(fresh)
+    saveMathProgress(fresh.math)
+    savePhysicsProgress(fresh.physics)
+    saveChemistryProgress(fresh.chemistry)
     allowPush = true
     emit('synced')
     return true

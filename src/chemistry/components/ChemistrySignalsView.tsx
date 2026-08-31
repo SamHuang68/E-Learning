@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { CHEMISTRY_SOLVING_SIGNALS, type ChemistrySolvingSignal } from '../data/solvingSignals'
 import { MathFormula } from '../../math/components/MathFormula'
+import { PROGRESS_STORAGE_KEYS } from '../../utils/progressKeys'
 
-const STORAGE_KEY_CHEMISTRY_MASTERY = 'chemistry_signals_mastery_v1'
+const STORAGE_KEY_CHEMISTRY_MASTERY = PROGRESS_STORAGE_KEYS.chemistrySignals
 
 type MasteryStatus = 'mastered' | 'review'
 type MasteryMap = Record<string, MasteryStatus>

@@ -181,6 +181,8 @@ export const MatrixTransformLab: React.FC = () => {
               <label>î_x (a)：{a}</label>
               <input
                 type="range"
+                aria-label="矩陣係數 a，i 向量 x 分量"
+                aria-valuetext={`${a}`}
                 min="-2"
                 max="2"
                 step="0.1"
@@ -192,6 +194,8 @@ export const MatrixTransformLab: React.FC = () => {
               <label>ĵ_x (b)：{b}</label>
               <input
                 type="range"
+                aria-label="矩陣係數 b，j 向量 x 分量"
+                aria-valuetext={`${b}`}
                 min="-2"
                 max="2"
                 step="0.1"
@@ -203,6 +207,8 @@ export const MatrixTransformLab: React.FC = () => {
               <label>î_y (c)：{c}</label>
               <input
                 type="range"
+                aria-label="矩陣係數 c，i 向量 y 分量"
+                aria-valuetext={`${c}`}
                 min="-2"
                 max="2"
                 step="0.1"
@@ -214,6 +220,8 @@ export const MatrixTransformLab: React.FC = () => {
               <label>ĵ_y (d)：{d}</label>
               <input
                 type="range"
+                aria-label="矩陣係數 d，j 向量 y 分量"
+                aria-valuetext={`${d}`}
                 min="-2"
                 max="2"
                 step="0.1"

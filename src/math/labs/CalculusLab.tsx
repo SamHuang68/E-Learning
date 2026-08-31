@@ -197,6 +197,8 @@ export const CalculusLab: React.FC = () => {
                 </div>
                 <input
                   type="range"
+                  aria-label="微分切點 x0"
+                  aria-valuetext={`${x0.toFixed(1)} x 座標`}
                   min="-1"
                   max="5"
                   step="0.1"
@@ -235,6 +237,8 @@ export const CalculusLab: React.FC = () => {
                 </div>
                 <input
                   type="range"
+                  aria-label="積分下限 a"
+                  aria-valuetext={`${intA.toFixed(1)} x 座標`}
                   min="-1"
                   max={intB - 0.5}
                   step="0.5"
@@ -251,6 +255,8 @@ export const CalculusLab: React.FC = () => {
                 </div>
                 <input
                   type="range"
+                  aria-label="積分上限 b"
+                  aria-valuetext={`${intB.toFixed(1)} x 座標`}
                   min={intA + 0.5}
                   max="5"
                   step="0.5"

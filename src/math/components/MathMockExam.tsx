@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { MOCK_EXAMS, type MockExamType } from '../data/mockExams'
 import { MathFormula } from './MathFormula'
 import { recordMockScore, loadMathProgress, saveMathProgress } from '../utils/mathStorage'
@@ -33,28 +33,6 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
   // 初始化時長
   const defaultMinutes = examType === 'cap' ? 80 : examType === 'gsat' ? 100 : 40
 
-  useEffect(() => {
-    if (!isStarted || isFinished || !isTimerRunning) {
-      if (timerRef.current) clearInterval(timerRef.current)
-      return
-    }
-
-    timerRef.current = window.setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timerRef.current!)
-          handleSubmit()
-          return 0
-        }
-        return prev - 1
-      })
-    }, 1000)
-
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current)
-    }
-  }, [isStarted, isFinished, isTimerRunning])
-
   function handleStart() {
     setAnswers({})
     setFlagged({})
@@ -74,7 +52,7 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
     setAnswers((prev) => ({ ...prev, [qIndex]: val }))
   }
 
-  function handleSubmit() {
+  const handleSubmit = useCallback(() => {
     let correct = 0
     const weakList: string[] = []
     const wrongQIds: string[] = []
@@ -143,7 +121,29 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
     })
     setIsFinished(true)
     recordMockScore(examType, pct)
-  }
+  }, [answers, exam, examType])
+
+  // Keep the countdown interval independent from answers. A separate effect
+  // submits when the stable countdown reaches zero, so the latest answer
+  // snapshot is graded without resetting the timer after every response.
+  useEffect(() => {
+    if (!isStarted || isFinished || !isTimerRunning) {
+      if (timerRef.current) clearInterval(timerRef.current)
+      return
+    }
+
+    timerRef.current = window.setInterval(() => {
+      setTimeLeft((prev) => Math.max(0, prev - 1))
+    }, 1000)
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current)
+    }
+  }, [isStarted, isFinished, isTimerRunning])
+
+  useEffect(() => {
+    if (isStarted && !isFinished && timeLeft === 0) handleSubmit()
+  }, [handleSubmit, isFinished, isStarted, timeLeft])
 
   const formatTimer = (secs: number) => {
     const m = Math.floor(secs / 60)

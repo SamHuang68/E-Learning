@@ -314,6 +314,8 @@ export const BuoyancyLab: React.FC = () => {
             </div>
             <input
               type="range"
+              aria-label="物體密度"
+              aria-valuetext={`${objectDensity.toFixed(2)} 克每立方公分`}
               min="0.05"
               max="2.8"
               step="0.05"
@@ -344,6 +346,8 @@ export const BuoyancyLab: React.FC = () => {
             </div>
             <input
               type="range"
+              aria-label="液體密度"
+              aria-valuetext={`${liquidDensity.toFixed(2)} 克每立方公分`}
               min="0.6"
               max="1.5"
               step="0.05"

@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react'
 import type { JlptLevel, Unit } from '../data/course'
 import type { LangId } from '../utils/storage'
+import { TrackSwitcher } from './TrackSwitcher'
 
 export type NavId =
   | 'kana'
@@ -49,9 +50,12 @@ export function Sidebar({
   progressPct,
   kanaMastered,
   kanaTotal,
+  onBackHub,
+  onSwitchLang,
 }: Props) {
   return (
     <aside className="sidebar">
+      <TrackSwitcher current="ja" onBackHub={onBackHub} onSwitchLang={onSwitchLang} />
       <div className="brand">
         <div className="brand-mark" aria-hidden="true">
           あ

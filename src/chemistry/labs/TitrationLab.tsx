@@ -433,6 +433,8 @@ export const TitrationLab: React.FC = () => {
             </div>
             <input
               type="range"
+              aria-label="已滴入氫氧化鈉體積"
+              aria-valuetext={`${vTitrant.toFixed(1)} 毫升`}
               min="0"
               max="50"
               step="0.5"

@@ -57,11 +57,13 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
     window.addEventListener('physics:progress-updated', handleUpdate)
     window.addEventListener('chemistry:progress-updated', handleUpdate)
     window.addEventListener('math:progress-updated', handleUpdate)
+    window.addEventListener('e-learning:progress-hydrated', handleUpdate)
     window.addEventListener('storage', handleUpdate)
     return () => {
       window.removeEventListener('physics:progress-updated', handleUpdate)
       window.removeEventListener('chemistry:progress-updated', handleUpdate)
       window.removeEventListener('math:progress-updated', handleUpdate)
+      window.removeEventListener('e-learning:progress-hydrated', handleUpdate)
       window.removeEventListener('storage', handleUpdate)
     }
   }, [])
@@ -82,8 +84,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
     (physicsProgress.xp || 0) +
     (chemistryProgress.xp || 0) +
     (jaProgress.xp || 0) +
-    (toeicProgress.xp || 0) +
-    150
+    (toeicProgress.xp || 0)
   const levelInfo = calculateLevelProgress(totalXp)
   const daily = dailyProgress(learningMeta)
 
@@ -93,7 +94,9 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
     mathProgress.examScores,
     mathProgress.labCompleted,
   )
-  const calculusRadar = computeCalculusRadar(0.4, 4, 5)
+  const calculusDoneCount = mathProgress.completedQuestions.filter((id) => id.startsWith('calc-prob-')).length
+  const calculusLabCount = mathProgress.labCompleted.includes('calculus') ? 1 : 0
+  const calculusRadar = computeCalculusRadar(0, calculusDoneCount, calculusLabCount)
   const physicsRadar = computePhysicsRadar(
     physicsProgress.completedQuestions,
     physicsProgress.examScores,
@@ -115,7 +118,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
   const toeicRadar = computeToeicRadar(
     Math.max(daily.done, toeicDoneCount),
     toeicDoneCount,
-    750,
+    0,
   )
 
   const activeRadar =
@@ -143,8 +146,9 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
         <p className="eyebrow">UNIFIED E-LEARNING PLATFORM</p>
         <h1>統一學習主頁 · 六大專業學術軌道</h1>
         <p className="lede">
-          同一個學習系統，六大專業軌道。臺灣 108 課綱數學、∫ 微積分互動專題、⚛️ 物理、🧪 化學、あおば日語 JLPT 與多益商務英語。離線優先、FSRS 間隔重複、2PL 自適應選題與抽象視覺圖解。
+          同一個學習系統，六大專業軌道。臺灣 108 課綱數學、∫ 微積分互動專題、⚛️ 物理、🧪 化學、あおば日語 JLPT 與多益商務英語。離線優先，語文卡片提供 FSRS 間隔複習，各軌保留可匯出的本機學習進度與互動圖解。
         </p>
+        <a className="hub-primary-cta" href="#tracks-title">開始學習 · 選擇六大軌道 ↓</a>
       </header>
 
       {/* 全域學習戰力與等級橫幅 */}
@@ -232,22 +236,22 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <strong style={{ fontSize: '0.9rem' }}>FSRS 認知間隔記憶引擎</strong>
+              <strong style={{ fontSize: '0.9rem' }}>語文 FSRS 間隔複習引擎</strong>
               <span
                 style={{
-                  fontSize: '0.68rem',
-                  padding: '0.1rem 0.4rem',
+                  fontSize: '0.76rem',
+                  padding: '0.15rem 0.45rem',
                   borderRadius: '999px',
-                  background: 'rgba(16, 185, 129, 0.12)',
-                  color: '#10b981',
-                  fontWeight: 600,
+                  background: '#d1fae5',
+                  color: '#047857',
+                  fontWeight: 700,
                 }}
               >
-                記憶留存預測 {Object.keys(learningMeta.items).length > 0 ? Math.min(99, Math.max(75, Math.round(90 + (Object.values(learningMeta.items).filter((it) => (it.intervalDays || 0) >= 21 || (it.correctStreak || 0) >= 3).length / Object.keys(learningMeta.items).length) * 9))) : 95}%
+                已排程 {Object.keys(learningMeta.items).length} 張卡
               </span>
             </div>
             <p style={{ margin: '0.15rem 0 0', fontSize: '0.74rem', color: 'var(--muted)' }}>
-              全軌道共追蹤 <strong>{Object.keys(learningMeta.items).length}</strong> 項知識點 · 已建立長期記憶 <strong>{Object.values(learningMeta.items).filter((it) => (it.intervalDays || 0) >= 21 || (it.correctStreak || 0) >= 3).length}</strong> 項 · 連勝加成 <strong>+{Math.min(50, learningMeta.streak * 5)}% XP</strong>
+              日語／多益卡片共追蹤 <strong>{Object.keys(learningMeta.items).length}</strong> 項 · 長間隔卡片 <strong>{Object.values(learningMeta.items).filter((it) => (it.intervalDays || 0) >= 21 || (it.correctStreak || 0) >= 3).length}</strong> 項 · 連勝加成 <strong>+{Math.min(50, learningMeta.streak * 5)}% XP</strong>
             </p>
           </div>
         </div>
@@ -343,7 +347,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
               <span>🏆 微認證勳章</span>
             </div>
             <div className="track-user-progress">
-              <span>進度：能力值 <strong>θ: +0.40</strong> · 徽章 <strong>2/6</strong></span>
+              <span>進度：已完成專題題目 <strong>{calculusDoneCount}</strong> 題 · 已記錄實驗室 <strong>{calculusLabCount}</strong> 項</span>
             </div>
             <b className="launch-action">進入微積分學習 →</b>
           </button>
@@ -597,10 +601,10 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
         </div>
       </section>
 
-      {/* 六軌多維能力戰力雷達 */}
+      {/* 六軌本機練習紀錄雷達 */}
       <section className="hub-section-block" aria-labelledby="radar-title">
         <div className="section-header-row">
-          <h2 id="radar-title">六大軌道能力與知識雷達</h2>
+          <h2 id="radar-title">六大軌道練習覆蓋雷達</h2>
           <div className="radar-tab-switcher">
             <button
               type="button"
@@ -653,20 +657,10 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
           <div className="radar-weakness-plan">
             <div className="plan-icon">🎯</div>
             <div className="plan-info">
-              <span className="plan-tag">AI 認知調度 · 今日優先補強計畫</span>
-              <strong>當前建議精進：{activeRadar.weakestDimension.label} ({activeRadar.weakestDimension.score}/100)</strong>
+              <span className="plan-tag">本機練習紀錄 · 下一步建議</span>
+              <strong>可先探索：{activeRadar.weakestDimension.label}（紀錄指標 {activeRadar.weakestDimension.score}/100）</strong>
               <p>
-                {activeRadarTab === 'math'
-                  ? `系統分析您的作答軌跡，建議前往強化「${activeRadar.weakestDimension.label}」專屬具象教具與階梯式題庫。`
-                  : activeRadarTab === 'calculus'
-                    ? `系統分析您的微積分認知模型，建議前往「${activeRadar.weakestDimension.label}」透過幾何反應式畫布與步驟推導解題器深化理解。`
-                    : activeRadarTab === 'physics'
-                      ? `系統分析您的物理力學與自然現象認知，建議前往「${activeRadar.weakestDimension.label}」透過動態實驗室與 3 秒破題卡深化理解。`
-                      : activeRadarTab === 'chemistry'
-                        ? `系統分析您的化學分子與反應計量概念，建議前往「${activeRadar.weakestDimension.label}」透過 VSEPR 幾何與滴定曲線強化掌握。`
-                        : activeRadarTab === 'ja'
-                          ? `系統分析您的日語反應速率，建議前往「${activeRadar.weakestDimension.label}」透過動作訊號樹與跟讀深化記憶。`
-                          : `系統分析您的英語語塊熟練度，建議前往「${activeRadar.weakestDimension.label}」進行 4 國口音沉浸跟讀。`}
+                這是依本機保存的作答、測驗與實驗室使用次數換算的探索提示，不是能力測驗或學習成效診斷；尚無紀錄的面向會維持 0。
               </p>
             </div>
             <button
@@ -697,7 +691,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <span style={{ fontSize: '1.4rem' }}>🎓</span>
-              <strong style={{ fontSize: '0.95rem' }}>AI 全域能力診斷與升學目標落點</strong>
+              <strong style={{ fontSize: '0.95rem' }}>跨軌學習狀態摘要</strong>
               <span
                 style={{
                   fontSize: '0.68rem',
@@ -708,11 +702,11 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
                   fontWeight: 700,
                 }}
               >
-                108 課綱 × 大考模型
+                練習導航 · 非升學預測
               </span>
             </div>
             <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.5 }}>
-              整合數理四軌（數學、微積分、物理、化學）與語文雙軌（日語、多益）之即時作答表現、錯題修復率與 FSRS 留存率，動態預測學習潛力指標。
+              彙整數理自然與語文軌道的已保存練習紀錄，協助選擇下一個複習方向；此摘要不是學習成效研究、能力診斷或升學落點預測。
             </p>
           </div>
 
@@ -728,23 +722,15 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
             }}
           >
             <div>
-              <span style={{ fontSize: '0.7rem', color: 'var(--muted)', display: 'block' }}>⚡ 數理自然綜合落點</span>
+              <span style={{ fontSize: '0.7rem', color: 'var(--muted)', display: 'block' }}>⚡ 數理自然練習狀態</span>
               <strong style={{ fontSize: '0.82rem', color: '#2563eb' }}>
-                {mathRadar.averageScore + calculusRadar.averageScore + physicsRadar.averageScore + chemistryRadar.averageScore >= 160
-                  ? '頂標潛力 · 頂尖理工/醫資'
-                  : mathRadar.averageScore + physicsRadar.averageScore >= 80
-                    ? '前標優勢 · 國立電資工程'
-                    : '均標成長 · 穩步建立基礎'}
+                已保存指標 {Math.round((mathRadar.averageScore + physicsRadar.averageScore + chemistryRadar.averageScore) / 3)} / 100
               </strong>
             </div>
             <div>
-              <span style={{ fontSize: '0.7rem', color: 'var(--muted)', display: 'block' }}>🌐 雙語國際溝通實力</span>
+              <span style={{ fontSize: '0.7rem', color: 'var(--muted)', display: 'block' }}>🌐 雙語練習狀態</span>
               <strong style={{ fontSize: '0.82rem', color: '#10b981' }}>
-                {jaRadar.averageScore + toeicRadar.averageScore >= 100
-                  ? '高階商務 · 金證 (860+) / N1'
-                  : jaRadar.averageScore + toeicRadar.averageScore >= 50
-                    ? '進階應用 · 藍證 (730+) / N2'
-                    : '基礎養成 · 循序語塊積累'}
+                已保存指標 {Math.round((jaRadar.averageScore + toeicRadar.averageScore) / 2)} / 100
               </strong>
             </div>
           </div>

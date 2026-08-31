@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
+import { LOCAL_PREFERENCE_KEYS } from '../utils/progressKeys'
 
 export type AccessibilitySettings = {
   fontSize: 'standard' | 'large' | 'extra-large'
@@ -7,7 +8,7 @@ export type AccessibilitySettings = {
   darkMode: boolean
 }
 
-const STORAGE_KEY = 'e-learning-a11y-settings'
+const STORAGE_KEY = LOCAL_PREFERENCE_KEYS.accessibility
 
 /**
  * WCAG 2.2 AA 無障礙與認知輔助控制器 (AccessibilityControls)
@@ -16,6 +17,9 @@ const STORAGE_KEY = 'e-learning-a11y-settings'
 export const AccessibilityControls: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false)
   const [showShortcuts, setShowShortcuts] = useState<boolean>(false)
+  const dialogRef = useRef<HTMLDialogElement>(null)
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const wasOpen = useRef(false)
   const [settings, setSettings] = useState<AccessibilitySettings>(() => {
     if (typeof localStorage !== 'undefined') {
       try {
@@ -65,16 +69,34 @@ export const AccessibilityControls: React.FC = () => {
     }
   }, [settings])
 
+  useEffect(() => {
+    const dialog = dialogRef.current
+    if (!dialog) return
+    if (isOpen) {
+      wasOpen.current = true
+      if (!dialog.open) dialog.showModal()
+      dialog.querySelector<HTMLElement>('button, input, select, [tabindex]:not([tabindex="-1"])')?.focus()
+      return
+    }
+    if (dialog.open) dialog.close()
+    if (wasOpen.current) {
+      triggerRef.current?.focus()
+      wasOpen.current = false
+    }
+  }, [isOpen])
+
   return (
     <>
       {/* 浮動無障礙按鈕 */}
       <aside className="a11y-floating-dock" aria-label="無障礙輔助控制">
         <button
+          ref={triggerRef}
           type="button"
           className="btn-a11y-trigger"
           onClick={() => setIsOpen((prev) => !prev)}
           title="開啟無障礙與學習輔助設定"
           aria-expanded={isOpen}
+          aria-controls="a11y-settings-dialog"
         >
           <span className="a11y-icon">♿</span>
           <span className="a11y-text">無障礙輔助</span>
@@ -82,16 +104,28 @@ export const AccessibilityControls: React.FC = () => {
       </aside>
 
       {/* 設定對話框 */}
-      {isOpen && (
-        <div className="a11y-modal-backdrop" onClick={() => setIsOpen(false)}>
-          <div
-            className="a11y-settings-dialog"
-            role="dialog"
-            aria-label="無障礙與視覺輔助設定"
-            onClick={(e) => e.stopPropagation()}
-          >
+      <dialog
+        ref={dialogRef}
+        id="a11y-settings-dialog"
+        className="a11y-settings-dialog"
+        aria-modal="true"
+        aria-labelledby="a11y-dialog-title"
+        onCancel={(event) => {
+          event.preventDefault()
+          setIsOpen(false)
+        }}
+        onClose={() => setIsOpen(false)}
+        onKeyDown={(event) => {
+          if (event.key !== 'Escape') return
+          event.preventDefault()
+          setIsOpen(false)
+        }}
+        onClick={(e) => {
+          if (e.target === e.currentTarget) setIsOpen(false)
+        }}
+      >
             <div className="a11y-dialog-header">
-              <h3>♿ 無障礙與認知輔助設定 (WCAG 2.2)</h3>
+              <h3 id="a11y-dialog-title">♿ 無障礙與認知輔助設定 (WCAG 2.2)</h3>
               <button
                 type="button"
                 className="btn-close"
@@ -109,6 +143,7 @@ export const AccessibilityControls: React.FC = () => {
                 <div className="segmented-btn-group">
                   <button
                     type="button"
+                    aria-pressed={settings.fontSize === 'standard'}
                     className={`seg-btn ${settings.fontSize === 'standard' ? 'active' : ''}`}
                     onClick={() => setSettings((s) => ({ ...s, fontSize: 'standard' }))}
                   >
@@ -116,6 +151,7 @@ export const AccessibilityControls: React.FC = () => {
                   </button>
                   <button
                     type="button"
+                    aria-pressed={settings.fontSize === 'large'}
                     className={`seg-btn ${settings.fontSize === 'large' ? 'active' : ''}`}
                     onClick={() => setSettings((s) => ({ ...s, fontSize: 'large' }))}
                   >
@@ -123,6 +159,7 @@ export const AccessibilityControls: React.FC = () => {
                   </button>
                   <button
                     type="button"
+                    aria-pressed={settings.fontSize === 'extra-large'}
                     className={`seg-btn ${settings.fontSize === 'extra-large' ? 'active' : ''}`}
                     onClick={() => setSettings((s) => ({ ...s, fontSize: 'extra-large' }))}
                   >
@@ -134,11 +171,12 @@ export const AccessibilityControls: React.FC = () => {
               {/* 2. 深色主題 */}
               <div className="setting-row toggle-row">
                 <div>
-                  <span className="setting-label">🌙 深色模式 (Dark Theme)：</span>
+                  <span className="setting-label" id="a11y-dark-label">🌙 深色模式 (Dark Theme)：</span>
                   <p className="setting-desc">降低螢幕眩光，適合夜間與長時間專注學習。</p>
                 </div>
                 <input
                   type="checkbox"
+                  aria-labelledby="a11y-dark-label"
                   className="a11y-toggle"
                   checked={settings.darkMode}
                   onChange={(e) => setSettings((s) => ({ ...s, darkMode: e.target.checked }))}
@@ -148,11 +186,12 @@ export const AccessibilityControls: React.FC = () => {
               {/* 3. 無干擾專注模式 */}
               <div className="setting-row toggle-row">
                 <div>
-                  <span className="setting-label">🎯 無干擾專注模式 (Distraction-Free)：</span>
+                  <span className="setting-label" id="a11y-focus-label">🎯 無干擾專注模式 (Distraction-Free)：</span>
                   <p className="setting-desc">隱藏背景動畫與非必要裝飾，專注於題目思考。</p>
                 </div>
                 <input
                   type="checkbox"
+                  aria-labelledby="a11y-focus-label"
                   className="a11y-toggle"
                   checked={settings.distractionFree}
                   onChange={(e) =>
@@ -164,11 +203,12 @@ export const AccessibilityControls: React.FC = () => {
               {/* 4. 高對比模式 */}
               <div className="setting-row toggle-row">
                 <div>
-                  <span className="setting-label">👁️ 高對比強化 (High Contrast)：</span>
+                  <span className="setting-label" id="a11y-contrast-label">👁️ 高對比強化 (High Contrast)：</span>
                   <p className="setting-desc">增強文字與背景明暗邊界，提升可讀性。</p>
                 </div>
                 <input
                   type="checkbox"
+                  aria-labelledby="a11y-contrast-label"
                   className="a11y-toggle"
                   checked={settings.highContrast}
                   onChange={(e) => setSettings((s) => ({ ...s, highContrast: e.target.checked }))}
@@ -194,9 +234,7 @@ export const AccessibilityControls: React.FC = () => {
                 )}
               </div>
             </div>
-          </div>
-        </div>
-      )}
+      </dialog>
     </>
   )
 }

@@ -142,7 +142,7 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
 
             <div className="xp">
               <span>★</span>
-              <strong>+150 XP</strong>
+              <strong>本次工作階段</strong>
             </div>
           </div>
         </header>
@@ -261,7 +261,7 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         {/* 底部頁腳 */}
         <footer className="math-footer calculus-footer">
           <span>∫ 微積分互動學習平台 · 幾何動態可視化、符號步驟推導與 2PL IRT 自適應評量</span>
-          <span>進度儲存於本機 · 支援離線學習與 FSRS 間隔重複</span>
+          <span>一般數學作答進度儲存於本機 · 微積分工作台參數為本次工作階段</span>
         </footer>
       </section>
 

@@ -1,4 +1,5 @@
 import type { MathGradeId, MathStage } from '../data/curriculum'
+import { PROGRESS_STORAGE_KEYS } from '../../utils/progressKeys'
 
 export type MathProgressState = {
   stage: MathStage
@@ -11,7 +12,7 @@ export type MathProgressState = {
   labCompleted: string[]
 }
 
-const MATH_PROGRESS_KEY = 'math-learning-progress'
+const MATH_PROGRESS_KEY = PROGRESS_STORAGE_KEYS.math
 
 // 記憶體備援（用於 SSR 或 Node 測試環境）
 let memoryStorage: Record<string, string> = {}

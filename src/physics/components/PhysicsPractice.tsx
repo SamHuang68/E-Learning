@@ -79,7 +79,7 @@ export const PhysicsPractice: React.FC<Props> = ({
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [isSubmitted, selectedOption, q, currentIdx])
+  })
 
   if (!q) {
     return <div className="practice-empty">單元題庫準備中…</div>

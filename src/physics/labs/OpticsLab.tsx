@@ -334,6 +334,8 @@ export const OpticsLab: React.FC = () => {
             </div>
             <input
               type="range"
+              aria-label="介質一折射率"
+              aria-valuetext={`${n1.toFixed(2)}`}
               min="1.0"
               max="2.5"
               step="0.05"
@@ -364,6 +366,8 @@ export const OpticsLab: React.FC = () => {
             </div>
             <input
               type="range"
+              aria-label="介質二折射率"
+              aria-valuetext={`${n2.toFixed(2)}`}
               min="1.0"
               max="2.5"
               step="0.05"
@@ -394,6 +398,8 @@ export const OpticsLab: React.FC = () => {
             </div>
             <input
               type="range"
+              aria-label="光線入射角"
+              aria-valuetext={`${theta1Deg} 度`}
               min="0"
               max="85"
               step="1"

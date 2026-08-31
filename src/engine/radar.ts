@@ -1,6 +1,6 @@
 /**
- * 多維度知識與能力雷達圖計算引擎 (Knowledge Radar Engine)
- * 支援三軌（臺灣數學、あおば日語、多益英語）多維能力評估與弱點診斷。
+ * 多維度練習紀錄雷達圖計算引擎 (Practice Coverage Radar Engine)
+ * 將本機保存的作答、測驗與實驗室紀錄轉成探索指標，不宣稱正式能力診斷。
  */
 
 export type RadarDimension = {
@@ -39,14 +39,14 @@ export function computeMathRadar(
   examScores: Record<string, number>,
   labCompleted: string[],
 ): TrackRadar {
-  // 依題號或標籤加權估算各維度分數
+  // 依已保存的題號、測驗與實驗室紀錄加權；沒有證據時維持 0。
   const totalCompleted = completedQuestions.length
   const totalLabs = labCompleted.length
 
   const algebraBase = Math.min(100, totalCompleted * 6 + (labCompleted.includes('blocks') ? 20 : 0))
   const geometryBase = Math.min(
     100,
-    totalLabs * 15 + (labCompleted.includes('pythagoras') ? 25 : 10),
+    totalLabs * 15 + (labCompleted.includes('pythagoras') ? 25 : 0),
   )
   const calculusBase = Math.min(
     100,
@@ -55,7 +55,7 @@ export function computeMathRadar(
   const examAvg =
     Object.values(examScores).length > 0
       ? Object.values(examScores).reduce((a, b) => a + b, 0) / Object.values(examScores).length
-      : 60
+      : 0
   const statisticsBase = Math.min(100, Math.round(examAvg * 0.9))
   const logicBase = Math.min(100, Math.round(geometryBase * 0.5 + algebraBase * 0.5))
 
@@ -63,42 +63,42 @@ export function computeMathRadar(
     {
       key: 'algebra',
       label: '代數方程運算',
-      score: Math.max(30, algebraBase),
+      score: algebraBase,
       fullMark: 100,
       description: '等量公理、因式分解與多項式運算能力',
-      status: scoreToStatus(Math.max(30, algebraBase)),
+      status: scoreToStatus(algebraBase),
     },
     {
       key: 'geometry',
       label: '空間幾何直觀',
-      score: Math.max(25, geometryBase),
+      score: geometryBase,
       fullMark: 100,
       description: '畢氏定理、圓周角與平面坐標幾何',
-      status: scoreToStatus(Math.max(25, geometryBase)),
+      status: scoreToStatus(geometryBase),
     },
     {
       key: 'calculus',
       label: '函數與微積分',
-      score: Math.max(20, calculusBase),
+      score: calculusBase,
       fullMark: 100,
       description: '三角函數、黎曼和切片與導函數極限',
-      status: scoreToStatus(Math.max(20, calculusBase)),
+      status: scoreToStatus(calculusBase),
     },
     {
       key: 'statistics',
       label: '數據統計分析',
-      score: Math.max(35, statisticsBase),
+      score: statisticsBase,
       fullMark: 100,
       description: '機率分布、數據圖表與綜合模擬考表現',
-      status: scoreToStatus(Math.max(35, statisticsBase)),
+      status: scoreToStatus(statisticsBase),
     },
     {
       key: 'logic',
       label: '抽象邏輯證明',
-      score: Math.max(30, logicBase),
+      score: logicBase,
       fullMark: 100,
       description: '無字證明推導與破題訊號辨析',
-      status: scoreToStatus(Math.max(30, logicBase)),
+      status: scoreToStatus(logicBase),
     },
   ]
 
@@ -126,11 +126,11 @@ export function computeAobaRadar(
   speakingDone: number,
   streak: number,
 ): TrackRadar {
-  const kanaScore = Math.min(100, 50 + cardsDone * 2)
-  const vocabScore = Math.min(100, kanjiMasteredCount * 8 + 30)
-  const grammarScore = Math.min(100, 40 + streak * 5)
-  const keigoScore = Math.min(100, 35 + cardsDone * 3)
-  const listeningScore = Math.min(100, speakingDone * 15 + 30)
+  const kanaScore = Math.min(100, cardsDone * 5)
+  const vocabScore = Math.min(100, kanjiMasteredCount * 8)
+  const grammarScore = Math.min(100, streak * 5)
+  const keigoScore = Math.min(100, cardsDone * 3)
+  const listeningScore = Math.min(100, speakingDone * 15)
 
   const dimensions: RadarDimension[] = [
     {
@@ -196,13 +196,13 @@ export function computeAobaRadar(
 export function computeToeicRadar(
   cardsDone: number,
   chunkCount: number,
-  examScore = 650,
+  examScore = 0,
 ): TrackRadar {
-  const chunksScore = Math.min(100, chunkCount * 12 + 40)
-  const listeningScore = Math.min(100, Math.round((examScore / 990) * 100) + 10)
-  const grammarScore = Math.min(100, 45 + cardsDone * 3)
-  const readingScore = Math.min(100, Math.round((examScore / 990) * 100) - 5)
-  const vocabScore = Math.min(100, 50 + cardsDone * 2)
+  const chunksScore = Math.min(100, chunkCount * 12)
+  const listeningScore = Math.min(100, Math.round((examScore / 990) * 100))
+  const grammarScore = Math.min(100, cardsDone * 3)
+  const readingScore = Math.min(100, Math.round((examScore / 990) * 100))
+  const vocabScore = Math.min(100, cardsDone * 2)
 
   const dimensions: RadarDimension[] = [
     {
@@ -216,34 +216,34 @@ export function computeToeicRadar(
     {
       key: 'listening',
       label: '聽力理解辨析',
-      score: Math.max(30, listeningScore),
+      score: listeningScore,
       fullMark: 100,
       description: 'Part 1~4 圖片、簡短對話與廣播訊息',
-      status: scoreToStatus(Math.max(30, listeningScore)),
+      status: scoreToStatus(listeningScore),
     },
     {
       key: 'grammar',
       label: 'Part 5 文法結構',
-      score: Math.max(30, grammarScore),
+      score: grammarScore,
       fullMark: 100,
       description: '詞性填空、連接詞、主被動時態',
-      status: scoreToStatus(Math.max(30, grammarScore)),
+      status: scoreToStatus(grammarScore),
     },
     {
       key: 'reading',
       label: '長文閱讀速讀',
-      score: Math.max(25, readingScore),
+      score: readingScore,
       fullMark: 100,
       description: 'Part 7 雙篇/三篇閱讀快速定位細節',
-      status: scoreToStatus(Math.max(25, readingScore)),
+      status: scoreToStatus(readingScore),
     },
     {
       key: 'vocab',
       label: '核心商務字彙',
-      score: Math.max(35, vocabScore),
+      score: vocabScore,
       fullMark: 100,
       description: '證書級距（Orange→Gold）高頻單字',
-      status: scoreToStatus(Math.max(35, vocabScore)),
+      status: scoreToStatus(vocabScore),
     },
   ]
 
@@ -268,17 +268,17 @@ export function computeToeicRadar(
 export function computeCalculusRadar(
   currentTheta = 0.0,
   solvedCount = 0,
-  labExploredCount = 3,
+  labExploredCount = 0,
 ): TrackRadar {
   const thetaBonus = Math.round(currentTheta * 15)
-  const limitScore = Math.min(100, Math.max(35, 45 + solvedCount * 8 + thetaBonus))
-  const derivativeScore = Math.min(100, Math.max(40, 50 + solvedCount * 10 + thetaBonus))
+  const limitScore = Math.min(100, Math.max(0, solvedCount * 12 + labExploredCount * 5 + thetaBonus))
+  const derivativeScore = Math.min(100, Math.max(0, solvedCount * 15 + labExploredCount * 4 + thetaBonus))
   const integralScore = Math.min(
     100,
-    Math.max(30, 40 + solvedCount * 8 + (labExploredCount > 2 ? 15 : 0) + thetaBonus),
+    Math.max(0, solvedCount * 12 + labExploredCount * 10 + thetaBonus),
   )
-  const seriesScore = Math.min(100, Math.max(25, 35 + solvedCount * 6 + thetaBonus))
-  const ftcScore = Math.min(100, Math.max(30, Math.round((derivativeScore + integralScore) / 2)))
+  const seriesScore = Math.min(100, Math.max(0, solvedCount * 8 + labExploredCount * 4 + thetaBonus))
+  const ftcScore = Math.min(100, Math.max(0, Math.round((derivativeScore + integralScore) / 2)))
 
   const dimensions: RadarDimension[] = [
     {
@@ -366,11 +366,11 @@ export function computePhysicsRadar(
   const examAvg = examValues.length > 0 ? examValues.reduce((a, b) => a + b, 0) / examValues.length : 0
   const examScoreBonus = Math.round((examAvg / 100) * 25)
 
-  const mechanicsBase = Math.min(100, Math.max(25, 35 + counts.mechanics * 8 + (labCompleted.includes('projectile') || labCompleted.includes('shm') ? 20 : 0) + examScoreBonus))
-  const thermoBase = Math.min(100, Math.max(20, 30 + counts.thermo * 10 + (labCompleted.includes('buoyancy') ? 15 : 0) + examScoreBonus))
-  const wavesBase = Math.min(100, Math.max(20, 30 + counts.waves * 10 + (labCompleted.includes('optics') ? 20 : 0) + examScoreBonus))
-  const emBase = Math.min(100, Math.max(20, 30 + counts.electromagnetism * 10 + (labCompleted.includes('circuit') ? 20 : 0) + examScoreBonus))
-  const modernBase = Math.min(100, Math.max(15, 25 + counts.modern * 12 + examScoreBonus))
+  const mechanicsBase = Math.min(100, counts.mechanics * 8 + (labCompleted.includes('projectile') || labCompleted.includes('shm') ? 20 : 0) + examScoreBonus)
+  const thermoBase = Math.min(100, counts.thermo * 10 + (labCompleted.includes('buoyancy') ? 15 : 0) + examScoreBonus)
+  const wavesBase = Math.min(100, counts.waves * 10 + (labCompleted.includes('optics') ? 20 : 0) + examScoreBonus)
+  const emBase = Math.min(100, counts.electromagnetism * 10 + (labCompleted.includes('circuit') ? 20 : 0) + examScoreBonus)
+  const modernBase = Math.min(100, counts.modern * 12 + examScoreBonus)
 
   const dimensions: RadarDimension[] = [
     {
@@ -459,11 +459,11 @@ export function computeChemistryRadar(
   const examAvg = examValues.length > 0 ? examValues.reduce((a, b) => a + b, 0) / examValues.length : 0
   const examScoreBonus = Math.round((examAvg / 100) * 25)
 
-  const structureBase = Math.min(100, Math.max(25, 35 + counts.structure * 8 + (labCompleted.includes('periodic') || labCompleted.includes('vsepr') ? 20 : 0) + examScoreBonus))
-  const stoichiometryBase = Math.min(100, Math.max(20, 30 + counts.stoichiometry * 8 + (labCompleted.includes('gas') || labCompleted.includes('solubility') ? 20 : 0) + examScoreBonus))
-  const equilibriumBase = Math.min(100, Math.max(20, 30 + counts.equilibrium * 10 + examScoreBonus))
-  const acidRedoxBase = Math.min(100, Math.max(20, 30 + counts.acid_redox * 8 + (labCompleted.includes('titration') ? 20 : 0) + examScoreBonus))
-  const organicBase = Math.min(100, Math.max(15, 25 + counts.organic * 10 + examScoreBonus))
+  const structureBase = Math.min(100, counts.structure * 8 + (labCompleted.includes('periodic') || labCompleted.includes('vsepr') ? 20 : 0) + examScoreBonus)
+  const stoichiometryBase = Math.min(100, counts.stoichiometry * 8 + (labCompleted.includes('gas') || labCompleted.includes('solubility') ? 20 : 0) + examScoreBonus)
+  const equilibriumBase = Math.min(100, counts.equilibrium * 10 + examScoreBonus)
+  const acidRedoxBase = Math.min(100, counts.acid_redox * 8 + (labCompleted.includes('titration') ? 20 : 0) + examScoreBonus)
+  const organicBase = Math.min(100, counts.organic * 10 + examScoreBonus)
 
   const dimensions: RadarDimension[] = [
     {

@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react'
 import type { ToeicCertificate, ToeicUnit } from '../data/certificates'
 import type { LangId } from '../../utils/storage'
+import { TrackSwitcher } from '../../components/TrackSwitcher'
 
 export type ToeicNavId =
   | 'phonics'
@@ -49,9 +50,12 @@ export function ToeicSidebar({
   unit,
   progressPct,
   phonicsCount,
+  onBackHub,
+  onSwitchLang,
 }: Props) {
   return (
     <aside className="sidebar">
+      <TrackSwitcher current="en" onBackHub={onBackHub} onSwitchLang={onSwitchLang} />
       <div className="brand">
         <div
           className="brand-mark"

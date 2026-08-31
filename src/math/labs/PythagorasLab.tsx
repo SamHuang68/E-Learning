@@ -118,6 +118,8 @@ export const PythagorasLab: React.FC = () => {
             </label>
             <input
               type="range"
+              aria-label="畢氏定理股長 a"
+              aria-valuetext={`${legA} 長度單位`}
               min="2"
               max="6"
               step="1"
@@ -132,6 +134,8 @@ export const PythagorasLab: React.FC = () => {
             </label>
             <input
               type="range"
+              aria-label="畢氏定理股長 b"
+              aria-valuetext={`${legB} 長度單位`}
               min="2"
               max="6"
               step="1"

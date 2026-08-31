@@ -383,6 +383,8 @@ export const GasLawLab: React.FC = () => {
             </div>
             <input
               type="range"
+              aria-label="氣體容器體積"
+              aria-valuetext={`${volL.toFixed(1)} 公升`}
               min="10"
               max="40"
               step="0.5"
@@ -401,6 +403,8 @@ export const GasLawLab: React.FC = () => {
             </div>
             <input
               type="range"
+              aria-label="氣體絕對溫度"
+              aria-valuetext={`${tempK} 開爾文，${(tempK - 273.15).toFixed(0)} 攝氏度`}
               min="150"
               max="600"
               step="10"
@@ -419,6 +423,8 @@ export const GasLawLab: React.FC = () => {
             </div>
             <input
               type="range"
+              aria-label="氣體莫耳數"
+              aria-valuetext={`${molN.toFixed(1)} 莫耳`}
               min="0.5"
               max="3.0"
               step="0.1"

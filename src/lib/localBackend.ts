@@ -104,6 +104,16 @@ function setSession(session: LocalSession | null, event: AuthEvent): void {
   emit(event, session)
 }
 
+/** Permanently remove one browser-local profile and its progress row. */
+export function deleteLocalAccount(userId: string): boolean {
+  const users = readUsers()
+  if (!users.some((user) => user.id === userId)) return false
+  writeUsers(users.filter((user) => user.id !== userId))
+  localStorage.removeItem(ROW_PREFIX + userId)
+  if (readSession()?.user.id === userId) setSession(null, 'SIGNED_OUT')
+  return true
+}
+
 const auth = {
   async getSession(): Promise<{
     data: { session: LocalSession | null }

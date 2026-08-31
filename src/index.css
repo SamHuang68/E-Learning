@@ -88,10 +88,52 @@ strong {
 }
 
 .sidebar-top-actions {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
   gap: 0.35rem;
   margin-bottom: 0.6rem;
+}
+
+.sidebar-top-actions .hub-back {
+  min-height: 44px;
+  margin: 0;
+  border-color: var(--line);
+  background: var(--surface-soft);
+}
+
+.sidebar-track-select,
+.sidebar-track-select select {
+  width: 100%;
+  min-width: 0;
+}
+
+.sidebar-track-select select {
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  padding: 0.45rem 0.55rem;
+}
+
+.brand-button {
+  width: 100%;
+  text-align: left;
+}
+
+.skip-link {
+  position: fixed;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 2000;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  background: #0f172a;
+  color: #fff;
+  transform: translateY(-160%);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
 }
 
 /* Hub */
@@ -117,6 +159,20 @@ strong {
   font-size: clamp(2rem, 4vw, 2.8rem);
   color: var(--navy);
   text-wrap: balance;
+}
+
+.hub-primary-cta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: 0.75rem;
+  padding: 0.65rem 1rem;
+  border-radius: 999px;
+  background: var(--navy);
+  color: #fff;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 8px 20px rgba(31, 77, 99, 0.18);
 }
 
 /* 全域學習戰力統計條 */
@@ -3010,7 +3066,7 @@ footer {
     height: auto !important;
     min-height: 100vh;
     max-height: none !important;
-    overflow-y: auto;
+    overflow-y: visible;
   }
 
   .sidebar,
@@ -3053,6 +3109,7 @@ footer {
   .physics-sidebar nav,
   .chemistry-sidebar nav {
     flex-direction: row;
+    align-items: center;
     overflow-x: auto;
     width: 100%;
     max-width: 100%;
@@ -3060,6 +3117,14 @@ footer {
     -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
     padding-bottom: 0.2rem;
+  }
+
+  .sidebar .nav-heading,
+  .math-sidebar .nav-heading,
+  .calculus-sidebar .nav-heading,
+  .physics-sidebar .nav-heading,
+  .chemistry-sidebar .nav-heading {
+    display: none;
   }
 
   .sidebar nav button,
@@ -3265,6 +3330,24 @@ footer {
   .content {
     padding: 1rem;
     max-width: 100vw;
+    height: auto;
+    max-height: none;
+    overflow-y: visible;
+    overscroll-behavior-y: auto;
+  }
+
+  .calculus-units-nav {
+    display: none !important;
+  }
+
+  .stage-switch-pills {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .stage-switch-pills > * {
+    flex: 1 1 9rem;
+    min-width: 0;
   }
 
   .builder-steps::before {
@@ -6459,23 +6542,74 @@ button:active:not(:disabled),
   transform: scale(1.05);
   background: #0f172a;
 }
-.a11y-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-}
 .a11y-settings-dialog {
   background: #ffffff;
+  color: #0f172a;
+  border: 0;
   border-radius: 12px;
   width: 100%;
   max-width: 480px;
+  max-height: min(90dvh, 720px);
+  overflow-y: auto;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
   padding: 1.5rem;
+}
+.a11y-settings-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.58);
+}
+
+.auth-warning {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #f59e0b;
+  border-radius: 10px;
+  background: #fffbeb;
+  color: #92400e;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+@media (max-width: 860px) {
+  .a11y-floating-dock {
+    position: relative;
+    inset: auto;
+    z-index: 40;
+    display: flex;
+    justify-content: flex-end;
+    padding: 0.35rem 0.75rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .btn-a11y-trigger {
+    width: 44px;
+    height: 44px;
+    min-height: 44px;
+    padding: 0;
+    justify-content: center;
+    border-radius: 12px;
+  }
+
+  .btn-a11y-trigger .a11y-text {
+    display: none;
+  }
+
+  .sidebar-top-actions {
+    margin-bottom: 0;
+  }
 }
 .a11y-dialog-header {
   display: flex;
