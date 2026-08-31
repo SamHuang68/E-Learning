@@ -80,28 +80,61 @@ export const MathErrorVault: React.FC<Props> = ({ onBack }) => {
         </div>
       ) : (
         <div className="vault-grid">
-          {errorQuestions.map((q) => (
-            <div key={q.id} className="vault-item-card">
-              <div className="item-header">
-                <span className="q-badge">{q.title}</span>
-                <span className="diff-tag">★{q.difficulty}</span>
+          {errorQuestions.map((q) => {
+            const text = `${q.title} ${q.question}`.toLowerCase()
+            let labInfo: { name: string; tab: string } | null = null
+            if (text.includes('畢氏') || text.includes('勾股') || text.includes('直角')) {
+              labInfo = { name: '📐 畢氏勾股定理教具', tab: 'pythagoras' }
+            } else if (text.includes('三角') || text.includes('sin') || text.includes('cos') || text.includes('單位圓')) {
+              labInfo = { name: '⭕ 三角函數單位圓教具', tab: 'unit-circle' }
+            } else if (text.includes('座標') || text.includes('坐標') || text.includes('函數') || text.includes('直線')) {
+              labInfo = { name: '📊 平面坐標系幾何板', tab: 'coordinate' }
+            } else if (text.includes('分數') || text.includes('分母') || text.includes('分子')) {
+              labInfo = { name: '🍰 分數概念可視化板', tab: 'fraction' }
+            } else if (text.includes('乘法') || text.includes('九九') || text.includes('乘積')) {
+              labInfo = { name: '🔢 九九乘法陣列盤', tab: 'multiplication' }
+            }
+
+            return (
+              <div key={q.id} className="vault-item-card">
+                <div className="item-header">
+                  <span className="q-badge">{q.title}</span>
+                  <span className="diff-tag">★{q.difficulty}</span>
+                </div>
+                <div className="q-content">
+                  <MathFormula math={q.question} />
+                </div>
+                {labInfo && (
+                  <div style={{ margin: '0.4rem 0 0.2rem' }}>
+                    <span
+                      style={{
+                        fontSize: '0.72rem',
+                        padding: '0.2rem 0.5rem',
+                        borderRadius: '6px',
+                        background: 'rgba(59, 130, 246, 0.12)',
+                        color: '#3b82f6',
+                        display: 'inline-block',
+                        fontWeight: 600,
+                      }}
+                    >
+                      🔬 關聯教具：{labInfo.name}
+                    </span>
+                  </div>
+                )}
+                <button
+                  type="button"
+                  className="btn-review-item"
+                  onClick={() => {
+                    setSelectedQ(q)
+                    setTestInput('')
+                    setFeedback(null)
+                  }}
+                >
+                  再次訂正挑戰 →
+                </button>
               </div>
-              <div className="q-content">
-                <MathFormula math={q.question} />
-              </div>
-              <button
-                type="button"
-                className="btn-review-item"
-                onClick={() => {
-                  setSelectedQ(q)
-                  setTestInput('')
-                  setFeedback(null)
-                }}
-              >
-                再次訂正挑戰 →
-              </button>
-            </div>
-          ))}
+            )
+          })}
         </div>
       )}
 

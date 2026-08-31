@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { MOCK_EXAMS, type MockExamType } from '../data/mockExams'
 import { MathFormula } from './MathFormula'
-import { recordMockScore } from '../utils/mathStorage'
+import { recordMockScore, loadMathProgress, saveMathProgress } from '../utils/mathStorage'
 
 type Props = {
   onExit: () => void
@@ -16,6 +16,9 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
   const [isStarted, setIsStarted] = useState(false)
   const [answers, setAnswers] = useState<Record<number, any>>({})
   const [isFinished, setIsFinished] = useState(false)
+  const [timeLeft, setTimeLeft] = useState<number>(80 * 60)
+  const [isTimerRunning, setIsTimerRunning] = useState<boolean>(true)
+  const timerRef = useRef<number | null>(null)
   const [scoreResult, setScoreResult] = useState<{
     correctCount: number
     totalCount: number
@@ -26,23 +29,53 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
 
   const exam = MOCK_EXAMS[examType]
 
+  // 初始化時長
+  const defaultMinutes = examType === 'cap' ? 80 : examType === 'gsat' ? 100 : 40
+
+  useEffect(() => {
+    if (!isStarted || isFinished || !isTimerRunning) {
+      if (timerRef.current) clearInterval(timerRef.current)
+      return
+    }
+
+    timerRef.current = window.setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current!)
+          handleSubmit()
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current)
+    }
+  }, [isStarted, isFinished, isTimerRunning])
+
   function handleStart() {
     setAnswers({})
     setIsFinished(false)
+    setTimeLeft(defaultMinutes * 60)
+    setIsTimerRunning(true)
     setIsStarted(true)
   }
 
   function handleSelectOption(qIndex: number, optIndex: number) {
+    if (isFinished) return
     setAnswers((prev) => ({ ...prev, [qIndex]: optIndex }))
   }
 
   function handleFillAnswer(qIndex: number, val: string) {
+    if (isFinished) return
     setAnswers((prev) => ({ ...prev, [qIndex]: val }))
   }
 
   function handleSubmit() {
     let correct = 0
     const weakList: string[] = []
+    const wrongQIds: string[] = []
 
     exam.questions.forEach((q, idx) => {
       const userAns = answers[idx]
@@ -63,6 +96,7 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
         correct++
       } else {
         weakList.push(q.title)
+        wrongQIds.push(q.id)
       }
     })
 
@@ -79,32 +113,40 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
       else if (pct >= 40) scale = 'B (基礎)'
       else scale = 'C (待加強)'
     } else if (examType === 'gsat') {
-      const gsatScore = Math.min(15, Math.max(1, Math.round((pct / 100) * 15)))
-      const level =
-        gsatScore >= 12
-          ? '頂標'
-          : gsatScore >= 9
-          ? '前標'
-          : gsatScore >= 6
-          ? '均標'
-          : gsatScore >= 3
-          ? '後標'
-          : '底標'
-      scale = `${gsatScore} 級分 (${level})`
+      const scaled = Math.min(15, Math.max(1, Math.round((pct / 100) * 15)))
+      scale = `${scaled} 級分 (${scaled >= 13 ? '頂標' : scaled >= 11 ? '前標' : scaled >= 8 ? '均標' : '後標'})`
     } else {
-      scale = pct >= 85 ? '精熟級' : pct >= 60 ? '基礎級' : '待加強級'
+      scale = pct >= 80 ? '優等評級 (Distinction)' : pct >= 60 ? '通過評級 (Pass)' : '建議補強 (Review Needed)'
     }
 
-    const res = {
+    // 自動將錯題寫入 LocalStorage
+    try {
+      const currentProgress = loadMathProgress()
+      const errorSet = new Set(currentProgress.errorQuestions)
+      wrongQIds.forEach((id) => errorSet.add(id))
+      saveMathProgress({
+        ...currentProgress,
+        errorQuestions: Array.from(errorSet),
+      })
+    } catch {
+      /* ignore */
+    }
+
+    setScoreResult({
       correctCount: correct,
       totalCount: exam.questions.length,
       percentage: pct,
       scaleGrade: scale,
       weakStrands: weakList,
-    }
-    setScoreResult(res)
+    })
     setIsFinished(true)
-    recordMockScore(exam.id, pct)
+    recordMockScore(examType, pct)
+  }
+
+  const formatTimer = (secs: number) => {
+    const m = Math.floor(secs / 60)
+    const s = secs % 60
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
   }
 
   return (
@@ -164,14 +206,83 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
         </div>
       ) : !isFinished ? (
         <div className="mock-exam-body">
-          <div className="exam-header-bar">
-            <h3>{exam.title}</h3>
-            <span className="exam-timer-pill">測驗進行中</span>
+          <div className="exam-header-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.75rem' }}>
+            <h3 style={{ margin: 0 }}>{exam.title}</h3>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+              <span
+                className="exam-timer-pill"
+                style={{
+                  fontFamily: 'monospace',
+                  fontWeight: 700,
+                  fontSize: '0.85rem',
+                  padding: '0.25rem 0.6rem',
+                  borderRadius: '999px',
+                  background: timeLeft < 300 ? 'rgba(239, 68, 68, 0.15)' : 'rgba(59, 130, 246, 0.15)',
+                  color: timeLeft < 300 ? '#ef4444' : '#3b82f6',
+                  border: `1px solid ${timeLeft < 300 ? 'rgba(239, 68, 68, 0.3)' : 'rgba(59, 130, 246, 0.3)'}`,
+                }}
+              >
+                ⏱️ {formatTimer(timeLeft)}
+              </span>
+              <button
+                type="button"
+                className="pill-btn"
+                style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}
+                onClick={() => setIsTimerRunning(!isTimerRunning)}
+              >
+                {isTimerRunning ? '⏸️ 暫停' : '▶️ 繼續'}
+              </button>
+            </div>
+          </div>
+
+          {/* 頂部題號導覽膠囊網格 */}
+          <div
+            className="exam-nav-grid"
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '0.3rem',
+              marginBottom: '0.85rem',
+              padding: '0.5rem',
+              background: 'var(--surface-soft)',
+              borderRadius: '8px',
+            }}
+          >
+            {exam.questions.map((_, idx) => {
+              const isAnswered = answers[idx] !== undefined && answers[idx] !== ''
+              return (
+                <button
+                  key={idx}
+                  type="button"
+                  style={{
+                    width: '28px',
+                    height: '28px',
+                    borderRadius: '6px',
+                    border: '1px solid var(--line)',
+                    background: isAnswered ? '#3b82f6' : 'var(--surface)',
+                    color: isAnswered ? '#ffffff' : 'var(--text)',
+                    fontSize: '0.72rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all 0.15s ease',
+                  }}
+                  onClick={() => {
+                    const el = document.getElementById(`math-mock-q-${idx}`)
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                  }}
+                >
+                  {idx + 1}
+                </button>
+              )
+            })}
           </div>
 
           <div className="mock-questions-list">
             {exam.questions.map((q, idx) => (
-              <div key={q.id} className="mock-q-item">
+              <div key={q.id} id={`math-mock-q-${idx}`} className="mock-q-item">
                 <div className="mock-q-num">第 {idx + 1} 題（難度 ★{q.difficulty}）</div>
                 <div className="mock-q-text">
                   <MathFormula math={q.question} />

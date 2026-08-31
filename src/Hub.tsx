@@ -348,6 +348,145 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
         </div>
       </section>
 
+      {/* 跨學科關聯知識圖譜與協同加速 (Cross-Disciplinary Synergy) */}
+      <section className="hub-section-block" aria-labelledby="synergy-title">
+        <div className="section-header-row">
+          <h2 id="synergy-title">跨學科知識圖譜與協同加速</h2>
+          <span className="section-subtext">CROSS-DISCIPLINARY COGNITIVE GRAPH</span>
+        </div>
+        <div
+          className="synergy-cards-grid"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
+            gap: '0.65rem',
+          }}
+        >
+          <div
+            className="synergy-card"
+            style={{
+              background: 'var(--surface)',
+              border: '1px solid var(--line)',
+              borderRadius: '12px',
+              padding: '0.85rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.35rem',
+              minWidth: 0,
+              overflowWrap: 'break-word',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <span style={{ fontSize: '1.2rem' }}>∫ ⟷ ⚛️</span>
+              <strong style={{ fontSize: '0.85rem' }}>微積分 ⟷ 物理運動學與力學能</strong>
+            </div>
+            <p style={{ margin: 0, fontSize: '0.76rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+              微分求切線斜率對應瞬時速度與加速度；定積分黎曼和對應曲線下面積（位移與做功）。
+            </p>
+            <div style={{ display: 'flex', gap: '0.3rem', marginTop: 'auto', paddingTop: '0.3rem' }}>
+              <button
+                type="button"
+                className="pill-btn"
+                style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}
+                onClick={() => onChoose('calculus')}
+              >
+                前往微積分
+              </button>
+              <button
+                type="button"
+                className="pill-btn"
+                style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}
+                onClick={() => onChoose('physics')}
+              >
+                前往物理
+              </button>
+            </div>
+          </div>
+
+          <div
+            className="synergy-card"
+            style={{
+              background: 'var(--surface)',
+              border: '1px solid var(--line)',
+              borderRadius: '12px',
+              padding: '0.85rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.35rem',
+              minWidth: 0,
+              overflowWrap: 'break-word',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <span style={{ fontSize: '1.2rem' }}>⚛️ ⟷ 🧪</span>
+              <strong style={{ fontSize: '0.85rem' }}>物理氣體動力論 ⟷ 化學理想氣體</strong>
+            </div>
+            <p style={{ margin: 0, fontSize: '0.76rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+              微觀粒子均方根速率與動能守恆，對應巨觀理想氣體狀態方程式 PV = nRT 與壓強模擬。
+            </p>
+            <div style={{ display: 'flex', gap: '0.3rem', marginTop: 'auto', paddingTop: '0.3rem' }}>
+              <button
+                type="button"
+                className="pill-btn"
+                style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}
+                onClick={() => onChoose('physics')}
+              >
+                前往物理實驗室
+              </button>
+              <button
+                type="button"
+                className="pill-btn"
+                style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}
+                onClick={() => onChoose('chemistry')}
+              >
+                前往化學實驗室
+              </button>
+            </div>
+          </div>
+
+          <div
+            className="synergy-card"
+            style={{
+              background: 'var(--surface)',
+              border: '1px solid var(--line)',
+              borderRadius: '12px',
+              padding: '0.85rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.35rem',
+              minWidth: 0,
+              overflowWrap: 'break-word',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <span style={{ fontSize: '1.2rem' }}>📐 ⟷ ⚛️</span>
+              <strong style={{ fontSize: '0.85rem' }}>數學三角函數 ⟷ 物理 SHM 與波動</strong>
+            </div>
+            <p style={{ margin: 0, fontSize: '0.76rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+              單位圓旋轉正弦投影對應簡諧運動位移與速度公式 x = A·sin(ωt)。
+            </p>
+            <div style={{ display: 'flex', gap: '0.3rem', marginTop: 'auto', paddingTop: '0.3rem' }}>
+              <button
+                type="button"
+                className="pill-btn"
+                style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}
+                onClick={() => onChoose('math')}
+              >
+                前往數學
+              </button>
+              <button
+                type="button"
+                className="pill-btn"
+                style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}
+                onClick={() => onChoose('physics')}
+              >
+                前往簡諧實驗室
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* 六軌多維能力戰力雷達 */}
       <section className="hub-section-block" aria-labelledby="radar-title">
         <div className="section-header-row">
