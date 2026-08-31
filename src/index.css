@@ -7421,3 +7421,72 @@ html.high-contrast { filter: contrast(125%); }
 [data-theme="dark"] .theta-indicator strong {
   color: #a78bfa;
 }
+
+/* =========================================================
+ * 7. 六大學習軌道網格與物理/化學專屬樣式 (Six Tracks Grid & Science Styles)
+ * ========================================================= */
+.six-track-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 0.85rem;
+}
+
+@media (min-width: 1024px) {
+  .six-track-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.hub-card.physics-track-card:hover {
+  border-color: #38bdf8;
+  box-shadow: 0 10px 24px rgba(2, 132, 199, 0.12);
+  transform: translateY(-2px);
+}
+
+.hub-card.chemistry-track-card:hover {
+  border-color: #34d399;
+  box-shadow: 0 10px 24px rgba(5, 150, 105, 0.12);
+  transform: translateY(-2px);
+}
+
+.physics-sidebar .nav-group button.active {
+  background: #f0f9ff;
+  color: #0369a1;
+  border-left: 3px solid #0284c7;
+}
+
+.chemistry-sidebar .nav-group button.active {
+  background: #ecfdf5;
+  color: #065f46;
+  border-left: 3px solid #059669;
+}
+
+.physics-lab .lab-header h3 {
+  color: #0369a1;
+  margin-bottom: 0.2rem;
+  font-size: 0.95rem;
+}
+
+.chemistry-lab .lab-header h3 {
+  color: #065f46;
+  margin-bottom: 0.2rem;
+  font-size: 0.95rem;
+}
+
+[data-theme="dark"] .physics-sidebar .nav-group button.active {
+  background: rgba(2, 132, 199, 0.15);
+  color: #38bdf8;
+}
+
+[data-theme="dark"] .chemistry-sidebar .nav-group button.active {
+  background: rgba(5, 150, 105, 0.15);
+  color: #34d399;
+}
+
+[data-theme="dark"] .physics-lab .lab-header h3 {
+  color: #38bdf8;
+}
+
+[data-theme="dark"] .chemistry-lab .lab-header h3 {
+  color: #34d399;
+}

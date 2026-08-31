@@ -19,6 +19,12 @@ const MathApp = lazyWithRetry(() =>
 const CalculusApp = lazyWithRetry(() =>
   import('./calculus/CalculusApp').then((m) => ({ default: m.CalculusApp })),
 )
+const PhysicsApp = lazyWithRetry(() =>
+  import('./physics/PhysicsApp').then((m) => ({ default: m.PhysicsApp })),
+)
+const ChemistryApp = lazyWithRetry(() =>
+  import('./chemistry/ChemistryApp').then((m) => ({ default: m.ChemistryApp })),
+)
 
 type TopView = AppView | 'privacy'
 
@@ -27,6 +33,8 @@ function readTopView(): TopView {
   if (hash === 'privacy') return 'privacy'
   if (hash === 'en' || hash.startsWith('toeic')) return 'en'
   if (hash === 'calculus' || hash.startsWith('calc')) return 'calculus'
+  if (hash === 'physics' || hash.startsWith('phys')) return 'physics'
+  if (hash === 'chemistry' || hash.startsWith('chem')) return 'chemistry'
   if (hash === 'math' || hash.startsWith('math')) return 'math'
   if (hash === 'ja' || hash.startsWith('aoba') || hash.startsWith('builder')) return 'ja'
   return 'hub'
@@ -117,6 +125,30 @@ function AppShell() {
       <ErrorBoundary label="微積分模組">
         <Suspense fallback={<ModuleFallback />}>
           <CalculusApp
+            onBackHub={() => choose('hub')}
+            onSwitchLang={(lang: LangId) => choose(lang)}
+          />
+        </Suspense>
+      </ErrorBoundary>
+    )
+  }
+  if (view === 'physics') {
+    return (
+      <ErrorBoundary label="臺灣物理模組">
+        <Suspense fallback={<ModuleFallback />}>
+          <PhysicsApp
+            onBackHub={() => choose('hub')}
+            onSwitchLang={(lang: LangId) => choose(lang)}
+          />
+        </Suspense>
+      </ErrorBoundary>
+    )
+  }
+  if (view === 'chemistry') {
+    return (
+      <ErrorBoundary label="臺灣化學模組">
+        <Suspense fallback={<ModuleFallback />}>
+          <ChemistryApp
             onBackHub={() => choose('hub')}
             onSwitchLang={(lang: LangId) => choose(lang)}
           />

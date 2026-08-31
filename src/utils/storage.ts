@@ -28,7 +28,7 @@ const LEARNING_META_KEY = 'e-learning-meta'
 const LEARNING_EVENT_LIMIT = 200
 
 /** Learning target language/subject modules. */
-export type LangId = 'ja' | 'en' | 'math' | 'calculus'
+export type LangId = 'ja' | 'en' | 'math' | 'calculus' | 'physics' | 'chemistry'
 /** Top-level app view: language/subject picker or a learning module. */
 export type AppView = 'hub' | LangId
 
@@ -38,6 +38,8 @@ function normalizeLang(value: string | null | undefined): AppView | null {
   if (value === 'en' || value === 'toeic') return 'en'
   if (value === 'math') return 'math'
   if (value === 'calculus' || value === 'calc') return 'calculus'
+  if (value === 'physics' || value === 'phys') return 'physics'
+  if (value === 'chemistry' || value === 'chem') return 'chemistry'
   return null
 }
 
