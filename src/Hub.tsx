@@ -131,9 +131,9 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
       {/* 主頁 Hero 標題與簡介 */}
       <header className="hub-hero">
         <p className="eyebrow">UNIFIED E-LEARNING PLATFORM</p>
-        <h1>統一學習主頁 · 四大專業學術軌道</h1>
+        <h1>統一學習主頁 · 六大專業學術軌道</h1>
         <p className="lede">
-          同一個學習系統，四大專業軌道。臺灣 108 課綱數學、∫ 微積分互動專題、あおば日語 JLPT 與多益商務英語。離線優先、FSRS 間隔重複、2PL 自適應選題與抽象視覺圖解。
+          同一個學習系統，六大專業軌道。臺灣 108 課綱數學、∫ 微積分互動專題、⚛️ 物理、🧪 化學、あおば日語 JLPT 與多益商務英語。離線優先、FSRS 間隔重複、2PL 自適應選題與抽象視覺圖解。
         </p>
       </header>
 
@@ -245,8 +245,8 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
             onClick={() => onChoose('physics')}
           >
             <div className="hub-card-header">
-              <div className="hub-card-mark" style={{ background: 'linear-gradient(135deg, #0284c7, #38bdf8)' }}>⚛️</div>
-              <span className="track-status-pill" style={{ background: '#e0f2fe', color: '#0369a1' }}>G7 ~ G12 貫通</span>
+              <div className="hub-card-mark physics-mark">⚛️</div>
+              <span className="track-status-pill physics">G7 ~ G12 貫通</span>
             </div>
             <p className="eyebrow">PHYSICS · 108 CURRICULUM</p>
             <h2>物理 (國中理化 + 高中)</h2>
@@ -262,7 +262,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
             <div className="track-user-progress">
               <span>進度：已解 <strong>{physicsDoneCount}</strong> 題 · 累積 <strong>{physicsProgress.xp} XP</strong></span>
             </div>
-            <b className="launch-action" style={{ color: '#0284c7' }}>進入物理學習 →</b>
+            <b className="launch-action physics-action">進入物理學習 →</b>
           </button>
 
           {/* 4. 🧪 臺灣 108 課綱化學 (國中+高中) */}
@@ -272,8 +272,8 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
             onClick={() => onChoose('chemistry')}
           >
             <div className="hub-card-header">
-              <div className="hub-card-mark" style={{ background: 'linear-gradient(135deg, #059669, #10b981)' }}>🧪</div>
-              <span className="track-status-pill" style={{ background: '#d1fae5', color: '#065f46' }}>G7 ~ G12 貫通</span>
+              <div className="hub-card-mark chemistry-mark">🧪</div>
+              <span className="track-status-pill chemistry">G7 ~ G12 貫通</span>
             </div>
             <p className="eyebrow">CHEMISTRY · 108 CURRICULUM</p>
             <h2>化學 (國中理化 + 高中)</h2>
@@ -289,7 +289,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
             <div className="track-user-progress">
               <span>進度：已解 <strong>{chemistryDoneCount}</strong> 題 · 累積 <strong>{chemistryProgress.xp} XP</strong></span>
             </div>
-            <b className="launch-action" style={{ color: '#059669' }}>進入化學學習 →</b>
+            <b className="launch-action chemistry-action">進入化學學習 →</b>
           </button>
 
           {/* 5. あおば日本語 */}

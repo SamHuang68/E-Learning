@@ -188,13 +188,17 @@ export const ChemistryApp: React.FC<Props> = () => {
         )}
 
         {activeNav === 'mock' && (
-          <ChemistryMockExam onSaveScore={handleSaveExamScore} />
+          <ChemistryMockExam
+            onSaveScore={handleSaveExamScore}
+            onNavigateVault={() => setActiveNav('vault')}
+          />
         )}
 
         {activeNav === 'vault' && (
           <ChemistryErrorVault
             errorQuestionIds={progress.errorQuestions}
             onRemoveError={handleRemoveError}
+            onOpenLab={handleOpenLab}
           />
         )}
 

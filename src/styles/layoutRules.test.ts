@@ -65,5 +65,26 @@ describe('CSS Layout & Sidebar Overflow Regression Guard', () => {
     expect(cssContent).toContain('.math-shell,')
     expect(cssContent).toContain('.physics-shell,')
     expect(cssContent).toContain('.chemistry-shell,')
+    expect(cssContent).toContain('.grades-nav-group,')
+  })
+
+  it('ensures .six-track-grid has responsive 1-col collapse on mobile', () => {
+    expect(cssContent).toContain('.six-track-grid {')
+    expect(cssContent).toMatch(/@media\s*\(max-width:\s*580px\)\s*\{[^}]*\.six-track-grid\s*\{[^}]*grid-template-columns:\s*1fr/s)
+  })
+
+  it('ensures .lab-workspace-grid has single column collapse and svg max-width protection', () => {
+    expect(cssContent).toContain('.lab-workspace-grid {')
+    expect(cssContent).toMatch(/@media\s*\(max-width:\s*680px\)\s*\{[^}]*\.lab-workspace-grid\s*\{[^}]*grid-template-columns:\s*1fr\s*!important/s)
+    expect(cssContent).toMatch(/\.lab-workspace-grid\s*svg[^}]*max-width:\s*100%/s)
+  })
+
+  it('ensures dark mode WCAG AA high-contrast rules exist for physics & chemistry elements', () => {
+    expect(cssContent).toContain('[data-theme="dark"] .track-status-pill.physics')
+    expect(cssContent).toContain('[data-theme="dark"] .track-status-pill.chemistry')
+    expect(cssContent).toContain('[data-theme="dark"] .signal-rule-box')
+    expect(cssContent).toContain('[data-theme="dark"] .signal-rule-box.chemistry')
+    expect(cssContent).toContain('[data-theme="dark"] .physics-today-view .unit-seq')
+    expect(cssContent).toContain('[data-theme="dark"] .chemistry-today-view .unit-seq')
   })
 })

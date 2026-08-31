@@ -189,13 +189,17 @@ export const PhysicsApp: React.FC<Props> = () => {
         )}
 
         {activeNav === 'mock' && (
-          <PhysicsMockExam onSaveScore={handleSaveExamScore} />
+          <PhysicsMockExam
+            onSaveScore={handleSaveExamScore}
+            onNavigateVault={() => setActiveNav('vault')}
+          />
         )}
 
         {activeNav === 'vault' && (
           <PhysicsErrorVault
             errorQuestionIds={progress.errorQuestions}
             onRemoveError={handleRemoveError}
+            onOpenLab={handleOpenLab}
           />
         )}
 

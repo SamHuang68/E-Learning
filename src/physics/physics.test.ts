@@ -223,3 +223,22 @@ describe('物理學習進度與狀態管理 (Physics Storage) 測試', () => {
     expect(state.xp).toBe(44) // Math.round(88 / 2)
   })
 })
+
+describe('物理錯題筆記本 (Physics Error Vault) 雙軌題庫檢索與實驗室智慧導航測試', () => {
+  it('單元題庫與大考模擬考題目應能被完整納入錯題檢索池', () => {
+    const allUnits = getAllPhysicsUnits()
+    const allMockExams = Object.values(PHYSICS_MOCK_EXAMS)
+
+    const unitQIds = allUnits.flatMap((u) => u.questions.map((q) => q.id))
+    const mockQIds = allMockExams.flatMap((e) => e.questions.map((q) => q.id))
+
+    expect(unitQIds.length).toBeGreaterThan(0)
+    expect(mockQIds.length).toBeGreaterThan(0)
+
+    // 驗證會考、學測與分科測驗錯題 ID 能被檢索
+    expect(mockQIds).toContain('mock_cap_q1')
+    expect(mockQIds).toContain('mock_gsat_q1')
+    expect(mockQIds).toContain('mock_ast_q1')
+  })
+})
+

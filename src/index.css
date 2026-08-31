@@ -3036,7 +3036,9 @@ footer {
 
   .sidebar > .brand,
   .math-sidebar > .brand,
-  .calculus-sidebar > .brand {
+  .calculus-sidebar > .brand,
+  .physics-sidebar > .brand,
+  .chemistry-sidebar > .brand {
     display: none;
   }
 
@@ -3047,30 +3049,42 @@ footer {
 
   .sidebar nav,
   .math-sidebar nav,
-  .calculus-sidebar nav {
+  .calculus-sidebar nav,
+  .physics-sidebar nav,
+  .chemistry-sidebar nav {
     flex-direction: row;
     overflow-x: auto;
     width: 100%;
     max-width: 100%;
     overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
     padding-bottom: 0.2rem;
   }
 
   .sidebar nav button,
   .math-sidebar nav button,
-  .calculus-sidebar nav button {
+  .calculus-sidebar nav button,
+  .physics-sidebar nav button,
+  .chemistry-sidebar nav button {
     flex: 0 0 auto;
     width: auto;
+    white-space: nowrap;
+  }
+
+  .sidebar nav button .nav-label,
+  .math-sidebar nav button .nav-label,
+  .calculus-sidebar nav button .nav-label,
+  .physics-sidebar nav button .nav-label,
+  .chemistry-sidebar nav button .nav-label {
+    white-space: nowrap;
   }
 
   .stage-block,
-  .grades-pill-grid {
-    display: none;
-  }
-
+  .grades-pill-grid,
+  .grades-nav-group,
   .course-summary {
-    display: none;
+    display: none !important;
   }
 
   .mobile-brand {
@@ -3413,19 +3427,24 @@ footer {
   align-items: center;
   gap: 0.35rem;
   flex-wrap: wrap;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .hero-title-group h2 {
-  font-size: 1.05rem;
+  font-size: clamp(0.95rem, 3.5vw, 1.15rem);
   margin: 0;
   color: #fff;
   line-height: 1.2;
+  word-break: break-word;
 }
 
 .hero-desc-inline {
   font-size: 0.75rem;
-  color: #bfdbfe;
-  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.25;
+  word-break: break-word;
+  max-width: 100%;
 }
 
 .stage-pill {
@@ -3434,6 +3453,7 @@ footer {
   border-radius: 999px;
   font-size: 0.68rem;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .exam-target-pill {
@@ -3443,23 +3463,30 @@ footer {
   border-radius: 999px;
   font-size: 0.68rem;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .hero-quick-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.3rem;
+  gap: 0.35rem;
+  align-items: center;
 }
 
 .btn-hero-primary {
   background: #fff;
   color: #1e3a8a;
   border: none;
-  padding: 0.28rem 0.65rem;
+  padding: 0.32rem 0.65rem;
   border-radius: 6px;
   font-weight: 700;
   font-size: 0.76rem;
   cursor: pointer;
+  white-space: nowrap;
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -3472,16 +3499,38 @@ footer {
   background: rgba(255, 255, 255, 0.15);
   color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.3);
-  padding: 0.28rem 0.55rem;
+  padding: 0.32rem 0.55rem;
   border-radius: 6px;
   font-weight: 600;
   font-size: 0.74rem;
   cursor: pointer;
+  white-space: nowrap;
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition: background 0.15s ease;
 }
 
 .btn-hero-secondary:hover {
   background: rgba(255, 255, 255, 0.25);
+}
+
+@media (max-width: 480px) {
+  .hero-quick-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.35rem;
+    width: 100%;
+  }
+  .hero-quick-actions .btn-hero-primary {
+    grid-column: 1 / -1;
+  }
+  .btn-hero-primary,
+  .btn-hero-secondary {
+    width: 100%;
+    text-align: center;
+  }
 }
 
 /* 單元地圖 Unit Cards */
@@ -3494,6 +3543,8 @@ footer {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.2rem;
+  flex-wrap: wrap;
+  gap: 0.35rem;
 }
 
 .section-title-row h3 {
@@ -3509,11 +3560,12 @@ footer {
   padding: 0.08rem 0.35rem;
   border-radius: 999px;
   border: 1px solid var(--line);
+  white-space: nowrap;
 }
 
 .unit-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr));
   gap: 0.35rem;
   margin: 0.2rem 0 0.35rem;
 }
@@ -3527,6 +3579,7 @@ footer {
   transition: all 0.15s ease;
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .unit-map-card:hover {
@@ -3560,12 +3613,14 @@ footer {
   border-radius: 4px;
   background: var(--surface-soft);
   color: var(--muted);
+  white-space: nowrap;
 }
 
 .unit-map-card h4 {
   margin: 0 0 0.08rem;
   font-size: 0.82rem;
   color: var(--ink);
+  word-break: break-word;
 }
 
 .unit-sub {
@@ -3574,6 +3629,7 @@ footer {
   line-height: 1.2;
   flex-grow: 1;
   margin: 0 0 0.25rem;
+  word-break: break-word;
 }
 
 .unit-progress-bar-wrap {
@@ -3596,11 +3652,14 @@ footer {
   justify-content: space-between;
   font-size: 0.65rem;
   color: var(--muted);
+  flex-wrap: wrap;
+  gap: 0.2rem;
 }
 
 .current-indicator {
   color: #2563eb;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 /* 核心概念卡片 (Concepts) */
@@ -3613,7 +3672,7 @@ footer {
 
 .concept-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr));
   gap: 0.3rem;
   margin: 0.18rem 0 0.35rem;
 }
@@ -3624,6 +3683,7 @@ footer {
   border-radius: 6px;
   padding: 0.35rem 0.55rem;
   border-left: 3px solid #3b82f6;
+  min-width: 0;
 }
 
 .concept-idx {
@@ -3632,20 +3692,30 @@ footer {
   color: #2563eb;
   display: block;
   margin-bottom: 0.05rem;
+  white-space: nowrap;
 }
 
 .concept-text {
   font-size: 0.76rem;
   line-height: 1.25;
   color: var(--ink);
+  word-break: break-word;
 }
 
 /* 實驗室卡片 (Labs) */
 .labs-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr));
   gap: 0.3rem;
   margin-top: 0.18rem;
+}
+
+@media (max-width: 480px) {
+  .unit-cards-grid,
+  .concept-cards-grid,
+  .labs-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .lab-entry-card {
@@ -7515,14 +7585,52 @@ html.high-contrast { filter: contrast(125%); }
  * ========================================================= */
 .six-track-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 0.85rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr));
+  gap: 1rem;
+}
+
+@media (max-width: 580px) {
+  .six-track-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 680px) and (max-width: 1023px) {
+  .six-track-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (min-width: 1024px) {
   .six-track-grid {
     grid-template-columns: repeat(3, 1fr);
   }
+}
+
+.hub-card-mark.physics-mark {
+  background: linear-gradient(145deg, #0284c7, #38bdf8);
+}
+
+.hub-card-mark.chemistry-mark {
+  background: linear-gradient(145deg, #059669, #10b981);
+}
+
+.track-status-pill.physics {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.track-status-pill.chemistry {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.launch-action.physics-action {
+  color: #0284c7;
+}
+
+.launch-action.chemistry-action {
+  color: #059669;
 }
 
 .hub-card.physics-track-card:hover {
@@ -7561,6 +7669,547 @@ html.high-contrast { filter: contrast(125%); }
   font-size: 0.95rem;
 }
 
+/* 3 秒破題訊號卡口訣盒 */
+.signal-rule-box {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.45rem;
+  border-radius: 4px;
+  margin-bottom: 0.25rem;
+  background: #f0f9ff;
+  color: #0369a1;
+  border: 1px solid rgba(3, 105, 161, 0.15);
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.signal-rule-box.chemistry {
+  background: #ecfdf5;
+  color: #065f46;
+  border-color: rgba(6, 95, 70, 0.15);
+}
+
+/* 實驗室工作台通用響應式防溢出網格 */
+.lab-workspace-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 0.75rem;
+  align-items: start;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+@media (max-width: 680px) {
+  .lab-workspace-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+.lab-workspace-grid svg,
+.canvas-container svg,
+.proof-svg-box svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ==========================================================================
+ * 8. 物理與化學錯題本與實驗室直通專屬樣式 (Error Vault & Lab Teleportation)
+ * ========================================================================== */
+
+.error-vault-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.vault-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.5rem;
+}
+
+.vault-stat-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.vault-stat-icon {
+  font-size: 1.3rem;
+  line-height: 1;
+}
+
+.vault-stat-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.vault-stat-label {
+  font-size: 0.7rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.vault-stat-value {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.vault-toolbar {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.6rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.vault-toolbar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.vault-search-input {
+  flex: 1;
+  min-width: 180px;
+  padding: 0.4rem 0.65rem;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--surface-soft);
+  color: var(--ink);
+  font-size: 0.8rem;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.vault-search-input:focus {
+  border-color: #3b82f6;
+}
+
+.vault-select-filter {
+  padding: 0.4rem 0.65rem;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--surface-soft);
+  color: var(--ink);
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.vault-chips-row {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.vault-chip-btn {
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.vault-chip-btn:hover {
+  border-color: #94a3b8;
+  color: var(--ink);
+}
+
+.vault-chip-btn.active {
+  background: #0284c7;
+  border-color: #0284c7;
+  color: #ffffff;
+}
+
+.vault-chip-btn.chemistry-active {
+  background: #059669;
+  border-color: #059669;
+  color: #ffffff;
+}
+
+/* 錯題卡片本體 */
+.vault-card-item {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  box-shadow: 0 2px 8px var(--shadow, rgba(0, 0, 0, 0.04));
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.vault-card-item:hover {
+  border-color: #94a3b8;
+}
+
+.vault-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.vault-tag-group {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.vault-source-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+
+.vault-strand-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  background: rgba(2, 132, 199, 0.1);
+  color: #0284c7;
+}
+
+.vault-strand-badge.chemistry {
+  background: rgba(5, 150, 105, 0.1);
+  color: #059669;
+}
+
+.vault-diff-stars {
+  font-size: 0.7rem;
+  color: #f59e0b;
+  letter-spacing: 0.05em;
+}
+
+.vault-btn-mastered {
+  padding: 0.25rem 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: 6px;
+  border: 1px solid #10b981;
+  background: rgba(16, 185, 129, 0.08);
+  color: #059669;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.vault-btn-mastered:hover {
+  background: #10b981;
+  color: #ffffff;
+}
+
+.vault-question-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.vault-question-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.vault-question-text {
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: var(--ink);
+  overflow-x: auto;
+  max-width: 100%;
+  word-break: break-word;
+}
+
+.vault-options-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 0.4rem;
+  margin-top: 0.2rem;
+}
+
+.vault-option-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  font-size: 0.8rem;
+  color: var(--ink);
+  word-break: break-word;
+  min-width: 0;
+}
+
+.vault-option-item.correct {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: #10b981;
+  color: #047857;
+  font-weight: 600;
+}
+
+/* 詳解與步驟拆解區 */
+.vault-solution-wrapper {
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.65rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.vault-solution-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.vault-solution-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #0284c7;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.vault-solution-title.chemistry {
+  color: #059669;
+}
+
+.vault-toggle-steps-btn {
+  background: none;
+  border: none;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #2563eb;
+  cursor: pointer;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.vault-toggle-steps-btn:hover {
+  text-decoration: underline;
+}
+
+.vault-solution-body {
+  font-size: 0.84rem;
+  line-height: 1.5;
+  color: var(--ink);
+  overflow-x: auto;
+  max-width: 100%;
+  word-break: break-word;
+}
+
+/* 5 步驟深度拆解面板 */
+.vault-steps-accordion {
+  margin-top: 0.45rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  border-top: 1px dashed var(--line);
+  padding-top: 0.55rem;
+}
+
+.vault-step-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.5rem 0.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.vault-step-title-line {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--navy);
+  flex-wrap: wrap;
+}
+
+.vault-step-title-line.chemistry {
+  color: #059669;
+}
+
+.vault-step-num {
+  background: #0284c7;
+  color: #ffffff;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 0.65rem;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.vault-step-num.chemistry {
+  background: #059669;
+}
+
+.vault-step-content-text {
+  font-size: 0.8rem;
+  color: var(--ink);
+  line-height: 1.45;
+  overflow-x: auto;
+  max-width: 100%;
+  word-break: break-word;
+}
+
+.vault-pitfall-box {
+  background: rgba(245, 158, 11, 0.08);
+  border-left: 3px solid #f59e0b;
+  border-radius: 0 6px 6px 0;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.76rem;
+  color: #b45309;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+/* 關聯動態實驗室直通按鈕 */
+.vault-teleport-footer {
+  margin-top: 0.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  padding-top: 0.45rem;
+  border-top: 1px solid var(--line);
+}
+
+.vault-teleport-hint {
+  font-size: 0.74rem;
+  color: var(--muted);
+  flex: 1;
+  min-width: 160px;
+}
+
+.vault-lab-teleport-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.95rem;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  border: 1px solid #38bdf8;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.vault-lab-teleport-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+  background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+}
+
+.vault-lab-teleport-btn.chemistry {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  border-color: #34d399;
+  box-shadow: 0 2px 6px rgba(5, 150, 105, 0.25);
+}
+
+.vault-lab-teleport-btn.chemistry:hover {
+  background: linear-gradient(135deg, #047857 0%, #065f46 100%);
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.35);
+}
+
+/* 公式與寬度保護 (手機端 0 溢出) */
+.katex-scroll-protection,
+.math-formula,
+.katex-block-wrapper {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
+  word-break: break-word;
+}
+
+.katex-scroll-protection .katex-display,
+.math-formula .katex-display {
+  margin: 0.4em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+@media (max-width: 640px) {
+  .vault-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .vault-card-item {
+    padding: 0.75rem 0.8rem;
+  }
+  .vault-options-list {
+    grid-template-columns: 1fr;
+  }
+  .vault-teleport-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .vault-lab-teleport-btn {
+    width: 100%;
+  }
+}
+
+/* =========================================================
+ * 9. 深色模式全套高對比 WCAG 2.2 AA 規範強化 (Dark Theme Contrast)
+ * ========================================================= */
 [data-theme="dark"] .physics-sidebar .nav-group button.active {
   background: rgba(2, 132, 199, 0.15);
   color: #38bdf8;
@@ -7578,3 +8227,151 @@ html.high-contrast { filter: contrast(125%); }
 [data-theme="dark"] .chemistry-lab .lab-header h3 {
   color: #34d399;
 }
+
+[data-theme="dark"] .track-status-pill.physics {
+  background: rgba(2, 132, 199, 0.2);
+  color: #38bdf8;
+}
+
+[data-theme="dark"] .track-status-pill.chemistry {
+  background: rgba(5, 150, 105, 0.2);
+  color: #34d399;
+}
+
+[data-theme="dark"] .launch-action.physics-action {
+  color: #38bdf8;
+}
+
+[data-theme="dark"] .launch-action.chemistry-action {
+  color: #34d399;
+}
+
+[data-theme="dark"] .signal-rule-box {
+  background: rgba(2, 132, 199, 0.18);
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
+[data-theme="dark"] .signal-rule-box.chemistry {
+  background: rgba(5, 150, 105, 0.18);
+  color: #34d399;
+  border-color: rgba(52, 211, 153, 0.3);
+}
+
+/* 今日學習儀表板深色對比度強化 */
+[data-theme="dark"] .physics-today-view .unit-seq,
+[data-theme="dark"] .physics-today-view .current-indicator,
+[data-theme="dark"] .physics-today-view .concept-idx,
+[data-theme="dark"] .physics-today-view .btn-enter-lab {
+  color: #38bdf8 !important;
+}
+
+[data-theme="dark"] .physics-today-view .concept-item-card {
+  border-left-color: #38bdf8 !important;
+  background: #111827;
+}
+
+[data-theme="dark"] .physics-today-view .lab-icon {
+  background: rgba(2, 132, 199, 0.2) !important;
+  color: #38bdf8;
+}
+
+[data-theme="dark"] .chemistry-today-view .unit-seq,
+[data-theme="dark"] .chemistry-today-view .current-indicator,
+[data-theme="dark"] .chemistry-today-view .concept-idx,
+[data-theme="dark"] .chemistry-today-view .btn-enter-lab {
+  color: #34d399 !important;
+}
+
+[data-theme="dark"] .chemistry-today-view .concept-item-card {
+  border-left-color: #34d399 !important;
+  background: #111827;
+}
+
+[data-theme="dark"] .chemistry-today-view .lab-icon {
+  background: rgba(5, 150, 105, 0.2) !important;
+  color: #34d399;
+}
+
+[data-theme="dark"] .unit-map-card {
+  background: #111827;
+  border-color: #374151;
+}
+
+[data-theme="dark"] .unit-map-card:hover {
+  border-color: #38bdf8;
+}
+
+[data-theme="dark"] .unit-map-card.active {
+  background: #1e293b;
+  border-color: #38bdf8;
+}
+
+[data-theme="dark"] .chemistry-today-view .unit-map-card.active {
+  border-color: #34d399;
+}
+
+[data-theme="dark"] .lab-entry-card {
+  background: #111827;
+  border-color: #374151;
+}
+
+[data-theme="dark"] .lab-entry-card:hover {
+  border-color: #38bdf8;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.2);
+}
+
+[data-theme="dark"] .chemistry-today-view .lab-entry-card:hover {
+  border-color: #34d399;
+  box-shadow: 0 4px 14px rgba(5, 150, 105, 0.2);
+}
+
+[data-theme="dark"] .exam-target-pill {
+  background: rgba(245, 158, 11, 0.25);
+  color: #fcd34d;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+[data-theme="dark"] .vault-chip-btn.active {
+  background: #0284c7;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .vault-chip-btn.chemistry-active {
+  background: #059669;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .vault-pitfall-box {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fcd34d;
+}
+
+[data-theme="dark"] .vault-btn-mastered {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border-color: #059669;
+}
+
+[data-theme="dark"] .vault-solution-wrapper,
+[data-theme="dark"] .vault-step-card {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+[data-theme="dark"] .vault-solution-title {
+  color: #38bdf8;
+}
+
+[data-theme="dark"] .vault-solution-title.chemistry {
+  color: #34d399;
+}
+
+[data-theme="dark"] .vault-step-title-line {
+  color: #7dd3fc;
+}
+
+[data-theme="dark"] .vault-step-title-line.chemistry {
+  color: #34d399;
+}
+

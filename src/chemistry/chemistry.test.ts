@@ -225,3 +225,22 @@ describe('化學學習進度與狀態管理 (Chemistry Storage) 測試', () => {
     expect(s2.bookmarkedSignals).not.toContain(sigId)
   })
 })
+
+describe('化學錯題筆記本 (Chemistry Error Vault) 雙軌題庫檢索與實驗室智慧導航測試', () => {
+  it('單元題庫與大考模擬考題目應能被完整納入錯題檢索池', () => {
+    const allUnits = getAllChemistryUnits()
+    const allMockExams = Object.values(CHEMISTRY_MOCK_EXAMS)
+
+    const unitQIds = allUnits.flatMap((u) => u.questions.map((q) => q.id))
+    const mockQIds = allMockExams.flatMap((e) => e.questions.map((q) => q.id))
+
+    expect(unitQIds.length).toBeGreaterThan(0)
+    expect(mockQIds.length).toBeGreaterThan(0)
+
+    // 驗證會考、學測與分科測驗化學錯題 ID 能被檢索
+    expect(mockQIds).toContain('cap_q1')
+    expect(mockQIds).toContain('gsat_q1')
+    expect(mockQIds).toContain('ast_q1')
+  })
+})
+
