@@ -1,6 +1,9 @@
-# E-Learning Hub｜あおば日語 × TOEIC English
+# E-Learning Hub｜あおば日語 × TOEIC English × 臺灣 108 課綱數學
 
-同一個 Vite / React 專案內的雙產品學習站。未登入可本機試用；登入後進度同步至 Supabase。託管於 GitHub Pages（靜態站）。
+> 🏛️ **Sam Huang 專案總入口**：[https://samhuang68.github.io/](https://samhuang68.github.io/)
+> 🌐 **E-Learning 線上體驗站**：[https://samhuang68.github.io/E-Learning/](https://samhuang68.github.io/E-Learning/)
+
+同一個 Vite / React 專案內的三大專業學習軌道（臺灣 108 課綱數學、JLPT 日語、TOEIC 多益英語）。未登入可本機試用；登入後進度同步至 Supabase。託管於 GitHub Pages（靜態站）。
 
 ## 功能成熟度
 

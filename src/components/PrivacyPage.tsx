@@ -62,6 +62,15 @@ export function PrivacyPage({ onBack }: Props) {
           在 Hub 可匯出／匯入進度 JSON、清除本機進度快取；登入使用者可重設雲端進度。
         </p>
       </section>
+      <section className="privacy-block">
+        <h2>開發者與專案授權</h2>
+        <p>
+          本 E-Learning 平台為 Sam Huang 開發之開源教育科技專案（MIT License）。源碼庫請訪問：
+        </p>
+        <p>
+          👉 <a href="https://github.com/SamHuang68/E-Learning" target="_blank" rel="noopener noreferrer"><strong>GitHub 專案開源庫 (SamHuang68/E-Learning) ↗</strong></a>
+        </p>
+      </section>
     </main>
   )
 }

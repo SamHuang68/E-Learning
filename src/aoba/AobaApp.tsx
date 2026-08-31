@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useAuth } from '../auth/AuthProvider'
-import { KanaLab } from '../components/KanaLab'
 import type { ReactNode } from 'react'
+import { useAuth } from '../auth/AuthProvider'
+import { Breadcrumbs } from '../components/Breadcrumbs'
+import { KanaLab } from '../components/KanaLab'
 import { KanjiLab } from '../components/KanjiLab'
 import { LessonBuilder } from '../components/LessonBuilder'
 import { MockExam } from '../components/MockExam'
@@ -12,6 +13,7 @@ import { ScenarioPlayer } from '../components/ScenarioPlayer'
 import { Sidebar, type NavId } from '../components/Sidebar'
 import { SpeakingLab } from '../components/SpeakingLab'
 import { TodayView } from '../components/TodayView'
+import { SignalDecisionView } from './components/SignalDecisionView'
 import { collectUnitCardIds, itemKey } from '../data/contentPack'
 import { jlptLevels, type BuilderConfig } from '../data/course'
 import { flattenKana, getKanaRows } from '../data/kana'
@@ -354,6 +356,10 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
       )
     }
 
+    if (nav === 'signals') {
+      return <SignalDecisionView onBack={() => setNav('today')} />
+    }
+
     if (nav === 'kana') {
       return (
         <KanaLab
@@ -449,25 +455,27 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
         : practice === 'reading'
           ? '閱讀練習'
           : '文法教室'
-      : nav === 'kana'
-        ? '五十音教室'
-        : nav === 'builder'
-          ? '課程設計器'
-          : nav === 'vocab'
-            ? '單字練習'
-            : nav === 'grammar'
-              ? '文法教室'
-              : nav === 'kanji'
-                ? '漢字實驗室'
-                : nav === 'scenario'
-                  ? '情境任務'
-                  : nav === 'speaking'
-                    ? '口說跟讀'
-                    : nav === 'mock'
-                      ? '模擬測驗'
-                      : nav === 'placement'
-                        ? '分級測驗'
-                        : '今日學習'
+      : nav === 'signals'
+        ? '句型動作判準 (3秒決策樹)'
+        : nav === 'kana'
+          ? '五十音教室'
+          : nav === 'builder'
+            ? '課程設計器'
+            : nav === 'vocab'
+              ? '單字練習'
+              : nav === 'grammar'
+                ? '文法教室'
+                : nav === 'kanji'
+                  ? '漢字實驗室'
+                  : nav === 'scenario'
+                    ? '情境任務'
+                    : nav === 'speaking'
+                      ? '口說跟讀'
+                      : nav === 'mock'
+                        ? '模擬測驗'
+                        : nav === 'placement'
+                          ? '分級測驗'
+                          : '今日學習'
 
   const sidebarNav: NavId =
     practice || special === 'review' ? 'today' : special === 'mock' ? 'mock' : special === 'placement' ? 'placement' : nav
@@ -487,6 +495,15 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
       />
 
       <section className="content">
+        <Breadcrumbs
+          items={[
+            { label: 'あおば日語', onClick: () => handleNav('today') },
+            { label: `${level.band} (${level.tier})`, onClick: () => handleNav('today') },
+            { label: `單元 ${unit.id} · ${unit.title}`, active: nav === 'today' && !practice && !special },
+            ...(nav !== 'today' || practice || special ? [{ label: title, active: true }] : []),
+          ]}
+        />
+
         <div className="mobile-brand">
           <div className="brand-mark">あ</div>
           <strong>あおば Aoba</strong>

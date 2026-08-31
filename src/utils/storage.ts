@@ -10,7 +10,7 @@ export function setProgressChangeHook(fn: (() => void) | null) {
   progressChangeHook = fn
 }
 
-function notifyProgressChanged() {
+export function notifyProgressChanged() {
   progressChangeHook?.()
 }
 
@@ -27,15 +27,17 @@ const TOEIC_PRESETS_KEY = 'toeic-presets'
 const LEARNING_META_KEY = 'e-learning-meta'
 const LEARNING_EVENT_LIMIT = 200
 
-/** Learning target language modules. */
-export type LangId = 'ja' | 'en'
-/** Top-level app view: language picker or a language module. */
+/** Learning target language/subject modules. */
+export type LangId = 'ja' | 'en' | 'math' | 'calculus'
+/** Top-level app view: language/subject picker or a learning module. */
 export type AppView = 'hub' | LangId
 
 function normalizeLang(value: string | null | undefined): AppView | null {
   if (value === 'hub') return 'hub'
   if (value === 'ja' || value === 'aoba') return 'ja'
   if (value === 'en' || value === 'toeic') return 'en'
+  if (value === 'math') return 'math'
+  if (value === 'calculus' || value === 'calc') return 'calculus'
   return null
 }
 
@@ -101,8 +103,10 @@ export type ToeicSavedPreset = {
 }
 
 export function loadLang(): AppView {
-  const hash = window.location.hash.replace('#', '')
+  const hash = window.location.hash.replace('#', '').trim()
   if (hash === 'en' || hash.startsWith('toeic')) return 'en'
+  if (hash === 'calculus' || hash.startsWith('calc')) return 'calculus'
+  if (hash === 'math' || hash.startsWith('math')) return 'math'
   if (
     hash === 'ja' ||
     hash.startsWith('aoba') ||
@@ -110,15 +114,7 @@ export function loadLang(): AppView {
   ) {
     return 'ja'
   }
-  if (hash === 'hub') return 'hub'
-  try {
-    const saved =
-      normalizeLang(localStorage.getItem(LANG_KEY)) ??
-      normalizeLang(localStorage.getItem(LEGACY_SITE_KEY))
-    if (saved) return saved
-  } catch {
-    /* ignore */
-  }
+  // 預設進入 E-Learning 統一學習主頁 (Hub)
   return 'hub'
 }
 
@@ -131,6 +127,8 @@ export function saveLang(view: AppView) {
   }
   if (view === 'hub') window.location.hash = 'hub'
   else if (view === 'en') window.location.hash = 'toeic'
+  else if (view === 'math') window.location.hash = 'math'
+  else if (view === 'calculus') window.location.hash = 'calculus'
   else window.location.hash = 'aoba'
   notifyProgressChanged()
 }
@@ -459,6 +457,7 @@ export function defaultLearningMeta(): LearningMeta {
 }
 
 export function loadLearningMeta(): LearningMeta {
+  if (typeof localStorage === 'undefined') return defaultLearningMeta()
   try {
     const raw = localStorage.getItem(LEARNING_META_KEY)
     if (raw) return normalizeLearningMeta(JSON.parse(raw))
@@ -469,7 +468,13 @@ export function loadLearningMeta(): LearningMeta {
 }
 
 export function saveLearningMeta(meta: LearningMeta): void {
-  localStorage.setItem(LEARNING_META_KEY, JSON.stringify(normalizeLearningMeta(meta)))
+  if (typeof localStorage !== 'undefined') {
+    try {
+      localStorage.setItem(LEARNING_META_KEY, JSON.stringify(normalizeLearningMeta(meta)))
+    } catch {
+      /* ignore */
+    }
+  }
   notifyProgressChanged()
 }
 

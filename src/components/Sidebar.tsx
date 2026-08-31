@@ -4,6 +4,7 @@ import type { LangId } from '../utils/storage'
 
 export type NavId =
   | 'kana'
+  | 'signals'
   | 'today'
   | 'builder'
   | 'vocab'
@@ -27,8 +28,9 @@ type Props = {
 }
 
 const items: { id: NavId; icon: string; label: string }[] = [
-  { id: 'kana', icon: 'あ', label: '五十音（基礎）' },
   { id: 'today', icon: '日', label: '今日學習' },
+  { id: 'signals', icon: '🎯', label: '句型動作判準 (3秒)' },
+  { id: 'kana', icon: 'あ', label: '五十音（基礎）' },
   { id: 'builder', icon: '設', label: '課程設計器' },
   { id: 'vocab', icon: 'Aa', label: '單字練習' },
   { id: 'grammar', icon: '文', label: '文法教室' },
@@ -47,8 +49,6 @@ export function Sidebar({
   progressPct,
   kanaMastered,
   kanaTotal,
-  onBackHub,
-  onSwitchLang,
 }: Props) {
   return (
     <aside className="sidebar">
@@ -61,19 +61,6 @@ export function Sidebar({
           <span>JLPT 級距學習</span>
         </div>
       </div>
-
-      <div className="lang-switch" role="group" aria-label="學習語言">
-        <button type="button" className="active" aria-current="true" disabled>
-          日本語
-        </button>
-        <button type="button" onClick={() => onSwitchLang('en')}>
-          English
-        </button>
-      </div>
-
-      <button type="button" className="hub-back" onClick={onBackHub}>
-        ← 選擇學習語言
-      </button>
 
       <nav aria-label="主選單">
         {items.map((item) => (

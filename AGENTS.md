@@ -11,3 +11,6 @@ This is a single Vite + React 19 + TypeScript static app (npm). Standard command
 - Navigation uses hash routes: `#hub`, `#aoba` (Japanese), `#toeic` (English), `#privacy`.
 - Pro-gated content demo unlock code: `AOBA-PRO`.
 - Lint: `npm run lint` (oxlint). Tests: `npm test` (vitest, unit tests under `src/engine/*.test.ts`).
+
+## Execution & Agent Orchestration Doctrine
+- **Loop Engineering & Hive Agent Standard**: 所有任務執行一律採用 **Loop Engineering（循環工程：Plan ➜ Execute ➜ Observe ➜ Refine）** 搭配 **Hive Agent（蜂群代理架構：任務形狀分析、能力圖譜路由、單一寫入者整合、驗證閘門與證據鏈驗證）** 作為標準作業準則。

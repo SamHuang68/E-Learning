@@ -3,6 +3,11 @@ import { useAuth } from '../auth/AuthProvider'
 import { AnalyticsPanel } from './AnalyticsPanel'
 import { resetCloudProgress } from '../utils/cloudProgress'
 import {
+  exportToeicChunksToAnki,
+  exportJapaneseSignalsToAnki,
+  exportMathSignalsToAnki,
+} from '../utils/ankiExporter'
+import {
   clearLocalProgressCache,
   exportProgressBundle,
   importProgressBundle,
@@ -103,6 +108,33 @@ export function DataControls() {
             {isLocal ? '重設帳號進度' : '重設雲端進度'}
           </button>
         ) : null}
+      </div>
+
+      <div style={{ marginTop: '1.25rem' }}>
+        <p className="eyebrow">ANKI / CSV 匯出</p>
+        <div className="data-controls-actions" style={{ marginTop: '0.4rem' }}>
+          <button
+            type="button"
+            className="auth-btn ghost"
+            onClick={exportToeicChunksToAnki}
+          >
+            ⚡ 匯出 TOEIC 商務語塊 (Anki CSV)
+          </button>
+          <button
+            type="button"
+            className="auth-btn ghost"
+            onClick={exportJapaneseSignalsToAnki}
+          >
+            🎯 匯出日語動作訊號 (Anki CSV)
+          </button>
+          <button
+            type="button"
+            className="auth-btn ghost"
+            onClick={exportMathSignalsToAnki}
+          >
+            📐 匯出數學破題訊號 (Anki CSV)
+          </button>
+        </div>
       </div>
       <input
         ref={fileRef}

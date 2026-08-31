@@ -4,6 +4,8 @@ import type { LangId } from '../../utils/storage'
 
 export type ToeicNavId =
   | 'phonics'
+  | 'chunks'
+  | 'story'
   | 'today'
   | 'builder'
   | 'vocab'
@@ -26,8 +28,10 @@ type Props = {
 }
 
 const items: { id: ToeicNavId; icon: string; label: string }[] = [
-  { id: 'phonics', icon: 'Aa', label: '發音基礎' },
   { id: 'today', icon: '★', label: '今日學習' },
+  { id: 'chunks', icon: '⚡', label: '商務語塊 (Chunks)' },
+  { id: 'story', icon: '📖', label: '情境微故事' },
+  { id: 'phonics', icon: 'Aa', label: '發音基礎' },
   { id: 'builder', icon: '✎', label: '課程設計器' },
   { id: 'vocab', icon: 'V', label: '單字練習' },
   { id: 'listening', icon: '♪', label: '聽力練習' },
@@ -45,8 +49,6 @@ export function ToeicSidebar({
   unit,
   progressPct,
   phonicsCount,
-  onBackHub,
-  onSwitchLang,
 }: Props) {
   return (
     <aside className="sidebar">
@@ -63,19 +65,6 @@ export function ToeicSidebar({
           <span>多益證書級距</span>
         </div>
       </div>
-
-      <div className="lang-switch" role="group" aria-label="學習語言">
-        <button type="button" onClick={() => onSwitchLang('ja')}>
-          日本語
-        </button>
-        <button type="button" className="active" aria-current="true" disabled>
-          English
-        </button>
-      </div>
-
-      <button type="button" className="hub-back" onClick={onBackHub}>
-        ← 選擇學習語言
-      </button>
 
       <nav aria-label="TOEIC menu">
         {items.map((item) => (
