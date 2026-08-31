@@ -3,6 +3,7 @@ import { loadMathProgress, recordMathAnswer } from '../utils/mathStorage'
 import { ALL_MATH_GRADES } from '../data/gradeStore'
 import type { MathQuestion } from '../data/curriculum'
 import { MathFormula } from './MathFormula'
+import { exportErrorVaultToAnki } from '../../utils/ankiExporter'
 
 type Props = {
   onBack: () => void
@@ -67,9 +68,22 @@ export const MathErrorVault: React.FC<Props> = ({ onBack }) => {
             自動彙整平常單元練習與模擬考答錯之題目。徹底訂正並再次答對即可移出錯題本！
           </p>
         </div>
-        <button type="button" className="btn-back" onClick={onBack}>
-          ← 返回學習中心
-        </button>
+        <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+          {errorQuestions.length > 0 && (
+            <button
+              type="button"
+              className="btn-back"
+              style={{ background: 'rgba(37, 99, 235, 0.12)', color: '#2563eb', borderColor: '#2563eb' }}
+              onClick={() => exportErrorVaultToAnki('數學', errorQuestions)}
+              title="一鍵匯出數學錯題至 Anki 記憶牌組"
+            >
+              📑 匯出 Anki 牌組
+            </button>
+          )}
+          <button type="button" className="btn-back" onClick={onBack}>
+            ← 返回學習中心
+          </button>
+        </div>
       </div>
 
       {errorQuestions.length === 0 ? (

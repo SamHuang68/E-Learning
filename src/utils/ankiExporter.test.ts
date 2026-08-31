@@ -35,4 +35,17 @@ describe('Anki Exporter Module', () => {
     const csv = exportToAnkiCsv(cards)
     expect(csv).toContain('"He said ""hello"""')
   })
+
+  it('should generate valid tags and HTML for error vault questions', () => {
+    const cards: AnkiCard[] = [
+      {
+        front: '<div>[物理 錯題] 拋體運動</div>',
+        back: '<div>解題步驟：v_y = v0 sinθ - gt</div>',
+        tags: '物理_Error_Vault E_Learning',
+      },
+    ]
+    const csv = exportToAnkiCsv(cards)
+    expect(csv).toContain('物理_Error_Vault')
+    expect(csv).toContain('v_y = v0 sinθ - gt')
+  })
 })

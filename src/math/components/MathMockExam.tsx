@@ -26,6 +26,7 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
     scaleGrade: string
     weakStrands: string[]
   } | null>(null)
+  const [flagged, setFlagged] = useState<Record<number, boolean>>({})
 
   const exam = MOCK_EXAMS[examType]
 
@@ -56,6 +57,7 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
 
   function handleStart() {
     setAnswers({})
+    setFlagged({})
     setIsFinished(false)
     setTimeLeft(defaultMinutes * 60)
     setIsTimerRunning(true)
@@ -250,17 +252,18 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
           >
             {exam.questions.map((_, idx) => {
               const isAnswered = answers[idx] !== undefined && answers[idx] !== ''
+              const isFlagged = flagged[idx]
               return (
                 <button
                   key={idx}
                   type="button"
                   style={{
-                    width: '28px',
+                    width: '32px',
                     height: '28px',
                     borderRadius: '6px',
-                    border: '1px solid var(--line)',
-                    background: isAnswered ? '#3b82f6' : 'var(--surface)',
-                    color: isAnswered ? '#ffffff' : 'var(--text)',
+                    border: isFlagged ? '1.5px solid #f59e0b' : '1px solid var(--line)',
+                    background: isFlagged ? '#fef3c7' : isAnswered ? '#3b82f6' : 'var(--surface)',
+                    color: isFlagged ? '#b45309' : isAnswered ? '#ffffff' : 'var(--text)',
                     fontSize: '0.72rem',
                     fontWeight: 600,
                     cursor: 'pointer',
@@ -275,6 +278,7 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
                   }}
                 >
                   {idx + 1}
+                  {isFlagged && ' 🚩'}
                 </button>
               )
             })}
@@ -283,7 +287,27 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
           <div className="mock-questions-list">
             {exam.questions.map((q, idx) => (
               <div key={q.id} id={`math-mock-q-${idx}`} className="mock-q-item">
-                <div className="mock-q-num">第 {idx + 1} 題（難度 ★{q.difficulty}）</div>
+                <div className="mock-q-num" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>第 {idx + 1} 題（難度 ★{q.difficulty}）</span>
+                  <button
+                    type="button"
+                    onClick={() => setFlagged((prev) => ({ ...prev, [idx]: !prev[idx] }))}
+                    style={{
+                      border: flagged[idx] ? '1px solid #f59e0b' : '1px solid var(--line)',
+                      background: flagged[idx] ? '#fef3c7' : 'transparent',
+                      color: flagged[idx] ? '#b45309' : 'var(--muted)',
+                      padding: '0.15rem 0.45rem',
+                      borderRadius: '4px',
+                      fontSize: '0.7rem',
+                      cursor: 'pointer',
+                      fontWeight: 600,
+                      transition: 'all 0.15s ease',
+                    }}
+                    title={flagged[idx] ? '點擊取消標記' : '點擊標記此題為不確定'}
+                  >
+                    {flagged[idx] ? '🚩 已標記' : '🏳️ 標記'}
+                  </button>
+                </div>
                 <div className="mock-q-text">
                   <MathFormula math={q.question} />
                 </div>

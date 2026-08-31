@@ -259,6 +259,47 @@ export const VseprGeometryLab: React.FC = () => {
             minWidth: 0,
           }}
         >
+          {/* 大考高頻分子快照按鈕 */}
+          <div>
+            <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--muted)', display: 'block', marginBottom: '0.25rem' }}>
+              🧪 大考高頻分子立體構型快照：
+            </span>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.25rem' }}>
+              {[
+                { label: '💧 H₂O (角形)', bp: 2, lp: 2 },
+                { label: '🌿 NH₃ (三角錐)', bp: 3, lp: 1 },
+                { label: '💎 CH₄ (四面體)', bp: 4, lp: 0 },
+                { label: '📏 CO₂ (直線)', bp: 2, lp: 0 },
+                { label: '🪐 PCl₅ (雙錐)', bp: 5, lp: 0 },
+                { label: '⭐ SF₆ (八面體)', bp: 6, lp: 0 },
+              ].map((m) => (
+                <button
+                  key={m.label}
+                  type="button"
+                  onClick={() => {
+                    setBp(m.bp)
+                    setLp(m.lp)
+                  }}
+                  style={{
+                    padding: '0.25rem 0.2rem',
+                    fontSize: '0.65rem',
+                    borderRadius: '6px',
+                    border: bp === m.bp && lp === m.lp ? '1px solid #10b981' : '1px solid var(--line)',
+                    background: bp === m.bp && lp === m.lp ? 'rgba(16,185,129,0.15)' : 'var(--surface-soft)',
+                    color: bp === m.bp && lp === m.lp ? '#10b981' : 'var(--text-main)',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                    overflow: 'hidden',
+                  }}
+                >
+                  {m.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* 鍵結對 (BP) */}
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem', fontWeight: 600, marginBottom: '0.15rem' }}>

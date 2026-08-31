@@ -197,6 +197,103 @@ export const ShmLab: React.FC = () => {
           }}
         >
           {/* 擺長滑桿 */}
+          {/* 經典物理情境快照 */}
+          <div>
+            <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--muted)', display: 'block', marginBottom: '0.25rem' }}>
+              ⚡ 經典簡諧運動情境快照：
+            </span>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.3rem' }}>
+              <button
+                type="button"
+                className="lab-snapshot-btn"
+                onClick={() => {
+                  setLength(0.99)
+                  setThetaMaxDeg(5)
+                  setAngleNowDeg(4)
+                }}
+                style={{
+                  padding: '0.25rem 0.4rem',
+                  fontSize: '0.68rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--line)',
+                  background: 'var(--surface-soft)',
+                  color: 'var(--text-main)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                🎯 <strong>標準秒擺 ($T=2.0s$)</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>L=0.99m · 微小振幅 5°</div>
+              </button>
+              <button
+                type="button"
+                className="lab-snapshot-btn"
+                onClick={() => {
+                  setLength(0.25)
+                  setThetaMaxDeg(15)
+                  setAngleNowDeg(10)
+                }}
+                style={{
+                  padding: '0.25rem 0.4rem',
+                  fontSize: '0.68rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--line)',
+                  background: 'var(--surface-soft)',
+                  color: 'var(--text-main)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                ⚡ <strong>短擺高頻 ($1.0Hz$)</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>L=0.25m · T=1.0s</div>
+              </button>
+              <button
+                type="button"
+                className="lab-snapshot-btn"
+                onClick={() => {
+                  setLength(1.5)
+                  setThetaMaxDeg(30)
+                  setAngleNowDeg(25)
+                }}
+                style={{
+                  padding: '0.25rem 0.4rem',
+                  fontSize: '0.68rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--line)',
+                  background: 'var(--surface-soft)',
+                  color: 'var(--text-main)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                📐 <strong>大角度近似失效</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>30° 擺角 · 誤差達 4.5%</div>
+              </button>
+              <button
+                type="button"
+                className="lab-snapshot-btn"
+                onClick={() => {
+                  setLength(2.45)
+                  setThetaMaxDeg(10)
+                  setAngleNowDeg(8)
+                }}
+                style={{
+                  padding: '0.25rem 0.4rem',
+                  fontSize: '0.68rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--line)',
+                  background: 'var(--surface-soft)',
+                  color: 'var(--text-main)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                🌌 <strong>長擺深沉緩擺</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>L=2.45m · T=3.14s</div>
+              </button>
+            </div>
+          </div>
+
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem', fontWeight: 600, marginBottom: '0.15rem' }}>
               <span>擺長 $L$：</span>

@@ -139,8 +139,39 @@ export function SpeakingLab({ prompts, lang = 'ja', onComplete }: Props) {
             {doneSet.has(prompt.id) ? '已完成' : '標記跟讀完成'}
           </button>
         </div>
+        {recording && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '4px',
+              height: '32px',
+              margin: '0.5rem 0',
+              padding: '0.3rem',
+              background: 'rgba(239, 68, 68, 0.08)',
+              borderRadius: '8px',
+            }}
+          >
+            {[14, 26, 12, 28, 18, 30, 16, 24, 12, 26, 20, 10].map((h, i) => (
+              <span
+                key={i}
+                style={{
+                  width: '4px',
+                  height: `${h}px`,
+                  borderRadius: '2px',
+                  background: '#ef4444',
+                  animation: `pulse 0.6s infinite alternate ${i * 0.08}s`,
+                }}
+              />
+            ))}
+            <span style={{ fontSize: '0.75rem', color: '#ef4444', fontWeight: 600, marginLeft: '6px' }}>
+              🎙️ 錄音進行中 · 請對著麥克風跟讀
+            </span>
+          </div>
+        )}
         {recordingUrl ? (
-          <audio controls src={recordingUrl} aria-label="你的錄音回放" />
+          <audio controls src={recordingUrl} aria-label="你的錄音回放" style={{ width: '100%', marginTop: '0.4rem' }} />
         ) : null}
         {message ? <p className="status-line warn">{message}</p> : null}
         <div className="flash-actions">

@@ -140,3 +140,99 @@ export function exportMathSignalsToAnki(): void {
   const csv = exportToAnkiCsv(cards)
   triggerCsvDownload(`Taiwan_Math_Signals_Anki_${new Date().toISOString().slice(0, 10)}.csv`, csv)
 }
+
+/**
+ * 匯出臺灣物理 3 秒破題訊號 Anki Deck
+ */
+export function exportPhysicsSignalsToAnki(): void {
+  // 動態載入避免循環依賴
+  import('../physics/data/solvingSignals').then(({ PHYSICS_SOLVING_SIGNALS }) => {
+    const cards: AnkiCard[] = PHYSICS_SOLVING_SIGNALS.map((sig) => {
+      const front = `
+        <div style="font-size: 18px; font-weight: bold; color: #2563eb;">${sig.topic} (${sig.gradeBand})</div>
+        <div style="margin-top: 8px; font-size: 14px;">🔍 <b>題目特徵訊號：</b><br/>${sig.problemSignal}</div>
+      `.trim()
+
+      const back = `
+        <div style="font-size: 16px; font-weight: bold; color: #b45309;">${sig.threeSecondRule}</div>
+        <div style="margin: 8px 0; font-family: monospace; font-size: 14px; background: #f1f5f9; padding: 6px; border-radius: 4px;">
+          第一步公式：${sig.firstStepFormula}
+        </div>
+        <div style="font-size: 13px;"><b>示範：</b>${sig.exampleProblem.question} ➜ <b>${sig.exampleProblem.quickSolve}</b></div>
+      `.trim()
+
+      return {
+        front,
+        back,
+        tags: `Taiwan_Physics 108_Curriculum ${sig.strand} ${sig.stage}`,
+      }
+    })
+
+    const csv = exportToAnkiCsv(cards)
+    triggerCsvDownload(`Taiwan_Physics_Signals_Anki_${new Date().toISOString().slice(0, 10)}.csv`, csv)
+  })
+}
+
+/**
+ * 匯出臺灣化學 3 秒破題訊號 Anki Deck
+ */
+export function exportChemistrySignalsToAnki(): void {
+  import('../chemistry/data/solvingSignals').then(({ CHEMISTRY_SOLVING_SIGNALS }) => {
+    const cards: AnkiCard[] = CHEMISTRY_SOLVING_SIGNALS.map((sig) => {
+      const front = `
+        <div style="font-size: 18px; font-weight: bold; color: #10b981;">${sig.topic} (${sig.gradeBand})</div>
+        <div style="margin-top: 8px; font-size: 14px;">🔍 <b>題目特徵訊號：</b><br/>${sig.problemSignal}</div>
+      `.trim()
+
+      const back = `
+        <div style="font-size: 16px; font-weight: bold; color: #b45309;">${sig.threeSecondRule}</div>
+        <div style="margin: 8px 0; font-family: monospace; font-size: 14px; background: #f1f5f9; padding: 6px; border-radius: 4px;">
+          第一步算式：${sig.firstStepFormula}
+        </div>
+        <div style="font-size: 13px;"><b>示範：</b>${sig.exampleProblem.question} ➜ <b>${sig.exampleProblem.quickSolve}</b></div>
+      `.trim()
+
+      return {
+        front,
+        back,
+        tags: `Taiwan_Chemistry 108_Curriculum ${sig.gradeBand} ${sig.stage}`,
+      }
+    })
+
+    const csv = exportToAnkiCsv(cards)
+    triggerCsvDownload(`Taiwan_Chemistry_Signals_Anki_${new Date().toISOString().slice(0, 10)}.csv`, csv)
+  })
+}
+
+/**
+ * 匯出錯題本題目為 Anki 複習卡
+ */
+export function exportErrorVaultToAnki(
+  trackName: string,
+  questions: Array<{ id: string; title: string; question: string; solution?: string; answerExplanation?: string }>,
+): void {
+  if (!questions || questions.length === 0) return
+  const cards: AnkiCard[] = questions.map((q) => {
+    const front = `
+      <div style="font-size: 16px; font-weight: bold; color: #dc2626;">[${trackName} 錯題] ${q.title}</div>
+      <div style="margin-top: 8px; font-size: 14px; line-height: 1.5;">${q.question}</div>
+    `.trim()
+
+    const back = `
+      <div style="font-size: 15px; font-weight: bold; color: #047857; margin-bottom: 6px;">正確解題步驟：</div>
+      <div style="font-size: 13px; line-height: 1.5; background: #f8fafc; padding: 8px; border-radius: 6px;">
+        ${q.solution || q.answerExplanation || '詳見教材步驟解析'}
+      </div>
+    `.trim()
+
+    return {
+      front,
+      back,
+      tags: `${trackName}_Error_Vault E_Learning`,
+    }
+  })
+
+  const csv = exportToAnkiCsv(cards)
+  triggerCsvDownload(`${trackName}_Error_Vault_Anki_${new Date().toISOString().slice(0, 10)}.csv`, csv)
+}
+

@@ -150,6 +150,7 @@ export const PhysicsMockExam: React.FC<Props> = ({
   const [timeSpentSeconds, setTimeSpentSeconds] = useState<number>(0)
   const [autoSubmittedNotice, setAutoSubmittedNotice] = useState<boolean>(false)
   const [syncedErrorCount, setSyncedErrorCount] = useState<number>(0)
+  const [flaggedQuestions, setFlaggedQuestions] = useState<Record<string, boolean>>({})
 
   const exam: PhysicsMockExamType =
     exams.find((e) => e.id === selectedExamId) || exams[0]
@@ -161,6 +162,7 @@ export const PhysicsMockExam: React.FC<Props> = ({
   // 切換試卷時重置狀態與計時器
   useEffect(() => {
     setAnswers({})
+    setFlaggedQuestions({})
     setIsSubmitted(false)
     setIsPaused(false)
     setAutoSubmittedNotice(false)
@@ -635,9 +637,9 @@ export const PhysicsMockExam: React.FC<Props> = ({
                   minWidth: '34px',
                   height: '30px',
                   borderRadius: '6px',
-                  border: capsuleBorder,
-                  background: capsuleBg,
-                  color: capsuleColor,
+                  border: flaggedQuestions[q.id] && !isSubmitted ? '1.5px solid #f59e0b' : capsuleBorder,
+                  background: flaggedQuestions[q.id] && !isSubmitted ? '#fef3c7' : capsuleBg,
+                  color: flaggedQuestions[q.id] && !isSubmitted ? '#b45309' : capsuleColor,
                   fontSize: '0.75rem',
                   fontWeight: 700,
                   cursor: 'pointer',
@@ -650,6 +652,7 @@ export const PhysicsMockExam: React.FC<Props> = ({
                 }}
               >
                 {idx + 1}
+                {flaggedQuestions[q.id] && !isSubmitted && ' 🚩'}
                 {isSubmitted && (isCorrect ? ' ✓' : ' ✕')}
               </button>
             )
@@ -1008,6 +1011,27 @@ export const PhysicsMockExam: React.FC<Props> = ({
                   難度 {'★'.repeat(q.difficulty || 3)}
                   {'☆'.repeat(Math.max(0, 5 - (q.difficulty || 3)))}
                 </span>
+
+                {!isSubmitted && (
+                  <button
+                    type="button"
+                    onClick={() => setFlaggedQuestions((prev) => ({ ...prev, [q.id]: !prev[q.id] }))}
+                    style={{
+                      border: flaggedQuestions[q.id] ? '1px solid #f59e0b' : '1px solid var(--line)',
+                      background: flaggedQuestions[q.id] ? '#fef3c7' : 'transparent',
+                      color: flaggedQuestions[q.id] ? '#b45309' : 'var(--muted)',
+                      padding: '0.15rem 0.45rem',
+                      borderRadius: '4px',
+                      fontSize: '0.7rem',
+                      cursor: 'pointer',
+                      fontWeight: 600,
+                      transition: 'all 0.15s ease',
+                    }}
+                    title={flaggedQuestions[q.id] ? '點擊取消標記' : '點擊標記此題為不確定'}
+                  >
+                    {flaggedQuestions[q.id] ? '🚩 已標記' : '🏳️ 標記'}
+                  </button>
+                )}
               </div>
 
               {/* 題目內文 */}

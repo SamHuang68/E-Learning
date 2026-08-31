@@ -17,6 +17,7 @@ import {
 import { CHEMISTRY_MOCK_EXAMS } from '../data/mockExams'
 import { CHEMISTRY_SOLVING_SIGNALS } from '../data/solvingSignals'
 import { MathFormula } from '../../math/components/MathFormula'
+import { exportErrorVaultToAnki } from '../../utils/ankiExporter'
 
 export type ChemistryErrorVaultProps = {
   /** 答錯題目 ID 清單 (自 LocalStorage progress 載入) */
@@ -479,6 +480,16 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
             onClick={() => toggleAllSteps(!allExpanded)}
           >
             {allExpanded ? '🔼 全部收起步驟' : '📖 全部展開步驟'}
+          </button>
+
+          <button
+            type="button"
+            className="vault-chip-btn"
+            style={{ background: 'rgba(16, 185, 129, 0.12)', color: '#10b981', borderColor: '#10b981' }}
+            onClick={() => exportErrorVaultToAnki('化學', filteredQuestions.map((q) => q.question))}
+            title="一鍵匯出當前篩選化學錯題至 Anki 記憶牌組"
+          >
+            📑 匯出 Anki 牌組
           </button>
         </div>
 
