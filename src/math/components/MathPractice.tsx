@@ -1,7 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import type { MathQuestion, MathUnit } from '../data/curriculum'
 import { MathFormula } from './MathFormula'
 import { recordMathAnswer } from '../utils/mathStorage'
+import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { Scratchpad } from '../../components/Scratchpad'
 
 type Props = {
   unit: MathUnit
@@ -20,20 +22,10 @@ export const MathPractice: React.FC<Props> = ({ unit, onBack, onComplete }) => {
   const [submitted, setSubmitted] = useState(false)
   const [isCorrect, setIsCorrect] = useState(false)
   const [showHint, setShowHint] = useState(false)
+  const [showScratchpad, setShowScratchpad] = useState(false)
 
   const questions = unit.questions
   const currentQ: MathQuestion | undefined = questions[currentIndex]
-
-  if (!currentQ) {
-    return (
-      <div className="math-practice-empty">
-        <h3>此單元目前無練習題</h3>
-        <button type="button" className="btn-primary" onClick={onBack}>
-          返回今日學習
-        </button>
-      </div>
-    )
-  }
 
   function handleCheckAnswer() {
     if (!currentQ || submitted) return
@@ -52,6 +44,9 @@ export const MathPractice: React.FC<Props> = ({ unit, onBack, onComplete }) => {
     }
 
     setIsCorrect(correct)
+    if (correct) {
+      playCorrectSound()
+    }
     setSubmitted(true)
     recordMathAnswer(currentQ.id, correct, 5)
   }
@@ -69,19 +64,69 @@ export const MathPractice: React.FC<Props> = ({ unit, onBack, onComplete }) => {
     }
   }
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
+      const k = e.key.toLowerCase()
+      if (k === 'a' || k === '1') {
+        if (!submitted && currentQ?.options && currentQ.options.length > 0) setSelectedOption(0)
+      } else if (k === 'b' || k === '2') {
+        if (!submitted && currentQ?.options && currentQ.options.length > 1) setSelectedOption(1)
+      } else if (k === 'c' || k === '3') {
+        if (!submitted && currentQ?.options && currentQ.options.length > 2) setSelectedOption(2)
+      } else if (k === 'd' || k === '4') {
+        if (!submitted && currentQ?.options && currentQ.options.length > 3) setSelectedOption(3)
+      } else if (k === 'enter' || k === ' ') {
+        e.preventDefault()
+        if (!submitted) {
+          handleCheckAnswer()
+        } else {
+          handleNext()
+        }
+      } else if (k === 'h') {
+        setShowHint((prev) => !prev)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [submitted, selectedOption, fillInput, currentQ, currentIndex])
+
+  if (!currentQ) {
+    return (
+      <div className="math-practice-empty">
+        <h3>此單元目前無練習題</h3>
+        <button type="button" className="btn-primary" onClick={onBack}>
+          返回今日學習
+        </button>
+      </div>
+    )
+  }
+
   const isLastQuestion = currentIndex + 1 >= questions.length
 
   return (
     <div className="math-practice-shell">
-      <div className="practice-top-bar">
+      <div className="practice-top-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <button type="button" className="btn-back" onClick={onBack}>
           ← 返回單元
         </button>
         <div className="practice-progress-pill">
           第 <strong>{currentIndex + 1}</strong> / {questions.length} 題
         </div>
-        <div className="practice-unit-tag">{unit.title}</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+          <div className="practice-unit-tag">{unit.title}</div>
+          <button
+            type="button"
+            className="pill-btn"
+            style={{ fontSize: '0.72rem', padding: '0.15rem 0.45rem' }}
+            onClick={() => setShowScratchpad(!showScratchpad)}
+          >
+            ✏️ 草稿紙
+          </button>
+        </div>
       </div>
+
+      <Scratchpad isOpen={showScratchpad} onClose={() => setShowScratchpad(false)} />
 
       <div className="practice-card">
         <div className="question-header">

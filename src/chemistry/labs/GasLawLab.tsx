@@ -73,6 +73,42 @@ export const GasLawLab: React.FC = () => {
         </div>
       </div>
 
+      {/* 經典氣體定律情境快照切換 */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem', marginBottom: '0.55rem' }}>
+        <button
+          type="button"
+          className="pill-btn"
+          style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', background: tempK === 273.15 && volL === 22.4 ? 'rgba(56, 189, 248, 0.2)' : undefined }}
+          onClick={() => { setTempK(273.15); setVolL(22.4); setMolN(1.0); }}
+        >
+          ❄️ 標準狀態 STP (0°C, 22.4L)
+        </button>
+        <button
+          type="button"
+          className="pill-btn"
+          style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', background: tempK === 298.15 && volL === 24.5 ? 'rgba(56, 189, 248, 0.2)' : undefined }}
+          onClick={() => { setTempK(298.15); setVolL(24.5); setMolN(1.0); }}
+        >
+          🌡️ 常溫常壓 NTP (25°C, 24.5L)
+        </button>
+        <button
+          type="button"
+          className="pill-btn"
+          style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', background: volL === 12.25 ? 'rgba(250, 204, 21, 0.2)' : undefined }}
+          onClick={() => { setTempK(298.15); setVolL(12.25); setMolN(1.0); }}
+        >
+          🗜️ 波以耳加壓 (體積減半 ➜ 2atm)
+        </button>
+        <button
+          type="button"
+          className="pill-btn"
+          style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', background: tempK === 600 ? 'rgba(239, 68, 68, 0.2)' : undefined }}
+          onClick={() => { setTempK(600); setVolL(24.5); setMolN(1.0); }}
+        >
+          🔥 等容升溫 (600K ➜ 2atm)
+        </button>
+      </div>
+
       {/* 雙欄響應式佈局 */}
       <div
         className="lab-workspace-grid"

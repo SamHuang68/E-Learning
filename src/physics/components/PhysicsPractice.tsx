@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import type { PhysicsUnit } from '../data/curriculum'
 import { MathFormula } from '../../math/components/MathFormula'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { Scratchpad } from '../../components/Scratchpad'
 
 type Props = {
   unit: PhysicsUnit
@@ -23,18 +24,16 @@ export const PhysicsPractice: React.FC<Props> = ({
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [showHint, setShowHint] = useState(false)
+  const [showScratchpad, setShowScratchpad] = useState(false)
 
   const questions = unit.questions
   const q = questions[currentIdx] || questions[0]
-  if (!q) {
-    return <div className="practice-empty">單元題庫準備中…</div>
-  }
 
-  const isCompleted = completedQuestions.includes(q.id)
-  const isCorrect = isSubmitted && selectedOption === q.answer
+  const isCompleted = q ? completedQuestions.includes(q.id) : false
+  const isCorrect = q && isSubmitted && selectedOption === q.answer
 
   function handleSubmit() {
-    if (selectedOption === null) return
+    if (!q || selectedOption === null) return
     setIsSubmitted(true)
     if (selectedOption === q.answer) {
       playCorrectSound()
@@ -55,12 +54,55 @@ export const PhysicsPractice: React.FC<Props> = ({
     }
   }
 
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
+      const k = e.key.toLowerCase()
+      if (k === 'a' || k === '1') {
+        if (!isSubmitted && q?.options && q.options.length > 0) setSelectedOption(0)
+      } else if (k === 'b' || k === '2') {
+        if (!isSubmitted && q?.options && q.options.length > 1) setSelectedOption(1)
+      } else if (k === 'c' || k === '3') {
+        if (!isSubmitted && q?.options && q.options.length > 2) setSelectedOption(2)
+      } else if (k === 'd' || k === '4') {
+        if (!isSubmitted && q?.options && q.options.length > 3) setSelectedOption(3)
+      } else if (k === 'enter' || k === ' ') {
+        e.preventDefault()
+        if (!isSubmitted && selectedOption !== null) {
+          handleSubmit()
+        } else if (isSubmitted) {
+          handleNext()
+        }
+      } else if (k === 'h') {
+        setShowHint((prev) => !prev)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isSubmitted, selectedOption, q, currentIdx])
+
+  if (!q) {
+    return <div className="practice-empty">單元題庫準備中…</div>
+  }
+
   return (
     <div className="math-practice-shell physics-practice-shell">
-      <div className="practice-top-bar">
+      <div className="practice-top-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span>單元 {unit.id}：{unit.title}</span>
-        <span>進度：{currentIdx + 1} / {questions.length} 題</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <span>進度：{currentIdx + 1} / {questions.length} 題</span>
+          <button
+            type="button"
+            className="pill-btn"
+            style={{ fontSize: '0.72rem', padding: '0.15rem 0.45rem' }}
+            onClick={() => setShowScratchpad(!showScratchpad)}
+          >
+            ✏️ 草稿紙
+          </button>
+        </div>
       </div>
+
+      <Scratchpad isOpen={showScratchpad} onClose={() => setShowScratchpad(false)} />
 
       <div className="practice-card">
         <div className="question-header">

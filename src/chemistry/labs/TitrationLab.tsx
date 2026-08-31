@@ -125,6 +125,34 @@ export const TitrationLab: React.FC = () => {
         </div>
       </div>
 
+      {/* 經典酸鹼滴定情境快照切換 */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem', marginBottom: '0.55rem' }}>
+        <button
+          type="button"
+          className="pill-btn"
+          style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', background: acidType === 'strong' && vTitrant === 25 ? 'rgba(236, 72, 153, 0.2)' : undefined }}
+          onClick={() => { setAcidType('strong'); setIndicator('phenolphthalein'); setVTitrant(25); }}
+        >
+          🧪 強酸滴定當量點 (HCl + NaOH, pH=7.0)
+        </button>
+        <button
+          type="button"
+          className="pill-btn"
+          style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', background: acidType === 'weak' && vTitrant === 12.5 ? 'rgba(56, 189, 248, 0.2)' : undefined }}
+          onClick={() => { setAcidType('weak'); setIndicator('phenolphthalein'); setVTitrant(12.5); }}
+        >
+          ⚖️ 弱酸半當量緩衝點 (pH=pKa=4.74)
+        </button>
+        <button
+          type="button"
+          className="pill-btn"
+          style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', background: acidType === 'weak' && vTitrant === 25 ? 'rgba(236, 72, 153, 0.2)' : undefined }}
+          onClick={() => { setAcidType('weak'); setIndicator('phenolphthalein'); setVTitrant(25); }}
+        >
+          🌸 弱酸當量點弱鹼水解 (pH=8.72 酚酞變粉紅)
+        </button>
+      </div>
+
       {/* 雙欄響應式佈局 */}
       <div
         className="lab-workspace-grid"

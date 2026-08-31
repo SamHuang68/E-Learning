@@ -43,6 +43,34 @@ export const CircuitLab: React.FC = () => {
         </div>
       </div>
 
+      {/* 經典電路情境快照切換 */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem', marginBottom: '0.55rem' }}>
+        <button
+          type="button"
+          className="pill-btn"
+          style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', background: mode === 'series' && r1 === 4 && r2 === 6 ? 'rgba(56, 189, 248, 0.2)' : undefined }}
+          onClick={() => { setMode('series'); setVoltage(12); setR1(4); setR2(6); }}
+        >
+          🔗 串聯分壓 (12V, 4Ω + 6Ω)
+        </button>
+        <button
+          type="button"
+          className="pill-btn"
+          style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', background: mode === 'parallel' && r1 === 6 && r2 === 3 ? 'rgba(56, 189, 248, 0.2)' : undefined }}
+          onClick={() => { setMode('parallel'); setVoltage(12); setR1(6); setR2(3); }}
+        >
+          🔀 並聯分流 (12V, 6Ω // 3Ω)
+        </button>
+        <button
+          type="button"
+          className="pill-btn"
+          style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', background: voltage === 24 ? 'rgba(250, 204, 21, 0.2)' : undefined }}
+          onClick={() => { setVoltage(24); setR1(10); setR2(10); }}
+        >
+          ⚡ 高壓對稱負載 (24V, 10Ω + 10Ω)
+        </button>
+      </div>
+
       {/* 雙欄響應式佈局 */}
       <div
         className="lab-workspace-grid"

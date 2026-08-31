@@ -60,6 +60,42 @@ export const OpticsLab: React.FC = () => {
         </div>
       </div>
 
+      {/* 經典幾何光學情境快照切換 */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem', marginBottom: '0.55rem' }}>
+        <button
+          type="button"
+          className="pill-btn"
+          style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', background: n1 === 1.0 && n2 === 1.33 ? 'rgba(250, 204, 21, 0.2)' : undefined }}
+          onClick={() => { setN1(1.0); setN2(1.33); setTheta1Deg(45); }}
+        >
+          🌊 空氣 ➜ 水折射 (n₁=1.0, n₂=1.33)
+        </button>
+        <button
+          type="button"
+          className="pill-btn"
+          style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', background: n1 === 1.0 && n2 === 1.5 ? 'rgba(250, 204, 21, 0.2)' : undefined }}
+          onClick={() => { setN1(1.0); setN2(1.5); setTheta1Deg(30); }}
+        >
+          🔍 空氣 ➜ 玻璃透鏡 (n₁=1.0, n₂=1.5)
+        </button>
+        <button
+          type="button"
+          className="pill-btn"
+          style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', background: n1 === 1.33 && n2 === 1.0 && theta1Deg >= 48.8 ? 'rgba(239, 68, 68, 0.2)' : undefined }}
+          onClick={() => { setN1(1.33); setN2(1.0); setTheta1Deg(60); }}
+        >
+          🚨 水中全反射 (θc=48.8°)
+        </button>
+        <button
+          type="button"
+          className="pill-btn"
+          style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', background: n1 === 2.42 && n2 === 1.0 ? 'rgba(250, 204, 21, 0.2)' : undefined }}
+          onClick={() => { setN1(2.42); setN2(1.0); setTheta1Deg(45); }}
+        >
+          💎 鑽石火彩全反射 (n₁=2.42, θc=24.4°)
+        </button>
+      </div>
+
       {/* 雙欄響應式佈局 */}
       <div
         className="lab-workspace-grid"
