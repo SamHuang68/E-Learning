@@ -18,4 +18,10 @@ describe('CSS Layout & Sidebar Overflow Regression Guard', () => {
     expect(cssContent).toMatch(/\.math-sidebar\s*\{[^}]*overflow-y:\s*auto/s)
     expect(cssContent).toMatch(/\.math-sidebar\s*\{[^}]*max-height:\s*100vh/s)
   })
+
+  it('ensures .calculus-sidebar has overflow-y: auto and max-height: 100vh', () => {
+    expect(cssContent).toContain('.calculus-sidebar {')
+    expect(cssContent).toMatch(/\.calculus-sidebar\s*\{[^}]*overflow-y:\s*auto/s)
+    expect(cssContent).toMatch(/\.calculus-sidebar\s*\{[^}]*max-height:\s*100vh/s)
+  })
 })

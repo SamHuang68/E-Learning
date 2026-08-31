@@ -22,10 +22,11 @@ import { CoordinateLab } from './labs/CoordinateLab'
 import { PythagorasLab } from './labs/PythagorasLab'
 import { UnitCircleLab } from './labs/UnitCircleLab'
 import { CalculusStudio } from './calculus/CalculusStudio'
+import type { LangId } from '../utils/storage'
 
 type Props = {
   onBackHub: () => void
-  onSwitchLang: (lang: 'ja' | 'en') => void
+  onSwitchLang: (lang: LangId) => void
 }
 
 /**

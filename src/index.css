@@ -189,10 +189,15 @@ strong {
   color: var(--muted);
 }
 
-/* 三大軌道網格 (Three Track Grid) */
+/* 三大與四大軌道網格 */
 .three-track-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.25rem;
+}
+.four-track-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 1.25rem;
 }
 
@@ -227,6 +232,7 @@ strong {
   font-weight: 800;
 }
 .track-status-pill.math { background: #eff6ff; color: #1d4ed8; }
+.track-status-pill.calculus { background: #f3e8ff; color: #7e22ce; }
 .track-status-pill.ja { background: #fdf2f8; color: #be185d; }
 .track-status-pill.en { background: #fefce8; color: #854d0e; }
 
@@ -283,6 +289,9 @@ strong {
 }
 .hub-card-mark.math-mark {
   background: linear-gradient(145deg, #2563eb, #1d4ed8);
+}
+.hub-card-mark.calculus-mark {
+  background: linear-gradient(145deg, #8b5cf6, #6d28d9);
 }
 .hub-card-mark.toeic {
   background: linear-gradient(145deg, #f59e0b, #d97706);
@@ -384,6 +393,14 @@ strong {
 }
 .lang-switch.three-ways {
   grid-template-columns: 1fr 1fr 1fr;
+}
+.lang-switch.four-ways {
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.2rem;
+}
+.lang-switch.four-ways button {
+  padding: 0.38rem 0.15rem;
+  font-size: 0.7rem;
 }
 
 .lang-switch button {
@@ -6275,13 +6292,220 @@ html.high-contrast { filter: contrast(125%); }
   cursor: pointer;
 }
 
+/* ============================================================
+   微積分獨立學習模組專用樣式 (Calculus Studio Standalone Track)
+   ============================================================ */
+.brand-mark.calculus-mark {
+  background: linear-gradient(145deg, #8b5cf6, #6d28d9);
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 800;
+}
+
+.calculus-sidebar {
+  overflow-y: auto;
+  max-height: 100vh;
+  box-sizing: border-box;
+}
+
+.calculus-shell {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  min-height: 100vh;
+}
+
+.calculus-content {
+  padding: 1.5rem 2rem;
+  max-width: 1300px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.calculus-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.formula-select select {
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.theta-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  padding: 0.35rem 0.75rem;
+  border-radius: 10px;
+}
+
+.theta-indicator small {
+  font-size: 0.7rem;
+  color: var(--muted);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.theta-indicator strong {
+  font-size: 1.05rem;
+  color: #8b5cf6;
+}
+
+.calculus-units-nav .unit-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.5rem 0.65rem;
+  text-align: left;
+  border-radius: 8px;
+}
+
+.calculus-units-nav .unit-item .unit-nav-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.calculus-units-nav .unit-item .unit-nav-label strong {
+  font-size: 0.78rem;
+  line-height: 1.2;
+}
+
+.calculus-units-nav .unit-item .unit-nav-label small {
+  font-size: 0.68rem;
+  color: var(--muted);
+  line-height: 1.2;
+}
+
+/* 成就館獨立展示 */
+.calculus-badges-gallery-view {
+  margin-top: 0.5rem;
+  animation: rise 0.4s ease both;
+}
+
+.badges-grid-catalog {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+  margin-top: 1rem;
+}
+
+.badge-card-item {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  box-shadow: 0 4px 16px var(--shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.badge-card-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px var(--shadow);
+  border-color: #8b5cf6;
+}
+
+.badge-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.badge-icon-display {
+  font-size: 2.2rem;
+}
+
+.badge-reward-pill {
+  background: #f59e0b;
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+}
+
+.badge-card-item h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: var(--ink);
+}
+
+.badge-card-desc {
+  font-size: 0.86rem;
+  color: var(--muted);
+  line-height: 1.45;
+  margin: 0;
+}
+
+.badge-criteria-box {
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.78rem;
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.badge-criteria-box small {
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.btn-badge-challenge {
+  margin-top: auto;
+  padding: 0.6rem;
+  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.btn-badge-challenge:hover {
+  opacity: 0.9;
+}
+
+.calculus-footer {
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
 /* 深色模式適配 */
 [data-theme="dark"] .calculus-studio-header,
 [data-theme="dark"] .calculus-canvas-card,
 [data-theme="dark"] .step-by-step-solver-panel,
 [data-theme="dark"] .calculus-lab-control-card,
 [data-theme="dark"] .calculus-assessment-widget,
-[data-theme="dark"] .calculus-badge-modal-card {
+[data-theme="dark"] .calculus-badge-modal-card,
+[data-theme="dark"] .badge-card-item {
   background: #111827;
   border-color: #374151;
 }
@@ -6291,7 +6515,9 @@ html.high-contrast { filter: contrast(125%); }
 [data-theme="dark"] .btn-mode-tab,
 [data-theme="dark"] .btn-tier-pill,
 [data-theme="dark"] .btn-prob-option,
-[data-theme="dark"] .unlocked-badge-detail {
+[data-theme="dark"] .unlocked-badge-detail,
+[data-theme="dark"] .badge-criteria-box,
+[data-theme="dark"] .theta-indicator {
   background: #1f2937;
   border-color: #374151;
 }

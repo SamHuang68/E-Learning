@@ -64,7 +64,7 @@ export function Sidebar({
         </div>
       </div>
 
-      <div className="lang-switch three-ways" role="group" aria-label="學習軌道切換">
+      <div className="lang-switch four-ways" role="group" aria-label="四大學習軌道切換">
         <button type="button" className="active" aria-current="true" disabled>
           あ 日本語
         </button>
@@ -73,6 +73,9 @@ export function Sidebar({
         </button>
         <button type="button" onClick={() => onSwitchLang('math')}>
           ∑ 數學
+        </button>
+        <button type="button" onClick={() => onSwitchLang('calculus')}>
+          ∫ 微積分
         </button>
       </div>
 

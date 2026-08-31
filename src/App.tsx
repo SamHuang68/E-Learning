@@ -16,6 +16,9 @@ const ToeicApp = lazyWithRetry(() =>
 const MathApp = lazyWithRetry(() =>
   import('./math/MathApp').then((m) => ({ default: m.MathApp })),
 )
+const CalculusApp = lazyWithRetry(() =>
+  import('./calculus/CalculusApp').then((m) => ({ default: m.CalculusApp })),
+)
 
 type TopView = AppView | 'privacy'
 
@@ -23,6 +26,7 @@ function readTopView(): TopView {
   const hash = window.location.hash.replace('#', '').trim()
   if (hash === 'privacy') return 'privacy'
   if (hash === 'en' || hash.startsWith('toeic')) return 'en'
+  if (hash === 'calculus' || hash.startsWith('calc')) return 'calculus'
   if (hash === 'math' || hash.startsWith('math')) return 'math'
   if (hash === 'ja' || hash.startsWith('aoba') || hash.startsWith('builder')) return 'ja'
   return 'hub'
@@ -89,9 +93,19 @@ function AppShell() {
         <Suspense fallback={<ModuleFallback />}>
           <MathApp
             onBackHub={() => choose('hub')}
-            onSwitchLang={(lang: LangId) => {
-              if (lang === 'ja' || lang === 'en') choose(lang)
-            }}
+            onSwitchLang={(lang: LangId) => choose(lang)}
+          />
+        </Suspense>
+      </ErrorBoundary>
+    )
+  }
+  if (view === 'calculus') {
+    return (
+      <ErrorBoundary label="微積分模組">
+        <Suspense fallback={<ModuleFallback />}>
+          <CalculusApp
+            onBackHub={() => choose('hub')}
+            onSwitchLang={(lang: LangId) => choose(lang)}
           />
         </Suspense>
       </ErrorBoundary>

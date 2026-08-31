@@ -28,7 +28,7 @@ const LEARNING_META_KEY = 'e-learning-meta'
 const LEARNING_EVENT_LIMIT = 200
 
 /** Learning target language/subject modules. */
-export type LangId = 'ja' | 'en' | 'math'
+export type LangId = 'ja' | 'en' | 'math' | 'calculus'
 /** Top-level app view: language/subject picker or a learning module. */
 export type AppView = 'hub' | LangId
 
@@ -37,6 +37,7 @@ function normalizeLang(value: string | null | undefined): AppView | null {
   if (value === 'ja' || value === 'aoba') return 'ja'
   if (value === 'en' || value === 'toeic') return 'en'
   if (value === 'math') return 'math'
+  if (value === 'calculus' || value === 'calc') return 'calculus'
   return null
 }
 
@@ -104,6 +105,7 @@ export type ToeicSavedPreset = {
 export function loadLang(): AppView {
   const hash = window.location.hash.replace('#', '').trim()
   if (hash === 'en' || hash.startsWith('toeic')) return 'en'
+  if (hash === 'calculus' || hash.startsWith('calc')) return 'calculus'
   if (hash === 'math' || hash.startsWith('math')) return 'math'
   if (
     hash === 'ja' ||
@@ -126,6 +128,7 @@ export function saveLang(view: AppView) {
   if (view === 'hub') window.location.hash = 'hub'
   else if (view === 'en') window.location.hash = 'toeic'
   else if (view === 'math') window.location.hash = 'math'
+  else if (view === 'calculus') window.location.hash = 'calculus'
   else window.location.hash = 'aoba'
   notifyProgressChanged()
 }

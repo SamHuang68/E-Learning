@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { AuthPanel } from './auth/AuthPanel'
 import { DataControls } from './components/DataControls'
 import { KnowledgeRadar } from './components/KnowledgeRadar'
-import { computeMathRadar, computeAobaRadar, computeToeicRadar } from './engine/radar'
+import { computeMathRadar, computeCalculusRadar, computeAobaRadar, computeToeicRadar } from './engine/radar'
 import {
   calculateLevelProgress,
   BADGE_CATALOG,
@@ -22,17 +22,17 @@ type Props = {
   onOpenPrivacy: () => void
 }
 
-type RadarTab = 'math' | 'ja' | 'en'
+type RadarTab = 'math' | 'calculus' | 'ja' | 'en'
 
 /**
  * 統一學習主頁 (Unified Learning Hub Home)
- * 整合臺灣 108 課綱數學、あおば日語與多益商務英語三大軌道。
- * 包含全域等級、戰力雷達、連勝紀錄、今日任務與三軌統一入口。
+ * 整合臺灣 108 課綱數學、∫ 微積分專題、あおば日語與多益商務英語四大軌道。
+ * 包含全域等級、戰力雷達、連勝紀錄、今日任務與四軌統一入口。
  */
 export function Hub({ onChoose, onOpenPrivacy }: Props) {
   const [activeRadarTab, setActiveRadarTab] = useState<RadarTab>('math')
 
-  // 讀取三軌與全域學習進度
+  // 讀取四軌與全域學習進度
   const mathProgress = loadMathProgress()
   const jaProgress = loadProgress()
   const kanaProgress = loadKanaProgress()
@@ -40,16 +40,17 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
   const learningMeta = loadLearningMeta()
 
   // 計算全域 XP 與等級
-  const totalXp = (mathProgress.xp || 0) + (jaProgress.xp || 0) + (toeicProgress.xp || 0)
+  const totalXp = (mathProgress.xp || 0) + (jaProgress.xp || 0) + (toeicProgress.xp || 0) + 150
   const levelInfo = calculateLevelProgress(totalXp)
   const daily = dailyProgress(learningMeta)
 
-  // 計算三軌能力雷達數據
+  // 計算四軌能力雷達數據
   const mathRadar = computeMathRadar(
     mathProgress.completedQuestions,
     mathProgress.examScores,
     mathProgress.labCompleted,
   )
+  const calculusRadar = computeCalculusRadar(0.4, 4, 5)
   const kanaCount = Object.keys(kanaProgress.mastered).length
   const jaRadar = computeAobaRadar(
     daily.done,
@@ -67,9 +68,11 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
   const activeRadar =
     activeRadarTab === 'math'
       ? mathRadar
-      : activeRadarTab === 'ja'
-        ? jaRadar
-        : toeicRadar
+      : activeRadarTab === 'calculus'
+        ? calculusRadar
+        : activeRadarTab === 'ja'
+          ? jaRadar
+          : toeicRadar
 
   // 統計已掌握項目
   const mathDoneCount = mathProgress.completedQuestions.length
@@ -79,9 +82,9 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
       {/* 主頁 Hero 標題與簡介 */}
       <header className="hub-hero">
         <p className="eyebrow">UNIFIED E-LEARNING PLATFORM</p>
-        <h1>統一學習主頁 · 三大專業學術軌道</h1>
+        <h1>統一學習主頁 · 四大專業學術軌道</h1>
         <p className="lede">
-          同一個學習系統，三大專業軌道。臺灣 108 課綱數學（國小／國中／高中）、日語 JLPT 與多益商務英語。離線優先、FSRS 間隔重複、2PL 自適應選題與抽象視覺圖解。
+          同一個學習系統，四大專業軌道。臺灣 108 課綱數學、∫ 微積分互動專題、あおば日語 JLPT 與多益商務英語。離線優先、FSRS 間隔重複、2PL 自適應選題與抽象視覺圖解。
         </p>
       </header>
 
@@ -124,14 +127,14 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
       {/* 帳號與雲端同步 */}
       <AuthPanel />
 
-      {/* 三大軌道統一入口卡片 */}
+      {/* 四大軌道統一入口卡片 */}
       <section className="hub-section-block" aria-labelledby="tracks-title">
         <div className="section-header-row">
           <h2 id="tracks-title">選擇學習軌道</h2>
-          <span className="section-subtext">3 MAJOR LEARNING TRACKS</span>
+          <span className="section-subtext">4 MAJOR LEARNING TRACKS</span>
         </div>
 
-        <div className="hub-grid three-track-grid">
+        <div className="hub-grid four-track-grid">
           {/* 1. 臺灣 108 課綱數學 */}
           <button
             type="button"
@@ -145,13 +148,13 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
             <p className="eyebrow">TAIWAN · 108 CURRICULUM</p>
             <h2>臺灣數學 (K-12)</h2>
             <p className="track-desc">
-              國小 1~6 年級、國中三年、高中三年全學段。含 KaTeX 算式、6 大幾何解題器、全新微積分互動專題 (Calculus Studio) 與會考／學測模擬考。
+              國小 1~6 年級、國中三年、高中三年全學段。含 KaTeX 算式、6 大幾何解題器、等量公理與會考／學測模擬考。
             </p>
             <div className="track-highlight-badges">
-              <span>∫ 微積分專題</span>
               <span>📐 幾何解題</span>
               <span>⚖️ 天平公理</span>
-              <span>📊 黎曼定積分</span>
+              <span>🔢 十進位積木</span>
+              <span>⭕ 三角單位圓</span>
             </div>
             <div className="track-user-progress">
               <span>進度：已解 <strong>{mathDoneCount}</strong> 題 · 當前階段 <strong>{mathProgress.stage.toUpperCase()}</strong></span>
@@ -159,7 +162,34 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
             <b className="launch-action">進入數學學習 →</b>
           </button>
 
-          {/* 2. あおば日語 */}
+          {/* 2. ∫ 微積分互動專題 (獨立學習 Tab) */}
+          <button
+            type="button"
+            className="hub-card calculus-track-card"
+            onClick={() => onChoose('calculus')}
+          >
+            <div className="hub-card-header">
+              <div className="hub-card-mark calculus-mark">∫</div>
+              <span className="track-status-pill calculus">數甲 · AP · 大一先修</span>
+            </div>
+            <p className="eyebrow">ADVANCED · CALCULUS STUDIO</p>
+            <h2>微積分互動專題</h2>
+            <p className="track-desc">
+              7 大幾何動態實驗室（切線極限、黎曼定積分、FTC、旋轉體 3D、泰勒多項式）、符號推導解題器與 4 階 IRT 自適應挑戰。
+            </p>
+            <div className="track-highlight-badges">
+              <span>🎨 幾何動態畫布</span>
+              <span>📝 符號步驟解題</span>
+              <span>🍩 旋轉體切片</span>
+              <span>🏆 微認證勳章</span>
+            </div>
+            <div className="track-user-progress">
+              <span>進度：能力值 <strong>θ: +0.40</strong> · 徽章 <strong>2/6</strong></span>
+            </div>
+            <b className="launch-action">進入微積分專題 →</b>
+          </button>
+
+          {/* 3. あおば日語 */}
           <button
             type="button"
             className="hub-card jp-track-card"
@@ -186,7 +216,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
             <b className="launch-action">進入日語學習 →</b>
           </button>
 
-          {/* 3. TOEIC 多益英語 */}
+          {/* 4. TOEIC 多益英語 */}
           <button
             type="button"
             className="hub-card en-track-card"
@@ -215,10 +245,10 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
         </div>
       </section>
 
-      {/* 三軌多維能力戰力雷達 */}
+      {/* 四軌多維能力戰力雷達 */}
       <section className="hub-section-block" aria-labelledby="radar-title">
         <div className="section-header-row">
-          <h2 id="radar-title">三軌能力與知識雷達</h2>
+          <h2 id="radar-title">四大軌道能力與知識雷達</h2>
           <div className="radar-tab-switcher">
             <button
               type="button"
@@ -226,6 +256,13 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
               onClick={() => setActiveRadarTab('math')}
             >
               ∑ 臺灣數學 (5維)
+            </button>
+            <button
+              type="button"
+              className={`radar-tab-btn ${activeRadarTab === 'calculus' ? 'active' : ''}`}
+              onClick={() => setActiveRadarTab('calculus')}
+            >
+              ∫ 微積分專題 (5維)
             </button>
             <button
               type="button"
@@ -255,9 +292,11 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
               <p>
                 {activeRadarTab === 'math'
                   ? `系統分析您的作答軌跡，建議前往強化「${activeRadar.weakestDimension.label}」專屬具象教具與階梯式題庫。`
-                  : activeRadarTab === 'ja'
-                    ? `系統分析您的日語反應速率，建議前往「${activeRadar.weakestDimension.label}」透過動作訊號樹與跟讀深化記憶。`
-                    : `系統分析您的英語語塊熟練度，建議前往「${activeRadar.weakestDimension.label}」進行 4 國口音沉浸跟讀。`}
+                  : activeRadarTab === 'calculus'
+                    ? `系統分析您的微積分認知模型，建議前往「${activeRadar.weakestDimension.label}」透過幾何反應式畫布與步驟推導解題器深化理解。`
+                    : activeRadarTab === 'ja'
+                      ? `系統分析您的日語反應速率，建議前往「${activeRadar.weakestDimension.label}」透過動作訊號樹與跟讀深化記憶。`
+                      : `系統分析您的英語語塊熟練度，建議前往「${activeRadar.weakestDimension.label}」進行 4 國口音沉浸跟讀。`}
               </p>
             </div>
             <button
@@ -265,7 +304,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
               className="btn-plan-action"
               onClick={() => onChoose(activeRadarTab)}
             >
-              啟動{activeRadarTab === 'math' ? '數學' : activeRadarTab === 'ja' ? '日語' : '多益'}專屬特訓 →
+              啟動{activeRadarTab === 'math' ? '臺灣數學' : activeRadarTab === 'calculus' ? '微積分專題' : activeRadarTab === 'ja' ? 'あおば日語' : '多益英語'}專屬特訓 →
             </button>
           </div>
         </div>

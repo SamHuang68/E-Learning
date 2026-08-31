@@ -2,6 +2,7 @@ import React from 'react'
 import type { MathGradeId, MathStage } from '../data/curriculum'
 import { ALL_MATH_GRADES } from '../data/gradeStore'
 import type { MathProgressState } from '../utils/mathStorage'
+import type { LangId } from '../../utils/storage'
 
 export type MathNavId = 'today' | 'practice' | 'mock' | 'vault' | 'labs' | 'visual' | 'calculus'
 
@@ -12,7 +13,7 @@ type Props = {
   onSelectGrade: (gradeId: MathGradeId) => void
   progress: MathProgressState
   onBackHub: () => void
-  onSwitchLang: (lang: 'ja' | 'en') => void
+  onSwitchLang: (lang: LangId) => void
 }
 
 /**
@@ -47,7 +48,7 @@ export const MathSidebar: React.FC<Props> = ({
   ]
 
   return (
-    <aside className="math-sidebar">
+    <aside className="sidebar math-sidebar">
       {/* 品牌商標 */}
       <div className="brand" onClick={() => onNav('today')} role="button" tabIndex={0}>
         <div className="brand-mark math-mark">∑</div>
@@ -57,8 +58,8 @@ export const MathSidebar: React.FC<Props> = ({
         </div>
       </div>
 
-      {/* 三軌切換膠囊 */}
-      <div className="lang-switch three-ways" role="group" aria-label="學習軌道切換">
+      {/* 四軌切換膠囊 */}
+      <div className="lang-switch four-ways" role="group" aria-label="四大學習軌道切換">
         <button type="button" onClick={() => onSwitchLang('ja')}>
           あ 日本語
         </button>
@@ -67,6 +68,9 @@ export const MathSidebar: React.FC<Props> = ({
         </button>
         <button type="button" className="active" aria-current="true" disabled>
           ∑ 數學
+        </button>
+        <button type="button" onClick={() => onSwitchLang('calculus')}>
+          ∫ 微積分
         </button>
       </div>
 
@@ -171,7 +175,8 @@ export const MathSidebar: React.FC<Props> = ({
           ← 返回學習中心 (Hub)
         </button>
         <div className="track-switchers">
-          <span>切換語言軌道：</span>
+          <span>切換其他軌道：</span>
+          <button type="button" onClick={() => onSwitchLang('calculus')}>微積分</button>
           <button type="button" onClick={() => onSwitchLang('ja')}>日語</button>
           <button type="button" onClick={() => onSwitchLang('en')}>多益</button>
         </div>

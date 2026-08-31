@@ -13,7 +13,7 @@ export type RadarDimension = {
 }
 
 export type TrackRadar = {
-  track: 'math' | 'ja' | 'en'
+  track: 'math' | 'calculus' | 'ja' | 'en'
   trackName: string
   dimensions: RadarDimension[]
   averageScore: number
@@ -255,6 +255,82 @@ export function computeToeicRadar(
   return {
     track: 'en',
     trackName: 'TOEIC 多益商務英語',
+    dimensions,
+    averageScore,
+    strongestDimension: sorted[0],
+    weakestDimension: sorted[sorted.length - 1],
+  }
+}
+
+/**
+ * 計算微積分專題多維能力雷達 (5 維：極限連續、導數切線、黎曼定積分、微積分基本定理、泰勒級數逼近)
+ */
+export function computeCalculusRadar(
+  currentTheta = 0.0,
+  solvedCount = 0,
+  labExploredCount = 3,
+): TrackRadar {
+  const thetaBonus = Math.round(currentTheta * 15)
+  const limitScore = Math.min(100, Math.max(35, 45 + solvedCount * 8 + thetaBonus))
+  const derivativeScore = Math.min(100, Math.max(40, 50 + solvedCount * 10 + thetaBonus))
+  const integralScore = Math.min(
+    100,
+    Math.max(30, 40 + solvedCount * 8 + (labExploredCount > 2 ? 15 : 0) + thetaBonus),
+  )
+  const seriesScore = Math.min(100, Math.max(25, 35 + solvedCount * 6 + thetaBonus))
+  const ftcScore = Math.min(100, Math.max(30, Math.round((derivativeScore + integralScore) / 2)))
+
+  const dimensions: RadarDimension[] = [
+    {
+      key: 'limits',
+      label: '極限與連續性 (ε-δ)',
+      score: limitScore,
+      fullMark: 100,
+      description: '極限逼近、左右極限、連續性與漸近線判斷',
+      status: scoreToStatus(limitScore),
+    },
+    {
+      key: 'derivatives',
+      label: '導數與切線極值',
+      score: derivativeScore,
+      fullMark: 100,
+      description: '鏈鎖律、微分幾何斜率、臨界點與凹凸反曲點',
+      status: scoreToStatus(derivativeScore),
+    },
+    {
+      key: 'integrals',
+      label: '黎曼和與定積分',
+      score: integralScore,
+      fullMark: 100,
+      description: '分割逼近、梯形/辛普森法與旋轉體體積',
+      status: scoreToStatus(integralScore),
+    },
+    {
+      key: 'ftc',
+      label: '微積分基本定理 (FTC)',
+      score: ftcScore,
+      fullMark: 100,
+      description: '累積函數面積變化率與微分/積分互逆關係',
+      status: scoreToStatus(ftcScore),
+    },
+    {
+      key: 'taylor',
+      label: '泰勒級數與逼近',
+      score: seriesScore,
+      fullMark: 100,
+      description: '多項式局部逼近、收斂半徑與拉格朗日餘項',
+      status: scoreToStatus(seriesScore),
+    },
+  ]
+
+  const averageScore = Math.round(
+    dimensions.reduce((sum, d) => sum + d.score, 0) / dimensions.length,
+  )
+  const sorted = [...dimensions].sort((a, b) => b.score - a.score)
+
+  return {
+    track: 'calculus',
+    trackName: '∫ 微積分互動專題 (Calculus)',
     dimensions,
     averageScore,
     strongestDimension: sorted[0],
