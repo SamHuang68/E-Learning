@@ -6,6 +6,20 @@ type Props = {
   onSaveScore: (examId: string, score: number) => void
 }
 
+function isOptionMatch(idx: number | undefined, answer: string | number | string[]): boolean {
+  if (idx === undefined) return false
+  if (typeof answer === 'number') return idx === answer
+  if (typeof answer === 'string') {
+    const letter = String.fromCharCode(65 + idx)
+    return answer.trim().toUpperCase() === letter || answer.trim() === String(idx)
+  }
+  if (Array.isArray(answer)) {
+    const letter = String.fromCharCode(65 + idx)
+    return answer.map((a) => a.trim().toUpperCase()).includes(letter) || answer.includes(String(idx))
+  }
+  return false
+}
+
 export const ChemistryMockExam: React.FC<Props> = ({ onSaveScore }) => {
   const exams = Object.values(CHEMISTRY_MOCK_EXAMS)
   const [selectedExamId, setSelectedExamId] = useState<string>(exams[0]?.id || '')
@@ -24,7 +38,7 @@ export const ChemistryMockExam: React.FC<Props> = ({ onSaveScore }) => {
     let score = 0
     const perQ = Math.round(100 / Math.max(1, exam.questions.length))
     exam.questions.forEach((q) => {
-      if (answers[q.id] === q.answer) score += perQ
+      if (isOptionMatch(answers[q.id], q.answer)) score += perQ
     })
     score = Math.min(100, score)
     setIsSubmitted(true)
@@ -58,7 +72,7 @@ export const ChemistryMockExam: React.FC<Props> = ({ onSaveScore }) => {
       <div className="mock-questions-list" style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
         {exam.questions.map((q, idx) => {
           const userAns = answers[q.id]
-          const isCorrect = isSubmitted && userAns === q.answer
+          const isCorrect = isSubmitted && isOptionMatch(userAns, q.answer)
 
           return (
             <div key={q.id} className="practice-card mock-question-item">
@@ -74,7 +88,7 @@ export const ChemistryMockExam: React.FC<Props> = ({ onSaveScore }) => {
                     let optCls = 'option-btn'
                     if (userAns === oIdx) optCls += ' selected'
                     if (isSubmitted) {
-                      if (oIdx === q.answer) optCls += ' correct-opt'
+                      if (isOptionMatch(oIdx, q.answer)) optCls += ' correct-opt'
                       else if (userAns === oIdx) optCls += ' wrong-opt'
                     }
                     return (

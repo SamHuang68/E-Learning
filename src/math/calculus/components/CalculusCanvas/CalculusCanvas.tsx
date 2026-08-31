@@ -123,8 +123,8 @@ export const CalculusCanvas: React.FC<CalculusCanvasProps> = ({
         </span>
       </div>
 
-      <div className="canvas-svg-container">
-        <svg viewBox={`0 0 ${width} ${height}`} className="calc-interactive-svg">
+      <div className="canvas-svg-container" style={{ width: '100%', overflow: 'hidden' }}>
+        <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid meet" className="calc-interactive-svg" style={{ width: '100%', height: 'auto', display: 'block' }}>
           <defs>
             <clipPath id="calculus-viewport-clip">
               <rect x="0" y="0" width={width} height={height} />

@@ -11,6 +11,19 @@ type Props = {
   onNextUnit: () => void
 }
 
+function isOptionMatch(idx: number, answer: string | number | string[]): boolean {
+  if (typeof answer === 'number') return idx === answer
+  if (typeof answer === 'string') {
+    const letter = String.fromCharCode(65 + idx)
+    return answer.trim().toUpperCase() === letter || answer.trim() === String(idx)
+  }
+  if (Array.isArray(answer)) {
+    const letter = String.fromCharCode(65 + idx)
+    return answer.map((a) => a.trim().toUpperCase()).includes(letter) || answer.includes(String(idx))
+  }
+  return false
+}
+
 export const ChemistryPractice: React.FC<Props> = ({
   unit,
   completedQuestions,
@@ -30,12 +43,12 @@ export const ChemistryPractice: React.FC<Props> = ({
   }
 
   const isCompleted = completedQuestions.includes(q.id)
-  const isCorrect = isSubmitted && selectedOption === q.answer
+  const isCorrect = isSubmitted && selectedOption !== null && isOptionMatch(selectedOption, q.answer)
 
   function handleSubmit() {
     if (selectedOption === null) return
     setIsSubmitted(true)
-    if (selectedOption === q.answer) {
+    if (isOptionMatch(selectedOption, q.answer)) {
       onAnswerCorrect(q.id, q.difficulty * 10)
     } else {
       onAnswerWrong(q.id)
@@ -81,7 +94,7 @@ export const ChemistryPractice: React.FC<Props> = ({
               let optCls = 'option-btn'
               if (selectedOption === idx) optCls += ' selected'
               if (isSubmitted) {
-                if (idx === q.answer) optCls += ' correct-opt'
+                if (isOptionMatch(idx, q.answer)) optCls += ' correct-opt'
                 else if (selectedOption === idx) optCls += ' wrong-opt'
               }
 

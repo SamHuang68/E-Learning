@@ -38,8 +38,8 @@ export const CoordinateLab: React.FC = () => {
       } else {
         y = quadA * Math.pow(x - quadH, 2) + quadK
       }
-      const sx = toScreenX(x)
-      const sy = toScreenY(y)
+      const sx = width / 2 + x * scale
+      const sy = height / 2 - y * scale
       if (points.length === 0) {
         points.push(`M ${sx} ${sy}`)
       } else {
@@ -47,7 +47,7 @@ export const CoordinateLab: React.FC = () => {
       }
     }
     return points.join(' ')
-  }, [mode, linearA, linearB, quadA, quadH, quadK])
+  }, [mode, linearA, linearB, quadA, quadH, quadK, scale, width, height])
 
   const handleReset = () => {
     if (mode === 'linear') {

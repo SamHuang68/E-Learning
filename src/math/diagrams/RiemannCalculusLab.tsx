@@ -127,8 +127,8 @@ export const RiemannCalculusLab: React.FC = () => {
 
       <div className="riemann-workspace-grid">
         {/* Canvas 曲線與階梯和繪製區 */}
-        <div className="canvas-container">
-          <div className="riemann-badges">
+        <div className="canvas-container" style={{ width: '100%', overflow: 'hidden', minWidth: 0 }}>
+          <div className="riemann-badges" style={{ flexWrap: 'wrap', gap: '0.35rem', marginBottom: '0.4rem' }}>
             <span className="badge-fn">🔴 曲線 ${preset.fnLatex}$</span>
             <span className="badge-slices">切片數 $N = {slicesN}$</span>
             <span className="badge-approx">
@@ -141,6 +141,7 @@ export const RiemannCalculusLab: React.FC = () => {
             width={450}
             height={280}
             className="riemann-canvas"
+            style={{ width: '100%', height: 'auto', display: 'block', maxWidth: '100%' }}
           />
         </div>
 
