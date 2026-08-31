@@ -13,7 +13,7 @@ export type RadarDimension = {
 }
 
 export type TrackRadar = {
-  track: 'math' | 'calculus' | 'ja' | 'en'
+  track: 'math' | 'calculus' | 'physics' | 'chemistry' | 'ja' | 'en'
   trackName: string
   dimensions: RadarDimension[]
   averageScore: number
@@ -331,6 +331,158 @@ export function computeCalculusRadar(
   return {
     track: 'calculus',
     trackName: '∫ 微積分互動專題 (Calculus)',
+    dimensions,
+    averageScore,
+    strongestDimension: sorted[0],
+    weakestDimension: sorted[sorted.length - 1],
+  }
+}
+
+/**
+ * 計算高中物理多維能力雷達 (力學、熱學、波動光學、電磁學、近代物理)
+ */
+export function computePhysicsRadar(
+  completedQuestions: string[] = [],
+  examScores: Record<string, number> = {},
+  labCompleted: string[] = [],
+): TrackRadar {
+  const totalCompleted = completedQuestions.length
+  const totalLabs = labCompleted.length
+  const examBonus = Object.values(examScores).length > 0 ? 5 : 0
+
+  const mechanicsBase = Math.min(100, Math.max(35, 45 + totalCompleted * 4 + totalLabs * 3 + examBonus + (labCompleted.includes('projectile') || labCompleted.includes('shm') ? 20 : 0)))
+  const thermoBase = Math.min(100, Math.max(30, 40 + totalCompleted * 3 + totalLabs * 2 + examBonus + (labCompleted.includes('gas-law') ? 20 : 0)))
+  const wavesBase = Math.min(100, Math.max(30, 40 + totalCompleted * 3 + totalLabs * 2 + examBonus + (labCompleted.includes('optics') ? 20 : 0)))
+  const emBase = Math.min(100, Math.max(25, 35 + totalCompleted * 4 + totalLabs * 2 + examBonus + (labCompleted.includes('circuit') ? 20 : 0)))
+  const modernBase = Math.min(100, Math.max(20, 30 + totalCompleted * 3 + examBonus))
+
+  const dimensions: RadarDimension[] = [
+    {
+      key: 'mechanics',
+      label: '力學與運動定律',
+      score: mechanicsBase,
+      fullMark: 100,
+      description: '斜拋、牛頓定律、動量與力學能守恆、SHM',
+      status: scoreToStatus(mechanicsBase),
+    },
+    {
+      key: 'thermo',
+      label: '熱學與分子動力論',
+      score: thermoBase,
+      fullMark: 100,
+      description: '理想氣體狀態方程式、熱力學第一定律與氣體動能',
+      status: scoreToStatus(thermoBase),
+    },
+    {
+      key: 'waves',
+      label: '波動與幾何物理光學',
+      score: wavesBase,
+      fullMark: 100,
+      description: '波的反射折射干涉繞射、司乃耳定律、雙狹縫實驗',
+      status: scoreToStatus(wavesBase),
+    },
+    {
+      key: 'electromagnetism',
+      label: '電磁學與電路分析',
+      score: emBase,
+      fullMark: 100,
+      description: '庫侖定律、克希荷夫電路、勞侖茲力與法拉第電磁感應',
+      status: scoreToStatus(emBase),
+    },
+    {
+      key: 'modern',
+      label: '近代物理與量子現象',
+      score: modernBase,
+      fullMark: 100,
+      description: '光電效應、物質波、波耳原子模型與核反應',
+      status: scoreToStatus(modernBase),
+    },
+  ]
+
+  const averageScore = Math.round(
+    dimensions.reduce((sum, d) => sum + d.score, 0) / dimensions.length,
+  )
+  const sorted = [...dimensions].sort((a, b) => b.score - a.score)
+
+  return {
+    track: 'physics',
+    trackName: '⚛️ 高中物理 108 課綱',
+    dimensions,
+    averageScore,
+    strongestDimension: sorted[0],
+    weakestDimension: sorted[sorted.length - 1],
+  }
+}
+
+/**
+ * 計算高中化學多維能力雷達 (物質構造、化學計量、化學平衡與動力學、酸鹼電化學、有機化學)
+ */
+export function computeChemistryRadar(
+  completedQuestions: string[] = [],
+  examScores: Record<string, number> = {},
+  labCompleted: string[] = [],
+): TrackRadar {
+  const totalCompleted = completedQuestions.length
+  const totalLabs = labCompleted.length
+  const examBonus = Object.values(examScores).length > 0 ? 5 : 0
+
+  const structureBase = Math.min(100, Math.max(35, 45 + totalCompleted * 4 + totalLabs * 2 + examBonus + (labCompleted.includes('periodic-table') || labCompleted.includes('vsepr') ? 20 : 0)))
+  const stoichiometryBase = Math.min(100, Math.max(30, 40 + totalCompleted * 3 + totalLabs * 2 + examBonus + (labCompleted.includes('gas-law') ? 20 : 0)))
+  const equilibriumBase = Math.min(100, Math.max(30, 35 + totalCompleted * 4 + examBonus))
+  const acidRedoxBase = Math.min(100, Math.max(25, 35 + totalCompleted * 4 + totalLabs * 2 + examBonus + (labCompleted.includes('titration') ? 20 : 0)))
+  const organicBase = Math.min(100, Math.max(20, 30 + totalCompleted * 4 + examBonus))
+
+  const dimensions: RadarDimension[] = [
+    {
+      key: 'structure',
+      label: '物質構造與化學鍵',
+      score: structureBase,
+      fullMark: 100,
+      description: '週期表規律、電子排列、VSEPR 分子幾何與混成軌域',
+      status: scoreToStatus(structureBase),
+    },
+    {
+      key: 'stoichiometry',
+      label: '化學計量與氣體溶液',
+      score: stoichiometryBase,
+      fullMark: 100,
+      description: '莫耳數反應式計量、理想氣體定律與溶液依數性',
+      status: scoreToStatus(stoichiometryBase),
+    },
+    {
+      key: 'equilibrium',
+      label: '反應速率與化學平衡',
+      score: equilibriumBase,
+      fullMark: 100,
+      description: '碰撞學說、活化能、勒沙特列平衡移動與 Ksp',
+      status: scoreToStatus(equilibriumBase),
+    },
+    {
+      key: 'acid_redox',
+      label: '酸鹼滴定與電化學電池',
+      score: acidRedoxBase,
+      fullMark: 100,
+      description: 'pH 緩衝溶液、滴定曲線、氧化數與法拉第電解定律',
+      status: scoreToStatus(acidRedoxBase),
+    },
+    {
+      key: 'organic',
+      label: '有機化學與生物聚合物',
+      score: organicBase,
+      fullMark: 100,
+      description: '官能基異構物命名、取代加成酯化反應與高分子聚合物',
+      status: scoreToStatus(organicBase),
+    },
+  ]
+
+  const averageScore = Math.round(
+    dimensions.reduce((sum, d) => sum + d.score, 0) / dimensions.length,
+  )
+  const sorted = [...dimensions].sort((a, b) => b.score - a.score)
+
+  return {
+    track: 'chemistry',
+    trackName: '🧪 高中化學 108 課綱',
     dimensions,
     averageScore,
     strongestDimension: sorted[0],
