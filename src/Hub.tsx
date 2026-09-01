@@ -20,11 +20,13 @@ import {
   loadProgress,
   loadKanaProgress,
   loadToeicProgress,
+  saveToeicInstructionLang,
   type LangId,
 } from './utils/storage'
 import { loadMathProgress } from './math/utils/mathStorage'
 import { loadPhysicsProgress } from './physics/utils/physicsStorage'
 import { loadChemistryProgress } from './chemistry/utils/chemistryStorage'
+import { loadChineseProgress } from './chinese/utils/chineseStorage'
 import { isAudioMuted, toggleAudioMute, playClickSound } from './engine/audioSynthesizer'
 
 type Props = {
@@ -68,7 +70,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
     }
   }, [])
 
-  // 讀取六軌與全域學習進度 (依 tick 響應式重新讀取)
+  // 讀取各軌與全域學習進度 (依 tick 響應式重新讀取)
   void tick
   const mathProgress = loadMathProgress()
   const physicsProgress = loadPhysicsProgress()
@@ -76,6 +78,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
   const jaProgress = loadProgress()
   const kanaProgress = loadKanaProgress()
   const toeicProgress = loadToeicProgress()
+  const chineseProgress = loadChineseProgress()
   const learningMeta = loadLearningMeta()
 
   // 計算全域 XP 與等級
@@ -84,7 +87,13 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
     (physicsProgress.xp || 0) +
     (chemistryProgress.xp || 0) +
     (jaProgress.xp || 0) +
+<<<<<<< HEAD
     (toeicProgress.xp || 0)
+=======
+    (toeicProgress.xp || 0) +
+    (chineseProgress.xp || 0) +
+    150
+>>>>>>> e4a05bc (feat: add multi-direction language learning architecture with Chinese-for-Japanese-speakers app and TOEIC Japanese explanation mode)
   const levelInfo = calculateLevelProgress(totalXp)
   const daily = dailyProgress(learningMeta)
 
@@ -406,7 +415,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
             <b className="launch-action chemistry-action">進入化學學習 →</b>
           </button>
 
-          {/* 5. あおば日本語 */}
+          {/* 5. あおば日本語 (中文學日語) */}
           <button
             type="button"
             className="hub-card jp-track-card"
@@ -414,12 +423,12 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
           >
             <div className="hub-card-header">
               <div className="hub-card-mark">あ</div>
-              <span className="track-status-pill ja">JLPT N5 ~ N1</span>
+              <span className="track-status-pill ja">🇹🇼 中文學日文</span>
             </div>
-            <p className="eyebrow">JAPANESE LANGUAGE</p>
+            <p className="eyebrow">JAPANESE · JLPT</p>
             <h2>あおば日本語</h2>
             <p className="track-desc">
-              JLPT 級距（N5/N4 基礎 → N3 中級 → N2/N1 進階）。保留五十音平／片假名、3 秒文法動作訊號決策樹與職場敬語情境。
+              JLPT 級距（N5/N4 基礎 → N3 中級 → N2/N1 進階）。五十音點讀、3 秒文法動作訊號決策樹與職場敬語情境。
             </p>
             <div className="track-highlight-badges">
               <span>🌸 五十音點讀</span>
@@ -433,20 +442,23 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
             <b className="launch-action">進入日語學習 →</b>
           </button>
 
-          {/* 6. TOEIC 多益英語 */}
+          {/* 6. TOEIC 多益英語 (中文學英文) */}
           <button
             type="button"
             className="hub-card en-track-card"
-            onClick={() => onChoose('en')}
+            onClick={() => {
+              saveToeicInstructionLang('zh')
+              onChoose('en')
+            }}
           >
             <div className="hub-card-header">
               <div className="hub-card-mark toeic">T</div>
-              <span className="track-status-pill en">多益四色證書</span>
+              <span className="track-status-pill en">🇹🇼 中文學英文</span>
             </div>
             <p className="eyebrow">ENGLISH · TOEIC</p>
             <h2>TOEIC English</h2>
             <p className="track-desc">
-              多益四色證書（橘／綠／藍／金）對照分數帶與職場門檻。高頻商務語塊 (Chunks) 訓練、美英澳加 4 國官方指定口音與同步字幕。
+              多益四色證書對照。高頻商務語塊 (Chunks) 訓練、美英澳加 4 國口音盲測與繁體中文深入避坑指南。
             </p>
             <div className="track-highlight-badges">
               <span>⚡ 商務語塊</span>
@@ -458,6 +470,69 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
               <span>進度：證書級距 <strong>{toeicProgress.certificateId.toUpperCase()}</strong> · 已掌握 <strong>{toeicDoneCount}</strong> 語塊</span>
             </div>
             <b className="launch-action">進入英語學習 →</b>
+          </button>
+
+          {/* 7. 台灣華語・中国語 (日本語で学ぶ中国語) */}
+          <button
+            type="button"
+            className="hub-card zh-track-card"
+            style={{ borderColor: '#f59e0b' }}
+            onClick={() => onChoose('zh')}
+          >
+            <div className="hub-card-header">
+              <div className="hub-card-mark" style={{ background: 'linear-gradient(135deg, #f59e0b, #ef4444)', color: '#fff' }}>華</div>
+              <span className="track-status-pill" style={{ background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', borderColor: 'rgba(245, 158, 11, 0.3)' }}>
+                🇯🇵 日文學中文 (新規)
+              </span>
+            </div>
+            <p className="eyebrow">TAIWANESE MANDARIN</p>
+            <h2>台湾華語・繁体字中国語</h2>
+            <p className="track-desc">
+              日本語母語者のための台湾華語。五度標記法による四声の高さのカーブ、日中偽友詞（手紙・汽車・大丈夫）避坑、把字句・被字句 3 秒直感判断。
+            </p>
+            <div className="track-highlight-badges">
+              <span>🗣️ 四聲音高曲線</span>
+              <span>⛩️ 日中同形異義語</span>
+              <span>⚡ 把字句・被字句</span>
+              <span>💬 リアル台湾会話</span>
+            </div>
+            <div className="track-user-progress">
+              <span>進度：累積 <strong>{chineseProgress.xp} XP</strong> · 掌握 <strong>{chineseProgress.masteredFalseFriends.length}</strong> 偽友詞</span>
+            </div>
+            <b className="launch-action" style={{ color: '#f59e0b' }}>日本語で中国語を学ぶ →</b>
+          </button>
+
+          {/* 8. TOEIC English (日本語解説モード) */}
+          <button
+            type="button"
+            className="hub-card en-ja-track-card"
+            style={{ borderColor: '#38bdf8' }}
+            onClick={() => {
+              saveToeicInstructionLang('ja')
+              onChoose('en')
+            }}
+          >
+            <div className="hub-card-header">
+              <div className="hub-card-mark" style={{ background: 'linear-gradient(135deg, #38bdf8, #6366f1)', color: '#fff' }}>E</div>
+              <span className="track-status-pill" style={{ background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', borderColor: 'rgba(56, 189, 248, 0.3)' }}>
+                🇯🇵 日文學英文 (解説切替)
+              </span>
+            </div>
+            <p className="eyebrow">TOEIC · JAPANESE UI</p>
+            <h2>TOEIC 日本語解説モード</h2>
+            <p className="track-desc">
+              ビジネス英語高頻出チャンク（get back to you / follow up on 等）を日本語で完全解説。4カ国公式アクセントリスニング対応。
+            </p>
+            <div className="track-highlight-badges">
+              <span>🇯🇵 日本語解説</span>
+              <span>⚡ コアチャンク5選</span>
+              <span>🎧 4カ国アクセント</span>
+              <span>📖 ストーリー復習</span>
+            </div>
+            <div className="track-user-progress">
+              <span>進度：解説言語 <strong>日本語</strong> · TOEIC <strong>{toeicProgress.certificateId.toUpperCase()}</strong></span>
+            </div>
+            <b className="launch-action" style={{ color: '#38bdf8' }}>日本語で英語を学ぶ →</b>
           </button>
         </div>
       </section>

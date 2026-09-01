@@ -29,7 +29,7 @@ const LEARNING_META_KEY = 'e-learning-meta'
 const LEARNING_EVENT_LIMIT = 200
 
 /** Learning target language/subject modules. */
-export type LangId = 'ja' | 'en' | 'math' | 'calculus' | 'physics' | 'chemistry'
+export type LangId = 'ja' | 'en' | 'zh' | 'math' | 'calculus' | 'physics' | 'chemistry'
 /** Top-level app view: language/subject picker or a learning module. */
 export type AppView = 'hub' | LangId
 
@@ -37,6 +37,7 @@ function normalizeLang(value: string | null | undefined): AppView | null {
   if (value === 'hub') return 'hub'
   if (value === 'ja' || value === 'aoba') return 'ja'
   if (value === 'en' || value === 'toeic') return 'en'
+  if (value === 'zh' || value === 'chinese' || value === 'mandarin' || value === 'huayu') return 'zh'
   if (value === 'math') return 'math'
   if (value === 'calculus' || value === 'calc') return 'calculus'
   if (value === 'physics' || value === 'phys') return 'physics'
@@ -108,6 +109,7 @@ export type ToeicSavedPreset = {
 export function loadLang(): AppView {
   const hash = window.location.hash.replace('#', '').trim()
   if (hash === 'en' || hash.startsWith('toeic')) return 'en'
+  if (hash === 'zh' || hash.startsWith('chinese') || hash.startsWith('huayu')) return 'zh'
   if (hash === 'calculus' || hash.startsWith('calc')) return 'calculus'
   if (hash === 'physics' || hash.startsWith('phys')) return 'physics'
   if (hash === 'chemistry' || hash.startsWith('chem')) return 'chemistry'
@@ -137,6 +139,7 @@ export function saveLang(view: AppView) {
   else if (view === 'physics') window.location.hash = 'physics'
   else if (view === 'chemistry') window.location.hash = 'chemistry'
   else if (view === 'ja') window.location.hash = 'aoba'
+  else if (view === 'zh') window.location.hash = 'zh'
   else window.location.hash = 'hub'
   notifyProgressChanged()
 }
@@ -639,6 +642,23 @@ export function loadToeicPresets(): ToeicSavedPreset[] {
     return raw ? (JSON.parse(raw) as ToeicSavedPreset[]) : []
   } catch {
     return []
+  }
+}
+
+export function loadToeicInstructionLang(): 'zh' | 'ja' {
+  try {
+    const val = localStorage.getItem('toeic-instruction-lang')
+    return val === 'ja' ? 'ja' : 'zh'
+  } catch {
+    return 'zh'
+  }
+}
+
+export function saveToeicInstructionLang(lang: 'zh' | 'ja') {
+  try {
+    localStorage.setItem('toeic-instruction-lang', lang)
+  } catch {
+    /* ignore */
   }
 }
 

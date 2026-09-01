@@ -4,13 +4,14 @@ import { TOEIC_CHUNK_WEEKS, type BusinessChunk } from '../data/chunks'
 type Props = {
   onBack: () => void
   onOpenStoryReview: () => void
+  instructionLang?: 'zh' | 'ja'
 }
 
 /**
  * TOEIC 商務語塊跟讀實驗室 (ToeicChunkLab)
  * 實踐 English Chunker 語塊教學法：三階段跟讀、Rhythm Hint、時態變形、避坑指南與主動回想產出。
  */
-export const ToeicChunkLab: React.FC<Props> = ({ onBack, onOpenStoryReview }) => {
+export const ToeicChunkLab: React.FC<Props> = ({ onBack, onOpenStoryReview, instructionLang = 'zh' }) => {
   const currentWeek = TOEIC_CHUNK_WEEKS[0]
   const [selectedChunkId, setSelectedChunkId] = useState<string>(currentWeek.chunks[0].id)
   const [speechRate, setSpeechRate] = useState<number>(1.0)
@@ -18,6 +19,7 @@ export const ToeicChunkLab: React.FC<Props> = ({ onBack, onOpenStoryReview }) =>
   const [shadowStep, setShadowStep] = useState<1 | 2 | 3>(1)
   const [isSpeaking, setIsSpeaking] = useState(false)
 
+  const isJa = instructionLang === 'ja'
   const activeChunk: BusinessChunk =
     currentWeek.chunks.find((c) => c.id === selectedChunkId) ?? currentWeek.chunks[0]
 
@@ -79,20 +81,20 @@ export const ToeicChunkLab: React.FC<Props> = ({ onBack, onOpenStoryReview }) =>
       {/* 頂部導航與週主題 */}
       <div className="chunk-top-bar">
         <button type="button" className="btn-back" onClick={onBack}>
-          ← 返回今日學習
+          {isJa ? '← 今日学習に戻る' : '← 返回今日學習'}
         </button>
         <button type="button" className="btn-story-mode" onClick={onOpenStoryReview}>
-          📖 查看本週微故事與 3 秒判斷對照表 →
+          {isJa ? '📖 今週のストーリー復習と判断表 →' : '📖 查看本週微故事與 3 秒判斷對照表 →'}
         </button>
       </div>
 
       <div className="chunk-hero-box">
         <div className="week-badge-row">
-          <span className="week-pill">第 {currentWeek.weekId} 週 · 5 個高頻商務語塊</span>
-          <span className="cert-pill">{currentWeek.certificateBand.toUpperCase()} 級核心</span>
+          <span className="week-pill">{isJa ? `第 ${currentWeek.weekId} 週 · 必須ビジネスチャンク 5 選` : `第 ${currentWeek.weekId} 週 · 5 個高頻商務語塊`}</span>
+          <span className="cert-pill">{currentWeek.certificateBand.toUpperCase()} {isJa ? 'レベルコア' : '級核心'}</span>
         </div>
-        <h2>{currentWeek.themeTitle}</h2>
-        <p className="hero-sub">{currentWeek.themeSubtitle}</p>
+        <h2>{isJa ? (currentWeek.themeTitleJa ?? currentWeek.themeTitle) : currentWeek.themeTitle}</h2>
+        <p className="hero-sub">{isJa ? (currentWeek.themeSubtitleJa ?? currentWeek.themeSubtitle) : currentWeek.themeSubtitle}</p>
 
         {/* 5 個語塊水平選單 */}
         <div className="chunks-tabs-grid">
@@ -107,7 +109,7 @@ export const ToeicChunkLab: React.FC<Props> = ({ onBack, onOpenStoryReview }) =>
               >
                 <span className="chunk-num">Lesson 0{idx + 1}</span>
                 <strong className="chunk-en">{item.chunk}</strong>
-                <span className="chunk-zh">{item.meaningZh}</span>
+                <span className="chunk-zh">{isJa ? (item.meaningJa ?? item.meaningZh) : item.meaningZh}</span>
               </button>
             )
           })}
@@ -119,11 +121,11 @@ export const ToeicChunkLab: React.FC<Props> = ({ onBack, onOpenStoryReview }) =>
         {/* 標題與語調卡 */}
         <div className="chunk-header-card">
           <div className="chunk-main-title">
-            <span className="tag-pill">🎧 核心語塊</span>
+            <span className="tag-pill">{isJa ? '🎧 コアチャンク' : '🎧 核心語塊'}</span>
             <h1>{activeChunk.chunk}</h1>
-            <p className="chunk-meaning-lg">{activeChunk.meaningZh}</p>
+            <p className="chunk-meaning-lg">{isJa ? (activeChunk.meaningJa ?? activeChunk.meaningZh) : activeChunk.meaningZh}</p>
             <p className="action-signal-note">
-              🎯 <strong>動作觸發訊號：</strong>{activeChunk.actionSignal}
+              🎯 <strong>{isJa ? 'アクションシグナル：' : '動作觸發訊號：'}</strong>{isJa ? (activeChunk.actionSignalJa ?? activeChunk.actionSignal) : activeChunk.actionSignal}
             </p>
           </div>
 

@@ -32,6 +32,9 @@ const ChemistryApp = lazyWithRetry(
   () => import('./chemistry/ChemistryApp').then((m) => ({ default: m.ChemistryApp })),
   'chemistry',
 )
+const ChineseApp = lazyWithRetry(() =>
+  import('./chinese/ChineseApp').then((m) => ({ default: m.ChineseApp })),
+)
 
 function readTopView(): TopView {
   return parseTopViewHash(window.location.hash)
@@ -67,6 +70,7 @@ function AppShell() {
       chemistry: '臺灣化學學習 (國中+高中)｜E-Learning Hub',
       ja: '日本語學習｜E-Learning Hub',
       en: 'TOEIC 英語學習｜E-Learning Hub',
+      zh: '台湾華語・中国語學習 (日本語で学ぶ)｜E-Learning Hub',
       privacy: '隱私與資料說明｜E-Learning Hub',
     }
     document.title = titles[view]
@@ -119,6 +123,18 @@ function AppShell() {
     return <PrivacyPage onBack={() => choose('hub')} />
   }
 
+  if (view === 'zh') {
+    return (
+      <ErrorBoundary label="華語模組">
+        <Suspense fallback={<ModuleFallback />}>
+          <ChineseApp
+            onBackHub={() => choose('hub')}
+            onSwitchLang={(lang: LangId) => choose(lang)}
+          />
+        </Suspense>
+      </ErrorBoundary>
+    )
+  }
   if (view === 'ja') {
     return (
       <ErrorBoundary label="日語模組">

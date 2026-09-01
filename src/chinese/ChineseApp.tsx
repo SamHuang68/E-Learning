@@ -1,0 +1,100 @@
+﻿import React, { useState } from 'react'
+import { ChineseSidebar, type ChineseNavSection } from './components/ChineseSidebar'
+import { PinyinLab } from './components/PinyinLab'
+import { FalseFriendsLab } from './components/FalseFriendsLab'
+import { ChineseSignalsView } from './components/ChineseSignalsView'
+import { ChineseConversationLab } from './components/ChineseConversationLab'
+import { ChineseToday } from './components/ChineseToday'
+import { loadChineseProgress, saveChineseProgress } from './utils/chineseStorage'
+import type { LangId } from '../utils/storage'
+
+interface Props {
+  onBackHub: () => void
+  onSwitchLang: (lang: LangId) => void
+}
+
+export const ChineseApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
+  const [section, setSection] = useState<ChineseNavSection>('today')
+  const [progress, setProgress] = useState(() => loadChineseProgress())
+
+  function earnXp(amount: number) {
+    setProgress((prev) => {
+      const next = { ...prev, xp: prev.xp + amount }
+      saveChineseProgress(next)
+      return next
+    })
+  }
+
+  return (
+    <div className="math-app-shell chinese-app-shell" style={{ display: 'flex', width: '100vw', height: '100vh', overflow: 'hidden' }}>
+      {/* 左側導覽列 */}
+      <ChineseSidebar
+        activeSection={section}
+        onSelectSection={setSection}
+        onBackHub={onBackHub}
+        xp={progress.xp}
+      />
+
+      {/* 右側主要內容區：嚴格 100vh 內部平滑滾動，零外捲 */}
+      <main
+        className="content chinese-main-content"
+        style={{
+          flex: 1,
+          height: '100vh',
+          overflowY: 'auto',
+          padding: '1.2rem 1.5rem',
+          minWidth: 0,
+          background: 'var(--bg)',
+        }}
+      >
+        {/* 頂部語言學習方向切換膠囊 */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '1rem',
+            paddingBottom: '0.6rem',
+            borderBottom: '1px solid var(--line)',
+            flexWrap: 'wrap',
+            gap: '0.5rem',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <span style={{ fontSize: '0.74rem', color: 'var(--muted)', fontWeight: 600 }}>🌐 語言學習方向：</span>
+            <span style={{ fontSize: '0.74rem', padding: '0.15rem 0.5rem', borderRadius: '999px', background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', fontWeight: 700 }}>
+              🇯🇵 日本語 ➜ 🇹🇼 台湾華語・繁體中文
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', gap: '0.3rem', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.7rem', color: 'var(--muted)' }}>切換其他語言：</span>
+            <button
+              type="button"
+              className="pill-btn"
+              style={{ fontSize: '0.7rem', padding: '0.15rem 0.4rem' }}
+              onClick={() => onSwitchLang('ja')}
+            >
+              あおば日語
+            </button>
+            <button
+              type="button"
+              className="pill-btn"
+              style={{ fontSize: '0.7rem', padding: '0.15rem 0.4rem' }}
+              onClick={() => onSwitchLang('en')}
+            >
+              TOEIC 英語
+            </button>
+          </div>
+        </div>
+
+        {/* 根據 section 渲染不同模組 */}
+        {section === 'today' && <ChineseToday xp={progress.xp} onNavigate={setSection} />}
+        {section === 'pinyin' && <PinyinLab onEarnXp={earnXp} />}
+        {section === 'false-friends' && <FalseFriendsLab onEarnXp={earnXp} />}
+        {section === 'signals' && <ChineseSignalsView onEarnXp={earnXp} />}
+        {section === 'conversations' && <ChineseConversationLab onEarnXp={earnXp} />}
+      </main>
+    </div>
+  )
+}

@@ -14,6 +14,8 @@ import { buildDailyQueue } from '../engine/srs'
 import {
   loadLearningMeta,
   loadToeicProgress,
+  loadToeicInstructionLang,
+  saveToeicInstructionLang,
   saveLearningMeta,
   saveToeicProgress,
   type LangId,
@@ -39,6 +41,7 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
   const { user, syncStatus } = useAuth()
   const [nav, setNav] = useState<ToeicNavId>('today')
   const [progress, setProgress] = useState<ToeicProgress>(() => loadToeicProgress())
+  const [instructionLang, setInstructionLang] = useState<'zh' | 'ja'>(() => loadToeicInstructionLang())
   const [practice, setPractice] = useState<
     'vocab' | 'listening' | 'grammar' | null
   >(null)
@@ -347,6 +350,7 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
         <ToeicChunkLab
           onBack={() => setNav('today')}
           onOpenStoryReview={() => setNav('story')}
+          instructionLang={instructionLang}
         />
       )
     }
@@ -450,6 +454,11 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
         unit={unit}
         progressPct={progressPct}
         phonicsCount={progress.phonicsMastered.length}
+        instructionLang={instructionLang}
+        onToggleInstructionLang={(lang) => {
+          setInstructionLang(lang)
+          saveToeicInstructionLang(lang)
+        }}
         onBackHub={onBackHub}
         onSwitchLang={onSwitchLang}
       />

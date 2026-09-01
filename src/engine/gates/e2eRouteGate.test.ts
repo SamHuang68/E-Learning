@@ -1,4 +1,4 @@
-﻿import { describe, it, expect, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { loadLang, saveLang, type AppView } from '../../utils/storage'
 
 describe('Strict Review Gate: E2E Route & View State Machine Invariants', () => {
@@ -77,6 +77,7 @@ describe('Strict Review Gate: E2E Route & View State Machine Invariants', () => 
     { view: 'calculus', expectedHash: 'calculus', label: '微積分互動專題' },
     { view: 'ja', expectedHash: 'aoba', label: 'あおば日本語' },
     { view: 'en', expectedHash: 'toeic', label: 'TOEIC 多益英語' },
+    { view: 'zh', expectedHash: 'zh', label: '台湾華語・繁體中文' },
     { view: 'hub', expectedHash: 'hub', label: '統一學習主頁 (Hub)' },
   ]
 
@@ -109,6 +110,9 @@ describe('Strict Review Gate: E2E Route & View State Machine Invariants', () => 
 
     saveLang('en')
     expect(loadLang()).toBe('en')
+
+    saveLang('zh')
+    expect(loadLang()).toBe('zh')
 
     saveLang('physics')
     expect(loadLang()).toBe('physics')
