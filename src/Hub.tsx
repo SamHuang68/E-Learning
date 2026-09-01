@@ -87,13 +87,8 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
     (physicsProgress.xp || 0) +
     (chemistryProgress.xp || 0) +
     (jaProgress.xp || 0) +
-<<<<<<< HEAD
-    (toeicProgress.xp || 0)
-=======
     (toeicProgress.xp || 0) +
-    (chineseProgress.xp || 0) +
-    150
->>>>>>> e4a05bc (feat: add multi-direction language learning architecture with Chinese-for-Japanese-speakers app and TOEIC Japanese explanation mode)
+    (chineseProgress.xp || 0)
   const levelInfo = calculateLevelProgress(totalXp)
   const daily = dailyProgress(learningMeta)
 
