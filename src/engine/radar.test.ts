@@ -6,6 +6,7 @@ import {
   computeChemistryRadar,
   computeAobaRadar,
   computeToeicRadar,
+  computeChineseRadar,
 } from './radar'
 
 describe('Knowledge Radar Engine & Four Tracks Ability Model', () => {
@@ -75,5 +76,19 @@ describe('Knowledge Radar Engine & Four Tracks Ability Model', () => {
       'reading',
       'vocab',
     ])
+  })
+
+  it('computes 5-dimension radar for Chinese track', () => {
+    const radar = computeChineseRadar(80, 5, 3, 2, 0)
+    expect(radar.track).toBe('zh')
+    expect(radar.dimensions).toHaveLength(5)
+    expect(radar.dimensions.map((d) => d.key)).toEqual([
+      'tones_pronunciation',
+      'false_friends',
+      'grammar_signals',
+      'practical_dialogue',
+      'tocfl_competency',
+    ])
+    expect(radar.averageScore).toBeGreaterThan(0)
   })
 })

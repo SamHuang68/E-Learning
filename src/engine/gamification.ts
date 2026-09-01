@@ -3,7 +3,7 @@
  * 實作難度加權 XP、Combo 連擊倍率、等級進階、連勝保護 (Streak Freeze) 與三軌微認證徽章。
  */
 
-export type BadgeCategory = 'math' | 'calculus' | 'physics' | 'chemistry' | 'ja' | 'en' | 'universal'
+export type BadgeCategory = 'math' | 'calculus' | 'physics' | 'chemistry' | 'ja' | 'en' | 'zh' | 'universal'
 
 export type Badge = {
   id: string
@@ -180,6 +180,40 @@ export const BADGE_CATALOG: Badge[] = [
     icon: '🏆',
     category: 'en',
     xpReward: 250,
+  },
+  {
+    id: 'badge-toeic-signals-pro',
+    title: '多益3秒秒殺神手',
+    description: '掌握使役動詞、動名詞與連接詞判別等秒殺破題法則',
+    icon: '🎯',
+    category: 'en',
+    xpReward: 160,
+  },
+
+  // 7. 台湾華語（日本語母語者）模組徽章
+  {
+    id: 'badge-zh-tone-master',
+    title: '四聲發音大師',
+    description: '精通五度標記法四聲音高曲線與拼音注音對照',
+    icon: '🗣️',
+    category: 'zh',
+    xpReward: 120,
+  },
+  {
+    id: 'badge-zh-false-friend-ace',
+    title: '偽友詞避坑達人',
+    description: '完全掌握手紙、汽車、勉強、大丈夫等高頻日中同形異義語',
+    icon: '⛩️',
+    category: 'zh',
+    xpReward: 150,
+  },
+  {
+    id: 'badge-zh-tocfl-pass',
+    title: 'TOCFL 模擬考首捷',
+    description: '完成 TOCFL A1/A2 華語文能力模擬測驗並取得合格評級',
+    icon: '🇹🇼',
+    category: 'zh',
+    xpReward: 200,
   },
 ]
 

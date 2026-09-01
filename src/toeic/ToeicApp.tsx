@@ -32,6 +32,7 @@ import { ToeicToday } from './components/ToeicToday'
 import { ToeicChunkLab } from './components/ToeicChunkLab'
 import { ToeicStoryReview } from './components/ToeicStoryReview'
 import { ToeicSignalsView } from './components/ToeicSignalsView'
+import { ToeicErrorVault } from './components/ToeicErrorVault'
 
 type Props = {
   onBackHub: () => void
@@ -359,6 +360,20 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
       return (
         <ToeicSignalsView
           onEarnXp={(n) => patch({ xp: progress.xp + n })}
+          instructionLang={instructionLang}
+        />
+      )
+    }
+    if (nav === 'errors') {
+      return (
+        <ToeicErrorVault
+          errorQuestionIds={['signal-causative', 'signal-preposition-gerund']}
+          onRemoveError={() => {
+            /* 標記掌握 */
+          }}
+          onEarnXp={(n) => patch({ xp: progress.xp + n })}
+          onOpenSignals={() => setNav('signals')}
+          onOpenChunks={() => setNav('chunks')}
           instructionLang={instructionLang}
         />
       )

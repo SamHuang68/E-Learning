@@ -9,6 +9,7 @@ import {
   computeChemistryRadar,
   computeAobaRadar,
   computeToeicRadar,
+  computeChineseRadar,
 } from './engine/radar'
 import {
   calculateLevelProgress,
@@ -34,7 +35,7 @@ type Props = {
   onOpenPrivacy: () => void
 }
 
-type RadarTab = 'math' | 'calculus' | 'physics' | 'chemistry' | 'ja' | 'en'
+type RadarTab = 'math' | 'calculus' | 'physics' | 'chemistry' | 'ja' | 'en' | 'zh'
 
 /**
  * 統一學習主頁 (Unified Learning Hub Home)
@@ -124,6 +125,13 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
     toeicDoneCount,
     0,
   )
+  const chineseRadar = computeChineseRadar(
+    chineseProgress.xp || 0,
+    chineseProgress.masteredFalseFriends?.length || 0,
+    chineseProgress.masteredGrammarSignals?.length || 0,
+    chineseProgress.completedDialogues?.length || 0,
+    chineseProgress.errorQuestions?.length || 0,
+  )
 
   const activeRadar =
     activeRadarTab === 'math'
@@ -136,7 +144,9 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
             ? chemistryRadar
             : activeRadarTab === 'ja'
               ? jaRadar
-              : toeicRadar
+              : activeRadarTab === 'zh'
+                ? chineseRadar
+                : toeicRadar
 
   // 統計已掌握項目
   const mathDoneCount = mathProgress.completedQuestions.length
@@ -718,6 +728,14 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
             >
               T 英語
             </button>
+            <button
+              type="button"
+              className={`radar-tab-btn ${activeRadarTab === 'zh' ? 'active' : ''}`}
+              style={{ color: activeRadarTab === 'zh' ? '#f59e0b' : undefined }}
+              onClick={() => setActiveRadarTab('zh')}
+            >
+              華 華語
+            </button>
           </div>
         </div>
 
@@ -738,7 +756,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
               className="btn-plan-action"
               onClick={() => onChoose(activeRadarTab)}
             >
-              啟動{activeRadarTab === 'math' ? '臺灣數學' : activeRadarTab === 'calculus' ? '微積分專題' : activeRadarTab === 'physics' ? '臺灣物理' : activeRadarTab === 'chemistry' ? '臺灣化學' : activeRadarTab === 'ja' ? 'あおば日語' : '多益英語'}專屬特訓 →
+              啟動{activeRadarTab === 'math' ? '臺灣數學' : activeRadarTab === 'calculus' ? '微積分專題' : activeRadarTab === 'physics' ? '臺灣物理' : activeRadarTab === 'chemistry' ? '臺灣化學' : activeRadarTab === 'ja' ? 'あおば日語' : activeRadarTab === 'zh' ? '台湾華語' : '多益英語'}專屬特訓 →
             </button>
           </div>
         </div>

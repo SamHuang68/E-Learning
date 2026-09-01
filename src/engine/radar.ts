@@ -13,7 +13,7 @@ export type RadarDimension = {
 }
 
 export type TrackRadar = {
-  track: 'math' | 'calculus' | 'physics' | 'chemistry' | 'ja' | 'en'
+  track: 'math' | 'calculus' | 'physics' | 'chemistry' | 'ja' | 'en' | 'zh'
   trackName: string
   dimensions: RadarDimension[]
   averageScore: number
@@ -516,6 +516,80 @@ export function computeChemistryRadar(
   return {
     track: 'chemistry',
     trackName: '🧪 臺灣化學 (國中+高中)',
+    dimensions,
+    averageScore,
+    strongestDimension: sorted[0],
+    weakestDimension: sorted[sorted.length - 1],
+  }
+}
+
+/**
+ * 計算台灣華語・繁體中文多維能力雷達 (Chinese for Japanese Speakers Track Radar)
+ */
+export function computeChineseRadar(
+  xp: number,
+  masteredFalseFriendsCount: number,
+  masteredSignalsCount: number,
+  completedDialoguesCount: number,
+  errorQuestionsCount: number = 0,
+): TrackRadar {
+  const tonesBase = Math.min(100, Math.round(xp * 0.4) + 20)
+  const falseFriendsBase = Math.min(100, masteredFalseFriendsCount * 10 + (xp > 50 ? 20 : 0))
+  const signalsBase = Math.min(100, masteredSignalsCount * 15 + (xp > 100 ? 25 : 0))
+  const dialogueBase = Math.min(100, completedDialoguesCount * 25 + (xp > 30 ? 20 : 0))
+  const tocflBase = Math.max(10, Math.min(100, Math.round(xp * 0.5) - errorQuestionsCount * 5 + 30))
+
+  const dimensions: RadarDimension[] = [
+    {
+      key: 'tones_pronunciation',
+      label: '四聲聲調與拼音發音',
+      score: tonesBase,
+      fullMark: 100,
+      description: '五度標記法四聲音高曲線、有気音與そり舌音發音精確度',
+      status: scoreToStatus(tonesBase),
+    },
+    {
+      key: 'false_friends',
+      label: '日中同形異義語辨析',
+      score: falseFriendsBase,
+      fullMark: 100,
+      description: '手紙・汽車・勉強・大丈夫等高頻日中偽友詞避坑掌握度',
+      status: scoreToStatus(falseFriendsBase),
+    },
+    {
+      key: 'grammar_signals',
+      label: '3秒文法動作訊號樹',
+      score: signalsBase,
+      fullMark: 100,
+      description: '把字句、被字句、了1/了2、是…的焦點強調構文秒殺法則',
+      status: scoreToStatus(signalsBase),
+    },
+    {
+      key: 'practical_dialogue',
+      label: '生活情境對話與跟讀',
+      score: dialogueBase,
+      fullMark: 100,
+      description: '手搖飲微糖去冰、士林夜市點餐、MRT捷運與超商咖啡對話',
+      status: scoreToStatus(dialogueBase),
+    },
+    {
+      key: 'tocfl_competency',
+      label: 'TOCFL 華語文測驗實力',
+      score: tocflBase,
+      fullMark: 100,
+      description: 'TOCFL A1/A2 聽力理解、詞彙語法與閱讀理解應試落點',
+      status: scoreToStatus(tocflBase),
+    },
+  ]
+
+  const averageScore = Math.round(
+    dimensions.reduce((sum, d) => sum + d.score, 0) / dimensions.length,
+  )
+  const sorted = [...dimensions].sort((a, b) => b.score - a.score)
+
+  return {
+    track: 'zh',
+    trackName: '🇹🇼 台湾華語 (日本語で学ぶ)',
     dimensions,
     averageScore,
     strongestDimension: sorted[0],

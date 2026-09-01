@@ -17,6 +17,7 @@ export type ToeicNavId =
   | 'speaking'
   | 'mock'
   | 'placement'
+  | 'errors'
 
 type Props = {
   nav: ToeicNavId
@@ -29,6 +30,7 @@ type Props = {
   onToggleInstructionLang?: (lang: 'zh' | 'ja') => void
   onBackHub: () => void
   onSwitchLang: (lang: LangId) => void
+  errorCount?: number
 }
 
 export function ToeicSidebar({
@@ -42,13 +44,15 @@ export function ToeicSidebar({
   onToggleInstructionLang,
   onBackHub,
   onSwitchLang,
+  errorCount = 0,
 }: Props) {
   const isJa = instructionLang === 'ja'
 
-  const items: { id: ToeicNavId; icon: string; label: string }[] = [
+  const items: { id: ToeicNavId; icon: string; label: string; badge?: string }[] = [
     { id: 'today', icon: '★', label: isJa ? '今日学習' : '今日學習' },
     { id: 'chunks', icon: '⚡', label: isJa ? 'ビジネスチャンク' : '商務語塊 (Chunks)' },
     { id: 'signals', icon: '🎯', label: isJa ? '3秒解答シグナル' : '3秒秒殺訊號卡' },
+    { id: 'errors', icon: '📕', label: isJa ? '誤答ノート' : '錯題弱點本', badge: errorCount > 0 ? `${errorCount}` : undefined },
     { id: 'story', icon: '📖', label: isJa ? 'ストーリー復習' : '情境微故事' },
     { id: 'phonics', icon: 'Aa', label: isJa ? '発音基礎' : '發音基礎' },
     { id: 'builder', icon: '✎', label: isJa ? 'コースビルダー' : '課程設計器' },
