@@ -1,9 +1,9 @@
-# E-Learning Hub｜あおば日語 × TOEIC English × 臺灣 108 課綱數學
+# E-Learning Hub｜語言 × 數學 × 微積分 × 物理 × 化學六軌學習
 
 > 🏛️ **Sam Huang 專案總入口**：[https://samhuang68.github.io/](https://samhuang68.github.io/)
 > 🌐 **E-Learning 線上體驗站**：[https://samhuang68.github.io/E-Learning/](https://samhuang68.github.io/E-Learning/)
 
-同一個 Vite / React 專案內的三大專業學習軌道（臺灣 108 課綱數學、JLPT 日語、TOEIC 多益英語）。未登入可本機試用；登入後進度同步至 Supabase。託管於 GitHub Pages（靜態站）。
+同一個 Vite / React 專案內整合 JLPT 日語、TOEIC 多益英語、臺灣 108 課綱數學、微積分、物理與化學。未登入可本機試用；登入後進度可同步至 Supabase。託管於 GitHub Pages（靜態站）。
 
 ## 功能成熟度
 
@@ -49,19 +49,33 @@ npm run preview
 
 > 注意：本機後端僅為離線／示範用途，密碼以雜湊存於 `localStorage`，並非安全邊界；請勿使用真實密碼。
 
-## Supabase 設定（一次性）
+## Supabase 設定
+
+### 全新專案
 
 1. 建立專案 → Authentication → 啟用 Email/Password  
-2. 在 SQL Editor 執行 [`supabase/schema.sql`](supabase/schema.sql)（含 `meta` jsonb）  
+2. 在 SQL Editor 執行 fresh-install snapshot：[`supabase/schema.sql`](supabase/schema.sql)
 3. Authentication → URL：Site URL / Redirect 設為 Pages 網址  
    （例如 `https://<user>.github.io/<repo>/`）  
 4. 將 `VITE_SUPABASE_URL`、`VITE_SUPABASE_ANON_KEY` 填入 `.env.local` 與 GitHub repo Secrets  
+
+### 既有專案升級
+
+不要把整份 `schema.sql` 當作 production upgrade script；該檔包含 fresh-install 的 RLS policy 建立流程。請依序：
+
+1. 在 staging／production SQL Editor 先執行唯讀 [`preflight`](supabase/checks/20260901010000_add_stem_progress.preflight.sql)。它會在 DDL 前攔截既有 STEM 欄位的 schema／JSON-object 資料漂移；請完整保存輸出作為升級證據。
+2. 於低流量時段執行不可變、單一 transaction 的 [`migration`](supabase/migrations/20260901010000_add_stem_progress_columns.sql)。
+3. 執行唯讀 [`postflight`](supabase/checks/20260901010000_add_stem_progress.postflight.sql)。逐列比對 owner、`relrowsecurity`、`relforcerowsecurity`、table `relacl` 與排序後的 policy 結果；所有升級前既有欄位的 `attname`／`attacl` 必須完全相同，三個新 STEM 欄位的 `attacl` 必須為 `NULL`。
+4. 先在 staging 驗證登入、讀取與 upsert，再發布依賴新欄位的 hosted-cloud 前端。
+
+Migration 只新增欄位，不會刪除／重建 policies、修改 grants 或移除學習資料。正式套用後不提供自動 drop-column rollback；若要回退前端，保留 additive columns。
+`table_privileges`／`column_privileges` 是人類可讀報告；table-level 權限會在新增欄位後自然展開成新的 column rows，因此 ACL 無漂移的判定以 `relacl`／`attacl` catalog 結果為準。
 
 同步行為：
 
 - **Write-through：** 先寫 localStorage，再 upsert 雲端  
 - **登入時：** 雲端列不存在 → 上傳本機；已存在 → 以雲端覆蓋本機  
-- **欄位：** `aoba` / `kana` / `toeic` / `meta`（jsonb）、`lang`、`updated_at`
+- **欄位：** `aoba` / `kana` / `toeic` / `math` / `physics` / `chemistry` / `meta`（jsonb）、`lang`、`updated_at`
 
 Pro demo 解鎖碼：`AOBA-PRO`（免費可用五十音／Phonics 與 n5n4／orange 前兩單元）。
 

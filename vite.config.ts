@@ -7,6 +7,21 @@ const base = process.env.VITE_BASE_PATH?.trim() || '/'
 export default defineConfig(({ mode }) => ({
   base,
   plugins: [react()],
+  build: {
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          groups: [
+            {
+              name: 'vendor-supabase',
+              test: /node_modules[\\/]@supabase[\\/]/,
+              includeDependenciesRecursively: true,
+            },
+          ],
+        },
+      },
+    },
+  },
   // Local-backend tests must not inherit a developer's optional cloud project.
   define:
     mode === 'test'

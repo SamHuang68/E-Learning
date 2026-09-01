@@ -1,4 +1,4 @@
-import { access, readFile } from 'node:fs/promises'
+import { access, readFile, stat } from 'node:fs/promises'
 import path from 'node:path'
 
 const distDir = path.resolve('dist')
@@ -13,9 +13,22 @@ if (files.some((file) => file.includes('visual-check'))) throw new Error('QA scr
 
 await Promise.all(files.map((file) => access(path.join(distDir, file.replace(/^\.\//, '')))))
 
+const maxJsBytes = 500_000
+const jsFiles = files.filter((file) => /^\.\/assets\/.*\.js$/.test(file))
+const jsSizes = await Promise.all(jsFiles.map(async (file) => ({
+  file,
+  bytes: (await stat(path.join(distDir, file.replace(/^\.\//, '')))).size,
+})))
+const oversizedJs = jsSizes.filter(({ bytes }) => bytes >= maxJsBytes)
+if (oversizedJs.length > 0) {
+  throw new Error(`JavaScript chunks must stay below ${maxJsBytes} bytes: ${JSON.stringify(oversizedJs)}`)
+}
+const largestJs = jsSizes.sort((a, b) => b.bytes - a.bytes)[0]
+
 const routeChunks = files.filter((file) => /assets\/(Aoba|Toeic|Math|Calculus|Physics|Chemistry)App-.*\.js$/.test(file))
 if (routeChunks.length !== 6) throw new Error(`Expected six lazy route chunks, found ${routeChunks.length}.`)
 if (!files.some((file) => /assets\/index-.*\.js$/.test(file))) throw new Error('Entry JavaScript is not precached.')
+if (!files.some((file) => /assets\/vendor-supabase-.*\.js$/.test(file))) throw new Error('Supabase vendor chunk is not precached.')
 if (!files.some((file) => /assets\/index-.*\.css$/.test(file))) throw new Error('Entry CSS is not precached.')
 if (!files.some((file) => file.startsWith('./audio/'))) throw new Error('Bundled learning audio is not precached.')
 
@@ -23,4 +36,10 @@ const workerSource = await readFile(path.join(distDir, 'sw.js'), 'utf8')
 if (workerSource.includes('__PRECACHE_VERSION__')) throw new Error('Service worker cache version was not injected.')
 if (!workerSource.includes(`e-learning-${manifest.buildId}`)) throw new Error('Service worker cache version does not match the manifest build id.')
 
-console.log(JSON.stringify({ verdict: 'PASS', buildId: manifest.buildId, files: files.length, lazyRouteChunks: routeChunks.length }))
+console.log(JSON.stringify({
+  verdict: 'PASS',
+  buildId: manifest.buildId,
+  files: files.length,
+  lazyRouteChunks: routeChunks.length,
+  largestJs,
+}))

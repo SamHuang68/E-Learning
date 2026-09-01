@@ -1,4 +1,6 @@
--- Run once in the Supabase SQL editor.
+-- Fresh installs only: run once in the Supabase SQL editor.
+-- Existing projects must use the timestamped files under supabase/migrations/
+-- so an upgrade cannot silently recreate project-specific policies.
 -- Auth: enable Email/Password in Authentication → Providers.
 -- Set Site URL / Redirect URLs to your GitHub Pages origin
 -- (e.g. https://<user>.github.io/<repo>/).
@@ -15,12 +17,6 @@ create table if not exists public.user_progress (
   meta jsonb not null default '{}'::jsonb,
   updated_at timestamptz not null default now()
 );
-
--- Additive migration for projects created from an earlier schema revision.
-alter table public.user_progress
-  add column if not exists math jsonb not null default '{}'::jsonb,
-  add column if not exists physics jsonb not null default '{}'::jsonb,
-  add column if not exists chemistry jsonb not null default '{}'::jsonb;
 
 alter table public.user_progress enable row level security;
 
