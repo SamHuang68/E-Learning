@@ -1,6 +1,6 @@
 ﻿/**
  * 台湾華語・中国語：3秒文法動作シグナル決策樹 (Chinese Grammar 3-Second Action Signals)
- * 專為日本語母語者量身打造：針對「把字句」「被字句」「了1 vs 了2」「是…的」「過」等核心難關提供直覺秒殺法則。
+ * 專為日本語母語者量身打造：針對「把字句」「被字句」「了1 vs 了2」「是…的」「過」「連動文」「使役兼語」「存現文」「比較句」「方向結果補語」提供直覺秒殺法則。
  */
 
 export interface ChineseGrammarSignal {
@@ -159,6 +159,58 @@ export const CHINESE_GRAMMAR_SIGNALS: ChineseGrammarSignal[] = [
       options: ['我沒去過九份。', '我不去過九份。', '我沒去九份了。', '我去九份沒有。'],
       correctIndex: 0,
       explanationJa: '経験の否定は「沒 + 動詞 + 過」を用います（我沒去過九份）。',
+    },
+  },
+  {
+    id: 'sig-bi',
+    pattern: '比較句 (比・比較構文)',
+    categoryJa: '比較・優劣',
+    meaningJa: 'AはBより〜だ',
+    signalTriggerJa: '2つの対象の大きさ・値段・気温などを比較する時。',
+    threeSecondRuleJa: '「A + 比 + B + 形容詞」！「很」「非常」などの程度副詞は併用不可！具体的な差は形容詞の後ろに置く。',
+    formula: 'A + 比 + B + 形容詞 + (差/得多/一點)',
+    contrastExample: {
+      zh: '今天比昨天熱一點。',
+      pinyin: 'jīn tiān bǐ zuó tiān rè yì diǎn.',
+      bopomofo: 'ㄐㄧㄣ ㄊㄧㄢ ㄅㄧˇ ㄗㄨㄛˊ ㄊㄧㄢ ㄖㄜˋ ㄧˋ ㄉㄧㄢˇ.',
+      ja: '今日は昨日より少し暑いです。',
+      noteJa: '形容詞「熱」の直後に差「一點」を添える。',
+    },
+    pitfall: {
+      wrong: '❌ 今天比昨天很熱。（間違い：比構文で「很」は使えない）',
+      reasonJa: '「比」ですでに比較されているため、絶対的な程度を表す「很」は使いません。「今天比昨天熱得多」とします。',
+    },
+    quiz: {
+      questionJa: '「台北は東京よりずっと暖かい」の正しい中国語は？',
+      options: ['台北比東京暖和得多。', '台北比東京很暖和。', '台北比東京非常暖和。', '台北很比東京暖和。'],
+      correctIndex: 0,
+      explanationJa: '比較構文では「很」の代わりに「得多（ずっと）」を形容詞の後ろに置きます。',
+    },
+  },
+  {
+    id: 'sig-rang',
+    pattern: '兼語文 (使役：讓 / 叫 / 請)',
+    categoryJa: '使役・依頼',
+    meaningJa: '〜に…させる・してもらう',
+    signalTriggerJa: '「人に〜させる」「人に〜してもらう」「人に頼む」時。',
+    threeSecondRuleJa: '「主語 + 讓/叫/請 + 人 + 動詞」！「讓」は許可・使役、「請」は丁寧な依頼。',
+    formula: '主語 + 讓/叫/請 + 人(兼語) + 動詞句',
+    contrastExample: {
+      zh: '這部台灣電影讓我非常感動。',
+      pinyin: 'zhè bù tái wān diàn yǐng ràng wǒ fēi cháng gǎn dòng.',
+      bopomofo: 'ㄓㄜˋ ㄅㄨˋ ㄊㄞˊ ㄨㄢ ㄉㄧㄢˋ ㄧㄥˇ ㄖㄤˋ ㄨㄛˇ ㄈㄟ ㄔㄤˊ ㄍㄢˇ ㄉㄨㄥˋ.',
+      ja: 'この台湾映画は私をとても感動させました。',
+      noteJa: '映画（主語）+ 讓 + 我（人）+ 感動（動作状態）。',
+    },
+    pitfall: {
+      wrong: '❌ 我請他在。（不完全：動詞句が必要）',
+      reasonJa: '兼語（人）の後には具体的な動作や目的語が必要です。',
+    },
+    quiz: {
+      questionJa: '「先生は学生に宿題をさせた」の正しい表現は？',
+      options: ['老師讓學生寫作業。', '學生讓老師寫作業。', '老師寫作業讓學生。', '讓老師學生寫作業。'],
+      correctIndex: 0,
+      explanationJa: '「主語 (老師) + 讓 + 人 (學生) + 動作 (寫作業)」の語順になります。',
     },
   },
 ]

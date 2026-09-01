@@ -1,6 +1,6 @@
 ﻿/**
  * 台湾華語・中国語：実用シチュエーション会話資料庫 (Real-life Taiwanese Mandarin Dialogues)
- * 包含夜市點餐、手搖飲客製化、捷運交通、商務拜訪與生活對話。
+ * 包含夜市點餐、手搖飲客製化、捷運交通、超商便利商店、九份旅遊與商務拜訪。
  */
 
 export interface DialogueLine {
@@ -15,7 +15,7 @@ export interface ConversationScene {
   id: string
   titleZh: string
   titleJa: string
-  sceneCategory: '夜市美食' | '交通出行' | '購物消費' | '商務職場'
+  sceneCategory: '夜市美食' | '交通出行' | '購物消費' | '商務職場' | '觀光旅遊'
   descriptionJa: string
   dialogue: DialogueLine[]
   cultureTipJa: string
@@ -149,5 +149,36 @@ export const CONVERSATION_SCENES: ConversationScene[] = [
       },
     ],
     cultureTipJa: '台湾の地下鉄（MRT）車内・改札内は飲食厳禁（ガムや水も禁止）で、罰金対象となるのでご注意ください。',
+  },
+  {
+    id: 'scene-convenience',
+    titleZh: '台灣超商買現煮咖啡與微波食品',
+    titleJa: '台湾のコンビニで淹れたてコーヒーと温め',
+    sceneCategory: '購物消費',
+    descriptionJa: 'セブンイレブンやファミマでアイスラテの注文とお弁当の温めをお願いする日常会話。',
+    dialogue: [
+      {
+        speaker: '客人',
+        zh: '你好，我要一杯大杯冰拿鐵，不加糖。',
+        pinyin: 'nǐ hǎo, wǒ yào yì bēi dà bēi bīng ná tiě, bù jiā táng.',
+        bopomofo: 'ㄋㄧˇ ㄏㄠˇ, ㄨㄛˇ ㄧㄠˋ ㄧˋ ㄅㄟ ㄉㄚˋ ㄅㄟ ㄅㄧㄥ ㄋㄚˊ ㄊㄧㄝˇ, ㄅㄨˋ ㄐㄧㄚ ㄊㄤˊ.',
+        ja: 'こんにちは、アイスラテのLサイズを1杯、シロップ抜きでお願いします。',
+      },
+      {
+        speaker: '店員',
+        zh: '好的。這個便當需要幫您微波加熱嗎？',
+        pinyin: 'hǎo de. zhè ge biàn dāng xū yào bāng nín wēi bō jiā rè ma?',
+        bopomofo: 'ㄏㄠˇ ˙ㄉㄜ. ㄓㄜˋ ˙ㄍㄜ ㄅㄧㄢˋ ㄉㄤ ㄒㄩ ㄧㄠˋ ㄅㄤ ㄋㄧㄣˊ ㄨㄟ ㄅㄛ ㄐㄧㄚ ㄖㄜˋ ˙ㄇㄚ?',
+        ja: 'かしこまりました。こちらのお弁当は電子レンジで温めますか？',
+      },
+      {
+        speaker: '客人',
+        zh: '要，麻煩幫我加熱，謝謝！',
+        pinyin: 'yào, má fan bāng wǒ jiā rè, xiè xie!',
+        bopomofo: 'ㄧㄠˋ, ㄇㄚˊ ˙ㄈㄢ ㄅㄤ ㄨㄛˇ ㄐㄧㄚ ㄖㄜˋ, ㄒㄧㄝˋ ˙ㄒㄧㄝ!',
+        ja: 'はい、温めをお願いします。ありがとう！',
+      },
+    ],
+    cultureTipJa: '台湾のコンビニでは温めを「微波 wēi bō」または「加熱 jiā rè」と言います。レジ袋は有料（1〜2元）です。',
   },
 ]

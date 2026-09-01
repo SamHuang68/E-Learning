@@ -413,4 +413,219 @@ export const TOEIC_CHUNK_WEEKS: ChunkWeekUnit[] = [
       ],
     },
   },
+  {
+    weekId: 2,
+    certificateBand: 'gold',
+    themeTitle: '商務談判與合約簽署',
+    themeTitleJa: 'ビジネス交渉と契約締結',
+    themeSubtitle: 'Negotiation, Contracts & Proposals',
+    themeSubtitleJa: '交渉・提案書作成・契約条件の確定',
+    chunks: [
+      {
+        id: 'reach-an-agreement',
+        chunk: 'reach an agreement',
+        meaningZh: '達成共識 / 達成協議',
+        meaningJa: '合意に達する・協定を結ぶ',
+        actionSignal: '雙方經過討論或談判後，終於取得一致共識時',
+        actionSignalJa: '双方が議論や交渉を経て最終的に合意に至った時',
+        rhythmHint: {
+          stress: 'reach an a-GREE-ment',
+          note: 'reach 與 an 連音讀作 /riːtʃən/，重音在 GREE',
+          noteJa: 'reachとanがリンキングして/riːtʃən/、アクセントはGREE',
+        },
+        usage: {
+          pattern: 'reach an agreement on/with [terms/party]',
+          explanation: 'TOEIC Part 7 與 Part 4 商務新聞最高頻片語，表示正式談判達成結論。',
+          explanationJa: 'TOEIC Part 7およびPart 4のビジネスニュースで頻出する、公式な交渉合意表現。',
+        },
+        examples: [
+          {
+            en: 'After hours of intense negotiation, both parties finally reached an agreement.',
+            zh: '經過數小時密集的談判，雙方終於達成了協議。',
+            ja: '数時間に及ぶ激しい交渉の末、双方はついに合意に達しました。',
+          },
+          {
+            en: 'We hope to reach an agreement on the revised budget before Friday.',
+            zh: '我們希望在週五前就修訂後的預算達成共識。',
+            ja: '金曜日までに修正予算案について合意に達することを望んでいます。',
+          },
+        ],
+        variations: [
+          { en: 'come to an agreement', zh: '得出共識', ja: '合意に至る' },
+          { en: 'arrive at a consensus', zh: '取得一致意見', ja: 'コンセンサスに達する' },
+        ],
+        pitfall: {
+          wrong: '❌ make an agreement with a price（受詞搭配不精確）',
+          reason: '與「價格」搭配時通常用 reach an agreement on the price，而非 make with。',
+          reasonJa: '価格に関して合意する場合はreach an agreement on the priceを用います。',
+        },
+        miniDialog: {
+          speakerA: {
+            en: 'Did we reach an agreement regarding the delivery deadline?',
+            zh: '我們就交貨期限達成共識了嗎？',
+            ja: '納期の件について合意に達しましたか？',
+          },
+          speakerB: {
+            en: 'Yes, they agreed to ship the goods by the end of this month.',
+            zh: '是的，他們同意在本月底前發貨。',
+            ja: 'はい、彼らは今月末までに発送することに同意してくれました。',
+          },
+        },
+        production: [
+          {
+            promptZh: '我們即將就新合約達成協議。',
+            promptJa: '私たちは新しい契約について間もなく合意に達します。',
+            answerEn: 'We are close to reaching an agreement on the new contract.',
+          },
+        ],
+      },
+      {
+        id: 'draft-a-proposal',
+        chunk: 'draft a proposal',
+        meaningZh: '草擬企劃提案書',
+        meaningJa: '企画提案書のドラフト（下書き）を作成する',
+        actionSignal: '在正式提案前，著手撰寫草案或企劃架構時',
+        actionSignalJa: '正式なプレゼンや提出の前に、企画案の下書きを作成する時',
+        rhythmHint: {
+          stress: 'DRAFT a pro-PO-sal',
+          note: 'DRAFT 發音俐落，proposal 重音在 PO',
+          noteJa: 'DRAFTを鋭く発音し、proposalの第2音節POにアクセント',
+        },
+        usage: {
+          pattern: 'draft a proposal for [project/client]',
+          explanation: '動詞 draft 代表「草擬初稿」，常出現在辦公室協作與業務拓展情境。',
+          explanationJa: '動詞draftは「初稿を作成する」を意味し、社内共同作業や営業開拓で多用されます。',
+        },
+        examples: [
+          {
+            en: 'The marketing team is currently drafting a proposal for the upcoming campaign.',
+            zh: '行銷團隊目前正在為即將到來的宣傳活動草擬提案。',
+            ja: 'マーケティングチームは現在、次のキャンペーンに向けた提案書を作成中です。',
+          },
+        ],
+        variations: [
+          { en: 'prepare a proposal', zh: '準備提案', ja: '提案書を準備する' },
+          { en: 'draw up a plan', zh: '擬定計畫', ja: '計画を策定する' },
+        ],
+        pitfall: {
+          wrong: '❌ write a proposal paper（過於口語贅字）',
+          reason: '商務上直接使用 draft/submit a proposal 即可，無需加 paper。',
+          reasonJa: 'ビジネスではdraft a proposalだけで十分であり、paperを重ねる必要はありません。',
+        },
+        miniDialog: {
+          speakerA: {
+            en: 'Who is going to draft the proposal for the client meeting?',
+            zh: '誰要來為客戶會議草擬提案？',
+            ja: 'クライアントとの会議に向けて提案書を作成するのは誰ですか？',
+          },
+          speakerB: {
+            en: 'Sarah said she would have the initial draft ready by noon.',
+            zh: '莎拉說她會在中午前準備好初稿。',
+            ja: 'サラが正午までに初稿を準備すると言っていました。',
+          },
+        },
+        production: [
+          {
+            promptZh: '我會在本週草擬一份新提案。',
+            promptJa: '今週中に新しい提案書を作成します。',
+            answerEn: 'I will draft a proposal this week.',
+          },
+        ],
+      },
+      {
+        id: 'finalize-the-terms',
+        chunk: 'finalize the terms',
+        meaningZh: '敲定條款 / 最終確定合約細節',
+        meaningJa: '（契約などの）諸条件を最終確定する',
+        actionSignal: '合約進入最後確認階段，敲定定價、責任或交期等具體條款時',
+        actionSignalJa: '契約の最終確認段階で、価格・責任・納期などの具体的条件を確定させる時',
+        rhythmHint: {
+          stress: 'FI-na-lize the TERMS',
+          note: 'FI 與 TERMS 雙重音，the 弱讀',
+          noteJa: 'FIとTERMSに強勢があり、theは弱音化',
+        },
+        usage: {
+          pattern: 'finalize the terms of the contract/agreement',
+          explanation: 'finalize 代表最後定案，terms 代表條款，此語塊為多益 Part 6/7 長文核心必考。',
+          explanationJa: 'finalizeは「最終決定する」、termsは「条項・条件」を指し、TOEIC長文読解の頻出語塊です。',
+        },
+        examples: [
+          {
+            en: 'Our legal counsel will meet tomorrow to finalize the terms of the acquisition.',
+            zh: '我們的法律顧問明天將會面，以敲定併購合約的條款。',
+            ja: '当社の法務顧問は明日会合を開き、買収契約の条件を最終決定します。',
+          },
+        ],
+        variations: [
+          { en: 'settle the terms', zh: '議定條款', ja: '条件を詰める' },
+          { en: 'confirm the details', zh: '確認細節', ja: '詳細を確認する' },
+        ],
+        pitfall: {
+          wrong: '❌ final the terms（詞性混淆）',
+          reason: 'final 是形容詞，動詞必須使用 finalize。',
+          reasonJa: 'finalは形容詞です。動詞は必ずfinalizeを用います。',
+        },
+        miniDialog: {
+          speakerA: {
+            en: 'Are we ready to sign the contract with Apex Corp?',
+            zh: '我們準備好要跟 Apex 簽約了嗎？',
+            ja: 'Apex社と契約を締結する準備は整いましたか？',
+          },
+          speakerB: {
+            en: 'Almost. We just need to finalize the terms regarding warranty.',
+            zh: '快了，我們只需要敲定保固相關的條款。',
+            ja: 'あと少しです。保証に関する条件を最終確定させるだけです。',
+          },
+        },
+        production: [
+          {
+            promptZh: '我們需要敲定合約的條款。',
+            promptJa: '私たちは契約の諸条件を確定させる必要があります。',
+            answerEn: 'We need to finalize the terms of the contract.',
+          },
+        ],
+      },
+    ],
+    microStory: {
+      title: 'The Merger Agreement',
+      scenario: 'Apex Corp 與 Horizon Tech 經歷長達三週的合約談判與條款敲定。',
+      sentences: [
+        {
+          seq: 1,
+          en: 'Our team spent two weeks drafting a comprehensive proposal for the partnership.',
+          zh: '我們的團隊花了兩週為這項合作夥伴關係【草擬了一份詳盡的提案書 (drafting a proposal)】。',
+          highlightChunkId: 'draft-a-proposal',
+        },
+        {
+          seq: 2,
+          en: 'After discussing all requirements, both sides finally reached an agreement on pricing.',
+          zh: '在討論完所有需求後，雙方終於在定價上【達成了協議 (reached an agreement)】。',
+          highlightChunkId: 'reach-an-agreement',
+        },
+        {
+          seq: 3,
+          en: 'Our legal advisors met on Friday to finalize the terms before official signing.',
+          zh: '我們的法律顧問在週五會面，以在正式簽約前【敲定各項條款 (finalize the terms)】。',
+          highlightChunkId: 'finalize-the-terms',
+        },
+      ],
+      decisionTable: [
+        {
+          chunk: 'reach an agreement',
+          signal: '談判協商後取得一致共識',
+          threeSecondRule: '雙方達成協議並拍板定案。',
+        },
+        {
+          chunk: 'draft a proposal',
+          signal: '著手撰寫企劃或合作草案',
+          threeSecondRule: '動筆起草提案內容。',
+        },
+        {
+          chunk: 'finalize the terms',
+          signal: '簽約前確認最後細部條款',
+          threeSecondRule: '確定合約條文與責任歸屬。',
+        },
+      ],
+    },
+  },
 ]

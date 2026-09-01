@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { CHINESE_TONES, INITIALS_DATA, PINYIN_DRILL_WORDS } from './data/pinyinBopomofo'
+import { CHINESE_TONES, INITIALS_DATA, FINALS_DATA, PINYIN_DRILL_WORDS } from './data/pinyinBopomofo'
 import { FALSE_FRIENDS_DATA } from './data/falseFriends'
 import { CHINESE_GRAMMAR_SIGNALS } from './data/grammarSignals'
 import { CONVERSATION_SCENES } from './data/conversations'
@@ -25,7 +25,7 @@ describe('Chinese for Japanese Speakers Track Integrity Tests', () => {
   })
 
   it('should have complete initials data with Katakana and Bopomofo', () => {
-    expect(INITIALS_DATA.length).toBeGreaterThanOrEqual(20)
+    expect(INITIALS_DATA.length).toBeGreaterThanOrEqual(21)
     INITIALS_DATA.forEach((i) => {
       expect(i.pinyin).toBeTruthy()
       expect(i.bopomofo).toBeTruthy()
@@ -33,8 +33,17 @@ describe('Chinese for Japanese Speakers Track Integrity Tests', () => {
     })
   })
 
+  it('should have complete finals data with Katakana and Bopomofo', () => {
+    expect(FINALS_DATA.length).toBeGreaterThanOrEqual(15)
+    FINALS_DATA.forEach((f) => {
+      expect(f.pinyin).toBeTruthy()
+      expect(f.bopomofo).toBeTruthy()
+      expect(f.katakana).toBeTruthy()
+    })
+  })
+
   it('should have high-value false friends data with pitfalls', () => {
-    expect(FALSE_FRIENDS_DATA.length).toBeGreaterThanOrEqual(10)
+    expect(FALSE_FRIENDS_DATA.length).toBeGreaterThanOrEqual(15)
     FALSE_FRIENDS_DATA.forEach((ff) => {
       expect(ff.wordZh).toBeTruthy()
       expect(ff.meaningZhInJa).toBeTruthy()

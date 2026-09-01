@@ -91,7 +91,7 @@ export const CHINESE_TONES: ToneData[] = [
   },
 ]
 
-/** 聲母 (Initials) */
+/** 聲母 (21 Initials) */
 export const INITIALS_DATA: PhonemeData[] = [
   { id: 'b', pinyin: 'b', bopomofo: 'ㄅ', katakana: 'ボー', categoryJa: '双唇音（無気音）', audioText: '波', tipsJa: '唇を閉じて破裂。息を出さない「濁らないバ行」。', exampleChar: '包', exampleMeaningJa: '包む・パン' },
   { id: 'p', pinyin: 'p', bopomofo: 'ㄆ', katakana: 'ポー', categoryJa: '双唇音（有気音）', audioText: '坡', tipsJa: '唇を弾いてティッシュが揺れるほど強い息を吹き出す。', exampleChar: '票', exampleMeaningJa: 'チケット' },
@@ -116,6 +116,25 @@ export const INITIALS_DATA: PhonemeData[] = [
   { id: 's', pinyin: 's', bopomofo: 'ㄙ', katakana: 'スー', categoryJa: '舌尖前音（摩擦音）', audioText: '思', tipsJa: '舌先と前歯の間から鋭く息を擦り出す。', exampleChar: '四', exampleMeaningJa: '四' },
 ]
 
+/** 韻母 (16 Core Finals & Medials) */
+export const FINALS_DATA: PhonemeData[] = [
+  { id: 'a', pinyin: 'a', bopomofo: 'ㄚ', katakana: 'アー', categoryJa: '単母音', audioText: '啊', tipsJa: '口を大きく丸く開けて日本語の「ア」より深く発音。', exampleChar: '八', exampleMeaningJa: '八' },
+  { id: 'o', pinyin: 'o', bopomofo: 'ㄛ', katakana: 'ウォー', categoryJa: '単母音', audioText: '喔', tipsJa: '口をすぼめて丸くし「オ」と発音。', exampleChar: '我', exampleMeaningJa: '私' },
+  { id: 'e', pinyin: 'e', bopomofo: 'ㄜ', katakana: 'ウァー', categoryJa: '単母音', audioText: '鵝', tipsJa: '「エ」の口の形のまま喉の奥から「ウ」と声を出す。日本人最難関。', exampleChar: '熱', exampleMeaningJa: '熱い' },
+  { id: 'i', pinyin: 'i', bopomofo: 'ㄧ', katakana: 'イー', categoryJa: '単母音（介音）', audioText: '衣', tipsJa: '口を左右にしっかり引いて「イー」と発音。', exampleChar: '一', exampleMeaningJa: '一' },
+  { id: 'u', pinyin: 'u', bopomofo: 'ㄨ', katakana: 'ウー', categoryJa: '単母音（介音）', audioText: '烏', tipsJa: '唇を前に突き出して丸く窄めて発音。', exampleChar: '五', exampleMeaningJa: '五' },
+  { id: 'yu', pinyin: 'ü', bopomofo: 'ㄩ', katakana: 'ユィー', categoryJa: '単母音（円唇）', audioText: '魚', tipsJa: '「イー」と言いながら唇だけを「ウ」の形にすぼめる。', exampleChar: '雨', exampleMeaningJa: '雨' },
+  { id: 'ai', pinyin: 'ai', bopomofo: 'ㄞ', katakana: 'アイ', categoryJa: '複母音', audioText: '愛', tipsJa: '大きく「ア」から滑らかに「イ」へ移行。', exampleChar: '愛', exampleMeaningJa: '愛する' },
+  { id: 'ei', pinyin: 'ei', bopomofo: 'ㄟ', katakana: 'エイ', categoryJa: '複母音', audioText: '欸', tipsJa: '「エ」から軽く「イ」へ。', exampleChar: '杯', exampleMeaningJa: 'コップ' },
+  { id: 'ao', pinyin: 'ao', bopomofo: 'ㄠ', katakana: 'アオ', categoryJa: '複母音', audioText: '熬', tipsJa: '「ア」から口を丸めて「オ」へ。', exampleChar: '高', exampleMeaningJa: '高い' },
+  { id: 'ou', pinyin: 'ou', bopomofo: 'ㄡ', katakana: 'オウ', categoryJa: '複母音', audioText: '歐', tipsJa: '「オ」から窄めて「ウ」へ。', exampleChar: '狗', exampleMeaningJa: '犬' },
+  { id: 'an', pinyin: 'an', bopomofo: 'ㄢ', katakana: 'アン(前鼻音)', categoryJa: '鼻母音', audioText: '安', tipsJa: '舌先を上の前歯の裏につけて終わる「アン」（案内）。', exampleChar: '三', exampleMeaningJa: '三' },
+  { id: 'en', pinyin: 'en', bopomofo: 'ㄣ', katakana: 'エン(前鼻音)', categoryJa: '鼻母音', audioText: '恩', tipsJa: '曖昧な「ウ」から舌先を前歯につけて「ン」。', exampleChar: '門', exampleMeaningJa: 'ドア・門' },
+  { id: 'ang', pinyin: 'ang', bopomofo: 'ㄤ', katakana: 'アン(後鼻音)', categoryJa: '鼻母音', audioText: '昂', tipsJa: '舌の奥を持ち上げて喉を響かせる「アン」（案外）。', exampleChar: '湯', exampleMeaningJa: 'スープ' },
+  { id: 'eng', pinyin: 'eng', bopomofo: 'ㄥ', katakana: 'エン(後鼻音)', categoryJa: '鼻母音', audioText: '鞥', tipsJa: '喉の奥から響かせる鼻音。', exampleChar: '冷', exampleMeaningJa: '冷たい' },
+  { id: 'er', pinyin: 'er', bopomofo: 'ㄦ', katakana: 'アール(捲舌)', categoryJa: '巻舌母音', audioText: '兒', tipsJa: '「ア」を発音しながら舌先を奥へ巻き上げる。', exampleChar: '二', exampleMeaningJa: '二' },
+]
+
 /** 常用基礎單字拼音練習 */
 export const PINYIN_DRILL_WORDS = [
   { zh: '你好', pinyin: 'nǐ hǎo', bopomofo: 'ㄋㄧˇ ㄏㄠˇ', ja: 'こんにちは', tipJa: '第3声＋第3声 ➜ 前の「你」が第2声（ní hǎo）に変調！' },
@@ -123,4 +142,7 @@ export const PINYIN_DRILL_WORDS = [
   { zh: '珍珠奶茶', pinyin: 'zhēn zhū nǎi chá', bopomofo: 'ㄓㄣ ㄓㄨ ㄋㄞˇ ㄔㄚˊ', ja: 'タピオカミルクティー', tipJa: 'zh(そり舌) ➜ zh(そり舌) ➜ nǎi(第3声) ➜ chá(第2声上昇)。' },
   { zh: '好吃', pinyin: 'hǎo chī', bopomofo: 'ㄏㄠˇ ㄔ', ja: '美味しい', tipJa: 'chī はそり舌有気音。口を丸めずにしっかり息を出す。' },
   { zh: '多少錢？', pinyin: 'duō shǎo qián?', bopomofo: 'ㄉㄨㄛ ㄕㄠˇ ㄑㄧㄢˊ', ja: 'いくらですか？', tipJa: 'qián は有気音 q ＋ 前鼻音 ián。' },
+  { zh: '不客氣', pinyin: 'bú kè qi', bopomofo: 'ㄅㄨˊ ㄎㄜˋ ˙ㄑㄧ', ja: 'どういたしまして', tipJa: '「不」は第4声の前で第2声（bú）に変調！' },
+  { zh: '對不起', pinyin: 'duì bu qǐ', bopomofo: 'ㄉㄨㄟˋ ˙ㄅㄨ ㄑㄧˇ', ja: 'すみません・ごめんなさい', tipJa: '真ん中の「不」は軽声で短く発音。' },
+  { zh: '捷運站', pinyin: 'jié yùn zhàn', bopomofo: 'ㄐㄧㄝˊ ㄩㄣˋ ㄓㄢˋ', ja: 'MRT（地下鉄）の駅', tipJa: 'jié(第2声) ➜ yùn(第4声) ➜ zhàn(そり舌第4声)。' },
 ]
