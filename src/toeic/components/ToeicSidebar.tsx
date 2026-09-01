@@ -8,6 +8,7 @@ export type ToeicNavId =
   | 'chunks'
   | 'signals'
   | 'double-passage'
+  | 'charts'
   | 'story'
   | 'today'
   | 'builder'
@@ -54,6 +55,7 @@ export function ToeicSidebar({
     { id: 'chunks', icon: '⚡', label: isJa ? 'ビジネスチャンク' : '商務語塊 (Chunks)' },
     { id: 'signals', icon: '🎯', label: isJa ? '3秒解答シグナル' : '3秒秒殺訊號卡' },
     { id: 'double-passage', icon: '📑', label: isJa ? '複数文書読解' : '雙篇閱讀對照' },
+    { id: 'charts', icon: '📊', label: isJa ? '図表読解ラボ' : '商務圖表題分析' },
     { id: 'errors', icon: '📕', label: isJa ? '誤答ノート' : '錯題弱點本', badge: errorCount > 0 ? `${errorCount}` : undefined },
     { id: 'story', icon: '📖', label: isJa ? 'ストーリー復習' : '情境微故事' },
     { id: 'phonics', icon: 'Aa', label: isJa ? '発音基礎' : '發音基礎' },

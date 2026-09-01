@@ -34,6 +34,7 @@ import { ToeicStoryReview } from './components/ToeicStoryReview'
 import { ToeicSignalsView } from './components/ToeicSignalsView'
 import { ToeicErrorVault } from './components/ToeicErrorVault'
 import { DoublePassageLab } from './components/DoublePassageLab'
+import { ChartAnalysisLab } from './components/ChartAnalysisLab'
 
 type Props = {
   onBackHub: () => void
@@ -368,6 +369,14 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
     if (nav === 'double-passage') {
       return (
         <DoublePassageLab
+          onEarnXp={(n) => patch({ xp: progress.xp + n })}
+          instructionLang={instructionLang}
+        />
+      )
+    }
+    if (nav === 'charts') {
+      return (
+        <ChartAnalysisLab
           onEarnXp={(n) => patch({ xp: progress.xp + n })}
           instructionLang={instructionLang}
         />

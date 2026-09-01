@@ -7,6 +7,7 @@ export type ChineseNavSection =
   | 'stroke'
   | 'false-friends'
   | 'signals'
+  | 'idioms'
   | 'conversations'
   | 'menu'
   | 'mock'
@@ -34,6 +35,7 @@ export const ChineseSidebar: React.FC<Props> = ({
     { id: 'stroke', icon: '🖌️', title: '注音與漢字筆順', subtitle: 'ボポモフォ＆書き順練習' },
     { id: 'false-friends', icon: '⛩️', title: '日中同形異義語', subtitle: '要注意の偽友詞・落とし穴' },
     { id: 'signals', icon: '⚡', title: '3秒文法決策樹', subtitle: '把字句・被字句・了' },
+    { id: 'idioms', icon: '📜', title: '成語與台灣諺語', subtitle: '四字熟語・摸蜊仔兼洗褲' },
     { id: 'conversations', icon: '💬', title: '實用情境會話', subtitle: '夜市・MRT・台湾日常会話' },
     { id: 'menu', icon: '🏮', title: '夜市美食與台灣語', subtitle: '台湾グルメ＆生活台湾語' },
     { id: 'mock', icon: '📝', title: 'TOCFL 模擬測驗', subtitle: 'A1/A2 レベル判定模試' },
