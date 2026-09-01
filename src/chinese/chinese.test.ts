@@ -1,8 +1,10 @@
-import { describe, it, expect } from 'vitest'
+﻿import { describe, it, expect } from 'vitest'
 import { CHINESE_TONES, INITIALS_DATA, FINALS_DATA, PINYIN_DRILL_WORDS } from './data/pinyinBopomofo'
 import { FALSE_FRIENDS_DATA } from './data/falseFriends'
 import { CHINESE_GRAMMAR_SIGNALS } from './data/grammarSignals'
 import { CONVERSATION_SCENES } from './data/conversations'
+import { TOCFL_MOCK_QUESTIONS } from './data/tocflExam'
+import { TAIWANESE_LOANWORDS } from './data/taiwaneseLoanwords'
 import { defaultChineseProgress, loadChineseProgress, saveChineseProgress } from './utils/chineseStorage'
 
 describe('Chinese for Japanese Speakers Track Integrity Tests', () => {
@@ -80,11 +82,34 @@ describe('Chinese for Japanese Speakers Track Integrity Tests', () => {
     })
   })
 
-  it('should properly serialize and deserialize progress', () => {
+  it('should have valid TOCFL mock exam questions with Japanese explanations', () => {
+    expect(TOCFL_MOCK_QUESTIONS.length).toBeGreaterThanOrEqual(5)
+    TOCFL_MOCK_QUESTIONS.forEach((q) => {
+      expect(q.promptZh).toBeTruthy()
+      expect(q.options.length).toBe(4)
+      expect(q.correctIndex).toBeGreaterThanOrEqual(0)
+      expect(q.correctIndex).toBeLessThan(4)
+      expect(q.explanationJa).toBeTruthy()
+    })
+  })
+
+  it('should have Taiwanese loanwords with culture tips', () => {
+    expect(TAIWANESE_LOANWORDS.length).toBeGreaterThanOrEqual(5)
+    TAIWANESE_LOANWORDS.forEach((item) => {
+      expect(item.wordZh).toBeTruthy()
+      expect(item.taiwanesePinyin).toBeTruthy()
+      expect(item.meaningJa).toBeTruthy()
+      expect(item.usageSituationJa).toBeTruthy()
+    })
+  })
+
+  it('should properly serialize and deserialize progress with errorQuestions', () => {
     const p = defaultChineseProgress()
     expect(p.xp).toBe(0)
-    saveChineseProgress({ ...p, xp: 50 })
+    expect(p.errorQuestions).toEqual([])
+    saveChineseProgress({ ...p, xp: 50, errorQuestions: ['tocfl-q1'] })
     const loaded = loadChineseProgress()
     expect(loaded.xp).toBe(50)
+    expect(loaded.errorQuestions).toContain('tocfl-q1')
   })
 })

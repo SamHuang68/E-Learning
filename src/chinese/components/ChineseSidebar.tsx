@@ -1,12 +1,21 @@
 ﻿import React from 'react'
 
-export type ChineseNavSection = 'today' | 'pinyin' | 'false-friends' | 'signals' | 'conversations'
+export type ChineseNavSection =
+  | 'today'
+  | 'pinyin'
+  | 'false-friends'
+  | 'signals'
+  | 'conversations'
+  | 'menu'
+  | 'mock'
+  | 'errors'
 
 interface Props {
   activeSection: ChineseNavSection
   onSelectSection: (section: ChineseNavSection) => void
   onBackHub: () => void
   xp: number
+  errorCount?: number
 }
 
 export const ChineseSidebar: React.FC<Props> = ({
@@ -14,13 +23,17 @@ export const ChineseSidebar: React.FC<Props> = ({
   onSelectSection,
   onBackHub,
   xp,
+  errorCount = 0,
 }) => {
-  const NAV_ITEMS: Array<{ id: ChineseNavSection; icon: string; title: string; subtitle: string }> = [
+  const NAV_ITEMS: Array<{ id: ChineseNavSection; icon: string; title: string; subtitle: string; badge?: string }> = [
     { id: 'today', icon: '🌸', title: '今日學習總覽', subtitle: '今日の学習ダッシュボード' },
     { id: 'pinyin', icon: '🗣️', title: '拼音與四聲聲調', subtitle: 'ピンイン・注音・声調' },
     { id: 'false-friends', icon: '⛩️', title: '日中同形異義語', subtitle: '要注意の偽友詞・落とし穴' },
     { id: 'signals', icon: '⚡', title: '3秒文法決策樹', subtitle: '把字句・被字句・了' },
     { id: 'conversations', icon: '💬', title: '實用情境會話', subtitle: '夜市・MRT・台湾日常会話' },
+    { id: 'menu', icon: '🏮', title: '夜市美食與台灣語', subtitle: '台湾グルメ＆生活台湾語' },
+    { id: 'mock', icon: '📝', title: 'TOCFL 模擬測驗', subtitle: 'A1/A2 レベル判定模試' },
+    { id: 'errors', icon: '📕', title: '華語錯題本', subtitle: '弱点專項攻克', badge: errorCount > 0 ? `${errorCount}` : undefined },
   ]
 
   return (
@@ -58,60 +71,70 @@ export const ChineseSidebar: React.FC<Props> = ({
               justifyContent: 'center',
               color: '#fff',
               fontWeight: 800,
-              fontSize: '1.1rem',
+              fontSize: '1rem',
             }}
           >
             華
           </div>
           <div>
-            <h2 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700 }}>台湾華語・中国語</h2>
+            <strong style={{ fontSize: '0.92rem', display: 'block' }}>台湾華語・中国語</strong>
             <span style={{ fontSize: '0.68rem', color: 'var(--muted)' }}>日本語母語者のための学習</span>
           </div>
         </div>
-      </div>
 
-      {/* XP 累積進度 */}
-      <div style={{ padding: '0.65rem 1rem', background: 'var(--surface-soft)', borderBottom: '1px solid var(--line)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--muted)' }}>
-          <span>累積學習經驗值</span>
-          <strong style={{ color: '#f59e0b', fontFamily: 'monospace' }}>{xp} XP</strong>
+        {/* 經驗值指示條 */}
+        <div style={{ marginTop: '0.6rem', padding: '0.4rem 0.6rem', background: 'var(--surface-soft)', borderRadius: '8px', border: '1px solid var(--line)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: '0.72rem', color: 'var(--muted)' }}>累積經驗值</span>
+          <strong style={{ fontSize: '0.84rem', color: '#f59e0b' }}>{xp} XP</strong>
         </div>
       </div>
 
-      {/* 導覽選單清單 */}
-      <nav style={{ padding: '0.65rem 0.5rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+      {/* 導航項目清單 */}
+      <nav style={{ padding: '0.6rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
         {NAV_ITEMS.map((item) => {
           const isActive = activeSection === item.id
           return (
             <button
               key={item.id}
               type="button"
-              onClick={() => onSelectSection(item.id)}
+              className={`sidebar-nav-btn ${isActive ? 'active' : ''}`}
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.6rem',
-                width: '100%',
+                justifyContent: 'space-between',
                 padding: '0.55rem 0.75rem',
                 borderRadius: '8px',
                 border: 'none',
                 background: isActive ? 'rgba(245, 158, 11, 0.15)' : 'transparent',
-                color: isActive ? '#f59e0b' : 'var(--text-main)',
+                color: isActive ? '#f59e0b' : 'var(--text)',
                 fontWeight: isActive ? 700 : 500,
                 textAlign: 'left',
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
               }}
+              onClick={() => onSelectSection(item.id)}
             >
-              <span style={{ fontSize: '1.1rem' }}>{item.icon}</span>
-              <div style={{ minWidth: 0, flex: 1 }}>
-                <div style={{ fontSize: '0.82rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {item.title}
-                </div>
-                <div style={{ fontSize: '0.66rem', color: 'var(--muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {item.subtitle}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ fontSize: '1.05rem' }}>{item.icon}</span>
+                <div>
+                  <div style={{ fontSize: '0.84rem', lineHeight: 1.2 }}>{item.title}</div>
+                  <div style={{ fontSize: '0.65rem', color: 'var(--muted)', lineHeight: 1.2 }}>{item.subtitle}</div>
                 </div>
               </div>
+              {item.badge && (
+                <span
+                  style={{
+                    fontSize: '0.68rem',
+                    background: '#ef4444',
+                    color: '#fff',
+                    padding: '0.1rem 0.35rem',
+                    borderRadius: '999px',
+                    fontWeight: 700,
+                  }}
+                >
+                  {item.badge}
+                </span>
+              )}
             </button>
           )
         })}

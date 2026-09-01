@@ -5,6 +5,9 @@ import { FalseFriendsLab } from './components/FalseFriendsLab'
 import { ChineseSignalsView } from './components/ChineseSignalsView'
 import { ChineseConversationLab } from './components/ChineseConversationLab'
 import { ChineseToday } from './components/ChineseToday'
+import { TaiwanMenuLab } from './components/TaiwanMenuLab'
+import { ChineseMockExam } from './components/ChineseMockExam'
+import { ChineseErrorVault } from './components/ChineseErrorVault'
 import { loadChineseProgress, saveChineseProgress } from './utils/chineseStorage'
 import type { LangId } from '../utils/storage'
 
@@ -25,6 +28,26 @@ export const ChineseApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
     })
   }
 
+  function recordError(questionId: string) {
+    setProgress((prev) => {
+      if (prev.errorQuestions.includes(questionId)) return prev
+      const next = { ...prev, errorQuestions: [...prev.errorQuestions, questionId] }
+      saveChineseProgress(next)
+      return next
+    })
+  }
+
+  function removeError(questionId: string) {
+    setProgress((prev) => {
+      const next = {
+        ...prev,
+        errorQuestions: prev.errorQuestions.filter((id) => id !== questionId),
+      }
+      saveChineseProgress(next)
+      return next
+    })
+  }
+
   return (
     <div className="math-app-shell chinese-app-shell" style={{ display: 'flex', width: '100vw', height: '100vh', overflow: 'hidden' }}>
       {/* 左側導覽列 */}
@@ -33,6 +56,7 @@ export const ChineseApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         onSelectSection={setSection}
         onBackHub={onBackHub}
         xp={progress.xp}
+        errorCount={progress.errorQuestions.length}
       />
 
       {/* 右側主要內容區：嚴格 100vh 內部平滑滾動，零外捲 */}
@@ -94,6 +118,15 @@ export const ChineseApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         {section === 'false-friends' && <FalseFriendsLab onEarnXp={earnXp} />}
         {section === 'signals' && <ChineseSignalsView onEarnXp={earnXp} />}
         {section === 'conversations' && <ChineseConversationLab onEarnXp={earnXp} />}
+        {section === 'menu' && <TaiwanMenuLab onEarnXp={earnXp} />}
+        {section === 'mock' && <ChineseMockExam onEarnXp={earnXp} onRecordError={recordError} />}
+        {section === 'errors' && (
+          <ChineseErrorVault
+            errorQuestionIds={progress.errorQuestions}
+            onRemoveError={removeError}
+            onEarnXp={earnXp}
+          />
+        )}
       </main>
     </div>
   )

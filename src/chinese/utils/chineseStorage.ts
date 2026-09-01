@@ -9,6 +9,7 @@ export interface ChineseProgressState {
   masteredFalseFriends: string[]
   masteredGrammarSignals: string[]
   completedDialogues: string[]
+  errorQuestions: string[]
 }
 
 const CHINESE_PROGRESS_KEY = 'chinese_learning_progress_v1'
@@ -47,6 +48,7 @@ export function defaultChineseProgress(): ChineseProgressState {
     masteredFalseFriends: [],
     masteredGrammarSignals: [],
     completedDialogues: [],
+    errorQuestions: [],
   }
 }
 

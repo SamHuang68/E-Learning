@@ -31,6 +31,7 @@ import { ToeicSidebar, type ToeicNavId } from './components/ToeicSidebar'
 import { ToeicToday } from './components/ToeicToday'
 import { ToeicChunkLab } from './components/ToeicChunkLab'
 import { ToeicStoryReview } from './components/ToeicStoryReview'
+import { ToeicSignalsView } from './components/ToeicSignalsView'
 
 type Props = {
   onBackHub: () => void
@@ -350,6 +351,14 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
         <ToeicChunkLab
           onBack={() => setNav('today')}
           onOpenStoryReview={() => setNav('story')}
+          instructionLang={instructionLang}
+        />
+      )
+    }
+    if (nav === 'signals') {
+      return (
+        <ToeicSignalsView
+          onEarnXp={(n) => patch({ xp: progress.xp + n })}
           instructionLang={instructionLang}
         />
       )
