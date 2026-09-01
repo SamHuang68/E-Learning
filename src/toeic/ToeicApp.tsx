@@ -33,6 +33,7 @@ import { ToeicChunkLab } from './components/ToeicChunkLab'
 import { ToeicStoryReview } from './components/ToeicStoryReview'
 import { ToeicSignalsView } from './components/ToeicSignalsView'
 import { ToeicErrorVault } from './components/ToeicErrorVault'
+import { DoublePassageLab } from './components/DoublePassageLab'
 
 type Props = {
   onBackHub: () => void
@@ -359,6 +360,14 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
     if (nav === 'signals') {
       return (
         <ToeicSignalsView
+          onEarnXp={(n) => patch({ xp: progress.xp + n })}
+          instructionLang={instructionLang}
+        />
+      )
+    }
+    if (nav === 'double-passage') {
+      return (
+        <DoublePassageLab
           onEarnXp={(n) => patch({ xp: progress.xp + n })}
           instructionLang={instructionLang}
         />

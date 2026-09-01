@@ -1,5 +1,12 @@
-﻿import { describe, it, expect } from 'vitest'
-import { isAudioMuted, setAudioMuted, toggleAudioMute, playCorrectSound, playBadgeUnlockedSound } from './audioSynthesizer'
+import { describe, it, expect } from 'vitest'
+import {
+  isAudioMuted,
+  setAudioMuted,
+  toggleAudioMute,
+  playCorrectSound,
+  playBadgeUnlockedSound,
+  playComboSound,
+} from './audioSynthesizer'
 
 describe('Web Audio Synthesizer Engine', () => {
   it('handles mute toggling safely', () => {
@@ -17,5 +24,6 @@ describe('Web Audio Synthesizer Engine', () => {
   it('safely invokes sound playback without crashing in Node/jsdom', () => {
     expect(() => playCorrectSound()).not.toThrow()
     expect(() => playBadgeUnlockedSound()).not.toThrow()
+    expect(() => playComboSound(5)).not.toThrow()
   })
 })

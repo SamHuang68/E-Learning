@@ -177,3 +177,33 @@ export function playWrongSound(): void {
   osc.start(now)
   osc.stop(now + 0.25)
 }
+
+/**
+ * 播放連擊 (Combo) 音效：音高隨連擊數動態遞增
+ */
+export function playComboSound(combo: number): void {
+  if (isAudioMuted()) return
+  const ctx = getAudioContext()
+  if (!ctx) return
+
+  const now = ctx.currentTime
+  const baseFreq = 440 // A4
+  const semitones = Math.min(18, Math.max(0, combo * 2))
+  const targetFreq = baseFreq * Math.pow(2, semitones / 12)
+
+  const osc = ctx.createOscillator()
+  const gain = ctx.createGain()
+
+  osc.type = 'sine'
+  osc.frequency.setValueAtTime(targetFreq, now)
+  osc.frequency.exponentialRampToValueAtTime(targetFreq * 1.25, now + 0.12)
+
+  gain.gain.setValueAtTime(0.09, now)
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2)
+
+  osc.connect(gain)
+  gain.connect(ctx.destination)
+
+  osc.start(now)
+  osc.stop(now + 0.2)
+}

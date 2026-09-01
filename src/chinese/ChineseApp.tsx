@@ -7,6 +7,7 @@ import { ChineseConversationLab } from './components/ChineseConversationLab'
 import { ChineseToday } from './components/ChineseToday'
 import { TaiwanMenuLab } from './components/TaiwanMenuLab'
 import { BopomofoStrokeLab } from './components/BopomofoStrokeLab'
+import { ToneListeningLab } from './components/ToneListeningLab'
 import { ChineseMockExam } from './components/ChineseMockExam'
 import { ChineseErrorVault } from './components/ChineseErrorVault'
 import { loadChineseProgress, saveChineseProgress } from './utils/chineseStorage'
@@ -116,6 +117,7 @@ export const ChineseApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         {/* 根據 section 渲染不同模組 */}
         {section === 'today' && <ChineseToday xp={progress.xp} onNavigate={setSection} />}
         {section === 'pinyin' && <PinyinLab onEarnXp={earnXp} />}
+        {section === 'tones-lab' && <ToneListeningLab onEarnXp={earnXp} />}
         {section === 'stroke' && <BopomofoStrokeLab onEarnXp={earnXp} />}
         {section === 'false-friends' && <FalseFriendsLab onEarnXp={earnXp} />}
         {section === 'signals' && <ChineseSignalsView onEarnXp={earnXp} />}

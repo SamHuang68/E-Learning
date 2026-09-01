@@ -3,6 +3,7 @@ import React from 'react'
 export type ChineseNavSection =
   | 'today'
   | 'pinyin'
+  | 'tones-lab'
   | 'stroke'
   | 'false-friends'
   | 'signals'
@@ -29,6 +30,7 @@ export const ChineseSidebar: React.FC<Props> = ({
   const NAV_ITEMS: Array<{ id: ChineseNavSection; icon: string; title: string; subtitle: string; badge?: string }> = [
     { id: 'today', icon: '🌸', title: '今日學習總覽', subtitle: '今日の学習ダッシュボード' },
     { id: 'pinyin', icon: '🗣️', title: '拼音與四聲聲調', subtitle: 'ピンイン・注音・声調' },
+    { id: 'tones-lab', icon: '🎧', title: '聲調辨音聽力', subtitle: '四声聞き分け・ミニマルペア' },
     { id: 'stroke', icon: '🖌️', title: '注音與漢字筆順', subtitle: 'ボポモフォ＆書き順練習' },
     { id: 'false-friends', icon: '⛩️', title: '日中同形異義語', subtitle: '要注意の偽友詞・落とし穴' },
     { id: 'signals', icon: '⚡', title: '3秒文法決策樹', subtitle: '把字句・被字句・了' },
