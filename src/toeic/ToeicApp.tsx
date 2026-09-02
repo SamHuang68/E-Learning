@@ -65,6 +65,7 @@ import { CloudSlaLab } from './components/CloudSlaLab'
 import { MarineInsuranceLab } from './components/MarineInsuranceLab'
 import { RoyaltyAuditLab } from './components/RoyaltyAuditLab'
 import { FcpaComplianceLab } from './components/FcpaComplianceLab'
+import { AntitrustHhiLab } from './components/AntitrustHhiLab'
 
 type Props = {
   onBackHub: () => void
@@ -647,6 +648,14 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
     if (nav === 'fcpa-compliance') {
       return (
         <FcpaComplianceLab
+          onEarnXp={(n) => patch({ xp: progress.xp + n })}
+          instructionLang={instructionLang}
+        />
+      )
+    }
+    if (nav === 'antitrust-hhi') {
+      return (
+        <AntitrustHhiLab
           onEarnXp={(n) => patch({ xp: progress.xp + n })}
           instructionLang={instructionLang}
         />
