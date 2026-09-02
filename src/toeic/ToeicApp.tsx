@@ -67,6 +67,7 @@ import { RoyaltyAuditLab } from './components/RoyaltyAuditLab'
 import { FcpaComplianceLab } from './components/FcpaComplianceLab'
 import { AntitrustHhiLab } from './components/AntitrustHhiLab'
 import { BusinessInterruptionLab } from './components/BusinessInterruptionLab'
+import { LetterOfCreditLab } from './components/LetterOfCreditLab'
 
 type Props = {
   onBackHub: () => void
@@ -665,6 +666,14 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
     if (nav === 'business-interruption') {
       return (
         <BusinessInterruptionLab
+          onEarnXp={(n) => patch({ xp: progress.xp + n })}
+          instructionLang={instructionLang}
+        />
+      )
+    }
+    if (nav === 'letter-of-credit') {
+      return (
+        <LetterOfCreditLab
           onEarnXp={(n) => patch({ xp: progress.xp + n })}
           instructionLang={instructionLang}
         />

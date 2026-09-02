@@ -41,6 +41,7 @@ export type ToeicNavId =
   | 'fcpa-compliance'
   | 'antitrust-hhi'
   | 'business-interruption'
+  | 'letter-of-credit'
   | 'story'
   | 'today'
   | 'builder'
@@ -120,6 +121,7 @@ export function ToeicSidebar({
     { id: 'fcpa-compliance', icon: '⚖️', label: isJa ? 'FCPA・反贈賄審査' : 'FCPA反海外腐敗法' },
     { id: 'antitrust-hhi', icon: '📊', label: isJa ? 'HHI独禁審査・企業結合' : 'HHI反壟斷審查' },
     { id: 'business-interruption', icon: '🏭', label: isJa ? '休業損害保険・BII理賠' : '營業中斷險理賠' },
+    { id: 'letter-of-credit', icon: '📜', label: isJa ? '信用状（L/C）・ディスクレ' : '信用狀單證瑕疵審查' },
     { id: 'errors', icon: '📕', label: isJa ? '誤答ノート' : '錯題弱點本', badge: errorCount > 0 ? `${errorCount}` : undefined },
     { id: 'story', icon: '📖', label: isJa ? 'ストーリー復習' : '情境微故事' },
     { id: 'phonics', icon: 'Aa', label: isJa ? '発音基礎' : '發音基礎' },

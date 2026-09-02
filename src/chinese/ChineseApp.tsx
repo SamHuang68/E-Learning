@@ -41,6 +41,7 @@ import { QingmingPopiahZhLab } from './components/QingmingPopiahZhLab'
 import { YuelaoLoveZhLab } from './components/YuelaoLoveZhLab'
 import { DoubleNinthZhLab } from './components/DoubleNinthZhLab'
 import { StartOfWinterZhLab } from './components/StartOfWinterZhLab'
+import { GuabaoSishenZhLab } from './components/GuabaoSishenZhLab'
 import { ChineseMockExam } from './components/ChineseMockExam'
 import { ChineseErrorVault } from './components/ChineseErrorVault'
 import { loadChineseProgress, saveChineseProgress } from './utils/chineseStorage'
@@ -188,6 +189,7 @@ export const ChineseApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         {section === 'yuelao-love' && <YuelaoLoveZhLab onEarnXp={earnXp} />}
         {section === 'double-ninth' && <DoubleNinthZhLab onEarnXp={earnXp} />}
         {section === 'start-of-winter' && <StartOfWinterZhLab onEarnXp={earnXp} />}
+        {section === 'guabao-sishen' && <GuabaoSishenZhLab onEarnXp={earnXp} />}
         {section === 'menu' && <TaiwanMenuLab onEarnXp={earnXp} />}
         {section === 'mock' && <ChineseMockExam onEarnXp={earnXp} onRecordError={recordError} />}
         {section === 'errors' && (
