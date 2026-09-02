@@ -282,4 +282,28 @@ export const CS_SOLVING_SIGNALS: CsSolvingSignal[] = [
       quickSolve: '2^6 = 64，因此需要 6 條選擇線。',
     },
   },
+  {
+    id: 'sig-cs-bplus-height',
+    strand: '五大單元架構',
+    topic: '資料庫 B+ 樹索引樹高與磁碟 I/O 次數',
+    problemSignal: '題目給定資料量 $N$ 與節點階數/扇出 $M$，求定位資料的磁碟讀取次數',
+    threeSecondRule: '【以 M 為底取 log 並無條件進位】扇出 200 時一千萬筆資料只要 4 次 I/O！',
+    firstStepFormula: 'h = \\lceil \\log_M N \\rceil',
+    exampleProblem: {
+      question: '若扇出 M=100，資料量 N=1,000,000，B+ 樹樹高為多少？',
+      quickSolve: '100^3 = 1,000,000，故樹高 h = 3，只需 3 次磁碟讀取。',
+    },
+  },
+  {
+    id: 'sig-cs-roofline-knee',
+    strand: '現代AI硬體',
+    topic: 'Roofline 頂蓋模型：記憶體瓶頸與算力瓶頸劃分',
+    problemSignal: '題目給定算力強度 $I$ (FLOPs/Byte)、峰值算力 $P_{\\text{peak}}$ 與頻寬 $B$',
+    threeSecondRule: '【比較算力強度與拐點值 I_knee】I < I_knee 必為 Memory-Bound！',
+    firstStepFormula: 'I_{\\text{knee}} = \\frac{P_{\\text{peak}}}{\\text{Bandwidth}} \\implies I < I_{\\text{knee}} \\to \\text{Memory-Bound}',
+    exampleProblem: {
+      question: 'GPU 算力 300 TFLOPS，頻寬 1500 GB/s，算力強度為 50 FLOPs/Byte 時為何種瓶頸？',
+      quickSolve: 'I_knee = 300e12 / 1500e9 = 200。因 50 < 200，故為 Memory-Bound。',
+    },
+  },
 ]
