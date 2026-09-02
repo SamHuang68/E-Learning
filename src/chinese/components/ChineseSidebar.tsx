@@ -12,6 +12,7 @@ export type ChineseNavSection =
   | 'idioms'
   | 'conversations'
   | 'transit'
+  | 'housing'
   | 'menu'
   | 'mock'
   | 'errors'
@@ -43,6 +44,7 @@ export const ChineseSidebar: React.FC<Props> = ({
     { id: 'idioms', icon: '📜', title: '成語與台灣諺語', subtitle: '四字熟語・摸蜊仔兼洗褲' },
     { id: 'conversations', icon: '💬', title: '實用情境會話', subtitle: '夜市・MRT・台湾日常会話' },
     { id: 'transit', icon: '🚇', title: '捷運與交通生活', subtitle: '悠遊卡・高鐵・運將對話' },
+    { id: 'housing', icon: '🏠', title: '租屋看房與垃圾車', subtitle: '套房押金・水電・追垃圾車' },
     { id: 'menu', icon: '🏮', title: '夜市美食與台灣語', subtitle: '台湾グルメ＆生活台湾語' },
     { id: 'mock', icon: '📝', title: 'TOCFL 模擬測驗', subtitle: 'A1/A2 レベル判定模試' },
     { id: 'errors', icon: '📕', title: '華語錯題本', subtitle: '弱点專項攻克', badge: errorCount > 0 ? `${errorCount}` : undefined },
