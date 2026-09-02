@@ -1,0 +1,206 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "LSM-Tree Storage Engine Dataflow",
+    "output": "lsm-tree-dataflow.html",
+    "viewBox": [
+      1080,
+      760
+    ],
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "write-path",
+        "label": "Write Hot Path",
+        "focus": [
+          "client",
+          "wal",
+          "memtable"
+        ],
+        "note": "Client writes hit WAL for durability and active MemTable in RAM."
+      },
+      {
+        "id": "flush-compaction",
+        "label": "Flush and Compaction",
+        "focus": [
+          "memtable",
+          "imm-mem",
+          "l0-sst",
+          "compactor",
+          "l1-sst"
+        ],
+        "note": "Frozen MemTables flush to L0 and merge-sort into partitioned levels."
+      }
+    ]
+  },
+  "stages": [
+    {
+      "label": "Client Ingest"
+    },
+    {
+      "label": "Memory Buffer"
+    },
+    {
+      "label": "Disk Spill"
+    },
+    {
+      "label": "Compaction Engine"
+    },
+    {
+      "label": "Tiered Storage"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "client",
+      "type": "frontend",
+      "label": "Client App",
+      "sublabel": "PUT / DELETE",
+      "stage": 0,
+      "row": 1,
+      "tag": "keys & values"
+    },
+    {
+      "id": "wal",
+      "type": "security",
+      "label": "WAL Disk Log",
+      "sublabel": "sequential append",
+      "stage": 1,
+      "row": 0,
+      "tag": "crash safe"
+    },
+    {
+      "id": "memtable",
+      "type": "database",
+      "label": "Active MemTable",
+      "sublabel": "SkipList (RAM)",
+      "stage": 1,
+      "row": 2,
+      "tag": "O(log N)"
+    },
+    {
+      "id": "imm-mem",
+      "type": "database",
+      "label": "Immutable MemTable",
+      "sublabel": "frozen snapshot",
+      "stage": 2,
+      "row": 2,
+      "tag": "read-only"
+    },
+    {
+      "id": "l0-sst",
+      "type": "database",
+      "label": "Level 0 SSTables",
+      "sublabel": "overlapping keys",
+      "stage": 3,
+      "row": 1,
+      "tag": "direct flush"
+    },
+    {
+      "id": "compactor",
+      "type": "backend",
+      "label": "Compaction Worker",
+      "sublabel": "K-way merge sort",
+      "stage": 3,
+      "row": 3,
+      "tag": "WAF factor T"
+    },
+    {
+      "id": "l1-sst",
+      "type": "database",
+      "label": "Level 1 SSTables",
+      "sublabel": "non-overlapping",
+      "stage": 4,
+      "row": 1,
+      "tag": "T=10 (10MB)"
+    },
+    {
+      "id": "l2-sst",
+      "type": "database",
+      "label": "Level 2 SSTables",
+      "sublabel": "capacity tier",
+      "stage": 4,
+      "row": 3,
+      "tag": "T^2 (100MB)"
+    }
+  ],
+  "flows": [
+    {
+      "id": "f1",
+      "from": "client",
+      "to": "wal",
+      "label": "fsync log",
+      "variant": "security"
+    },
+    {
+      "id": "f2",
+      "from": "client",
+      "to": "memtable",
+      "label": "insert memory",
+      "variant": "emphasis"
+    },
+    {
+      "id": "f3",
+      "from": "memtable",
+      "to": "imm-mem",
+      "label": "freeze when full",
+      "variant": "default"
+    },
+    {
+      "id": "f4",
+      "from": "imm-mem",
+      "to": "l0-sst",
+      "label": "minor flush",
+      "variant": "emphasis"
+    },
+    {
+      "id": "f5",
+      "from": "l0-sst",
+      "to": "compactor",
+      "label": "trigger merge",
+      "variant": "default"
+    },
+    {
+      "id": "f6",
+      "from": "compactor",
+      "to": "l1-sst",
+      "label": "write sorted",
+      "variant": "emphasis"
+    },
+    {
+      "id": "f7",
+      "from": "compactor",
+      "to": "l2-sst",
+      "label": "major compaction",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Sequential Write Dominance",
+      "items": [
+        "WAL uses sequential I/O to avoid disk seek penalties",
+        "MemTable in RAM handles concurrent read and write operations"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Level Architecture",
+      "items": [
+        "Level 0 contains raw flushes where key ranges can overlap",
+        "Level 1 and beyond maintain strictly sorted and non-overlapping partitions"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Write Amplification Tradeoff",
+      "items": [
+        "Leveled compaction incurs ~T * L rewrite amplification",
+        "Bloom filters eliminate unnecessary disk reads for non-existent keys"
+      ]
+    }
+  ]
+}

@@ -1,11 +1,14 @@
-﻿import React from 'react'
+﻿import React, { useState } from 'react'
 
 interface Props {
   onEarnXp?: (amount: number) => void
 }
 
+type DiagramKind = 'ai-server' | 'lsm-tree'
+
 export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
-  const [explored, setExplored] = React.useState(false)
+  const [selectedDiagram, setSelectedDiagram] = useState<DiagramKind>('ai-server')
+  const [explored, setExplored] = useState(false)
 
   const handleInteract = () => {
     if (!explored && onEarnXp) {
@@ -14,26 +17,85 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
     }
   }
 
+  const diagramMeta = {
+    'ai-server': {
+      title: '現代 AI 伺服器硬體全景架構圖',
+      subtitle: 'Host CPU (96GB RAM)、PCIe Gen5 與 Dual GPU NVSwitch 900 GB/s 全互聯拓撲',
+      file: './archify/ai-server-architecture.html',
+      badge: 'Archify Showcase 2.16',
+      stats: [
+        { label: 'HOST SUBSYSTEM', title: 'CPU + 96GB DDR5', desc: 'Linux OS 行程調度與大容量模型快取', color: '#06b6d4' },
+        { label: 'INTERCONNECT BUS', title: 'PCIe Gen5 x16', desc: '雙向 64 GB/s 主機至設備 DMA 流水傳輸', color: '#10b981' },
+        { label: 'GPU ACCELERATORS', title: 'Dual GPU + NVSwitch', desc: '900 GB/s All-to-All 網格消滅張量平行通訊牆', color: '#f43f5e' },
+      ],
+    },
+    'lsm-tree': {
+      title: '分散式儲存 LSM-Tree 讀寫與壓縮架構圖',
+      subtitle: 'WAL 預寫日誌、記憶體 SkipList MemTable 與磁碟 L0~L2 分層壓縮管線',
+      file: './archify/lsm-tree-architecture.html',
+      badge: 'Archify Standard 2.16',
+      stats: [
+        { label: 'IN-MEMORY BUFFER', title: 'MemTable (SkipList)', desc: '無鎖並發 O(log N) 寫入與點查', color: '#06b6d4' },
+        { label: 'DURABILITY LOG', title: 'WAL Sequential I/O', desc: '順序寫入消滅磁頭尋道代價保證崩潰安全', color: '#10b981' },
+        { label: 'STORAGE COMPACTION', title: 'Leveled Compaction', desc: '分層多路歸併排序，Bloom Filter 杜絕無效訪存', color: '#f43f5e' },
+      ],
+    },
+  }[selectedDiagram]
+
   return (
     <div className="math-lab-panel cs-arch-panel" style={{ padding: '1.25rem', height: '100%', display: 'flex', flexDirection: 'column', gap: '1rem', overflowY: 'auto' }}>
-      {/* 頂部 Header */}
+      {/* 頂部 Header 與切換膠囊 */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
             <span style={{ fontSize: '1.4rem' }}>🏛️</span>
-            <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800 }}>現代 AI 伺服器硬體全景架構圖</h2>
+            <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800 }}>{diagramMeta.title}</h2>
             <span style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#6366f1', padding: '0.15rem 0.5rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 700 }}>
-              Archify Showcase 2.16
+              {diagramMeta.badge}
             </span>
           </div>
           <p style={{ margin: '0.25rem 0 0', color: 'var(--muted)', fontSize: '0.82rem' }}>
-            由 Archify 引擎生成的向量架構圖，直觀展現 Host CPU、96GB RAM、PCIe Gen5 匯流排與 Dual GPU NVSwitch 全互聯拓撲。
+            {diagramMeta.subtitle}
           </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          {/* 切換不同架構圖按鈕 */}
+          <div style={{ display: 'flex', background: 'var(--line)', padding: '2px', borderRadius: '6px' }}>
+            <button
+              onClick={() => setSelectedDiagram('ai-server')}
+              style={{
+                padding: '0.35rem 0.65rem',
+                fontSize: '0.78rem',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                background: selectedDiagram === 'ai-server' ? 'var(--card-bg, #1e293b)' : 'transparent',
+                color: selectedDiagram === 'ai-server' ? 'var(--accent, #6366f1)' : 'var(--muted)',
+                fontWeight: selectedDiagram === 'ai-server' ? 700 : 500,
+              }}
+            >
+              AI 伺服器架構
+            </button>
+            <button
+              onClick={() => setSelectedDiagram('lsm-tree')}
+              style={{
+                padding: '0.35rem 0.65rem',
+                fontSize: '0.78rem',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                background: selectedDiagram === 'lsm-tree' ? 'var(--card-bg, #1e293b)' : 'transparent',
+                color: selectedDiagram === 'lsm-tree' ? 'var(--accent, #6366f1)' : 'var(--muted)',
+                fontWeight: selectedDiagram === 'lsm-tree' ? 700 : 500,
+              }}
+            >
+              LSM-Tree 儲存架構
+            </button>
+          </div>
+
           <a
-            href="./archify/ai-server-architecture.html"
+            href={diagramMeta.file}
             target="_blank"
             rel="noopener noreferrer"
             onClick={handleInteract}
@@ -58,23 +120,13 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
 
       {/* 核心架構階層導覽指標 */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem' }}>
-        <div style={{ background: 'var(--card-bg, rgba(255,255,255,0.05))', border: '1px solid var(--line)', padding: '0.75rem', borderRadius: '8px' }}>
-          <div style={{ fontSize: '0.75rem', color: '#06b6d4', fontWeight: 700 }}>HOST SUBSYSTEM</div>
-          <div style={{ fontSize: '0.92rem', fontWeight: 800, marginTop: '0.2rem' }}>CPU + 96GB DDR5</div>
-          <div style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.2rem' }}>Linux OS 行程調度與大容量模型快取</div>
-        </div>
-
-        <div style={{ background: 'var(--card-bg, rgba(255,255,255,0.05))', border: '1px solid var(--line)', padding: '0.75rem', borderRadius: '8px' }}>
-          <div style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: 700 }}>INTERCONNECT BUS</div>
-          <div style={{ fontSize: '0.92rem', fontWeight: 800, marginTop: '0.2rem' }}>PCIe Gen5 x16</div>
-          <div style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.2rem' }}>雙向 64 GB/s 主機至設備 DMA 流水傳輸</div>
-        </div>
-
-        <div style={{ background: 'var(--card-bg, rgba(255,255,255,0.05))', border: '1px solid var(--line)', padding: '0.75rem', borderRadius: '8px' }}>
-          <div style={{ fontSize: '0.75rem', color: '#f43f5e', fontWeight: 700 }}>GPU ACCELERATORS</div>
-          <div style={{ fontSize: '0.92rem', fontWeight: 800, marginTop: '0.2rem' }}>Dual GPU + NVSwitch</div>
-          <div style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.2rem' }}>900 GB/s All-to-All 網格消滅張量平行通訊牆</div>
-        </div>
+        {diagramMeta.stats.map((stat, idx) => (
+          <div key={idx} style={{ background: 'var(--card-bg, rgba(255,255,255,0.05))', border: '1px solid var(--line)', padding: '0.75rem', borderRadius: '8px' }}>
+            <div style={{ fontSize: '0.75rem', color: stat.color, fontWeight: 700 }}>{stat.label}</div>
+            <div style={{ fontSize: '0.92rem', fontWeight: 800, marginTop: '0.2rem' }}>{stat.title}</div>
+            <div style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.2rem' }}>{stat.desc}</div>
+          </div>
+        ))}
       </div>
 
       {/* 嵌入的 Archify 互動向量架構視窗 */}
@@ -91,8 +143,9 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
         onClick={handleInteract}
       >
         <iframe
-          src="./archify/ai-server-architecture.html"
-          title="Modern AI Server Architecture (Archify)"
+          key={selectedDiagram}
+          src={diagramMeta.file}
+          title={diagramMeta.title}
           style={{
             width: '100%',
             height: '100%',

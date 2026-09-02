@@ -1,0 +1,225 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "LSM-Tree Distributed Storage Engine Architecture",
+    "output": "lsm-tree-architecture.html",
+    "quality_profile": "standard",
+    "views": [
+      {
+        "id": "write-path",
+        "label": "In-Memory Write Path",
+        "focus": [
+          "client",
+          "wal",
+          "memtable"
+        ],
+        "note": "Client writes are appended to WAL for crash recovery and inserted into SkipList MemTable in RAM."
+      },
+      {
+        "id": "compaction-path",
+        "label": "Disk Flush and Compaction",
+        "focus": [
+          "imm-mem",
+          "flush-worker",
+          "l0-sst",
+          "compactor",
+          "l1-sst"
+        ],
+        "note": "Frozen MemTables flush to L0 and merge-sort into partitioned non-overlapping Level 1 SSTables."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "client",
+      "type": "external",
+      "label": "Client Application",
+      "sublabel": "PUT / GET / DELETE",
+      "pos": [
+        40,
+        300
+      ],
+      "size": [
+        140,
+        60
+      ]
+    },
+    {
+      "id": "wal",
+      "type": "security",
+      "label": "WAL Disk Log",
+      "sublabel": "Sequential Fsync",
+      "pos": [
+        260,
+        150
+      ],
+      "size": [
+        150,
+        60
+      ],
+      "tag": "Crash Durability"
+    },
+    {
+      "id": "memtable",
+      "type": "database",
+      "label": "Active MemTable",
+      "sublabel": "SkipList in RAM",
+      "pos": [
+        260,
+        300
+      ],
+      "size": [
+        150,
+        60
+      ],
+      "tag": "O(log N) Latency"
+    },
+    {
+      "id": "imm-mem",
+      "type": "database",
+      "label": "Immutable MemTable",
+      "sublabel": "Frozen Snapshot",
+      "pos": [
+        260,
+        450
+      ],
+      "size": [
+        150,
+        60
+      ],
+      "tag": "Read-Only"
+    },
+    {
+      "id": "flush-worker",
+      "type": "backend",
+      "label": "Flush Worker",
+      "sublabel": "Minor Compaction",
+      "pos": [
+        490,
+        375
+      ],
+      "size": [
+        140,
+        60
+      ]
+    },
+    {
+      "id": "l0-sst",
+      "type": "database",
+      "label": "Level 0 SSTables",
+      "sublabel": "Overlapping Key Ranges",
+      "pos": [
+        720,
+        200
+      ],
+      "size": [
+        150,
+        60
+      ]
+    },
+    {
+      "id": "l1-sst",
+      "type": "database",
+      "label": "Level 1 SSTables",
+      "sublabel": "Strictly Partitioned",
+      "pos": [
+        720,
+        400
+      ],
+      "size": [
+        150,
+        60
+      ]
+    },
+    {
+      "id": "compactor",
+      "type": "backend",
+      "label": "Compaction Engine",
+      "sublabel": "K-way Merge Sort",
+      "pos": [
+        940,
+        300
+      ],
+      "size": [
+        150,
+        60
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "c1",
+      "from": "client",
+      "to": "wal",
+      "label": "WAL Append",
+      "variant": "security"
+    },
+    {
+      "id": "c2",
+      "from": "client",
+      "to": "memtable",
+      "label": "RAM Write",
+      "variant": "emphasis"
+    },
+    {
+      "id": "c3",
+      "from": "memtable",
+      "to": "imm-mem",
+      "label": "Freeze",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 40
+    },
+    {
+      "id": "c4",
+      "from": "imm-mem",
+      "to": "flush-worker",
+      "label": "Spill"
+    },
+    {
+      "id": "c5",
+      "from": "flush-worker",
+      "to": "l0-sst",
+      "label": "Flush"
+    },
+    {
+      "id": "c6",
+      "from": "l0-sst",
+      "to": "compactor",
+      "label": "Compact"
+    },
+    {
+      "id": "c7",
+      "from": "compactor",
+      "to": "l1-sst",
+      "label": "Level 1"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "High Write Throughput",
+      "items": [
+        "Random writes are transformed into sequential append-only writes via WAL and MemTable",
+        "Zero in-place updates eliminate disk seek latency penalties"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Two-Tiered Memory Hierarchy",
+      "items": [
+        "SkipList provides concurrent O(log N) point lookup and range scan",
+        "Immutable MemTable decouples write ingestion from disk flushing"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Leveled Compaction Tradeoffs",
+      "items": [
+        "Background merge-sort maintains sorted order across non-overlapping partitions",
+        "Bloom filters in SSTables eliminate unnecessary disk reads for non-existent keys"
+      ]
+    }
+  ]
+}

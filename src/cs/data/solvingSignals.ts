@@ -402,4 +402,28 @@ export const CS_SOLVING_SIGNALS: CsSolvingSignal[] = [
       quickSolve: '此為高頻寬記憶體 (HBM3e) 的標準物理封裝特徵。',
     },
   },
+  {
+    id: 'sig-cs-lsm-waf',
+    strand: '五大單元架構',
+    topic: 'LSM-Tree 分層壓縮寫入放大係數 (WAF)',
+    problemSignal: '題目給定放大因子 T 與層數 L，求 Leveled Compaction 寫入放大',
+    threeSecondRule: '【WAF 大約等於 T 乘以 (L - 1)】每層多路歸併覆寫 T 次！',
+    firstStepFormula: '\\text{WAF} \\approx 1 + 1 + T \\times (L - 1)',
+    exampleProblem: {
+      question: 'T=10 且 L=5 時 LSM-Tree 的 WAF 約為多少？',
+      quickSolve: '2 + 10 * 4 = 42。',
+    },
+  },
+  {
+    id: 'sig-cs-dpo-closed-form',
+    strand: '前沿AI演算法',
+    topic: 'DPO 直接偏好優化隱式獎勵閉式解',
+    problemSignal: '題目詢問 DPO 為何能擺脫獨立 Reward Model 與 PPO 強化學習',
+    threeSecondRule: '【獎勵直接解析為策略對數勝率差】二元交叉熵單步搞定對齊！',
+    firstStepFormula: 'r(x, y) = \\beta \\log \\frac{\\pi_\\theta(y|x)}{\\pi_{\\text{ref}}(y|x)} + C',
+    exampleProblem: {
+      question: 'DPO 的對齊損失函數數學本質為何？',
+      quickSolve: '直接在偏好對上透過二元邏輯斯迴歸最小化勝率交叉熵。',
+    },
+  },
 ]
