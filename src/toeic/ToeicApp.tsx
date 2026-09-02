@@ -50,6 +50,7 @@ import { PrLab } from './components/PrLab'
 import { MnaLab } from './components/MnaLab'
 import { IpLab } from './components/IpLab'
 import { EsgLab } from './components/EsgLab'
+import { AiCloudLab } from './components/AiCloudLab'
 
 type Props = {
   onBackHub: () => void
@@ -512,6 +513,14 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
     if (nav === 'esg') {
       return (
         <EsgLab
+          onEarnXp={(n) => patch({ xp: progress.xp + n })}
+          instructionLang={instructionLang}
+        />
+      )
+    }
+    if (nav === 'ai-cloud') {
+      return (
+        <AiCloudLab
           onEarnXp={(n) => patch({ xp: progress.xp + n })}
           instructionLang={instructionLang}
         />
