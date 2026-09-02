@@ -41,6 +41,7 @@ import { PhoneLab } from './components/PhoneLab'
 import { TravelLab } from './components/TravelLab'
 import { ConferenceLab } from './components/ConferenceLab'
 import { InterviewLab } from './components/InterviewLab'
+import { MarketingLab } from './components/MarketingLab'
 
 type Props = {
   onBackHub: () => void
@@ -431,6 +432,14 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
     if (nav === 'interview') {
       return (
         <InterviewLab
+          onEarnXp={(n) => patch({ xp: progress.xp + n })}
+          instructionLang={instructionLang}
+        />
+      )
+    }
+    if (nav === 'marketing') {
+      return (
+        <MarketingLab
           onEarnXp={(n) => patch({ xp: progress.xp + n })}
           instructionLang={instructionLang}
         />

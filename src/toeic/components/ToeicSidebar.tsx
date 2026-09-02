@@ -15,6 +15,7 @@ export type ToeicNavId =
   | 'travel'
   | 'conference'
   | 'interview'
+  | 'marketing'
   | 'story'
   | 'today'
   | 'builder'
@@ -68,6 +69,7 @@ export function ToeicSidebar({
     { id: 'travel', icon: '✈️', label: isJa ? '出張・フライト宿泊' : '商務差旅與登機' },
     { id: 'conference', icon: '💻', label: isJa ? 'オンライン会議Q&A' : '視訊會議與簡報' },
     { id: 'interview', icon: '👔', label: isJa ? '面接・採用福利' : '求職面試與福利' },
+    { id: 'marketing', icon: '📢', label: isJa ? 'マーケ・SNS広報' : '行銷宣傳與公關' },
     { id: 'errors', icon: '📕', label: isJa ? '誤答ノート' : '錯題弱點本', badge: errorCount > 0 ? `${errorCount}` : undefined },
     { id: 'story', icon: '📖', label: isJa ? 'ストーリー復習' : '情境微故事' },
     { id: 'phonics', icon: 'Aa', label: isJa ? '発音基礎' : '發音基礎' },
