@@ -210,4 +210,28 @@ export const CS_SOLVING_SIGNALS: CsSolvingSignal[] = [
       quickSolve: 'L = 2 × 2.56μs × 100Mbps = 512 bits = 64 Bytes。',
     },
   },
+  {
+    id: 'sig-cs-lora-reduction',
+    strand: '前沿AI演算法',
+    topic: '大模型 LoRA 矩陣分解參數縮減比例',
+    problemSignal: '題目給定原權重維度 $d \\times k$ 與 LoRA 低秩維度 $r$，求可訓練參數量佔比',
+    threeSecondRule: '【(d+k)*r 除以 d*k】4096 維下 rank=8 參數量立減 99.6%！',
+    firstStepFormula: '\\text{Ratio} = \\frac{(d + k) \\cdot r}{d \\cdot k}',
+    exampleProblem: {
+      question: '4096 × 4096 的權重矩陣加入 rank=8 的 LoRA 後，需微調的參數為多少？',
+      quickSolve: '(4096 + 4096) × 8 = 65,536 個參數 (相較於 1,677 萬縮減 99.6%)。',
+    },
+  },
+  {
+    id: 'sig-cs-shunting-yard',
+    strand: '軟硬體本質',
+    topic: '編譯器 Shunting-Yard 運算式轉後序',
+    problemSignal: '題目給定包含括號與乘除加減的中序運算式，求其對應的逆波蘭 (RPN) 順序',
+    threeSecondRule: '【遇到數字直接輸出，運算子看優先級比大小進棧，遇右括號全彈出】！',
+    firstStepFormula: '\\text{Precedence: } ^ > *, / > +, - \\quad \\& \\quad \\text{Parentheses Match}',
+    exampleProblem: {
+      question: '運算式 A + B * C 轉換為後序表示法為何？',
+      quickSolve: '乘法優先級高於加法，轉換結果為 A B C * +。',
+    },
+  },
 ]

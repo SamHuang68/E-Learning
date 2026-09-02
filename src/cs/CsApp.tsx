@@ -8,6 +8,7 @@ import { CsMockExam } from './components/CsMockExam'
 import { CsErrorVault } from './components/CsErrorVault'
 import { VonNeumannArchitectureLab } from './labs/VonNeumannArchitectureLab'
 import { PipelineHazardLab } from './labs/PipelineHazardLab'
+import { CacheMappingLab } from './labs/CacheMappingLab'
 import { AiMatrixTransformerLab } from './labs/AiMatrixTransformerLab'
 import { loadCsProgress, saveCsProgress, type CsProgress } from './utils/csStorage'
 
@@ -147,6 +148,15 @@ export const CsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
             onEarnXp={(amount) => {
               handleEarnXp(amount)
               handleLabCompleted('pipeline-hazard')
+            }}
+          />
+        )}
+
+        {activeSection === 'cache-mapping' && (
+          <CacheMappingLab
+            onEarnXp={(amount) => {
+              handleEarnXp(amount)
+              handleLabCompleted('cache-mapping')
             }}
           />
         )}

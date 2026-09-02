@@ -8,6 +8,7 @@ export type CsNavSection =
   | 'signals'
   | 'von-neumann'
   | 'pipeline-hazard'
+  | 'cache-mapping'
   | 'ai-transformer'
   | 'mock'
   | 'errors'
@@ -35,6 +36,7 @@ export const CsSidebar: React.FC<Props> = ({
     { id: 'signals', icon: '⚡', title: '3秒破題訊號卡', subtitle: '15組秒殺決策翻轉' },
     { id: 'von-neumann', icon: '⚙️', title: '五大單元實驗室', subtitle: '取指解碼執行寫回' },
     { id: 'pipeline-hazard', icon: '⚡', title: 'CPU 管線冒險', subtitle: 'Forwarding & Stall' },
+    { id: 'cache-mapping', icon: '💾', title: '快取位址映射', subtitle: 'Tag · Index · Offset' },
     { id: 'ai-transformer', icon: '🤖', title: 'AI 矩陣與注意力', subtitle: 'GPU GEMM & Attention' },
     { id: 'mock', icon: '📝', title: '期中期末模擬考', subtitle: '計時標準評量診斷' },
     { id: 'errors', icon: '📕', title: '錯題弱點本', subtitle: '盲點複習掌握', badge: errorCount > 0 ? `${errorCount}` : undefined },
