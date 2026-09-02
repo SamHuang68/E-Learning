@@ -21,6 +21,7 @@ export type ToeicNavId =
   | 'trade'
   | 'real-estate'
   | 'pr'
+  | 'mna'
   | 'story'
   | 'today'
   | 'builder'
@@ -80,6 +81,7 @@ export function ToeicSidebar({
     { id: 'trade', icon: '🌐', label: isJa ? '国際貿易・関税申告' : '國際貿易與關稅' },
     { id: 'real-estate', icon: '🏢', label: isJa ? '不動産・オフィス賃貸' : '商辦租賃與擴遷' },
     { id: 'pr', icon: '📰', label: isJa ? '広報・プレスリリース' : '公關與新聞發布' },
+    { id: 'mna', icon: '🤝', label: isJa ? 'M&A・デューデリ' : '企業併購與盡職調查' },
     { id: 'errors', icon: '📕', label: isJa ? '誤答ノート' : '錯題弱點本', badge: errorCount > 0 ? `${errorCount}` : undefined },
     { id: 'story', icon: '📖', label: isJa ? 'ストーリー復習' : '情境微故事' },
     { id: 'phonics', icon: 'Aa', label: isJa ? '発音基礎' : '發音基礎' },
