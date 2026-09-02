@@ -28,6 +28,7 @@ export type ChineseNavSection =
   | 'convenience-atm'
   | 'youbike'
   | 'boba'
+  | 'wedding'
   | 'menu'
   | 'mock'
   | 'errors'
@@ -75,6 +76,7 @@ export const ChineseSidebar: React.FC<Props> = ({
     { id: 'convenience-atm', icon: '🏪', title: '超商生活與 ATM 金融', subtitle: '跨行轉帳・無卡提款・自備環保杯' },
     { id: 'youbike', icon: '🚲', title: '微笑單車與捷運轉乘', subtitle: 'YouBike 2.0・座墊反轉・轉乘折5元' },
     { id: 'boba', icon: '🧋', title: '手搖飲料客製文化', subtitle: '微糖微冰・黑糖波霸・環保杯折5元' },
+    { id: 'wedding', icon: '💒', title: '婚禮喜酒紅包文化', subtitle: '雙數吉利・紅包賀詞・喝喜酒喜餅' },
     { id: 'menu', icon: '🏮', title: '夜市美食與台灣語', subtitle: '台湾グルメ＆生活台湾語' },
     { id: 'mock', icon: '📝', title: 'TOCFL 模擬測驗', subtitle: 'A1/A2 レベル判定模試' },
     { id: 'errors', icon: '📕', title: '華語錯題本', subtitle: '弱点專項攻克', badge: errorCount > 0 ? `${errorCount}` : undefined },

@@ -54,6 +54,7 @@ import { AiCloudLab } from './components/AiCloudLab'
 import { ColdChainLab } from './components/ColdChainLab'
 import { BondedWarehouseLab } from './components/BondedWarehouseLab'
 import { RfpBiddingLab } from './components/RfpBiddingLab'
+import { ForceMajeureLab } from './components/ForceMajeureLab'
 
 type Props = {
   onBackHub: () => void
@@ -548,6 +549,14 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
     if (nav === 'rfp-bidding') {
       return (
         <RfpBiddingLab
+          onEarnXp={(n) => patch({ xp: progress.xp + n })}
+          instructionLang={instructionLang}
+        />
+      )
+    }
+    if (nav === 'force-majeure') {
+      return (
+        <ForceMajeureLab
           onEarnXp={(n) => patch({ xp: progress.xp + n })}
           instructionLang={instructionLang}
         />
