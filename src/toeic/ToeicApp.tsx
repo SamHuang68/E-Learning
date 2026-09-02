@@ -59,6 +59,7 @@ import { TechTransferLab } from './components/TechTransferLab'
 import { AntitrustLab } from './components/AntitrustLab'
 import { ConflictMineralsLab } from './components/ConflictMineralsLab'
 import { PatentLitigationLab } from './components/PatentLitigationLab'
+import { GdprPrivacyLab } from './components/GdprPrivacyLab'
 
 type Props = {
   onBackHub: () => void
@@ -593,6 +594,14 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
     if (nav === 'patent-litigation') {
       return (
         <PatentLitigationLab
+          onEarnXp={(n) => patch({ xp: progress.xp + n })}
+          instructionLang={instructionLang}
+        />
+      )
+    }
+    if (nav === 'gdpr-privacy') {
+      return (
+        <GdprPrivacyLab
           onEarnXp={(n) => patch({ xp: progress.xp + n })}
           instructionLang={instructionLang}
         />
