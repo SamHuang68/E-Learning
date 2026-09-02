@@ -213,18 +213,41 @@ export const ProjectileLab: React.FC = () => {
             <line x1={curSx} y1={originY} x2={curSx} y2={curSy} stroke="rgba(244, 114, 182, 0.4)" strokeWidth="1" strokeDasharray="2 2" />
             <circle cx={curSx} cy={curSy} r="6" fill="#f43f5e" stroke="#fff" strokeWidth="1.5" />
             {curV > 0.5 && (
-              <line
-                x1={curSx}
-                y1={curSy}
-                x2={curSx + (vx / v0) * 22}
-                y2={curSy - (curVy / v0) * 22}
-                stroke="#fbbf24"
-                strokeWidth="2"
-                markerEnd="url(#arrow-orange)"
-              />
+              <>
+                {/* 速度分解：水平 vx 分量 */}
+                <line
+                  x1={curSx}
+                  y1={curSy}
+                  x2={curSx + (vx / v0) * 22}
+                  y2={curSy}
+                  stroke="rgba(56, 189, 248, 0.75)"
+                  strokeWidth="1.5"
+                  strokeDasharray="2 2"
+                />
+                {/* 速度分解：鉛直 vy 分量 */}
+                <line
+                  x1={curSx}
+                  y1={curSy}
+                  x2={curSx}
+                  y2={curSy - (curVy / v0) * 22}
+                  stroke="rgba(244, 114, 182, 0.75)"
+                  strokeWidth="1.5"
+                  strokeDasharray="2 2"
+                />
+                {/* 合速度向量 v */}
+                <line
+                  x1={curSx}
+                  y1={curSy}
+                  x2={curSx + (vx / v0) * 22}
+                  y2={curSy - (curVy / v0) * 22}
+                  stroke="#fbbf24"
+                  strokeWidth="2"
+                  markerEnd="url(#arrow-orange)"
+                />
+              </>
             )}
             <text x={curSx} y={Math.max(22, curSy - 9)} fill="#fbcfe8" fontSize="8" fontWeight="bold" textAnchor="middle">
-              ({curX.toFixed(1)}m, {curY.toFixed(1)}m)
+              ({curX.toFixed(1)}m, {curY.toFixed(1)}m) | v={curV.toFixed(1)}m/s
             </text>
           </svg>
         </div>

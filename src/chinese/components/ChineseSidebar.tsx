@@ -6,6 +6,7 @@ export type ChineseNavSection =
   | 'tones-lab'
   | 'stroke'
   | 'false-friends'
+  | 'synonyms'
   | 'signals'
   | 'idioms'
   | 'conversations'
@@ -34,6 +35,7 @@ export const ChineseSidebar: React.FC<Props> = ({
     { id: 'tones-lab', icon: '🎧', title: '聲調辨音聽力', subtitle: '四声聞き分け・ミニマルペア' },
     { id: 'stroke', icon: '🖌️', title: '注音與漢字筆順', subtitle: 'ボポモフォ＆書き順練習' },
     { id: 'false-friends', icon: '⛩️', title: '日中同形異義語', subtitle: '要注意の偽友詞・落とし穴' },
+    { id: 'synonyms', icon: '⚖️', title: '近義詞微語義辨析', subtitle: '合適vs適合・以為vs認為' },
     { id: 'signals', icon: '⚡', title: '3秒文法決策樹', subtitle: '把字句・被字句・了' },
     { id: 'idioms', icon: '📜', title: '成語與台灣諺語', subtitle: '四字熟語・摸蜊仔兼洗褲' },
     { id: 'conversations', icon: '💬', title: '實用情境會話', subtitle: '夜市・MRT・台湾日常会話' },
