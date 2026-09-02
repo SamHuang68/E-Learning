@@ -26,6 +26,7 @@ export type ChineseNavSection =
   | 'pet'
   | 'rechao'
   | 'convenience-atm'
+  | 'youbike'
   | 'menu'
   | 'mock'
   | 'errors'
@@ -71,6 +72,7 @@ export const ChineseSidebar: React.FC<Props> = ({
     { id: 'pet', icon: '🐶', title: '寵物友善與動物醫院', subtitle: '晶片狂犬病・捷運提籠・友善餐廳' },
     { id: 'rechao', icon: '🍻', title: '百元熱炒與聚餐文化', subtitle: '金牌台啤・蔥爆牛・搶買單我請客' },
     { id: 'convenience-atm', icon: '🏪', title: '超商生活與 ATM 金融', subtitle: '跨行轉帳・無卡提款・自備環保杯' },
+    { id: 'youbike', icon: '🚲', title: '微笑單車與捷運轉乘', subtitle: 'YouBike 2.0・座墊反轉・轉乘折5元' },
     { id: 'menu', icon: '🏮', title: '夜市美食與台灣語', subtitle: '台湾グルメ＆生活台湾語' },
     { id: 'mock', icon: '📝', title: 'TOCFL 模擬測驗', subtitle: 'A1/A2 レベル判定模試' },
     { id: 'errors', icon: '📕', title: '華語錯題本', subtitle: '弱点專項攻克', badge: errorCount > 0 ? `${errorCount}` : undefined },

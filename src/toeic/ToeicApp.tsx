@@ -52,6 +52,7 @@ import { IpLab } from './components/IpLab'
 import { EsgLab } from './components/EsgLab'
 import { AiCloudLab } from './components/AiCloudLab'
 import { ColdChainLab } from './components/ColdChainLab'
+import { BondedWarehouseLab } from './components/BondedWarehouseLab'
 
 type Props = {
   onBackHub: () => void
@@ -530,6 +531,14 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
     if (nav === 'cold-chain') {
       return (
         <ColdChainLab
+          onEarnXp={(n) => patch({ xp: progress.xp + n })}
+          instructionLang={instructionLang}
+        />
+      )
+    }
+    if (nav === 'bonded-warehouse') {
+      return (
+        <BondedWarehouseLab
           onEarnXp={(n) => patch({ xp: progress.xp + n })}
           instructionLang={instructionLang}
         />

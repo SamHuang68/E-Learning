@@ -26,6 +26,7 @@ export type ToeicNavId =
   | 'esg'
   | 'ai-cloud'
   | 'cold-chain'
+  | 'bonded-warehouse'
   | 'story'
   | 'today'
   | 'builder'
@@ -90,6 +91,7 @@ export function ToeicSidebar({
     { id: 'esg', icon: '🌱', label: isJa ? 'ESG・脱炭素カーボン' : '企業永續與碳盤查' },
     { id: 'ai-cloud', icon: '🤖', label: isJa ? 'AIトランスフォーメーション' : 'AI轉型與雲端機房' },
     { id: 'cold-chain', icon: '❄️', label: isJa ? '航空貨物・コールドチェーン' : '空運冷鏈與溫控物流' },
+    { id: 'bonded-warehouse', icon: '🏛️', label: isJa ? '通関申告・保税倉庫' : '海關申報與保稅倉庫' },
     { id: 'errors', icon: '📕', label: isJa ? '誤答ノート' : '錯題弱點本', badge: errorCount > 0 ? `${errorCount}` : undefined },
     { id: 'story', icon: '📖', label: isJa ? 'ストーリー復習' : '情境微故事' },
     { id: 'phonics', icon: 'Aa', label: isJa ? '発音基礎' : '發音基礎' },
