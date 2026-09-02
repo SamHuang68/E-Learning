@@ -8,9 +8,11 @@ export const PROGRESS_STORAGE_KEYS = {
   math: 'math-learning-progress',
   physics: 'physics-learning-progress',
   chemistry: 'chemistry-learning-progress',
+  cs: 'cs-learning-progress',
   mathSignals: 'math_signals_mastery_v1',
   physicsSignals: 'physics_signals_mastery_v1',
   chemistrySignals: 'chemistry_signals_mastery_v1',
+  csSignals: 'cs_signals_mastery_v1',
 } as const
 
 export const LOCAL_PREFERENCE_KEYS = {

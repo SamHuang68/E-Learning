@@ -7,6 +7,7 @@ import {
   computeCalculusRadar,
   computePhysicsRadar,
   computeChemistryRadar,
+  computeCsRadar,
   computeAobaRadar,
   computeToeicRadar,
   computeChineseRadar,
@@ -27,6 +28,7 @@ import {
 import { loadMathProgress } from './math/utils/mathStorage'
 import { loadPhysicsProgress } from './physics/utils/physicsStorage'
 import { loadChemistryProgress } from './chemistry/utils/chemistryStorage'
+import { loadCsProgress } from './cs/utils/csStorage'
 import { loadChineseProgress } from './chinese/utils/chineseStorage'
 import { isAudioMuted, toggleAudioMute, playClickSound } from './engine/audioSynthesizer'
 
@@ -35,12 +37,12 @@ type Props = {
   onOpenPrivacy: () => void
 }
 
-type RadarTab = 'math' | 'calculus' | 'physics' | 'chemistry' | 'ja' | 'en' | 'zh'
+type RadarTab = 'math' | 'calculus' | 'physics' | 'chemistry' | 'cs' | 'ja' | 'en' | 'zh'
 
 /**
  * 統一學習主頁 (Unified Learning Hub Home)
- * 整合臺灣 108 課綱數學、∫ 微積分專題、⚛️ 物理、🧪 化學、あおば日語與多益商務英語六大軌道。
- * 包含全域等級、戰力雷達、連勝紀錄、今日任務與六軌統一入口。
+ * 整合臺灣 108 課綱數學、∫ 微積分專題、⚛️ 物理、🧪 化學、💻 計算機概論、あおば日語與多益商務英語。
+ * 包含全域等級、戰力雷達、連勝紀錄、今日任務與多軌統一入口。
  */
 export function Hub({ onChoose, onOpenPrivacy }: Props) {
   const [activeRadarTab, setActiveRadarTab] = useState<RadarTab>('math')
@@ -59,12 +61,14 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
     const handleUpdate = () => setTick((t) => t + 1)
     window.addEventListener('physics:progress-updated', handleUpdate)
     window.addEventListener('chemistry:progress-updated', handleUpdate)
+    window.addEventListener('cs:progress-updated', handleUpdate)
     window.addEventListener('math:progress-updated', handleUpdate)
     window.addEventListener('e-learning:progress-hydrated', handleUpdate)
     window.addEventListener('storage', handleUpdate)
     return () => {
       window.removeEventListener('physics:progress-updated', handleUpdate)
       window.removeEventListener('chemistry:progress-updated', handleUpdate)
+      window.removeEventListener('cs:progress-updated', handleUpdate)
       window.removeEventListener('math:progress-updated', handleUpdate)
       window.removeEventListener('e-learning:progress-hydrated', handleUpdate)
       window.removeEventListener('storage', handleUpdate)
@@ -76,6 +80,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
   const mathProgress = loadMathProgress()
   const physicsProgress = loadPhysicsProgress()
   const chemistryProgress = loadChemistryProgress()
+  const csProgress = loadCsProgress()
   const jaProgress = loadProgress()
   const kanaProgress = loadKanaProgress()
   const toeicProgress = loadToeicProgress()
@@ -87,13 +92,14 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
     (mathProgress.xp || 0) +
     (physicsProgress.xp || 0) +
     (chemistryProgress.xp || 0) +
+    (csProgress.xp || 0) +
     (jaProgress.xp || 0) +
     (toeicProgress.xp || 0) +
     (chineseProgress.xp || 0)
   const levelInfo = calculateLevelProgress(totalXp)
   const daily = dailyProgress(learningMeta)
 
-  // 計算六軌能力雷達數據
+  // 計算能力雷達數據
   const mathRadar = computeMathRadar(
     mathProgress.completedQuestions,
     mathProgress.examScores,
@@ -111,6 +117,11 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
     chemistryProgress.completedQuestions,
     chemistryProgress.examScores,
     chemistryProgress.labCompleted,
+  )
+  const csRadar = computeCsRadar(
+    csProgress.completedQuestions,
+    csProgress.examScores,
+    csProgress.labCompleted,
   )
   const kanaCount = Object.keys(kanaProgress.mastered).length
   const jaRadar = computeAobaRadar(
@@ -142,16 +153,19 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
           ? physicsRadar
           : activeRadarTab === 'chemistry'
             ? chemistryRadar
-            : activeRadarTab === 'ja'
-              ? jaRadar
-              : activeRadarTab === 'zh'
-                ? chineseRadar
-                : toeicRadar
+            : activeRadarTab === 'cs'
+              ? csRadar
+              : activeRadarTab === 'ja'
+                ? jaRadar
+                : activeRadarTab === 'zh'
+                  ? chineseRadar
+                  : toeicRadar
 
   // 統計已掌握項目
   const mathDoneCount = mathProgress.completedQuestions.length
   const physicsDoneCount = physicsProgress.completedQuestions.length
   const chemistryDoneCount = chemistryProgress.completedQuestions.length
+  const csDoneCount = csProgress.completedQuestions.length
 
   return (
     <main className="hub unified-hub">
@@ -420,7 +434,37 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
             <b className="launch-action chemistry-action">進入化學學習 →</b>
           </button>
 
-          {/* 5. あおば日本語 (中文學日語) */}
+          {/* 5. 💻 計算機概論 (硬體+軟體+現代 AI) */}
+          <button
+            type="button"
+            className="hub-card cs-track-card"
+            style={{ borderColor: '#2563eb' }}
+            onClick={() => onChoose('cs')}
+          >
+            <div className="hub-card-header">
+              <div className="hub-card-mark cs-mark" style={{ background: 'linear-gradient(135deg, #2563eb, #10b981)', color: '#fff' }}>💻</div>
+              <span className="track-status-pill" style={{ background: 'rgba(37, 99, 235, 0.15)', color: '#2563eb', borderColor: 'rgba(37, 99, 235, 0.3)' }}>
+                軟硬體 · 五大單元 · AI加速
+              </span>
+            </div>
+            <p className="eyebrow">COMPUTER SCIENCE · HARDWARE TO AI</p>
+            <h2>計算機概論 (軟硬體與現代AI)</h2>
+            <p className="track-desc">
+              從軟硬體本質定義、系統抽象階層，延伸至傳統馮紐曼五大功能單元、系統匯流排、二補數、作業系統排程，全景接軌現代 GPU 平行張量加速、TPU 脈動陣列與 Transformer 大模型架構。
+            </p>
+            <div className="track-highlight-badges">
+              <span>🖥️ 系統抽象階層</span>
+              <span>⚙️ 馮紐曼五大單元</span>
+              <span>⚡ GPU/TPU 加速</span>
+              <span>🤖 Transformer LLM</span>
+            </div>
+            <div className="track-user-progress">
+              <span>進度：已解 <strong>{csDoneCount}</strong> 題 · 累積 <strong>{csProgress.xp} XP</strong></span>
+            </div>
+            <b className="launch-action" style={{ color: '#2563eb' }}>進入計算機概論學習 →</b>
+          </button>
+
+          {/* 6. あおば日本語 (中文學日語) */}
           <button
             type="button"
             className="hub-card jp-track-card"
@@ -713,6 +757,14 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
               onClick={() => setActiveRadarTab('chemistry')}
             >
               🧪 化學
+            </button>
+            <button
+              type="button"
+              className={`radar-tab-btn ${activeRadarTab === 'cs' ? 'active' : ''}`}
+              style={{ color: activeRadarTab === 'cs' ? '#2563eb' : undefined }}
+              onClick={() => setActiveRadarTab('cs')}
+            >
+              💻 計概
             </button>
             <button
               type="button"

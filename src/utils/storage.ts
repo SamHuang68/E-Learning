@@ -29,7 +29,7 @@ const LEARNING_META_KEY = 'e-learning-meta'
 const LEARNING_EVENT_LIMIT = 200
 
 /** Learning target language/subject modules. */
-export type LangId = 'ja' | 'en' | 'zh' | 'math' | 'calculus' | 'physics' | 'chemistry'
+export type LangId = 'ja' | 'en' | 'zh' | 'math' | 'calculus' | 'physics' | 'chemistry' | 'cs'
 /** Top-level app view: language/subject picker or a learning module. */
 export type AppView = 'hub' | LangId
 
@@ -42,6 +42,7 @@ function normalizeLang(value: string | null | undefined): AppView | null {
   if (value === 'calculus' || value === 'calc') return 'calculus'
   if (value === 'physics' || value === 'phys') return 'physics'
   if (value === 'chemistry' || value === 'chem') return 'chemistry'
+  if (value === 'cs' || value === 'compsci' || value === 'computer') return 'cs'
   return null
 }
 
@@ -113,6 +114,7 @@ export function loadLang(): AppView {
   if (hash === 'calculus' || hash.startsWith('calc')) return 'calculus'
   if (hash === 'physics' || hash.startsWith('phys')) return 'physics'
   if (hash === 'chemistry' || hash.startsWith('chem')) return 'chemistry'
+  if (hash === 'cs' || hash.startsWith('compsci') || hash.startsWith('computer')) return 'cs'
   if (hash === 'math' || hash.startsWith('math')) return 'math'
   if (
     hash === 'ja' ||
@@ -138,6 +140,7 @@ export function saveLang(view: AppView) {
   else if (view === 'calculus') window.location.hash = 'calculus'
   else if (view === 'physics') window.location.hash = 'physics'
   else if (view === 'chemistry') window.location.hash = 'chemistry'
+  else if (view === 'cs') window.location.hash = 'cs'
   else if (view === 'ja') window.location.hash = 'aoba'
   else if (view === 'zh') window.location.hash = 'zh'
   else window.location.hash = 'hub'

@@ -9,10 +9,12 @@ type Props = {
 const TRACKS: Array<{ id: LangId; label: string }> = [
   { id: 'ja', label: 'あ 日語' },
   { id: 'en', label: 'TOEIC 英語' },
+  { id: 'zh', label: '🀄 華語' },
   { id: 'math', label: '∑ 數學' },
   { id: 'calculus', label: '∫ 微積分' },
   { id: 'physics', label: '⚛ 物理' },
   { id: 'chemistry', label: '🧪 化學' },
+  { id: 'cs', label: '💻 計算機概論' },
 ]
 
 export function TrackSwitcher({ current, onBackHub, onSwitchLang }: Props) {

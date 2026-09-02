@@ -73,6 +73,7 @@ describe('Strict Review Gate: E2E Route & View State Machine Invariants', () => 
   const ALL_TRACKS: Array<{ view: AppView; expectedHash: string; label: string }> = [
     { view: 'physics', expectedHash: 'physics', label: '臺灣物理 (國中+高中)' },
     { view: 'chemistry', expectedHash: 'chemistry', label: '臺灣化學 (國中+高中)' },
+    { view: 'cs', expectedHash: 'cs', label: '計算機概論 (硬體+軟體+AI)' },
     { view: 'math', expectedHash: 'math', label: '臺灣數學 (K-12)' },
     { view: 'calculus', expectedHash: 'calculus', label: '微積分互動專題' },
     { view: 'ja', expectedHash: 'aoba', label: 'あおば日本語' },
@@ -98,6 +99,9 @@ describe('Strict Review Gate: E2E Route & View State Machine Invariants', () => 
 
     saveLang('chemistry')
     expect(loadLang()).toBe('chemistry')
+
+    saveLang('cs')
+    expect(loadLang()).toBe('cs')
 
     saveLang('math')
     expect(loadLang()).toBe('math')

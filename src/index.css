@@ -3061,6 +3061,7 @@ footer {
   .calculus-shell,
   .physics-shell,
   .chemistry-shell,
+  .cs-shell,
   .toeic-shell {
     grid-template-columns: minmax(0, 1fr) !important;
     height: auto !important;
@@ -3073,7 +3074,8 @@ footer {
   .math-sidebar,
   .calculus-sidebar,
   .physics-sidebar,
-  .chemistry-sidebar {
+  .chemistry-sidebar,
+  .cs-sidebar {
     position: sticky;
     top: 0;
     height: auto !important;

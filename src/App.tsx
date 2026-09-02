@@ -32,6 +32,10 @@ const ChemistryApp = lazyWithRetry(
   () => import('./chemistry/ChemistryApp').then((m) => ({ default: m.ChemistryApp })),
   'chemistry',
 )
+const CsApp = lazyWithRetry(
+  () => import('./cs/CsApp').then((m) => ({ default: m.CsApp })),
+  'cs',
+)
 const ChineseApp = lazyWithRetry(() =>
   import('./chinese/ChineseApp').then((m) => ({ default: m.ChineseApp })),
 )
@@ -68,6 +72,7 @@ function AppShell() {
       calculus: '微積分互動專題｜E-Learning Hub',
       physics: '臺灣物理學習 (國中+高中)｜E-Learning Hub',
       chemistry: '臺灣化學學習 (國中+高中)｜E-Learning Hub',
+      cs: '計算機概論 (軟硬體與現代AI)｜E-Learning Hub',
       ja: '日本語學習｜E-Learning Hub',
       en: 'TOEIC 英語學習｜E-Learning Hub',
       zh: '台湾華語・中国語學習 (日本語で学ぶ)｜E-Learning Hub',
@@ -200,6 +205,18 @@ function AppShell() {
       <ErrorBoundary label="臺灣化學模組">
         <Suspense fallback={<ModuleFallback />}>
           <ChemistryApp
+            onBackHub={() => choose('hub')}
+            onSwitchLang={(lang: LangId) => choose(lang)}
+          />
+        </Suspense>
+      </ErrorBoundary>
+    )
+  }
+  if (view === 'cs') {
+    return (
+      <ErrorBoundary label="計算機概論模組">
+        <Suspense fallback={<ModuleFallback />}>
+          <CsApp
             onBackHub={() => choose('hub')}
             onSwitchLang={(lang: LangId) => choose(lang)}
           />

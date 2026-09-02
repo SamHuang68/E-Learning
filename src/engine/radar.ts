@@ -13,7 +13,7 @@ export type RadarDimension = {
 }
 
 export type TrackRadar = {
-  track: 'math' | 'calculus' | 'physics' | 'chemistry' | 'ja' | 'en' | 'zh'
+  track: 'math' | 'calculus' | 'physics' | 'chemistry' | 'cs' | 'ja' | 'en' | 'zh'
   trackName: string
   dimensions: RadarDimension[]
   averageScore: number
@@ -590,6 +590,93 @@ export function computeChineseRadar(
   return {
     track: 'zh',
     trackName: '🇹🇼 台湾華語 (日本語で学ぶ)',
+    dimensions,
+    averageScore,
+    strongestDimension: sorted[0],
+    weakestDimension: sorted[sorted.length - 1],
+  }
+}
+
+/**
+ * 計算計算機概論 (硬體+軟體+現代 AI) 能力雷達
+ */
+export function computeCsRadar(
+  completedQuestions: string[],
+  examScores: Record<string, number>,
+  labCompleted: string[],
+): TrackRadar {
+  const totalCompleted = completedQuestions.length
+  const totalLabs = labCompleted.length
+
+  const hardwareBase = Math.min(
+    100,
+    totalCompleted * 8 + (labCompleted.includes('von-neumann') ? 30 : 0),
+  )
+  const osBase = Math.min(
+    100,
+    totalCompleted * 6 + (examScores['cs-midterm'] ? Math.round(examScores['cs-midterm'] * 0.4) : 10),
+  )
+  const networkBase = Math.min(100, totalCompleted * 7 + 15)
+  const aiComputeBase = Math.min(
+    100,
+    totalLabs * 25 + (labCompleted.includes('ai-transformer') ? 35 : 0),
+  )
+  const llmAlgoBase = Math.min(
+    100,
+    totalCompleted * 7 + (labCompleted.includes('ai-transformer') ? 25 : 0),
+  )
+
+  const dimensions: RadarDimension[] = [
+    {
+      key: 'hardware_arch',
+      label: '電腦硬體與馮紐曼架構',
+      score: hardwareBase,
+      fullMark: 100,
+      description: '五大功能單元（CU, ALU, MU, IU, OU）、系統匯流排、暫存器與機器週期',
+      status: scoreToStatus(hardwareBase),
+    },
+    {
+      key: 'os_system',
+      label: '作業系統與行程記憶體',
+      score: osBase,
+      fullMark: 100,
+      description: '行程執行緒區別、CPU 排程、死結四大條件、虛擬記憶體與分頁機制',
+      status: scoreToStatus(osBase),
+    },
+    {
+      key: 'network_security',
+      label: '網路協定與網際網路通訊',
+      score: networkBase,
+      fullMark: 100,
+      description: 'OSI 七層與 TCP/IP、三向交握、DNS 域名解析、HTTP/HTTPS 與 TLS',
+      status: scoreToStatus(networkBase),
+    },
+    {
+      key: 'ai_compute',
+      label: '現代 AI 硬體與加速晶片',
+      score: aiComputeBase,
+      fullMark: 100,
+      description: 'CPU vs GPU 平行運算、TPU 脈動陣列、NPU 邊緣推論與 VRAM 最佳化',
+      status: scoreToStatus(aiComputeBase),
+    },
+    {
+      key: 'llm_algorithms',
+      label: 'Transformer 與大模型架構',
+      score: llmAlgoBase,
+      fullMark: 100,
+      description: 'Self-Attention 自注意力機制、KV Cache、量化技術 (INT4) 與 Hive Agent',
+      status: scoreToStatus(llmAlgoBase),
+    },
+  ]
+
+  const averageScore = Math.round(
+    dimensions.reduce((sum, d) => sum + d.score, 0) / dimensions.length,
+  )
+  const sorted = [...dimensions].sort((a, b) => b.score - a.score)
+
+  return {
+    track: 'cs',
+    trackName: '💻 計算機概論 (硬體+軟體+AI)',
     dimensions,
     averageScore,
     strongestDimension: sorted[0],
