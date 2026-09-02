@@ -32,6 +32,7 @@ export type ToeicNavId =
   | 'tech-transfer'
   | 'antitrust'
   | 'conflict-minerals'
+  | 'patent-litigation'
   | 'story'
   | 'today'
   | 'builder'
@@ -102,6 +103,7 @@ export function ToeicSidebar({
     { id: 'tech-transfer', icon: '🔐', label: isJa ? '技術移転・エスクロー' : '技術移轉與原始碼託管' },
     { id: 'antitrust', icon: '⚖️', label: isJa ? '独禁法・カルテル防止' : '反托拉斯與價格合謀' },
     { id: 'conflict-minerals', icon: '💎', label: isJa ? '紛争鉱物・労働監査' : '衝突礦產與勞工人權' },
+    { id: 'patent-litigation', icon: '⚖️', label: isJa ? '特許侵害・仮差止命令' : '專利侵權與禁制令' },
     { id: 'errors', icon: '📕', label: isJa ? '誤答ノート' : '錯題弱點本', badge: errorCount > 0 ? `${errorCount}` : undefined },
     { id: 'story', icon: '📖', label: isJa ? 'ストーリー復習' : '情境微故事' },
     { id: 'phonics', icon: 'Aa', label: isJa ? '発音基礎' : '發音基礎' },
