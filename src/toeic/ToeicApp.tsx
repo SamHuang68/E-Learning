@@ -55,6 +55,7 @@ import { ColdChainLab } from './components/ColdChainLab'
 import { BondedWarehouseLab } from './components/BondedWarehouseLab'
 import { RfpBiddingLab } from './components/RfpBiddingLab'
 import { ForceMajeureLab } from './components/ForceMajeureLab'
+import { TechTransferLab } from './components/TechTransferLab'
 
 type Props = {
   onBackHub: () => void
@@ -557,6 +558,14 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
     if (nav === 'force-majeure') {
       return (
         <ForceMajeureLab
+          onEarnXp={(n) => patch({ xp: progress.xp + n })}
+          instructionLang={instructionLang}
+        />
+      )
+    }
+    if (nav === 'tech-transfer') {
+      return (
+        <TechTransferLab
           onEarnXp={(n) => patch({ xp: progress.xp + n })}
           instructionLang={instructionLang}
         />

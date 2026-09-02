@@ -29,6 +29,7 @@ export type ToeicNavId =
   | 'bonded-warehouse'
   | 'rfp-bidding'
   | 'force-majeure'
+  | 'tech-transfer'
   | 'story'
   | 'today'
   | 'builder'
@@ -96,6 +97,7 @@ export function ToeicSidebar({
     { id: 'bonded-warehouse', icon: '🏛️', label: isJa ? '通関申告・保税倉庫' : '海關申報與保稅倉庫' },
     { id: 'rfp-bidding', icon: '📑', label: isJa ? '調達RFP・ベンダー選定' : '採購RFP與供應商競標' },
     { id: 'force-majeure', icon: '🌪️', label: isJa ? '不可抗力・保険求償' : '不可抗力與天災保險' },
+    { id: 'tech-transfer', icon: '🔐', label: isJa ? '技術移転・エスクロー' : '技術移轉與原始碼託管' },
     { id: 'errors', icon: '📕', label: isJa ? '誤答ノート' : '錯題弱點本', badge: errorCount > 0 ? `${errorCount}` : undefined },
     { id: 'story', icon: '📖', label: isJa ? 'ストーリー復習' : '情境微故事' },
     { id: 'phonics', icon: 'Aa', label: isJa ? '発音基礎' : '發音基礎' },
