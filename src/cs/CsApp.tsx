@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import type { LangId } from '../utils/storage'
 import { CsSidebar, type CsNavSection } from './components/CsSidebar'
 import { CsToday } from './components/CsToday'
@@ -7,6 +7,7 @@ import { CsSignalsView } from './components/CsSignalsView'
 import { CsMockExam } from './components/CsMockExam'
 import { CsErrorVault } from './components/CsErrorVault'
 import { VonNeumannArchitectureLab } from './labs/VonNeumannArchitectureLab'
+import { PipelineHazardLab } from './labs/PipelineHazardLab'
 import { AiMatrixTransformerLab } from './labs/AiMatrixTransformerLab'
 import { loadCsProgress, saveCsProgress, type CsProgress } from './utils/csStorage'
 
@@ -137,6 +138,15 @@ export const CsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
             onEarnXp={(amount) => {
               handleEarnXp(amount)
               handleLabCompleted('von-neumann')
+            }}
+          />
+        )}
+
+        {activeSection === 'pipeline-hazard' && (
+          <PipelineHazardLab
+            onEarnXp={(amount) => {
+              handleEarnXp(amount)
+              handleLabCompleted('pipeline-hazard')
             }}
           />
         )}

@@ -1,4 +1,4 @@
-﻿import React from 'react'
+import React from 'react'
 import { TrackSwitcher } from '../../components/TrackSwitcher'
 import type { LangId } from '../../utils/storage'
 
@@ -7,6 +7,7 @@ export type CsNavSection =
   | 'practice'
   | 'signals'
   | 'von-neumann'
+  | 'pipeline-hazard'
   | 'ai-transformer'
   | 'mock'
   | 'errors'
@@ -33,6 +34,7 @@ export const CsSidebar: React.FC<Props> = ({
     { id: 'practice', icon: '📚', title: '課綱單元題庫', subtitle: '7大單元完整特訓' },
     { id: 'signals', icon: '⚡', title: '3秒破題訊號卡', subtitle: '15組秒殺決策翻轉' },
     { id: 'von-neumann', icon: '⚙️', title: '五大單元實驗室', subtitle: '取指解碼執行寫回' },
+    { id: 'pipeline-hazard', icon: '⚡', title: 'CPU 管線冒險', subtitle: 'Forwarding & Stall' },
     { id: 'ai-transformer', icon: '🤖', title: 'AI 矩陣與注意力', subtitle: 'GPU GEMM & Attention' },
     { id: 'mock', icon: '📝', title: '期中期末模擬考', subtitle: '計時標準評量診斷' },
     { id: 'errors', icon: '📕', title: '錯題弱點本', subtitle: '盲點複習掌握', badge: errorCount > 0 ? `${errorCount}` : undefined },

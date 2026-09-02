@@ -162,4 +162,28 @@ export const CS_SOLVING_SIGNALS: CsSolvingSignal[] = [
       quickSolve: '70B × 0.5 Bytes = 35 GB 顯存。',
     },
   },
+  {
+    id: 'sig-cs-tlb-emat',
+    strand: '作業系統',
+    topic: 'TLB 虛擬記憶體有效存取時間 (EMAT)',
+    problemSignal: '題目給定 TLB 命中率 $\\alpha$、TLB 延遲與 RAM 訪存時間，求 EMAT',
+    threeSecondRule: '【TLB 必查一次，未中罰查兩次主存】公式即為 $T_{\\text{TLB}} + (2 - \\alpha) \\cdot T_{\\text{RAM}}$！',
+    firstStepFormula: '\\text{EMAT} = T_{\\text{TLB}} + (2 - \\alpha) \\cdot T_{\\text{RAM}}',
+    exampleProblem: {
+      question: 'TLB 耗時 10ns，RAM 耗時 100ns，命中率 95% 時之 EMAT？',
+      quickSolve: 'EMAT = 10 + (2 - 0.95) × 100 = 115 ns。',
+    },
+  },
+  {
+    id: 'sig-cs-moe-routing',
+    strand: '前沿AI演算法',
+    topic: '混合專家模型 (MoE) 稀疏門控路由',
+    problemSignal: '題目詢問 MoE 架構如何實現參數量與推論 FLOPs 計算量的解耦',
+    threeSecondRule: '【Top-k 門控只喚醒 k 個專家，其餘權重全歸零】參數量大但每 token 運算量小！',
+    firstStepFormula: 'G(x) = \\text{Softmax}(\\text{TopK}(x \\cdot W_g, k))',
+    exampleProblem: {
+      question: '8x7B (47B) MoE 模型推論時每個 token 的計算量約等同於多少參量的密集模型？',
+      quickSolve: '每次僅啟動 Top-2 專家，運算量僅相當於約 13B 密集模型。',
+    },
+  },
 ]
