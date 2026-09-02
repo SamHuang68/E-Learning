@@ -306,4 +306,28 @@ export const CS_SOLVING_SIGNALS: CsSolvingSignal[] = [
       quickSolve: 'I_knee = 300e12 / 1500e9 = 200。因 50 < 200，故為 Memory-Bound。',
     },
   },
+  {
+    id: 'sig-cs-tp-allreduce',
+    strand: '現代AI硬體',
+    topic: 'Megatron-LM 張量平行單層通訊次數與傳輸量',
+    problemSignal: '題目詢問 Transformer 層在張量平行 (TP) 下的前向傳播 All-Reduce 次數',
+    threeSecondRule: '【嚴格 2 次 All-Reduce】MHA 輸出投影一次，MLP 第二層投影一次！',
+    firstStepFormula: '\\text{Ops} = 2 \\times \\text{All-Reduce} \\implies \\text{Bytes} = 2 \\times \\left[2 \\times \\frac{N-1}{N} M\\right]',
+    exampleProblem: {
+      question: '單層 Transformer 前向傳播在 TP=8 下產生幾次 All-Reduce？',
+      quickSolve: 'Attention 輸出一次、MLP 輸出一次，共 2 次 All-Reduce。',
+    },
+  },
+  {
+    id: 'sig-cs-kvcache-mem',
+    strand: '前沿AI演算法',
+    topic: 'LLM 推論 KV Cache 顯存佔用估算',
+    problemSignal: '題目給定 Batch, SeqLen, Layers, HiddenDim 與 FP16 精度，求 KV Cache 顯存大小',
+    threeSecondRule: '【乘數因子為 2 (Key 與 Value 各一份)】2 * b * s * L * h * 2 Bytes！',
+    firstStepFormula: '\\text{Size} = 2 \\times b \\times s \\times L \\times h \\times 2\\text{ Bytes}',
+    exampleProblem: {
+      question: 'b=2, s=8192, L=32, h=4096 在 FP16 下的 KV Cache 顯存佔用？',
+      quickSolve: '2 * 2 * 8192 * 32 * 4096 * 2 = 8,589,934,592 Bytes = 8 GiB (約 8.59 GB)。',
+    },
+  },
 ]
