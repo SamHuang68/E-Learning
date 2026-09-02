@@ -354,4 +354,28 @@ export const CS_SOLVING_SIGNALS: CsSolvingSignal[] = [
       quickSolve: 'ceil(2050 / 16) = ceil(128.125) = 129 個 Blocks。',
     },
   },
+  {
+    id: 'sig-cs-pp-bubble-rate',
+    strand: '現代AI硬體',
+    topic: '大模型 1F1B 管線平行 (Pipeline Parallelism) 氣泡率估算',
+    problemSignal: '題目給定管線級數 $p$ 與微批次數 $m$，求硬體閒置氣泡比例',
+    threeSecondRule: '【(p - 1) 除以 (m + p - 1)】m 越大氣泡率越趨近零！',
+    firstStepFormula: 'F_{\\text{bubble}} = \\frac{p - 1}{m + p - 1}',
+    exampleProblem: {
+      question: '4 級管線且 16 個微批次時的氣泡率為多少？',
+      quickSolve: '(4 - 1) / (16 + 4 - 1) = 3 / 19 ≈ 15.79%。',
+    },
+  },
+  {
+    id: 'sig-cs-rsa-euler-inv',
+    strand: '網路與通訊',
+    topic: 'RSA 公鑰密碼學私鑰模反元素推導',
+    problemSignal: '題目給定質數 p, q 與公鑰指數 e，求私鑰 d',
+    threeSecondRule: '【先求歐拉值 (p-1)(q-1) 再用擴展歐幾里得求模逆元】e*d ≡ 1 mod phi！',
+    firstStepFormula: 'e \\cdot d \\equiv 1 \\pmod{(p-1)(q-1)}',
+    exampleProblem: {
+      question: 'p=61, q=53, e=17 時的私鑰 d 為多少？',
+      quickSolve: 'phi=(60)(52)=3120，解 17d ≡ 1 mod 3120 得 d = 2753。',
+    },
+  },
 ]
