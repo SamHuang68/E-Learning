@@ -14,6 +14,7 @@ import { MeasureWordsLab } from './components/MeasureWordsLab'
 import { TransitLab } from './components/TransitLab'
 import { HousingLab } from './components/HousingLab'
 import { BankingLab } from './components/BankingLab'
+import { MedicalLab } from './components/MedicalLab'
 import { ChineseMockExam } from './components/ChineseMockExam'
 import { ChineseErrorVault } from './components/ChineseErrorVault'
 import { loadChineseProgress, saveChineseProgress } from './utils/chineseStorage'
@@ -134,6 +135,7 @@ export const ChineseApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         {section === 'transit' && <TransitLab onEarnXp={earnXp} />}
         {section === 'housing' && <HousingLab onEarnXp={earnXp} />}
         {section === 'banking' && <BankingLab onEarnXp={earnXp} />}
+        {section === 'medical' && <MedicalLab onEarnXp={earnXp} />}
         {section === 'menu' && <TaiwanMenuLab onEarnXp={earnXp} />}
         {section === 'mock' && <ChineseMockExam onEarnXp={earnXp} onRecordError={recordError} />}
         {section === 'errors' && (
