@@ -22,6 +22,7 @@ export type ChineseNavSection =
   | 'festivals'
   | 'crafts'
   | 'road-trip'
+  | 'repair'
   | 'menu'
   | 'mock'
   | 'errors'
@@ -63,6 +64,7 @@ export const ChineseSidebar: React.FC<Props> = ({
     { id: 'festivals', icon: '🏮', title: '傳統節慶與廟宇拜拜', subtitle: '龍山寺擲筊・年貨大街・買三送一' },
     { id: 'crafts', icon: '🍵', title: '老街文創與茶藝體驗', subtitle: '十分天燈祈福・九份高山茶品茗' },
     { id: 'road-trip', icon: '⛽', title: '租車自駕與環島公路', subtitle: '中油九五加滿・蘇花改・ETC' },
+    { id: 'repair', icon: '🔧', title: '租屋修繕與水電管委', subtitle: '冷氣漏水報修・跳電・管理費' },
     { id: 'menu', icon: '🏮', title: '夜市美食與台灣語', subtitle: '台湾グルメ＆生活台湾語' },
     { id: 'mock', icon: '📝', title: 'TOCFL 模擬測驗', subtitle: 'A1/A2 レベル判定模試' },
     { id: 'errors', icon: '📕', title: '華語錯題本', subtitle: '弱点專項攻克', badge: errorCount > 0 ? `${errorCount}` : undefined },

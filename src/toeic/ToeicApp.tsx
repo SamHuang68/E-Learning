@@ -48,6 +48,7 @@ import { TradeLab } from './components/TradeLab'
 import { RealEstateLab } from './components/RealEstateLab'
 import { PrLab } from './components/PrLab'
 import { MnaLab } from './components/MnaLab'
+import { IpLab } from './components/IpLab'
 
 type Props = {
   onBackHub: () => void
@@ -494,6 +495,14 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
     if (nav === 'mna') {
       return (
         <MnaLab
+          onEarnXp={(n) => patch({ xp: progress.xp + n })}
+          instructionLang={instructionLang}
+        />
+      )
+    }
+    if (nav === 'ip') {
+      return (
+        <IpLab
           onEarnXp={(n) => patch({ xp: progress.xp + n })}
           instructionLang={instructionLang}
         />
