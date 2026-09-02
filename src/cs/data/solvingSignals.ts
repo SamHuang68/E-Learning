@@ -186,4 +186,28 @@ export const CS_SOLVING_SIGNALS: CsSolvingSignal[] = [
       quickSolve: '每次僅啟動 Top-2 專家，運算量僅相當於約 13B 密集模型。',
     },
   },
+  {
+    id: 'sig-cs-raft-quorum',
+    strand: '網路與通訊',
+    topic: 'Raft 分散式共識法定過半數 (Quorum)',
+    problemSignal: '題目給定集群節點數 $N$，求領導者當選或日誌提交所需的最低票數',
+    threeSecondRule: '【節點數除以 2 取高斯整數再加 1】5 節點需 3 票，7 節點需 4 票！',
+    firstStepFormula: '\\text{Quorum} = \\lfloor N / 2 \\rfloor + 1',
+    exampleProblem: {
+      question: '一個由 5 台伺服器組成的 Raft 集群，最多能容忍幾台節點同時當機？',
+      quickSolve: '法定票數為 3 票，因此最多可容忍 5 - 3 = 2 台節點同時當機故障。',
+    },
+  },
+  {
+    id: 'sig-cs-csma-cd-minframe',
+    strand: '網路與通訊',
+    topic: '乙太網路 CSMA/CD 最短訊框長度',
+    problemSignal: '題目給定單向傳播延遲 $\\tau$ 與傳輸速率 $B$，求偵測碰撞的最短訊框長度',
+    threeSecondRule: '【2 倍傳播延遲乘以傳輸頻寬】發送時間必須撐過來回爭用期才能確保偵測到衝突！',
+    firstStepFormula: 'L_{\\min} = 2\\tau \\times \\text{Bandwidth}',
+    exampleProblem: {
+      question: '傳播延遲 2.56μs、速率 100Mbps 的乙太網路，最短訊框為多少？',
+      quickSolve: 'L = 2 × 2.56μs × 100Mbps = 512 bits = 64 Bytes。',
+    },
+  },
 ]
