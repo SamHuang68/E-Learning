@@ -426,4 +426,28 @@ export const CS_SOLVING_SIGNALS: CsSolvingSignal[] = [
       quickSolve: '直接在偏好對上透過二元邏輯斯迴歸最小化勝率交叉熵。',
     },
   },
+  {
+    id: 'sig-cs-consistent-hashing',
+    strand: '五大單元架構',
+    topic: '一致性哈希 (Consistent Hashing) 與虛擬節點',
+    problemSignal: '題目問及伺服器增減時如何避免全域快取雪崩重哈希',
+    threeSecondRule: '【看到圓環映射 + 平均 1/N 遷移 + 虛擬節點防偏斜直選一致性哈希】！',
+    firstStepFormula: '\\Delta \\text{Migration} \\approx \\frac{1}{N} \\times \\text{TotalKeys}',
+    exampleProblem: {
+      question: '分散式叢集增減單一節點時僅需遷移多少比例資料？',
+      quickSolve: '僅需遷移約 1/N 的相鄰區間資料。',
+    },
+  },
+  {
+    id: 'sig-cs-cordic-shifts',
+    strand: '數位邏輯',
+    topic: 'CORDIC 座標旋轉演算法無乘法器特徵',
+    problemSignal: '題目問及微控制器或 FPGA 內僅靠位移與加法計算三角函數的演算法',
+    threeSecondRule: '【看到 tan(theta_i) = 2^(-i) 純位移與加法計算旋轉直選 CORDIC】！',
+    firstStepFormula: 'x_{i+1} = x_i - d_i y_i 2^{-i}, \\quad y_{i+1} = y_i + d_i x_i 2^{-i}',
+    exampleProblem: {
+      question: 'FPGA 內無需乘法器計算 sin/cos 的微迭代演算法為何？',
+      quickSolve: 'CORDIC 座標旋轉數位計算演算法。',
+    },
+  },
 ]

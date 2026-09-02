@@ -1,0 +1,198 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "MESI Cache Coherence Protocol Sequence",
+    "output": "cache-coherence-sequence.html",
+    "viewBox": [
+      820,
+      760
+    ],
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "miss-path",
+        "label": "Read Miss and Snooping",
+        "focus": [
+          "core0",
+          "bus",
+          "core1"
+        ],
+        "note": "Core 0 misses in L1 and broadcasts BusRd onto the snooping bus."
+      },
+      {
+        "id": "flush-path",
+        "label": "Flush and Writeback",
+        "focus": [
+          "core1",
+          "bus",
+          "dram",
+          "core0"
+        ],
+        "note": "Core 1 detects hit in Modified state and flushes data to Core 0 and DRAM."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "core0",
+      "type": "backend",
+      "label": "Core 0 L1",
+      "sublabel": "Requester (Miss)"
+    },
+    {
+      "id": "bus",
+      "type": "messagebus",
+      "label": "Coherence Bus",
+      "sublabel": "Snooping Arbiter"
+    },
+    {
+      "id": "core1",
+      "type": "backend",
+      "label": "Core 1 L1",
+      "sublabel": "Modified Owner"
+    },
+    {
+      "id": "dram",
+      "type": "database",
+      "label": "Main Memory",
+      "sublabel": "DRAM Controller"
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 295,
+      "label": "Read Miss"
+    },
+    {
+      "from": 315,
+      "to": 505,
+      "label": "Snoop & Flush"
+    },
+    {
+      "from": 525,
+      "to": 665,
+      "label": "Shared Transition"
+    }
+  ],
+  "messages": [
+    {
+      "id": "m1",
+      "from": "core0",
+      "to": "bus",
+      "y": 185,
+      "label": "BusRd (Line X)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m2",
+      "from": "bus",
+      "to": "core1",
+      "y": 240,
+      "label": "Snoop Query",
+      "variant": "default"
+    },
+    {
+      "id": "m3",
+      "from": "core1",
+      "to": "bus",
+      "y": 300,
+      "label": "Signal M Hit",
+      "variant": "security"
+    },
+    {
+      "id": "m4",
+      "from": "core1",
+      "to": "bus",
+      "y": 370,
+      "label": "Flush Line X",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m5",
+      "from": "bus",
+      "to": "dram",
+      "y": 440,
+      "label": "Memory Writeback",
+      "variant": "dashed"
+    },
+    {
+      "id": "m6",
+      "from": "bus",
+      "to": "core0",
+      "y": 510,
+      "label": "Supply Clean Data",
+      "variant": "return"
+    },
+    {
+      "id": "m7",
+      "from": "bus",
+      "to": "core1",
+      "y": 580,
+      "label": "Transition to S",
+      "variant": "default"
+    },
+    {
+      "id": "m8",
+      "from": "bus",
+      "to": "core0",
+      "y": 640,
+      "label": "Transition to S",
+      "variant": "return"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "core0",
+      "from": 180,
+      "to": 630,
+      "type": "backend"
+    },
+    {
+      "participant": "bus",
+      "from": 185,
+      "to": 460,
+      "type": "messagebus"
+    },
+    {
+      "participant": "core1",
+      "from": 230,
+      "to": 570,
+      "type": "backend"
+    },
+    {
+      "participant": "dram",
+      "from": 400,
+      "to": 470,
+      "type": "database"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Snooping Interconnect",
+      "items": [
+        "All CPU cores observe BusRd transactions on the shared coherence bus",
+        "Cache controllers respond immediately to state conflict queries"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Cache-to-Cache Transfer",
+      "items": [
+        "Modified owner intervenes and flushes fresh data directly to requester",
+        "Simultaneously updates main memory to maintain system-wide coherence"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "MESI State Invariant",
+      "items": [
+        "Both cores safely downgrade their local line state to Shared (S)",
+        "Guarantees subsequent reads can proceed locally at nanosecond speeds"
+      ]
+    }
+  ]
+}

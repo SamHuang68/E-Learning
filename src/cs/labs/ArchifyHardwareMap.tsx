@@ -4,7 +4,7 @@ interface Props {
   onEarnXp?: (amount: number) => void
 }
 
-type DiagramKind = 'ai-server' | 'lsm-tree'
+type DiagramKind = 'ai-server' | 'lsm-tree' | 'cache-coherence'
 
 export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
   const [selectedDiagram, setSelectedDiagram] = useState<DiagramKind>('ai-server')
@@ -38,6 +38,17 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
         { label: 'IN-MEMORY BUFFER', title: 'MemTable (SkipList)', desc: '無鎖並發 O(log N) 寫入與點查', color: '#06b6d4' },
         { label: 'DURABILITY LOG', title: 'WAL Sequential I/O', desc: '順序寫入消滅磁頭尋道代價保證崩潰安全', color: '#10b981' },
         { label: 'STORAGE COMPACTION', title: 'Leveled Compaction', desc: '分層多路歸併排序，Bloom Filter 杜絕無效訪存', color: '#f43f5e' },
+      ],
+    },
+    'cache-coherence': {
+      title: 'MESI 快取一致性匯流排監聽時序圖',
+      subtitle: 'CPU Core 0 讀取缺失、Core 1 攔截刷新與 DRAM 主存回寫狀態機時序',
+      file: './archify/cache-coherence-sequence.html',
+      badge: 'Archify Sequence 2.16',
+      stats: [
+        { label: 'SNOOPING INTERCONNECT', title: 'BusRd Broadcast', desc: '匯流排廣播監聽與仲裁者狀態追蹤', color: '#06b6d4' },
+        { label: 'CACHE INTERVENTION', title: 'Flush Line X', desc: '擁有 Modified 髒資料的核心直接截斷主存並提供數據', color: '#10b981' },
+        { label: 'STATE DOWNGRADE', title: 'Transition to Shared (S)', desc: '雙核心安全降級為 Shared 狀態保持嚴格一致性', color: '#f43f5e' },
       ],
     },
   }[selectedDiagram]
@@ -75,7 +86,7 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
                 fontWeight: selectedDiagram === 'ai-server' ? 700 : 500,
               }}
             >
-              AI 伺服器架構
+              AI 伺服器
             </button>
             <button
               onClick={() => setSelectedDiagram('lsm-tree')}
@@ -90,7 +101,22 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
                 fontWeight: selectedDiagram === 'lsm-tree' ? 700 : 500,
               }}
             >
-              LSM-Tree 儲存架構
+              LSM-Tree 儲存
+            </button>
+            <button
+              onClick={() => setSelectedDiagram('cache-coherence')}
+              style={{
+                padding: '0.35rem 0.65rem',
+                fontSize: '0.78rem',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                background: selectedDiagram === 'cache-coherence' ? 'var(--card-bg, #1e293b)' : 'transparent',
+                color: selectedDiagram === 'cache-coherence' ? 'var(--accent, #6366f1)' : 'var(--muted)',
+                fontWeight: selectedDiagram === 'cache-coherence' ? 700 : 500,
+              }}
+            >
+              MESI 匯流排時序
             </button>
           </div>
 
