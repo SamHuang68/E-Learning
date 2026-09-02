@@ -36,6 +36,7 @@ export type ToeicNavId =
   | 'gdpr-privacy'
   | 'nda-trade-secrets'
   | 'cloud-sla'
+  | 'marine-insurance'
   | 'story'
   | 'today'
   | 'builder'
@@ -110,6 +111,7 @@ export function ToeicSidebar({
     { id: 'gdpr-privacy', icon: '🛡️', label: isJa ? 'GDPR・プライバシー保護' : 'GDPR與資料隱私' },
     { id: 'nda-trade-secrets', icon: '🤝', label: isJa ? '秘密保持・NDA違約金' : '保密協議與違約金' },
     { id: 'cloud-sla', icon: '☁️', label: isJa ? 'クラウドSLA・障害補償' : '雲端SLA與停機補償' },
+    { id: 'marine-insurance', icon: '🚢', label: isJa ? '共同海損・海上保険' : '共同海損與海上貨運險' },
     { id: 'errors', icon: '📕', label: isJa ? '誤答ノート' : '錯題弱點本', badge: errorCount > 0 ? `${errorCount}` : undefined },
     { id: 'story', icon: '📖', label: isJa ? 'ストーリー復習' : '情境微故事' },
     { id: 'phonics', icon: 'Aa', label: isJa ? '発音基礎' : '發音基礎' },
