@@ -234,4 +234,28 @@ export const CS_SOLVING_SIGNALS: CsSolvingSignal[] = [
       quickSolve: '乘法優先級高於加法，轉換結果為 A B C * +。',
     },
   },
+  {
+    id: 'sig-cs-ieee754-bias',
+    strand: '數位邏輯',
+    topic: 'IEEE 754 單精度浮點數指數偏差值',
+    problemSignal: '題目給定十進位或二進位小數，求其 IEEE 754 32 位元單精度指數欄位數值',
+    threeSecondRule: '【真值指數 e 加上 127】雙精度則是加上 1023！',
+    firstStepFormula: 'E = e + 127 \\quad (\\text{Single Precision } 32\\text{-bit})',
+    exampleProblem: {
+      question: '若規格化後指數為 2^3，則 8-bit 指數欄位填入何值？',
+      quickSolve: 'E = 3 + 127 = 130 = (10000010)_2。',
+    },
+  },
+  {
+    id: 'sig-cs-vit-patches',
+    strand: '現代AI硬體',
+    topic: '視覺 Transformer (ViT) 影像分塊總數',
+    problemSignal: '題目給定影像高寬 H, W 與 patch 大小 P，求送入 Transformer 的 Token 數',
+    threeSecondRule: '【H*W 除以 P 的平方，若問總 Token 數再加 1 個 CLS】！',
+    firstStepFormula: 'N = \\frac{H \\times W}{P^2} \\implies \\text{Total} = N + 1',
+    exampleProblem: {
+      question: '224×224 影像以 16×16 切塊，包含 CLS 的總 Token 數？',
+      quickSolve: 'N = (224*224)/(16*16) = 196，加上 CLS 共 197 個 Token。',
+    },
+  },
 ]
