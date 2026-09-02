@@ -51,6 +51,7 @@ import { MnaLab } from './components/MnaLab'
 import { IpLab } from './components/IpLab'
 import { EsgLab } from './components/EsgLab'
 import { AiCloudLab } from './components/AiCloudLab'
+import { ColdChainLab } from './components/ColdChainLab'
 
 type Props = {
   onBackHub: () => void
@@ -521,6 +522,14 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
     if (nav === 'ai-cloud') {
       return (
         <AiCloudLab
+          onEarnXp={(n) => patch({ xp: progress.xp + n })}
+          instructionLang={instructionLang}
+        />
+      )
+    }
+    if (nav === 'cold-chain') {
+      return (
+        <ColdChainLab
           onEarnXp={(n) => patch({ xp: progress.xp + n })}
           instructionLang={instructionLang}
         />

@@ -25,6 +25,7 @@ import { RoadTripZhLab } from './components/RoadTripZhLab'
 import { RepairZhLab } from './components/RepairZhLab'
 import { PetZhLab } from './components/PetZhLab'
 import { RechaoZhLab } from './components/RechaoZhLab'
+import { ConvenienceAtmZhLab } from './components/ConvenienceAtmZhLab'
 import { ChineseMockExam } from './components/ChineseMockExam'
 import { ChineseErrorVault } from './components/ChineseErrorVault'
 import { loadChineseProgress, saveChineseProgress } from './utils/chineseStorage'
@@ -156,6 +157,7 @@ export const ChineseApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         {section === 'repair' && <RepairZhLab onEarnXp={earnXp} />}
         {section === 'pet' && <PetZhLab onEarnXp={earnXp} />}
         {section === 'rechao' && <RechaoZhLab onEarnXp={earnXp} />}
+        {section === 'convenience-atm' && <ConvenienceAtmZhLab onEarnXp={earnXp} />}
         {section === 'menu' && <TaiwanMenuLab onEarnXp={earnXp} />}
         {section === 'mock' && <ChineseMockExam onEarnXp={earnXp} onRecordError={recordError} />}
         {section === 'errors' && (
