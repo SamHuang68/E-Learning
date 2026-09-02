@@ -330,4 +330,28 @@ export const CS_SOLVING_SIGNALS: CsSolvingSignal[] = [
       quickSolve: '2 * 2 * 8192 * 32 * 4096 * 2 = 8,589,934,592 Bytes = 8 GiB (約 8.59 GB)。',
     },
   },
+  {
+    id: 'sig-cs-moe-balance-loss',
+    strand: '前沿AI演算法',
+    topic: 'MoE 門控路由輔助負載均衡損失理論下界',
+    problemSignal: '題目詢問 MoE 專家混合模型在完美均勻分佈時的負載均衡損失值',
+    threeSecondRule: '【完美平衡時剛好等於權重超參數 alpha】坍塌時膨脹為 alpha * E！',
+    firstStepFormula: '\\mathcal{L}_{\\text{balance}} = \\alpha \\cdot E \\sum_{i=1}^E f_i P_i \\implies \\min = \\alpha',
+    exampleProblem: {
+      question: '8 專家 MoE 模型在 alpha=0.01 且路由完美均勻時的輔助損失為？',
+      quickSolve: '每個專家分配 1/8 且機率 1/8，損失嚴格為 0.01。',
+    },
+  },
+  {
+    id: 'sig-cs-pagedattention-blocks',
+    strand: '現代AI硬體',
+    topic: 'PagedAttention 邏輯分頁塊 (Blocks) 數量計算',
+    problemSignal: '題目給定序列長度 $S$ 與 Block Size $B$，求所需的物理顯存塊數',
+    threeSecondRule: '【S 除以 B 無條件進位】最後一個不滿的塊為唯一內部碎片！',
+    firstStepFormula: 'N_{\\text{blocks}} = \\left\\lceil \\frac{S}{B} \\right\\rceil',
+    exampleProblem: {
+      question: '序列長度 2050，每塊大小 16 個 Token，共需多少個 Block？',
+      quickSolve: 'ceil(2050 / 16) = ceil(128.125) = 129 個 Blocks。',
+    },
+  },
 ]
