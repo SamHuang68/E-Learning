@@ -11,6 +11,7 @@ export type ToeicNavId =
   | 'charts'
   | 'negotiation'
   | 'email-master'
+  | 'phone'
   | 'story'
   | 'today'
   | 'builder'
@@ -60,6 +61,7 @@ export function ToeicSidebar({
     { id: 'charts', icon: '📊', label: isJa ? '図表読解ラボ' : '商務圖表題分析' },
     { id: 'negotiation', icon: '🤝', label: isJa ? '交渉・スモールトーク' : '談判與社交語塊' },
     { id: 'email-master', icon: '✉️', label: isJa ? 'ビジネスメール演習' : '商務電郵寫作範本' },
+    { id: 'phone', icon: '📞', label: isJa ? '電話・留守電特訓' : '電話與語音信箱' },
     { id: 'errors', icon: '📕', label: isJa ? '誤答ノート' : '錯題弱點本', badge: errorCount > 0 ? `${errorCount}` : undefined },
     { id: 'story', icon: '📖', label: isJa ? 'ストーリー復習' : '情境微故事' },
     { id: 'phonics', icon: 'Aa', label: isJa ? '発音基礎' : '發音基礎' },
