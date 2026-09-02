@@ -57,6 +57,7 @@ import { RfpBiddingLab } from './components/RfpBiddingLab'
 import { ForceMajeureLab } from './components/ForceMajeureLab'
 import { TechTransferLab } from './components/TechTransferLab'
 import { AntitrustLab } from './components/AntitrustLab'
+import { ConflictMineralsLab } from './components/ConflictMineralsLab'
 
 type Props = {
   onBackHub: () => void
@@ -575,6 +576,14 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
     if (nav === 'antitrust') {
       return (
         <AntitrustLab
+          onEarnXp={(n) => patch({ xp: progress.xp + n })}
+          instructionLang={instructionLang}
+        />
+      )
+    }
+    if (nav === 'conflict-minerals') {
+      return (
+        <ConflictMineralsLab
           onEarnXp={(n) => patch({ xp: progress.xp + n })}
           instructionLang={instructionLang}
         />
