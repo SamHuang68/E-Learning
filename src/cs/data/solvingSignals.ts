@@ -258,4 +258,28 @@ export const CS_SOLVING_SIGNALS: CsSolvingSignal[] = [
       quickSolve: 'N = (224*224)/(16*16) = 196，加上 CLS 共 197 個 Token。',
     },
   },
+  {
+    id: 'sig-cs-speculative-speedup',
+    strand: '前沿AI演算法',
+    topic: '大模型推測解碼 (Speculative Decoding) 加速期望值',
+    problemSignal: '題目給定小模型接受率 $\\alpha$ 與草稿步數 $K$，求單步平均生成 Token 數',
+    threeSecondRule: '【首項為 1 公比為 alpha 的等比級數和】alpha=0.8, K=4 時單步直出 3.36 個 Token！',
+    firstStepFormula: '\\mathbb{E}[N] = \\frac{1 - \\alpha^{K+1}}{1 - \\alpha} = \\sum_{j=0}^K \\alpha^j',
+    exampleProblem: {
+      question: '接受率 0.8、草稿長度 4 的推測解碼，大模型單次評估平均輸出多少 Token？',
+      quickSolve: '1 + 0.8 + 0.64 + 0.512 + 0.4096 = 3.36 個 Token (加速 2.8 倍)。',
+    },
+  },
+  {
+    id: 'sig-cs-mux-select',
+    strand: '數位邏輯',
+    topic: '多工器 (MUX) 輸入線與選擇控制線關係',
+    problemSignal: '題目給定 $N$ 條輸入資料線，求需要幾條選擇線 $n$',
+    threeSecondRule: '【取以 2 為底的對數】16 條輸入需 4 條線，32 條輸入需 5 條線！',
+    firstStepFormula: 'n = \\log_2 N \\iff 2^n = N',
+    exampleProblem: {
+      question: '64 對 1 多工器需要幾條選擇線？',
+      quickSolve: '2^6 = 64，因此需要 6 條選擇線。',
+    },
+  },
 ]
