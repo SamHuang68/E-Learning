@@ -34,6 +34,7 @@ export type ChineseNavSection =
   | 'zhuazhou'
   | 'ghost-festival'
   | 'tangyuan'
+  | 'dragon-boat'
   | 'menu'
   | 'mock'
   | 'errors'
@@ -87,6 +88,7 @@ export const ChineseSidebar: React.FC<Props> = ({
     { id: 'zhuazhou', icon: '👶', title: '滿歲度晬與抓周民俗', subtitle: '虎頭帽・腳踏龜紅龜粿・米篩道具' },
     { id: 'ghost-festival', icon: '🏮', title: '中元普渡與放水燈', subtitle: '好兄弟拜拜・供品禁忌・基隆水燈' },
     { id: 'tangyuan', icon: '🥣', title: '冬至吃湯圓添歲數', subtitle: '搓紅白圓・芝麻花生大湯圓' },
+    { id: 'dragon-boat', icon: '🛶', title: '端午立蛋與南北粽', subtitle: '正午立蛋・水煮生米vs油飯蒸粽' },
     { id: 'menu', icon: '🏮', title: '夜市美食與台灣語', subtitle: '台湾グルメ＆生活台湾語' },
     { id: 'mock', icon: '📝', title: 'TOCFL 模擬測驗', subtitle: 'A1/A2 レベル判定模試' },
     { id: 'errors', icon: '📕', title: '華語錯題本', subtitle: '弱点專項攻克', badge: errorCount > 0 ? `${errorCount}` : undefined },

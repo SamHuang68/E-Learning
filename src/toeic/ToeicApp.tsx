@@ -60,6 +60,7 @@ import { AntitrustLab } from './components/AntitrustLab'
 import { ConflictMineralsLab } from './components/ConflictMineralsLab'
 import { PatentLitigationLab } from './components/PatentLitigationLab'
 import { GdprPrivacyLab } from './components/GdprPrivacyLab'
+import { NdaTradeSecretsLab } from './components/NdaTradeSecretsLab'
 
 type Props = {
   onBackHub: () => void
@@ -602,6 +603,14 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
     if (nav === 'gdpr-privacy') {
       return (
         <GdprPrivacyLab
+          onEarnXp={(n) => patch({ xp: progress.xp + n })}
+          instructionLang={instructionLang}
+        />
+      )
+    }
+    if (nav === 'nda-trade-secrets') {
+      return (
+        <NdaTradeSecretsLab
           onEarnXp={(n) => patch({ xp: progress.xp + n })}
           instructionLang={instructionLang}
         />
