@@ -63,6 +63,7 @@ import { GdprPrivacyLab } from './components/GdprPrivacyLab'
 import { NdaTradeSecretsLab } from './components/NdaTradeSecretsLab'
 import { CloudSlaLab } from './components/CloudSlaLab'
 import { MarineInsuranceLab } from './components/MarineInsuranceLab'
+import { RoyaltyAuditLab } from './components/RoyaltyAuditLab'
 
 type Props = {
   onBackHub: () => void
@@ -629,6 +630,14 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
     if (nav === 'marine-insurance') {
       return (
         <MarineInsuranceLab
+          onEarnXp={(n) => patch({ xp: progress.xp + n })}
+          instructionLang={instructionLang}
+        />
+      )
+    }
+    if (nav === 'royalty-audit') {
+      return (
+        <RoyaltyAuditLab
           onEarnXp={(n) => patch({ xp: progress.xp + n })}
           instructionLang={instructionLang}
         />

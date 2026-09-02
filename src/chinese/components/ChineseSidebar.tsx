@@ -37,6 +37,7 @@ export type ChineseNavSection =
   | 'dragon-boat'
   | 'mid-autumn'
   | 'lantern-festival'
+  | 'qingming-popiah'
   | 'menu'
   | 'mock'
   | 'errors'
@@ -93,6 +94,7 @@ export const ChineseSidebar: React.FC<Props> = ({
     { id: 'dragon-boat', icon: '🛶', title: '端午立蛋與南北粽', subtitle: '正午立蛋・水煮生米vs油飯蒸粽' },
     { id: 'mid-autumn', icon: '🌕', title: '中秋烤肉與柚子帽', subtitle: '騎樓炭烤吐司・文旦戴柚子帽' },
     { id: 'lantern-festival', icon: '🏮', title: '元宵天燈與鹽水蜂炮', subtitle: '平溪四色天燈・鹽水萬發蜂炮' },
+    { id: 'qingming-popiah', icon: '🌱', title: '清明掃墓與包潤餅', subtitle: '壓墓紙慎終追遠・花生糖粉包潤餅' },
     { id: 'menu', icon: '🏮', title: '夜市美食與台灣語', subtitle: '台湾グルメ＆生活台湾語' },
     { id: 'mock', icon: '📝', title: 'TOCFL 模擬測驗', subtitle: 'A1/A2 レベル判定模試' },
     { id: 'errors', icon: '📕', title: '華語錯題本', subtitle: '弱点專項攻克', badge: errorCount > 0 ? `${errorCount}` : undefined },
