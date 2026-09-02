@@ -36,6 +36,7 @@ import { ToeicErrorVault } from './components/ToeicErrorVault'
 import { DoublePassageLab } from './components/DoublePassageLab'
 import { ChartAnalysisLab } from './components/ChartAnalysisLab'
 import { NegotiationLab } from './components/NegotiationLab'
+import { EmailMasterLab } from './components/EmailMasterLab'
 
 type Props = {
   onBackHub: () => void
@@ -386,6 +387,14 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
     if (nav === 'negotiation') {
       return (
         <NegotiationLab
+          onEarnXp={(n) => patch({ xp: progress.xp + n })}
+          instructionLang={instructionLang}
+        />
+      )
+    }
+    if (nav === 'email-master') {
+      return (
+        <EmailMasterLab
           onEarnXp={(n) => patch({ xp: progress.xp + n })}
           instructionLang={instructionLang}
         />

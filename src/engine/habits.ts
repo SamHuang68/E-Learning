@@ -86,3 +86,30 @@ export function unlockAchievements(meta: LearningMeta): LearningMeta {
     achievements: [...unlocked],
   }
 }
+
+/**
+ * 計算今日待複習卡片與記憶保鮮狀態摘要
+ */
+export function computeDueReviewSummary(
+  items: Record<string, { due?: string; repetitions?: number }>,
+  now = new Date(),
+): { dueCount: number; freshCount: number; totalCount: number; urgencyLevel: 'low' | 'medium' | 'high' } {
+  const nowIso = now.toISOString()
+  let dueCount = 0
+  let freshCount = 0
+  const entries = Object.values(items)
+  const totalCount = entries.length
+
+  for (const item of entries) {
+    if (item.due && item.due <= nowIso) {
+      dueCount++
+    } else {
+      freshCount++
+    }
+  }
+
+  const urgencyLevel: 'low' | 'medium' | 'high' =
+    dueCount >= 10 ? 'high' : dueCount >= 3 ? 'medium' : 'low'
+
+  return { dueCount, freshCount, totalCount, urgencyLevel }
+}
