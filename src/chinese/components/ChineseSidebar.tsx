@@ -19,6 +19,7 @@ export type ChineseNavSection =
   | 'railway'
   | 'food'
   | 'utilities'
+  | 'festivals'
   | 'menu'
   | 'mock'
   | 'errors'
@@ -57,6 +58,7 @@ export const ChineseSidebar: React.FC<Props> = ({
     { id: 'railway', icon: '🚅', title: '高鐵購票與鐵道觀光', subtitle: '早鳥票・對號座・阿里山日出' },
     { id: 'food', icon: '🧋', title: '夜市小吃與手搖點茶', subtitle: '微糖微冰・雞排要不要切' },
     { id: 'utilities', icon: '⚡', title: '水電帳單與搬家生活', subtitle: '一度電試算・瓦斯・搬家紙箱' },
+    { id: 'festivals', icon: '🏮', title: '傳統節慶與廟宇拜拜', subtitle: '龍山寺擲筊・年貨大街・買三送一' },
     { id: 'menu', icon: '🏮', title: '夜市美食與台灣語', subtitle: '台湾グルメ＆生活台湾語' },
     { id: 'mock', icon: '📝', title: 'TOCFL 模擬測驗', subtitle: 'A1/A2 レベル判定模試' },
     { id: 'errors', icon: '📕', title: '華語錯題本', subtitle: '弱点專項攻克', badge: errorCount > 0 ? `${errorCount}` : undefined },
