@@ -23,6 +23,7 @@ export type ToeicNavId =
   | 'pr'
   | 'mna'
   | 'ip'
+  | 'esg'
   | 'story'
   | 'today'
   | 'builder'
@@ -84,6 +85,7 @@ export function ToeicSidebar({
     { id: 'pr', icon: '📰', label: isJa ? '広報・プレスリリース' : '公關與新聞發布' },
     { id: 'mna', icon: '🤝', label: isJa ? 'M&A・デューデリ' : '企業併購與盡職調查' },
     { id: 'ip', icon: '⚖️', label: isJa ? '知財・特許ライセンス' : '智財專利與技術授權' },
+    { id: 'esg', icon: '🌱', label: isJa ? 'ESG・脱炭素カーボン' : '企業永續與碳盤查' },
     { id: 'errors', icon: '📕', label: isJa ? '誤答ノート' : '錯題弱點本', badge: errorCount > 0 ? `${errorCount}` : undefined },
     { id: 'story', icon: '📖', label: isJa ? 'ストーリー復習' : '情境微故事' },
     { id: 'phonics', icon: 'Aa', label: isJa ? '発音基礎' : '發音基礎' },
