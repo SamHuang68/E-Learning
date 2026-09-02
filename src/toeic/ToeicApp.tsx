@@ -61,6 +61,7 @@ import { ConflictMineralsLab } from './components/ConflictMineralsLab'
 import { PatentLitigationLab } from './components/PatentLitigationLab'
 import { GdprPrivacyLab } from './components/GdprPrivacyLab'
 import { NdaTradeSecretsLab } from './components/NdaTradeSecretsLab'
+import { CloudSlaLab } from './components/CloudSlaLab'
 
 type Props = {
   onBackHub: () => void
@@ -611,6 +612,14 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
     if (nav === 'nda-trade-secrets') {
       return (
         <NdaTradeSecretsLab
+          onEarnXp={(n) => patch({ xp: progress.xp + n })}
+          instructionLang={instructionLang}
+        />
+      )
+    }
+    if (nav === 'cloud-sla') {
+      return (
+        <CloudSlaLab
           onEarnXp={(n) => patch({ xp: progress.xp + n })}
           instructionLang={instructionLang}
         />

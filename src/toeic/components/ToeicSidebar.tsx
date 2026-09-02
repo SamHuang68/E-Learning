@@ -35,6 +35,7 @@ export type ToeicNavId =
   | 'patent-litigation'
   | 'gdpr-privacy'
   | 'nda-trade-secrets'
+  | 'cloud-sla'
   | 'story'
   | 'today'
   | 'builder'
@@ -108,6 +109,7 @@ export function ToeicSidebar({
     { id: 'patent-litigation', icon: '⚖️', label: isJa ? '特許侵害・仮差止命令' : '專利侵權與禁制令' },
     { id: 'gdpr-privacy', icon: '🛡️', label: isJa ? 'GDPR・プライバシー保護' : 'GDPR與資料隱私' },
     { id: 'nda-trade-secrets', icon: '🤝', label: isJa ? '秘密保持・NDA違約金' : '保密協議與違約金' },
+    { id: 'cloud-sla', icon: '☁️', label: isJa ? 'クラウドSLA・障害補償' : '雲端SLA與停機補償' },
     { id: 'errors', icon: '📕', label: isJa ? '誤答ノート' : '錯題弱點本', badge: errorCount > 0 ? `${errorCount}` : undefined },
     { id: 'story', icon: '📖', label: isJa ? 'ストーリー復習' : '情境微故事' },
     { id: 'phonics', icon: 'Aa', label: isJa ? '発音基礎' : '發音基礎' },
