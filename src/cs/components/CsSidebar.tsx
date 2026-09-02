@@ -6,6 +6,7 @@ export type CsNavSection =
   | 'today'
   | 'practice'
   | 'signals'
+  | 'arch-map'
   | 'von-neumann'
   | 'pipeline-hazard'
   | 'cache-mapping'
@@ -34,6 +35,7 @@ export const CsSidebar: React.FC<Props> = ({
     { id: 'today', icon: '💻', title: '今日學習總覽', subtitle: '全景探索與指標' },
     { id: 'practice', icon: '📚', title: '課綱單元題庫', subtitle: '7大單元完整特訓' },
     { id: 'signals', icon: '⚡', title: '3秒破題訊號卡', subtitle: '15組秒殺決策翻轉' },
+    { id: 'arch-map', icon: '🏛️', title: '硬體全景架構圖', subtitle: 'Archify 互動可視化', badge: 'NEW' },
     { id: 'von-neumann', icon: '⚙️', title: '五大單元實驗室', subtitle: '取指解碼執行寫回' },
     { id: 'pipeline-hazard', icon: '⚡', title: 'CPU 管線冒險', subtitle: 'Forwarding & Stall' },
     { id: 'cache-mapping', icon: '💾', title: '快取位址映射', subtitle: 'Tag · Index · Offset' },

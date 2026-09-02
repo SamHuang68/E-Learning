@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Modern AI Accelerated Server Architecture",
+    "output": "ai-server-architecture.html",
+    "quality_profile": "showcase",
+    "views": [
+      { "id": "inference-path", "label": "Local LLM Inference Path", "focus": ["client", "cpu-host", "pcie-bus", "gpu-0", "gpu-1"], "note": "End-to-end tensor flow from user query to distributed GPU tensor parallel execution." },
+      { "id": "memory-hierarchy", "label": "Memory and Storage Hierarchy", "focus": ["cpu-host", "host-ram", "nvme-ssd", "gpu-0"], "note": "Multi-tier memory transfers from NVMe model weights to Host RAM and GPU HBM3." }
+    ]
+  },
+  "components": [
+    { "id": "client", "type": "external", "label": "Web Client", "sublabel": "Browser / REST API", "pos": [40, 300], "size": [130, 60] },
+    { "id": "cpu-host", "type": "backend", "label": "Host CPU & Kernel", "sublabel": "Linux OS & Scheduler", "pos": [260, 300], "size": [150, 60] },
+    { "id": "host-ram", "type": "database", "label": "Host RAM (96GB)", "sublabel": "DDR5 Memory / Page Cache", "pos": [260, 150], "size": [150, 60] },
+    { "id": "nvme-ssd", "type": "database", "label": "NVMe Storage", "sublabel": "Model Weights & Checkpoints", "pos": [260, 450], "size": [150, 60] },
+    { "id": "pcie-bus", "type": "messagebus", "label": "PCIe Gen5 Bus", "sublabel": "64 GB/s Full-Duplex", "pos": [490, 300], "size": [140, 60] },
+    { "id": "gpu-0", "type": "cloud", "label": "GPU Accelerator 0", "sublabel": "Tensor Core + 16GB VRAM", "pos": [720, 200], "size": [160, 60] },
+    { "id": "gpu-1", "type": "cloud", "label": "GPU Accelerator 1", "sublabel": "Tensor Core + 16GB VRAM", "pos": [720, 400], "size": [160, 60] },
+    { "id": "nvswitch", "type": "messagebus", "label": "NVSwitch Fabric", "sublabel": "900 GB/s All-to-All Mesh", "pos": [940, 300], "size": [160, 60] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Host Server Hardware", "wraps": ["cpu-host", "host-ram", "nvme-ssd", "pcie-bus"] },
+    { "kind": "security-group", "label": "GPU Acceleration Subsystem", "wraps": ["gpu-0", "gpu-1", "nvswitch"] }
+  ],
+  "connections": [
+    { "id": "c1", "from": "client", "to": "cpu-host", "label": "HTTP / IPC", "variant": "emphasis" },
+    { "id": "c2", "from": "cpu-host", "to": "host-ram", "label": "DRAM Bus", "fromSide": "top", "toSide": "bottom" },
+    { "id": "c3", "from": "nvme-ssd", "to": "cpu-host", "label": "Direct DMA", "fromSide": "top", "toSide": "bottom" },
+    { "id": "c4", "from": "cpu-host", "to": "pcie-bus", "label": "DMA Descriptors" },
+    { "id": "c5", "from": "pcie-bus", "to": "gpu-0", "label": "P2P Copy" },
+    { "id": "c6", "from": "pcie-bus", "to": "gpu-1", "label": "P2P Copy" },
+    { "id": "c7", "from": "gpu-0", "to": "nvswitch", "label": "All-Reduce" },
+    { "id": "c8", "from": "gpu-1", "to": "nvswitch", "label": "All-Reduce" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Host Node", "items": ["Multi-core CPU coordinates Linux OS, processes and scheduling", "High capacity 96GB DDR5 RAM caches models and datasets"] },
+    { "dot": "emerald", "title": "Accelerated Compute", "items": ["Dual GPU setup with Tensor Cores for GEMM operations", "Dedicated high bandwidth VRAM eliminates memory bottlenecks"] },
+    { "dot": "rose", "title": "Interconnect Fabric", "items": ["PCIe Gen5 provides host-to-device streaming", "NVSwitch delivers 900 GB/s inter-GPU All-Reduce synchronization"] }
+  ]
+}

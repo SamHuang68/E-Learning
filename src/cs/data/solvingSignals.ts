@@ -378,4 +378,28 @@ export const CS_SOLVING_SIGNALS: CsSolvingSignal[] = [
       quickSolve: 'phi=(60)(52)=3120，解 17d ≡ 1 mod 3120 得 d = 2753。',
     },
   },
+  {
+    id: 'sig-cs-zero3-comm-ratio',
+    strand: '現代AI硬體',
+    topic: 'ZeRO-3 (FSDP) 全分片通訊開銷比例',
+    problemSignal: '題目詢問 ZeRO-3 全分片相比於標準資料平行 (DP) 的通訊量倍數',
+    threeSecondRule: '【恰好為 1.5 倍 (3M / 2M)】增加 50% 通訊換取顯存均勻攤銷 N 倍！',
+    firstStepFormula: '\\frac{\\text{Comm}_{\\text{ZeRO-3}}}{\\text{Comm}_{\\text{DP}}} = \\frac{3 \\times \\frac{N-1}{N} M}{2 \\times \\frac{N-1}{N} M} = 1.5',
+    exampleProblem: {
+      question: '70B 模型在 ZeRO-3 訓練時相較於標準 DP 增加了多少比例通訊量？',
+      quickSolve: '通訊比為 1.5 倍，故僅增加了 50% 通訊量。',
+    },
+  },
+  {
+    id: 'sig-cs-hbm-interposer',
+    strand: '現代AI硬體',
+    topic: 'HBM3e 高頻寬記憶體 TSV 與 2.5D 矽中介層特徵',
+    problemSignal: '題目問及 AI 晶片達到數 TB/s 顯存頻寬的核心微電子封裝關鍵字',
+    threeSecondRule: '【看到 1024-bit 超寬匯流排 + TSV 垂直堆疊 + 矽中介層 Interposer 直選 HBM】！',
+    firstStepFormula: '\\text{Bandwidth} = \\text{BusWidth} \\times \\text{DataRate} \\approx 1024\\text{ bits} \\times \\text{Rate} \\to 8\\text{ TB/s}',
+    exampleProblem: {
+      question: 'GPU 核心與記憶體共封裝在矽中介層上且具備 1024 位元匯流排者為何種記憶體？',
+      quickSolve: '此為高頻寬記憶體 (HBM3e) 的標準物理封裝特徵。',
+    },
+  },
 ]

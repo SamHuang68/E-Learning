@@ -10,6 +10,7 @@ import { VonNeumannArchitectureLab } from './labs/VonNeumannArchitectureLab'
 import { PipelineHazardLab } from './labs/PipelineHazardLab'
 import { CacheMappingLab } from './labs/CacheMappingLab'
 import { AiMatrixTransformerLab } from './labs/AiMatrixTransformerLab'
+import { ArchifyHardwareMap } from './labs/ArchifyHardwareMap'
 import { loadCsProgress, saveCsProgress, type CsProgress } from './utils/csStorage'
 
 interface Props {
@@ -133,6 +134,15 @@ export const CsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         )}
 
         {activeSection === 'signals' && <CsSignalsView />}
+
+        {activeSection === 'arch-map' && (
+          <ArchifyHardwareMap
+            onEarnXp={(amount) => {
+              handleEarnXp(amount)
+              handleLabCompleted('arch-map')
+            }}
+          />
+        )}
 
         {activeSection === 'von-neumann' && (
           <VonNeumannArchitectureLab
