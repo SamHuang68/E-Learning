@@ -43,6 +43,7 @@ import { ConferenceLab } from './components/ConferenceLab'
 import { InterviewLab } from './components/InterviewLab'
 import { MarketingLab } from './components/MarketingLab'
 import { SupplyChainLab } from './components/SupplyChainLab'
+import { CybersecurityLab } from './components/CybersecurityLab'
 
 type Props = {
   onBackHub: () => void
@@ -449,6 +450,14 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
     if (nav === 'supply-chain') {
       return (
         <SupplyChainLab
+          onEarnXp={(n) => patch({ xp: progress.xp + n })}
+          instructionLang={instructionLang}
+        />
+      )
+    }
+    if (nav === 'cybersecurity') {
+      return (
+        <CybersecurityLab
           onEarnXp={(n) => patch({ xp: progress.xp + n })}
           instructionLang={instructionLang}
         />

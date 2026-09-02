@@ -17,6 +17,7 @@ export type ChineseNavSection =
   | 'medical'
   | 'post'
   | 'railway'
+  | 'food'
   | 'menu'
   | 'mock'
   | 'errors'
@@ -53,6 +54,7 @@ export const ChineseSidebar: React.FC<Props> = ({
     { id: 'medical', icon: '🩺', title: '看病就醫與健保診所', subtitle: '健保卡・症狀描述・藥局拿藥' },
     { id: 'post', icon: '📦', title: '郵局包裹與超商取貨', subtitle: '手機末三碼・貨到付款・掛號' },
     { id: 'railway', icon: '🚅', title: '高鐵購票與鐵道觀光', subtitle: '早鳥票・對號座・阿里山日出' },
+    { id: 'food', icon: '🧋', title: '夜市小吃與手搖點茶', subtitle: '微糖微冰・雞排要不要切' },
     { id: 'menu', icon: '🏮', title: '夜市美食與台灣語', subtitle: '台湾グルメ＆生活台湾語' },
     { id: 'mock', icon: '📝', title: 'TOCFL 模擬測驗', subtitle: 'A1/A2 レベル判定模試' },
     { id: 'errors', icon: '📕', title: '華語錯題本', subtitle: '弱点專項攻克', badge: errorCount > 0 ? `${errorCount}` : undefined },

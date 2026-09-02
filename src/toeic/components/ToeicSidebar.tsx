@@ -17,6 +17,7 @@ export type ToeicNavId =
   | 'interview'
   | 'marketing'
   | 'supply-chain'
+  | 'cybersecurity'
   | 'story'
   | 'today'
   | 'builder'
@@ -72,6 +73,7 @@ export function ToeicSidebar({
     { id: 'interview', icon: '👔', label: isJa ? '面接・採用福利' : '求職面試與福利' },
     { id: 'marketing', icon: '📢', label: isJa ? 'マーケ・SNS広報' : '行銷宣傳與公關' },
     { id: 'supply-chain', icon: '🚢', label: isJa ? 'サプライチェーン物流' : '供應鏈與庫存管理' },
+    { id: 'cybersecurity', icon: '🛡️', label: isJa ? 'IT・セキュリティ' : '網路資安與維護' },
     { id: 'errors', icon: '📕', label: isJa ? '誤答ノート' : '錯題弱點本', badge: errorCount > 0 ? `${errorCount}` : undefined },
     { id: 'story', icon: '📖', label: isJa ? 'ストーリー復習' : '情境微故事' },
     { id: 'phonics', icon: 'Aa', label: isJa ? '発音基礎' : '發音基礎' },
