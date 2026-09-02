@@ -38,6 +38,7 @@ export type ToeicNavId =
   | 'cloud-sla'
   | 'marine-insurance'
   | 'royalty-audit'
+  | 'fcpa-compliance'
   | 'story'
   | 'today'
   | 'builder'
@@ -114,6 +115,7 @@ export function ToeicSidebar({
     { id: 'cloud-sla', icon: '☁️', label: isJa ? 'クラウドSLA・障害補償' : '雲端SLA與停機補償' },
     { id: 'marine-insurance', icon: '🚢', label: isJa ? '共同海損・海上保険' : '共同海損與海上貨運險' },
     { id: 'royalty-audit', icon: '📊', label: isJa ? '特許監査・ロイヤルティ' : '專利權利金審計' },
+    { id: 'fcpa-compliance', icon: '⚖️', label: isJa ? 'FCPA・反贈賄審査' : 'FCPA反海外腐敗法' },
     { id: 'errors', icon: '📕', label: isJa ? '誤答ノート' : '錯題弱點本', badge: errorCount > 0 ? `${errorCount}` : undefined },
     { id: 'story', icon: '📖', label: isJa ? 'ストーリー復習' : '情境微故事' },
     { id: 'phonics', icon: 'Aa', label: isJa ? '発音基礎' : '發音基礎' },
