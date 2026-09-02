@@ -1,4 +1,4 @@
-﻿/**
+/**
  * 計算機概論 · 3 秒破題訊號卡庫 (Computer Science Solving Signals)
  * 涵蓋大考、高考、資工研究所與業界工程師面試核心考點：
  * 題目特徵 ➜ 3 秒直覺決策 ➜ 第一步關鍵判斷與秒殺技巧。
@@ -112,6 +112,54 @@ export const CS_SOLVING_SIGNALS: CsSolvingSignal[] = [
     exampleProblem: {
       question: '為什麼長文本對話在大模型推論時顯存會逐漸上升？',
       quickSolve: '因為對話長度增加導致保存在顯存中的 KV Cache 尺寸線性增長。',
+    },
+  },
+  {
+    id: 'sig-cs-pipeline-speedup',
+    strand: '五大單元架構',
+    topic: 'CPU 管線化極限加速比',
+    problemSignal: '題目給定管線級數 $k$ 與指令數 $n$，求管線化相較於單週期的理論加速比 (Speedup)',
+    threeSecondRule: '【總單週期時間除以管線總週期】n 趨向無窮大時，加速比極限就是管線級數 k！',
+    firstStepFormula: 'S = \\frac{k \\cdot n}{k + n - 1} \\xrightarrow{n \\to \\infty} k',
+    exampleProblem: {
+      question: '一個 5 級管線處理器執行 1,000,000 條指令，其加速比約為幾倍？',
+      quickSolve: '指令數極大，加速比逼近管線級數 5.0 倍。',
+    },
+  },
+  {
+    id: 'sig-cs-cache-tag-index',
+    strand: '五大單元架構',
+    topic: '組相聯快取位址欄位拆分',
+    problemSignal: '題目給定快取容量 $C$、區塊大小 $B$ 與路數 $N$，求 Set Index 與 Tag 位元數',
+    threeSecondRule: '【算組數取 log2 就是 Index，區塊取 log2 就是 Offset，剩下全給 Tag】！',
+    firstStepFormula: '\\text{Offset} = \\log_2(B), \\quad \\text{Index} = \\log_2\\left(\\frac{C}{N \\cdot B}\\right), \\quad \\text{Tag} = 32 - \\text{Index} - \\text{Offset}',
+    exampleProblem: {
+      question: '32KB 8-Way 64B 快取行，在 32 位元位址下 Tag 佔幾位元？',
+      quickSolve: 'Offset=6, Sets=64 (Index=6) ➜ Tag = 32 - 6 - 6 = 20 bits。',
+    },
+  },
+  {
+    id: 'sig-cs-tpu-systolic',
+    strand: '現代AI硬體',
+    topic: 'TPU 脈動陣列矩陣運算延遲',
+    problemSignal: '題目詢問 $N \\times N$ 脈動陣列完成矩陣乘法所需的硬體時脈週期數',
+    threeSecondRule: '【3N 減 2 週期全部搞定】第一個結果在 2N-1 週期出來，全部乘加在 3N-2 週期收工！',
+    firstStepFormula: 'T_{\\text{systolic}} = 3N - 2 \\quad [O(N^3) \\to O(N)]',
+    exampleProblem: {
+      question: '256 × 256 的 TPU 脈動陣列計算矩陣乘法需要多少時脈週期？',
+      quickSolve: 'T = 3 × 256 - 2 = 766 週期。',
+    },
+  },
+  {
+    id: 'sig-cs-quantization-int4',
+    strand: '前沿AI演算法',
+    topic: '大模型權重量化顯存節省精算',
+    problemSignal: '題目由參數量與量化位元數 (FP16 vs INT4)，計算模型載入所需的最低顯存',
+    threeSecondRule: '【參數量乘位元除以 8 就是 Bytes】FP16 是 2 Bytes，INT4 是 0.5 Bytes，顯存立減 75%！',
+    firstStepFormula: '\\text{VRAM (Bytes)} = \\text{Param Count} \\times \\frac{\\text{bits}}{8}',
+    exampleProblem: {
+      question: '一個 70B 模型採用 INT4 量化載入需要多少顯存？',
+      quickSolve: '70B × 0.5 Bytes = 35 GB 顯存。',
     },
   },
 ]
