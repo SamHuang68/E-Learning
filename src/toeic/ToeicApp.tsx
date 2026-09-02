@@ -56,6 +56,7 @@ import { BondedWarehouseLab } from './components/BondedWarehouseLab'
 import { RfpBiddingLab } from './components/RfpBiddingLab'
 import { ForceMajeureLab } from './components/ForceMajeureLab'
 import { TechTransferLab } from './components/TechTransferLab'
+import { AntitrustLab } from './components/AntitrustLab'
 
 type Props = {
   onBackHub: () => void
@@ -566,6 +567,14 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
     if (nav === 'tech-transfer') {
       return (
         <TechTransferLab
+          onEarnXp={(n) => patch({ xp: progress.xp + n })}
+          instructionLang={instructionLang}
+        />
+      )
+    }
+    if (nav === 'antitrust') {
+      return (
+        <AntitrustLab
           onEarnXp={(n) => patch({ xp: progress.xp + n })}
           instructionLang={instructionLang}
         />
