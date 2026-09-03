@@ -1,11 +1,11 @@
-﻿import React, { useState } from 'react'
+import React, { useState } from 'react'
 
 interface Props {
   onEarnXp?: (amount: number) => void
 }
 
 type DiagramKind =
-  | 'ai-server'
+  | 'ai-pc'
   | 'lsm-tree'
   | 'cache-coherence'
   | 'process-lifecycle'
@@ -14,7 +14,7 @@ type DiagramKind =
   | 'percolator-txn'
 
 export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
-  const [selectedDiagram, setSelectedDiagram] = useState<DiagramKind>('ai-server')
+  const [selectedDiagram, setSelectedDiagram] = useState<DiagramKind>('ai-pc')
   const [explored, setExplored] = useState(false)
 
   const handleInteract = () => {
@@ -25,15 +25,15 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
   }
 
   const diagramMeta = {
-    'ai-server': {
-      title: '現代 AI 伺服器硬體全景架構圖',
-      subtitle: 'Host CPU (96GB RAM)、PCIe Gen5 與 Dual GPU NVSwitch 900 GB/s 全互聯拓撲',
-      file: './archify/ai-server-architecture.html',
+    'ai-pc': {
+      title: '高階 AI PC 與本地端工作站全景架構圖',
+      subtitle: 'Host CPU + 96GB DDR5 記憶體、PCIe Gen5 x16 與 RTX 5080 (16GB GDDR7) 本地推論架構',
+      file: './archify/ai-pc-architecture.html',
       badge: 'Archify Showcase 2.16',
       stats: [
-        { label: 'HOST SUBSYSTEM', title: 'CPU + 96GB DDR5', desc: 'Linux OS 行程調度與大容量模型快取', color: '#06b6d4' },
-        { label: 'INTERCONNECT BUS', title: 'PCIe Gen5 x16', desc: '雙向 64 GB/s 主機至設備 DMA 流水傳輸', color: '#10b981' },
-        { label: 'GPU ACCELERATORS', title: 'Dual GPU + NVSwitch', desc: '900 GB/s All-to-All 網格消滅張量平行通訊牆', color: '#f43f5e' },
+        { label: 'HOST SUBSYSTEM', title: 'CPU + 96GB DDR5', desc: '大容量主存快取模型權重、處理 OS 與巨量上下文', color: '#06b6d4' },
+        { label: 'HIGH-SPEED BUS', title: 'PCIe Gen5 x16 (64GB/s)', desc: '直通 GPU 進行張量層載入與 DMA 雙向高速串流', color: '#10b981' },
+        { label: 'LOCAL ACCELERATOR', title: 'RTX 5080 (16GB GDDR7)', desc: '~1.0 TB/s 顯存頻寬與 Blackwell Tensor Core 本地極速推論', color: '#f43f5e' },
       ],
     },
     'lsm-tree': {
@@ -125,19 +125,19 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
           {/* 切換不同架構圖按鈕 (七向切換膠囊) */}
           <div style={{ display: 'flex', background: 'var(--line)', padding: '2px', borderRadius: '6px', flexWrap: 'wrap' }}>
             <button
-              onClick={() => setSelectedDiagram('ai-server')}
+              onClick={() => setSelectedDiagram('ai-pc')}
               style={{
                 padding: '0.35rem 0.65rem',
                 fontSize: '0.78rem',
                 border: 'none',
                 borderRadius: '4px',
                 cursor: 'pointer',
-                background: selectedDiagram === 'ai-server' ? 'var(--card-bg, #1e293b)' : 'transparent',
-                color: selectedDiagram === 'ai-server' ? 'var(--accent, #6366f1)' : 'var(--muted)',
-                fontWeight: selectedDiagram === 'ai-server' ? 700 : 500,
+                background: selectedDiagram === 'ai-pc' ? 'var(--card-bg, #1e293b)' : 'transparent',
+                color: selectedDiagram === 'ai-pc' ? 'var(--accent, #6366f1)' : 'var(--muted)',
+                fontWeight: selectedDiagram === 'ai-pc' ? 700 : 500,
               }}
             >
-              AI 伺服器
+              AI PC 工作站
             </button>
             <button
               onClick={() => setSelectedDiagram('lsm-tree')}

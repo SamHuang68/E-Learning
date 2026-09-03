@@ -1,0 +1,269 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Modern High-End AI PC & Workstation Architecture",
+    "output": "ai-pc-architecture.html",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1180,
+      600
+    ],
+    "views": [
+      {
+        "id": "inference-flow",
+        "label": "Local Ollama Inference Flow",
+        "focus": [
+          "client",
+          "cpu",
+          "ollama",
+          "pcie",
+          "gpu",
+          "tensor_core"
+        ],
+        "note": "Zero-external API inference pipeline running locally on RTX 5080."
+      },
+      {
+        "id": "memory-hierarchy",
+        "label": "96GB RAM & 16GB VRAM Tiering",
+        "focus": [
+          "ram",
+          "ssd",
+          "cpu",
+          "pcie",
+          "gpu"
+        ],
+        "note": "Hybrid weight offloading across 96GB DDR5 host RAM and 16GB GDDR7 VRAM."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "client",
+      "type": "external",
+      "label": "Local App / Web UI",
+      "sublabel": "Browser / IDE Client",
+      "pos": [
+        40,
+        260
+      ],
+      "size": [
+        130,
+        60
+      ]
+    },
+    {
+      "id": "cpu",
+      "type": "backend",
+      "label": "Host CPU & Kernel",
+      "sublabel": "Desktop Multi-Core CPU",
+      "pos": [
+        240,
+        260
+      ],
+      "size": [
+        150,
+        60
+      ]
+    },
+    {
+      "id": "ram",
+      "type": "database",
+      "label": "Host RAM (96GB)",
+      "sublabel": "DDR5 Dual-Channel",
+      "pos": [
+        240,
+        100
+      ],
+      "size": [
+        150,
+        60
+      ]
+    },
+    {
+      "id": "ssd",
+      "type": "database",
+      "label": "PCIe 5.0 NVMe SSD",
+      "sublabel": "14,000 MB/s Read",
+      "pos": [
+        240,
+        420
+      ],
+      "size": [
+        150,
+        60
+      ]
+    },
+    {
+      "id": "ollama",
+      "type": "backend",
+      "label": "Ollama Engine",
+      "sublabel": "Port 11434 API",
+      "pos": [
+        480,
+        100
+      ],
+      "size": [
+        150,
+        60
+      ]
+    },
+    {
+      "id": "pcie",
+      "type": "messagebus",
+      "label": "PCIe Gen5 x16 Bus",
+      "sublabel": "64 GB/s Direct DMA",
+      "pos": [
+        480,
+        260
+      ],
+      "size": [
+        150,
+        60
+      ]
+    },
+    {
+      "id": "gpu",
+      "type": "cloud",
+      "label": "GeForce RTX 5080",
+      "sublabel": "16GB GDDR7 VRAM",
+      "pos": [
+        720,
+        260
+      ],
+      "size": [
+        160,
+        60
+      ]
+    },
+    {
+      "id": "tensor_core",
+      "type": "cloud",
+      "label": "Blackwell Tensor Core",
+      "sublabel": "FP8 / FP4 GEMM Engine",
+      "pos": [
+        960,
+        260
+      ],
+      "size": [
+        160,
+        60
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Local PC Workstation (Host Node)",
+      "wraps": [
+        "cpu",
+        "ram",
+        "ssd",
+        "ollama",
+        "pcie"
+      ]
+    },
+    {
+      "kind": "security-group",
+      "label": "RTX 5080 GPU Accelerator",
+      "wraps": [
+        "gpu",
+        "tensor_core"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "c1",
+      "from": "client",
+      "to": "cpu",
+      "label": "Local UI",
+      "labelDy": -12,
+      "variant": "emphasis"
+    },
+    {
+      "id": "c2",
+      "from": "cpu",
+      "to": "ram",
+      "label": "DDR5 Bus",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "labelDx": 20
+    },
+    {
+      "id": "c3",
+      "from": "ssd",
+      "to": "cpu",
+      "label": "M.2 DMA",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "labelDx": 20
+    },
+    {
+      "id": "c4",
+      "from": "ram",
+      "to": "ollama",
+      "label": "96GB Pool",
+      "fromSide": "right",
+      "toSide": "left",
+      "labelDy": -12
+    },
+    {
+      "id": "c5",
+      "from": "ollama",
+      "to": "pcie",
+      "label": "Offload",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDx": 0,
+      "labelDy": 24
+    },
+    {
+      "id": "c6",
+      "from": "cpu",
+      "to": "pcie",
+      "label": "Host DMA",
+      "labelDy": -12
+    },
+    {
+      "id": "c7",
+      "from": "pcie",
+      "to": "gpu",
+      "label": "PCIe 5.0",
+      "labelDy": -12
+    },
+    {
+      "id": "c8",
+      "from": "gpu",
+      "to": "tensor_core",
+      "label": "GDDR7 Bus",
+      "labelDy": -12
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "User PC Workstation",
+      "items": [
+        "Desktop Multi-Core CPU coordinates Windows 11 / WSL2 runtime",
+        "Massive 96GB DDR5 system RAM caches model weights and offloaded KV cache"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "GeForce RTX 5080 (16GB)",
+      "items": [
+        "16GB GDDR7 delivering ultra-high memory bandwidth (~1.0 TB/s)",
+        "Blackwell Tensor Cores optimized for FP8 / FP4 quantization and FlashAttention"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Local Ollama Engine",
+      "items": [
+        "Runs entirely offline on localhost:11434 with zero data leakage to external APIs",
+        "VRAM-first dynamic allocation with torch.cuda.empty_cache() protection"
+      ]
+    }
+  ]
+}

@@ -153,7 +153,7 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
                 計算機科學核心大樹 (Computer Science Knowledge Root)
               </div>
               <div style={{ fontSize: '0.74rem', color: '#94a3b8' }}>
-                7 大分支主幹 · 點擊任一主幹展開核心概念葉節點 · 直達刷題與專案實驗室
+                7 大分支主幹 · 點擊任一主幹展開核心概念葉節點 · 直達教科書專題研讀、單元題庫練習與專案實驗室
               </div>
             </div>
           </div>
@@ -187,14 +187,22 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
                       userSelect: 'none',
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                      <span style={{ fontSize: '0.85rem', color: isExpanded ? '#38bdf8' : '#64748b' }}>
-                        {isExpanded ? '▼' : '▶'}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+                          transition: 'transform 0.15s ease',
+                          fontSize: '0.82rem',
+                          color: '#818cf8',
+                        }}
+                      >
+                        ▶
                       </span>
                       <span
                         style={{
                           fontSize: '0.72rem',
-                          padding: '0.1rem 0.4rem',
+                          padding: '0.1rem 0.45rem',
                           borderRadius: '4px',
                           background: 'rgba(99, 102, 241, 0.2)',
                           color: '#a5b4fc',
@@ -248,7 +256,7 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
                           fontWeight: 700,
                         }}
                       >
-                        ✍️ 自我評量
+                        📚 題庫練習
                       </button>
                     </div>
                   </div>
@@ -371,7 +379,24 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.5rem' }}>
+                <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    onClick={() => onNavigate('textbook')}
+                    style={{
+                      flex: 1,
+                      padding: '0.35rem 0',
+                      fontSize: '0.74rem',
+                      borderRadius: '5px',
+                      background: 'rgba(56, 189, 248, 0.2)',
+                      color: '#38bdf8',
+                      border: '1px solid rgba(56, 189, 248, 0.35)',
+                      cursor: 'pointer',
+                      fontWeight: 700,
+                    }}
+                  >
+                    📖 研讀專題
+                  </button>
                   <button
                     type="button"
                     onClick={() => onNavigate('practice', unit.id)}
@@ -380,14 +405,14 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
                       padding: '0.35rem 0',
                       fontSize: '0.74rem',
                       borderRadius: '5px',
-                      background: 'rgba(6, 182, 212, 0.2)',
-                      color: '#38bdf8',
-                      border: '1px solid rgba(6, 182, 212, 0.35)',
+                      background: 'rgba(16, 185, 129, 0.2)',
+                      color: '#34d399',
+                      border: '1px solid rgba(16, 185, 129, 0.35)',
                       cursor: 'pointer',
                       fontWeight: 700,
                     }}
                   >
-                    題庫練習
+                    📚 題庫練習
                   </button>
                   {unit.suggestedLab && (
                     <button

@@ -1,17 +1,19 @@
-﻿import { describe, it, expect } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import fs from 'fs'
 import path from 'path'
 
 describe('Archify SKILL 網頁架構可視化與應用整合測試', () => {
-  it('已生成高規格 Archify 現代 AI 伺服器硬體全景架構圖 HTML', () => {
-    const htmlPath = path.resolve(process.cwd(), 'public/archify/ai-server-architecture.html')
+  it('已生成高規格 Archify 高階 AI PC 與工作站全景架構圖 HTML (符合用戶真實系統)', () => {
+    const htmlPath = path.resolve(process.cwd(), 'public/archify/ai-pc-architecture.html')
     expect(fs.existsSync(htmlPath)).toBe(true)
 
     const content = fs.readFileSync(htmlPath, 'utf8')
     expect(content).toContain('Host CPU &amp; Kernel')
-    expect(content).toContain('NVSwitch Fabric')
-    expect(content).toContain('PCIe Gen5 Bus')
-    expect(content).toContain('GPU Accelerator')
+    expect(content).toContain('Host RAM (96GB)')
+    expect(content).toContain('PCIe Gen5 x16 Bus')
+    expect(content).toContain('GeForce RTX 5080')
+    expect(content).toContain('Blackwell Tensor Core')
+    expect(content).toContain('Ollama Engine')
   })
 
   it('已生成高規格 Archify 分散式儲存 LSM-Tree 架構圖 HTML', () => {

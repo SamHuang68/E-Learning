@@ -1,4 +1,4 @@
-﻿import { describe, it, expect } from 'vitest'
+import { describe, it, expect } from 'vitest'
 
 export interface TextbookChapter {
   id: string
@@ -472,31 +472,36 @@ export const CS_TEXTBOOK_CHAPTERS: TextbookChapter[] = [
       ],
     },
     architecturalDeepDive: {
-      sectionTitle: 'NVIDIA Blackwell / H100 GPU 核心微架構與記憶體流',
-      content: '現代頂級 AI 晶片不僅是算力怪獸，更是先進封裝 (CoWoS) 與極致寬頻寬互聯的集大成者。',
+      sectionTitle: '本地端 AI PC (RTX 5080 + 96GB RAM) 與資料中心叢集微架構全景',
+      content: '現代 AI 運算硬體存在清晰的兩種工程型態：其一是「個人高階 AI PC / 本地端工作站」（以桌面多核心 CPU + 96GB 高容量 DDR5 系統主存 + PCIe Gen5 x16 直連 NVIDIA GeForce RTX 5080 16GB GDDR7，透過 Ollama 達成零資料外洩的本地端極速推論）；其二是「資料中心雲端超級伺服器」（以 1TB~2TB 伺服器 ECC RAM + 8 顆 H100/B200 透過專用 NVSwitch 網格達成 900 GB/s 以上 All-to-All 互聯）。絕不可將 PC 的 96GB 記憶體誤套在伺服器上，亦不可將只有機架式伺服器專屬的 NVSwitch 妄加於消費級 PC 之上。',
       keySubsystems: [
         {
-          name: '第 4/5 代 Tensor Core 矩陣單元',
-          role: '極速低精度乘累加',
-          technicalMechanism: '單週期執行 4x4x4 FP8 / FP16 矩陣乘加，支援 FP8 前向 E4M3 高精度與反向 E5M2 廣動態範圍混合運算。',
+          name: '第 5 代 Blackwell Tensor Core (RTX 5080)',
+          role: '本地端極速低精度乘累加',
+          technicalMechanism: '單晶片支援 FP8 (E4M3/E5M2) 與次世代 FP4 硬體矩陣運算，搭配 16GB GDDR7 (~1.0 TB/s 顯存頻寬)，為 8B~14B 規模模型提供滿速即時推論。',
         },
         {
-          name: '非同步張量記憶體加速器 (TMA)',
-          role: '硬體級零 CPU 介入資料搬運',
-          technicalMechanism: '直接在 HBM 與 Shared Memory (SRAM) 之間發起多維張量搬運，完全旁路 CUDA Core 暫存器，消除指令發射負擔。',
+          name: 'PCIe Gen5 x16 匯流排與 96GB DDR5 混和卸載',
+          role: '突破 16GB 顯存牆之主存擴展',
+          technicalMechanism: '以 64 GB/s 單向 (128 GB/s 雙向) 高速 PCIe 頻寬，將 70B 等超大模型以 Q4/Q8 分層卸載至 96GB DDR5 系統主存，兼顧本地運行能力與低延遲。',
         },
         {
-          name: 'NVSwitch 雙向 900 GB/s 網格架構',
-          role: '消滅多卡平行通訊牆',
-          technicalMechanism: '單機 8 卡全互聯，使跨 GPU 張量平行 (TP) All-Reduce 延遲壓縮至微秒級。',
+          name: '資料中心專用 NVSwitch 網格拓撲 (伺服器專屬對比)',
+          role: '雲端超巨模型張量平行 (TP)',
+          technicalMechanism: '專屬於 DGX/HGX 多卡機架，以 900 GB/s~1.8 TB/s 專用交換晶片消滅跨卡 All-Reduce 通訊瓶頸，需搭配 1TB~2TB 伺服器級 ECC 記憶體支撐。',
         },
       ],
     },
     industrialCaseStudies: [
       {
-        companyOrProject: 'NVIDIA',
-        systemName: 'DGX SuperPOD 超級叢集',
-        appliedSolution: '透過 NVLink + NVSwitch + Quantum-2 InfiniBand 構建跨數萬顆 GPU 的極低延遲無阻斷 fat-tree 網路拓撲，支撐兆級參數大模型訓練。',
+        companyOrProject: '本地端 AI 邊緣工作站 (Local AI PC)',
+        systemName: 'RTX 5080 + 96GB DDR5 + Ollama 推論棧',
+        appliedSolution: '以本機端 Ollama 服務端點 (http://localhost:11434) 為核心，模型權重常駐 16GB GDDR7 與 96GB DDR5，實現無 API 延遲、零隱私洩漏、具備 torch.cuda.empty_cache() 動態保護的高效推論。',
+      },
+      {
+        companyOrProject: 'NVIDIA Enterprise',
+        systemName: 'DGX H100/B200 超級伺服器叢集',
+        appliedSolution: '配備 2TB 系統記憶體與 8 張 SXM 封裝 GPU，透過主機板內嵌之 4 顆 NVSwitch 晶片實現 3.2 Tbps 雙向對等穿透，專供千億參數預訓練。',
       },
     ],
     deepThinkingQuestions: [
