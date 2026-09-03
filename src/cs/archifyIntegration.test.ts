@@ -70,7 +70,18 @@ describe('Archify SKILL 網頁架構可視化與應用整合測試', () => {
     expect(content).toContain('Tensor Core GEMM')
   })
 
-  it('六份架構定義 JSON 規範皆有效且符合標準規範', () => {
+  it('已生成高規格 Archify Percolator 分散式事務兩階段提交時序圖 HTML', () => {
+    const htmlPath = path.resolve(process.cwd(), 'public/archify/percolator-transaction.html')
+    expect(fs.existsSync(htmlPath)).toBe(true)
+
+    const content = fs.readFileSync(htmlPath, 'utf8')
+    expect(content).toContain('Client')
+    expect(content).toContain('TSO')
+    expect(content).toContain('Primary')
+    expect(content).toContain('Secondary')
+  })
+
+  it('七份架構定義 JSON 規範皆有效且符合標準規範', () => {
     const aiJson = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'public/archify/ai-server.architecture.json'), 'utf8'))
     expect(aiJson.components.length).toBeGreaterThanOrEqual(8)
 
@@ -90,5 +101,9 @@ describe('Archify SKILL 網頁架構可視化與應用整合測試', () => {
     const attnJson = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'public/archify/transformer-attention.architecture.json'), 'utf8'))
     expect(attnJson.components.length).toBe(6)
     expect(attnJson.connections.length).toBe(6)
+
+    const percJson = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'public/archify/percolator-transaction.sequence.json'), 'utf8'))
+    expect(percJson.participants.length).toBe(4)
+    expect(percJson.messages.length).toBe(12)
   })
 })

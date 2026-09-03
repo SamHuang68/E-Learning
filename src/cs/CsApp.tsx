@@ -131,7 +131,7 @@ export const CsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         xp={progress.xp}
         errorCount={progress.errorQuestions.length}
         completedCount={progress.completedQuestions.length}
-        totalQuestions={105}
+        totalQuestions={112}
       />
 
       {/* 核心主視窗 (零拉頁，單屏適配) */}

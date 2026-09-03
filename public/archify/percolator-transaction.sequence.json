@@ -1,0 +1,205 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Google Percolator Distributed Transaction Sequence",
+    "output": "percolator-transaction.html",
+    "viewBox": [
+      880,
+      880
+    ],
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "prewrite-view",
+        "label": "Prewrite Phase",
+        "focus": [
+          "client",
+          "tso",
+          "p_row",
+          "s_row"
+        ],
+        "note": "Client gets StartTS, locks Primary Row, then locks Secondary Rows."
+      },
+      {
+        "id": "commit-view",
+        "label": "Commit Phase",
+        "focus": [
+          "client",
+          "tso",
+          "p_row",
+          "s_row"
+        ],
+        "note": "Client gets CommitTS, commits Primary Row (atomic point), then commits Secondary Rows."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "client",
+      "type": "external",
+      "label": "Client",
+      "sublabel": "Txn Coordinator"
+    },
+    {
+      "id": "tso",
+      "type": "backend",
+      "label": "TSO",
+      "sublabel": "Timestamp Oracle"
+    },
+    {
+      "id": "p_row",
+      "type": "database",
+      "label": "Primary",
+      "sublabel": "Primary Row"
+    },
+    {
+      "id": "s_row",
+      "type": "database",
+      "label": "Secondary",
+      "sublabel": "Secondary Row"
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 335,
+      "label": "1. StartTS & Conflict Check"
+    },
+    {
+      "from": 350,
+      "to": 495,
+      "label": "2. Prewrite Locks Phase"
+    },
+    {
+      "from": 510,
+      "to": 740,
+      "label": "3. Commit & Rollout Phase"
+    }
+  ],
+  "messages": [
+    {
+      "id": "m1",
+      "from": "client",
+      "to": "tso",
+      "y": 175,
+      "label": "1. GetStartTS()",
+      "variant": "default"
+    },
+    {
+      "id": "m2",
+      "from": "tso",
+      "to": "client",
+      "y": 220,
+      "label": "2. StartTS = 100",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m3",
+      "from": "client",
+      "to": "p_row",
+      "y": 265,
+      "label": "3. Check conflicts on Primary",
+      "variant": "default"
+    },
+    {
+      "id": "m4",
+      "from": "p_row",
+      "to": "client",
+      "y": 310,
+      "label": "4. OK: No Locks, write < 100",
+      "variant": "security"
+    },
+    {
+      "id": "m5",
+      "from": "client",
+      "to": "p_row",
+      "y": 370,
+      "label": "5. Prewrite Primary: data+lock",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m6",
+      "from": "client",
+      "to": "s_row",
+      "y": 415,
+      "label": "6. Prewrite Secondary (ref Primary)",
+      "variant": "default"
+    },
+    {
+      "id": "m7",
+      "from": "s_row",
+      "to": "client",
+      "y": 460,
+      "label": "7. Prewrite ACKs received",
+      "variant": "security"
+    },
+    {
+      "id": "m8",
+      "from": "client",
+      "to": "tso",
+      "y": 530,
+      "label": "8. GetCommitTS()",
+      "variant": "default"
+    },
+    {
+      "id": "m9",
+      "from": "tso",
+      "to": "client",
+      "y": 575,
+      "label": "9. CommitTS = 110",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m10",
+      "from": "client",
+      "to": "p_row",
+      "y": 620,
+      "label": "10. Commit Primary (Atomic Point)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m11",
+      "from": "p_row",
+      "to": "client",
+      "y": 665,
+      "label": "11. Primary committed (write=110)",
+      "variant": "security"
+    },
+    {
+      "id": "m12",
+      "from": "client",
+      "to": "s_row",
+      "y": 710,
+      "label": "12. Commit Secondary (write=110)",
+      "variant": "default"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Primary Lock Anchor",
+      "items": [
+        "The Primary Row serves as the single source of truth for transaction commit",
+        "If coordinator crashes, recovery workers check the Primary Lock state to roll forward or backward"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Two-Phase Decentralized 2PC",
+      "items": [
+        "No centralized transaction coordinator holds persistent memory state",
+        "BigTable row atomicity powers distributed multi-row ACID transactions"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Snapshot Isolation Scaling",
+      "items": [
+        "Reads never block writes and writes never block reads",
+        "Timestamp Oracle (TSO) provides strictly increasing global linear order"
+      ]
+    }
+  ]
+}

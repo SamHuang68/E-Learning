@@ -522,4 +522,28 @@ export const CS_SOLVING_SIGNALS: CsSolvingSignal[] = [
       quickSolve: '每個專家恰好 32 個 Token，丟包數為 0。',
     },
   },
+  {
+    id: 'sig-cs-percolator-primary-anchor',
+    strand: '五大單元架構',
+    topic: 'Google Percolator 分散式事務 Primary Lock 錨點提交',
+    problemSignal: '題目問及 Percolator 事務協調者崩潰時如何判定整筆分散式事務是否生效',
+    threeSecondRule: '【Primary Lock 是否轉化為 write 記錄是唯一判定標準，其餘鎖隨之推進或清理】！',
+    firstStepFormula: '\\text{Check Primary Row} \\implies \\begin{cases} \\text{write}[commit\\_ts] \\text{ 存在} \\implies \\text{Roll Forward} \\\\ lock \\text{ 殘留或無記錄} \\implies \\text{Roll Back} \\end{cases}',
+    exampleProblem: {
+      question: 'Percolator 協調者在提交 Primary Row 後宕機，Secondary Rows 上的鎖如何處理？',
+      quickSolve: '後續讀取者檢查 Primary Row 發現已提交，自動替其 Roll Forward 提交 Secondary。',
+    },
+  },
+  {
+    id: 'sig-cs-rope-ntk-scaling',
+    strand: '前沿AI演算法',
+    topic: '大模型長文本 RoPE 旋轉編碼與 NTK-Aware 外推縮放',
+    problemSignal: '題目問及 RoPE 相對位置不變性或 NTK 外推如何保護高頻解析度',
+    threeSecondRule: '【內積只取相對距離 (m-n)，長文本縮放放大 Base 指數倍保護相鄰語義】！',
+    firstStepFormula: '\\langle R_m q, R_n k \\rangle = q^T R_{n-m} k, \\quad \\text{Base}_{\\text{new}} = \\text{Base} \\cdot \\alpha^{\\frac{d}{d-2}}',
+    exampleProblem: {
+      question: '擴展 4 倍上下文時，為什麼不能直接把位置座標除以 4？',
+      quickSolve: '高頻分量分辨率丟失會破壞相鄰 Token 語意，NTK 縮放動態放大 Base 才能保持局部高精度。',
+    },
+  },
 ]

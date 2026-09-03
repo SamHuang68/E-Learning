@@ -11,6 +11,7 @@ type DiagramKind =
   | 'process-lifecycle'
   | 'tcp-handshake'
   | 'transformer-attention'
+  | 'percolator-txn'
 
 export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
   const [selectedDiagram, setSelectedDiagram] = useState<DiagramKind>('ai-server')
@@ -90,6 +91,17 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
         { label: 'TENSOR ENGINE', title: 'FP8 Matrix GEMM', desc: '非同步傳輸 TMA 與 Tensor Core 矩陣相乘雙倍 TFLOPS', color: '#f43f5e' },
       ],
     },
+    'percolator-txn': {
+      title: 'Percolator 分散式事務兩階段提交時序圖',
+      subtitle: 'TSO 全局時間戳、Primary Lock 錨點提交與 Secondary 鎖解耦快照隔離',
+      file: './archify/percolator-transaction.html',
+      badge: 'Archify Sequence 2.16',
+      stats: [
+        { label: 'TSO TIMESTAMP', title: 'StartTS / CommitTS', desc: '全域單調遞增時間戳，保證跨分區線性一致性', color: '#06b6d4' },
+        { label: 'PRIMARY LOCK', title: 'Single Truth Anchor', desc: 'Primary 行原子提交為唯一成功標誌，故障自癒', color: '#10b981' },
+        { label: 'SNAPSHOT READ', title: 'Lock-Free Reads', desc: '讀取 write[commit_ts <= read_ts] 無鎖不阻塞寫入', color: '#f43f5e' },
+      ],
+    },
   }[selectedDiagram]
 
   return (
@@ -110,7 +122,7 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
         </div>
 
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
-          {/* 切換不同架構圖按鈕 (六向切換膠囊) */}
+          {/* 切換不同架構圖按鈕 (七向切換膠囊) */}
           <div style={{ display: 'flex', background: 'var(--line)', padding: '2px', borderRadius: '6px', flexWrap: 'wrap' }}>
             <button
               onClick={() => setSelectedDiagram('ai-server')}
@@ -201,6 +213,21 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
               }}
             >
               Transformer 注意力
+            </button>
+            <button
+              onClick={() => setSelectedDiagram('percolator-txn')}
+              style={{
+                padding: '0.35rem 0.65rem',
+                fontSize: '0.78rem',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                background: selectedDiagram === 'percolator-txn' ? 'var(--card-bg, #1e293b)' : 'transparent',
+                color: selectedDiagram === 'percolator-txn' ? 'var(--accent, #6366f1)' : 'var(--muted)',
+                fontWeight: selectedDiagram === 'percolator-txn' ? 700 : 500,
+              }}
+            >
+              Percolator 事務
             </button>
           </div>
 
