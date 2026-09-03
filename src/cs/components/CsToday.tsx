@@ -1,8 +1,8 @@
-﻿import React from 'react'
+import React from 'react'
 import type { CsProgress } from '../utils/csStorage'
 import { CS_CURRICULUM } from '../data/curriculum'
 import { computeCsRadar } from '../../engine/radar'
-import type { CsNavSection } from './CsSidebar'
+import type { CsNavSection } from './CsTopNav'
 
 interface Props {
   progress: CsProgress
@@ -49,6 +49,22 @@ export const CsToday: React.FC<Props> = ({ progress, onNavigate }) => {
         </div>
 
         <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center' }}>
+          <button
+            type="button"
+            onClick={() => onNavigate('hierarchy')}
+            style={{
+              padding: '0.5rem 0.85rem',
+              borderRadius: '8px',
+              border: '1px solid #38bdf8',
+              background: 'rgba(56, 189, 248, 0.15)',
+              color: '#38bdf8',
+              fontSize: '0.8rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+            }}
+          >
+            🌳 展開知識階層樹
+          </button>
           <div style={{ textAlign: 'center', background: 'var(--surface)', padding: '0.5rem 0.8rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
             <span style={{ fontSize: '0.7rem', color: 'var(--muted)', display: 'block' }}>累積經驗值</span>
             <strong style={{ fontSize: '1.1rem', color: '#2563eb' }}>{progress.xp} XP</strong>

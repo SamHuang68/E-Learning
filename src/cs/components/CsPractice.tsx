@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react'
+import React, { useState } from 'react'
 import { CS_CURRICULUM, type CsUnit, type CsQuestion } from '../data/curriculum'
 import { playCorrectSound, playWrongSound } from '../../engine/audioSynthesizer'
 
@@ -6,14 +6,20 @@ interface Props {
   completedQuestions: string[]
   onCompleteQuestion: (questionId: string, earnedXp: number) => void
   onRecordError: (questionId: string) => void
+  initialUnitId?: string
 }
 
 export const CsPractice: React.FC<Props> = ({
   completedQuestions,
   onCompleteQuestion,
   onRecordError,
+  initialUnitId,
 }) => {
-  const [activeUnitId, setActiveUnitId] = useState<string>(CS_CURRICULUM[0].id)
+  const [activeUnitId, setActiveUnitId] = useState<string>(
+    initialUnitId && CS_CURRICULUM.some((u) => u.id === initialUnitId)
+      ? initialUnitId
+      : CS_CURRICULUM[0].id
+  )
   const [selectedOptions, setSelectedOptions] = useState<Record<string, number>>({})
   const [submittedQuestions, setSubmittedQuestions] = useState<Record<string, boolean>>({})
 

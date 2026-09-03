@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react'
+﻿import React, { useState, useEffect } from 'react'
 import type { LangId } from '../utils/storage'
-import { CsSidebar, type CsNavSection } from './components/CsSidebar'
+import { CsTopNav, type CsNavSection } from './components/CsTopNav'
+import { CsHierarchyTree } from './components/CsHierarchyTree'
 import { CsToday } from './components/CsToday'
 import { CsPractice } from './components/CsPractice'
 import { CsSignalsView } from './components/CsSignalsView'
@@ -19,7 +20,8 @@ interface Props {
 }
 
 export const CsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
-  const [activeSection, setActiveSection] = useState<CsNavSection>('today')
+  const [activeSection, setActiveSection] = useState<CsNavSection>('hierarchy')
+  const [practiceUnitId, setPracticeUnitId] = useState<string | undefined>(undefined)
   const [progress, setProgress] = useState<CsProgress>(() => loadCsProgress())
 
   useEffect(() => {
@@ -105,28 +107,67 @@ export const CsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
   }
 
   return (
-    <div className="app-shell math-shell cs-shell" style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
-      {/* 側邊欄 */}
-      <CsSidebar
+    <div
+      className="app-shell cs-shell"
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100vh',
+        width: '100vw',
+        overflow: 'hidden',
+        background: '#090d16',
+        color: '#f8fafc',
+      }}
+    >
+      {/* 頂部水平功能列 (取代側邊欄，一頁盡覽所有功能) */}
+      <CsTopNav
         activeSection={activeSection}
-        onSelectSection={setActiveSection}
+        onSelectSection={(section) => {
+          setPracticeUnitId(undefined)
+          setActiveSection(section)
+        }}
         onBackHub={onBackHub}
         onSwitchLang={onSwitchLang}
         xp={progress.xp}
         errorCount={progress.errorQuestions.length}
+        completedCount={progress.completedQuestions.length}
+        totalQuestions={91}
       />
 
-      {/* 核心內容區 (滾動封裝) */}
-      <main className="content" style={{ flex: 1, height: '100vh', overflowY: 'auto', padding: '1.2rem', minWidth: 0 }}>
+      {/* 核心主視窗 (零拉頁，單屏適配) */}
+      <main
+        className="content cs-main-viewport"
+        style={{
+          flex: 1,
+          minHeight: 0,
+          overflowY: 'auto',
+          padding: '0.85rem 1.25rem',
+          width: '100%',
+        }}
+      >
+        {activeSection === 'hierarchy' && (
+          <CsHierarchyTree
+            completedQuestions={progress.completedQuestions}
+            onNavigate={(section, unitId) => {
+              if (unitId) setPracticeUnitId(unitId)
+              setActiveSection(section)
+            }}
+          />
+        )}
+
         {activeSection === 'today' && (
           <CsToday
             progress={progress}
-            onNavigate={(section) => setActiveSection(section)}
+            onNavigate={(section) => {
+              setPracticeUnitId(undefined)
+              setActiveSection(section as CsNavSection)
+            }}
           />
         )}
 
         {activeSection === 'practice' && (
           <CsPractice
+            initialUnitId={practiceUnitId}
             completedQuestions={progress.completedQuestions}
             onCompleteQuestion={handleCompleteQuestion}
             onRecordError={handleRecordError}
