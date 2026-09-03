@@ -4,7 +4,7 @@ interface Props {
   onEarnXp?: (amount: number) => void
 }
 
-type DiagramKind = 'ai-server' | 'lsm-tree' | 'cache-coherence'
+type DiagramKind = 'ai-server' | 'lsm-tree' | 'cache-coherence' | 'process-lifecycle'
 
 export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
   const [selectedDiagram, setSelectedDiagram] = useState<DiagramKind>('ai-server')
@@ -51,6 +51,17 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
         { label: 'STATE DOWNGRADE', title: 'Transition to Shared (S)', desc: '雙核心安全降級為 Shared 狀態保持嚴格一致性', color: '#f43f5e' },
       ],
     },
+    'process-lifecycle': {
+      title: '作業系統五狀態行程生命週期轉移圖',
+      subtitle: 'CFS 調度佇列 (Ready ➜ Running)、I/O 睡眠等待 (Blocked) 與殭屍回收 (Terminated)',
+      file: './archify/process-lifecycle.html',
+      badge: 'Archify Lifecycle 2.16',
+      stats: [
+        { label: 'CFS SCHEDULER', title: 'Ready ➜ Running', desc: '紅黑樹尋找最小 vruntime 進行排程分發', color: '#06b6d4' },
+        { label: 'I/O ASYNCHRONY', title: 'Running ➜ Blocked', desc: '阻塞等待磁碟或網路中斷，完全釋放 CPU 核心', color: '#10b981' },
+        { label: 'PROCESS REAPING', title: 'Zombie ➜ Reaped', desc: 'waitpid() 釋放 PCB 結構，PID 1 領養孤兒行程', color: '#f43f5e' },
+      ],
+    },
   }[selectedDiagram]
 
   return (
@@ -72,7 +83,7 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
 
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
           {/* 切換不同架構圖按鈕 */}
-          <div style={{ display: 'flex', background: 'var(--line)', padding: '2px', borderRadius: '6px' }}>
+          <div style={{ display: 'flex', background: 'var(--line)', padding: '2px', borderRadius: '6px', flexWrap: 'wrap' }}>
             <button
               onClick={() => setSelectedDiagram('ai-server')}
               style={{
@@ -101,7 +112,7 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
                 fontWeight: selectedDiagram === 'lsm-tree' ? 700 : 500,
               }}
             >
-              LSM-Tree 儲存
+              LSM-Tree
             </button>
             <button
               onClick={() => setSelectedDiagram('cache-coherence')}
@@ -116,7 +127,22 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
                 fontWeight: selectedDiagram === 'cache-coherence' ? 700 : 500,
               }}
             >
-              MESI 匯流排時序
+              MESI 匯流排
+            </button>
+            <button
+              onClick={() => setSelectedDiagram('process-lifecycle')}
+              style={{
+                padding: '0.35rem 0.65rem',
+                fontSize: '0.78rem',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                background: selectedDiagram === 'process-lifecycle' ? 'var(--card-bg, #1e293b)' : 'transparent',
+                color: selectedDiagram === 'process-lifecycle' ? 'var(--accent, #6366f1)' : 'var(--muted)',
+                fontWeight: selectedDiagram === 'process-lifecycle' ? 700 : 500,
+              }}
+            >
+              行程生命週期
             </button>
           </div>
 

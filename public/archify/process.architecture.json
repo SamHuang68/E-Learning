@@ -1,0 +1,181 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Operating System Process Five-State Transition Model",
+    "output": "process-lifecycle.html",
+    "quality_profile": "standard",
+    "views": [
+      {
+        "id": "sched-loop",
+        "label": "CPU Scheduling Loop",
+        "focus": [
+          "state-ready",
+          "state-running"
+        ],
+        "note": "Inspect the high-frequency dispatch and preemption loop in CPU runqueue."
+      },
+      {
+        "id": "io-lifecycle",
+        "label": "I/O Sleep & Wakeup",
+        "focus": [
+          "state-running",
+          "state-blocked",
+          "state-ready"
+        ],
+        "note": "Observe non-blocking process sleep when waiting for disk or network I/O interrupts."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "state-new",
+      "type": "external",
+      "label": "New State",
+      "sublabel": "fork() / clone()",
+      "pos": [
+        40,
+        220
+      ],
+      "size": [
+        140,
+        60
+      ],
+      "tag": "Entry"
+    },
+    {
+      "id": "state-ready",
+      "type": "database",
+      "label": "Ready State",
+      "sublabel": "CFS Runqueue in RAM",
+      "pos": [
+        270,
+        220
+      ],
+      "size": [
+        150,
+        60
+      ],
+      "tag": "Schedulable"
+    },
+    {
+      "id": "state-running",
+      "type": "backend",
+      "label": "Running State",
+      "sublabel": "CPU Core Executing",
+      "pos": [
+        530,
+        220
+      ],
+      "size": [
+        150,
+        60
+      ],
+      "tag": "Active"
+    },
+    {
+      "id": "state-blocked",
+      "type": "security",
+      "label": "Blocked State",
+      "sublabel": "Waiting I/O Event",
+      "pos": [
+        400,
+        390
+      ],
+      "size": [
+        150,
+        60
+      ],
+      "tag": "Asleep"
+    },
+    {
+      "id": "state-terminated",
+      "type": "database",
+      "label": "Terminated",
+      "sublabel": "Zombie / waitpid()",
+      "pos": [
+        780,
+        220
+      ],
+      "size": [
+        140,
+        60
+      ],
+      "tag": "Reaped"
+    }
+  ],
+  "connections": [
+    {
+      "id": "c1",
+      "from": "state-new",
+      "to": "state-ready",
+      "label": "Admit"
+    },
+    {
+      "id": "c2",
+      "from": "state-ready",
+      "to": "state-running",
+      "label": "Dispatch",
+      "variant": "emphasis"
+    },
+    {
+      "id": "c3",
+      "from": "state-running",
+      "to": "state-ready",
+      "label": "Time Slice Expiry",
+      "fromSide": "top",
+      "toSide": "top",
+      "labelDy": -30
+    },
+    {
+      "id": "c4",
+      "from": "state-running",
+      "to": "state-blocked",
+      "label": "I/O Wait Call",
+      "variant": "security",
+      "fromSide": "bottom",
+      "toSide": "right"
+    },
+    {
+      "id": "c5",
+      "from": "state-blocked",
+      "to": "state-ready",
+      "label": "I/O Interrupt Wake",
+      "fromSide": "left",
+      "toSide": "bottom"
+    },
+    {
+      "id": "c6",
+      "from": "state-running",
+      "to": "state-terminated",
+      "label": "Exit Syscall",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "CFS Completely Fair Scheduler",
+      "items": [
+        "Linux picks the process with the lowest virtual runtime (vruntime) from the Red-Black tree",
+        "Context switch preserves register states and swaps CR3 page table pointer"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "I/O Asynchrony & Sleep",
+      "items": [
+        "Blocked processes yield CPU immediately, preventing busy polling",
+        "Hardware device controller raises IRQ interrupt to wake task back to Ready queue"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Zombie State & PCB Reclaim",
+      "items": [
+        "Terminated processes retain Task Struct until parent issues waitpid()",
+        "Init process (PID 1) automatically adopts and reaps orphaned child processes"
+      ]
+    }
+  ]
+}

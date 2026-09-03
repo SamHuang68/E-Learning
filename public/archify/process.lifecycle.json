@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "Operating System Process Lifecycle",
+    "output": "process-lifecycle.html",
+    "viewBox": [
+      980,
+      660
+    ],
+    "animation": "trace",
+    "quality_profile": "standard",
+    "views": [
+      {
+        "id": "cpu-dispatch",
+        "label": "CPU Dispatch Rail",
+        "focus": [
+          "new",
+          "ready",
+          "running",
+          "terminated"
+        ],
+        "note": "Follow processes from admission to runqueue dispatch and termination."
+      },
+      {
+        "id": "io-blocking",
+        "label": "I/O Blocking Loop",
+        "focus": [
+          "running",
+          "blocked",
+          "ready"
+        ],
+        "note": "Inspect the non-blocking transition when waiting for disk or network interrupts."
+      }
+    ]
+  },
+  "lanes": [
+    {
+      "id": "active",
+      "label": "CPU Sched Rail"
+    },
+    {
+      "id": "wait",
+      "label": "I/O Sleep Wait"
+    },
+    {
+      "id": "terminal",
+      "label": "Terminal State"
+    }
+  ],
+  "states": [
+    {
+      "id": "new",
+      "type": "start",
+      "label": "New",
+      "sublabel": "fork() / clone()",
+      "lane": "active",
+      "col": 0,
+      "step": "01",
+      "tag": "entry"
+    },
+    {
+      "id": "ready",
+      "type": "active",
+      "label": "Ready",
+      "sublabel": "in CFS runqueue",
+      "lane": "active",
+      "col": 1,
+      "step": "02",
+      "tag": "schedulable"
+    },
+    {
+      "id": "running",
+      "type": "active",
+      "label": "Running",
+      "sublabel": "CPU dispatch uop",
+      "lane": "active",
+      "col": 2,
+      "step": "03",
+      "tag": "executing"
+    },
+    {
+      "id": "blocked",
+      "type": "waiting",
+      "label": "Blocked",
+      "sublabel": "waiting disk / net",
+      "lane": "wait",
+      "col": 1,
+      "tag": "asleep"
+    },
+    {
+      "id": "terminated",
+      "type": "success",
+      "label": "Terminated",
+      "sublabel": "exit code / waitpid",
+      "lane": "terminal",
+      "col": 0,
+      "tag": "reaped"
+    }
+  ],
+  "transitions": [
+    {
+      "id": "t1",
+      "from": "new",
+      "to": "ready",
+      "label": "admitted"
+    },
+    {
+      "id": "t2",
+      "from": "ready",
+      "to": "running",
+      "label": "dispatch",
+      "variant": "emphasis"
+    },
+    {
+      "id": "t3",
+      "from": "running",
+      "to": "ready",
+      "label": "time quantum expired",
+      "variant": "default",
+      "fromSide": "top",
+      "toSide": "top"
+    },
+    {
+      "id": "t4",
+      "from": "running",
+      "to": "blocked",
+      "label": "system call I/O",
+      "variant": "security",
+      "fromSide": "bottom",
+      "toSide": "right"
+    },
+    {
+      "id": "t5",
+      "from": "blocked",
+      "to": "ready",
+      "label": "interrupt return",
+      "variant": "dashed",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "t6",
+      "from": "running",
+      "to": "terminated",
+      "label": "exit() syscall",
+      "variant": "default",
+      "fromSide": "right",
+      "toSide": "top"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "CFS Scheduler Rail",
+      "items": [
+        "Linux Completely Fair Scheduler picks task with minimum vruntime",
+        "Context switches save register state to kernel stack"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "I/O Asynchrony",
+      "items": [
+        "Blocked processes do not consume CPU clock cycles while waiting",
+        "Hardware interrupt handlers wake tasks and re-enqueue them to Ready queue"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Zombie Prevention",
+      "items": [
+        "Terminated processes retain PCB until parent calls waitpid()",
+        "Init process (PID 1) adopts orphaned processes to reclaim memory"
+      ]
+    }
+  ]
+}

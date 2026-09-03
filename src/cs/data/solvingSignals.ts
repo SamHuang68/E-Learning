@@ -450,4 +450,28 @@ export const CS_SOLVING_SIGNALS: CsSolvingSignal[] = [
       quickSolve: 'CORDIC 座標旋轉數位計算演算法。',
     },
   },
+  {
+    id: 'sig-cs-saga-pattern',
+    strand: '五大單元架構',
+    topic: '分散式長事務 Saga 模式與補償事務',
+    problemSignal: '題目問及微服務跨庫事務如何避免 2PC 鎖定阻塞',
+    threeSecondRule: '【拆分子事務 + 失敗逆向依序執行補償事務直選 Saga】！',
+    firstStepFormula: 'T_1 \\dots T_k (\\text{Fail}) \\implies C_{k-1} \\dots C_1',
+    exampleProblem: {
+      question: '微服務長事務第三步扣款失敗時 Saga 如何維持最終一致性？',
+      quickSolve: '逆向依序執行前兩步的補償事務進行語義回滾。',
+    },
+  },
+  {
+    id: 'sig-cs-epoll-redblack',
+    strand: '作業系統',
+    topic: 'Linux epoll 高並發核心資料結構特徵',
+    problemSignal: '題目問及 epoll 突破 select/poll 效能瓶頸的核心資料結構',
+    threeSecondRule: '【看到紅黑樹常駐管理 FD + 中斷回調就緒雙向鏈表 O(1) 直選 epoll】！',
+    firstStepFormula: 'O(1) \\text{ Event-Driven Dispatch} \\quad (\\text{Ready List})',
+    exampleProblem: {
+      question: 'epoll 在核心層分別用什麼結構儲存監聽集合與就緒事件？',
+      quickSolve: '紅黑樹管理監聽集合，雙向鏈結串列儲存就緒事件。',
+    },
+  },
 ]
