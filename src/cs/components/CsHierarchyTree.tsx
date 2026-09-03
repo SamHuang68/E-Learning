@@ -57,7 +57,7 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
                 border: '1px solid rgba(56, 189, 248, 0.3)',
               }}
             >
-              7 大領域 · 91 道題庫
+              7 大領域 · 98 道題庫
             </span>
           </div>
           <p style={{ margin: '0.2rem 0 0', color: '#94a3b8', fontSize: '0.78rem' }}>

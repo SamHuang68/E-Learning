@@ -4,7 +4,12 @@ interface Props {
   onEarnXp?: (amount: number) => void
 }
 
-type DiagramKind = 'ai-server' | 'lsm-tree' | 'cache-coherence' | 'process-lifecycle'
+type DiagramKind =
+  | 'ai-server'
+  | 'lsm-tree'
+  | 'cache-coherence'
+  | 'process-lifecycle'
+  | 'tcp-handshake'
 
 export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
   const [selectedDiagram, setSelectedDiagram] = useState<DiagramKind>('ai-server')
@@ -62,6 +67,17 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
         { label: 'PROCESS REAPING', title: 'Zombie ➜ Reaped', desc: 'waitpid() 釋放 PCB 結構，PID 1 領養孤兒行程', color: '#f43f5e' },
       ],
     },
+    'tcp-handshake': {
+      title: 'TCP 三向交握與四向揮手時序圖',
+      subtitle: '連線建立 (SYN / SYN+ACK / ACK)、雙工數據傳輸與 TIME_WAIT 2MSL 狀態機',
+      file: './archify/tcp-handshake-sequence.html',
+      badge: 'Archify Sequence 2.16',
+      stats: [
+        { label: 'SYN NEGOTIATION', title: '3-Way Handshake', desc: 'ISN 初始序號同步與 MSS 窗口協商', color: '#06b6d4' },
+        { label: 'HALF-CLOSE', title: '4-Way Teardown', desc: 'FIN / ACK 雙向非對稱釋放與 CLOSE_WAIT', color: '#10b981' },
+        { label: '2MSL DRAIN', title: 'TIME_WAIT & 2MSL', desc: '等待 2MSL 確保最終 ACK 到達並排空網路殘留封包', color: '#f43f5e' },
+      ],
+    },
   }[selectedDiagram]
 
   return (
@@ -82,7 +98,7 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
         </div>
 
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
-          {/* 切換不同架構圖按鈕 */}
+          {/* 切換不同架構圖按鈕 (五向切換膠囊) */}
           <div style={{ display: 'flex', background: 'var(--line)', padding: '2px', borderRadius: '6px', flexWrap: 'wrap' }}>
             <button
               onClick={() => setSelectedDiagram('ai-server')}
@@ -143,6 +159,21 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
               }}
             >
               行程生命週期
+            </button>
+            <button
+              onClick={() => setSelectedDiagram('tcp-handshake')}
+              style={{
+                padding: '0.35rem 0.65rem',
+                fontSize: '0.78rem',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                background: selectedDiagram === 'tcp-handshake' ? 'var(--card-bg, #1e293b)' : 'transparent',
+                color: selectedDiagram === 'tcp-handshake' ? 'var(--accent, #6366f1)' : 'var(--muted)',
+                fontWeight: selectedDiagram === 'tcp-handshake' ? 700 : 500,
+              }}
+            >
+              TCP 交握時序
             </button>
           </div>
 

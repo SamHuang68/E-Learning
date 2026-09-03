@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react'
+import React, { useState } from 'react'
 import { TrackSwitcher } from '../../components/TrackSwitcher'
 import type { LangId } from '../../utils/storage'
 
@@ -34,7 +34,7 @@ export const CsTopNav: React.FC<Props> = ({
   xp,
   errorCount = 0,
   completedCount = 0,
-  totalQuestions = 91,
+  totalQuestions = 98,
 }) => {
   const [showLabsDropdown, setShowLabsDropdown] = useState(false)
 
@@ -248,7 +248,7 @@ export const CsTopNav: React.FC<Props> = ({
           }}
         >
           <span>📚</span>
-          <span>7大單元題庫 (91題)</span>
+          <span>7大單元題庫 (98題)</span>
         </button>
 
         {/* 4. 3秒破題訊號卡 */}
@@ -272,10 +272,10 @@ export const CsTopNav: React.FC<Props> = ({
           }}
         >
           <span>⚡</span>
-          <span>破題訊號 (17組)</span>
+          <span>破題訊號 (19組)</span>
         </button>
 
-        {/* 5. 硬體全景架構圖 (Archify 四圖) */}
+        {/* 5. 硬體全景架構圖 (Archify 五圖) */}
         <button
           type="button"
           onClick={() => onSelectSection('arch-map')}
@@ -296,7 +296,7 @@ export const CsTopNav: React.FC<Props> = ({
           }}
         >
           <span>🏛️</span>
-          <span>硬體全景架構 (Archify 4圖)</span>
+          <span>硬體全景架構 (Archify 5圖)</span>
         </button>
 
         {/* 6. 動態實驗室下拉按鈕 */}

@@ -474,4 +474,28 @@ export const CS_SOLVING_SIGNALS: CsSolvingSignal[] = [
       quickSolve: '紅黑樹管理監聽集合，雙向鏈結串列儲存就緒事件。',
     },
   },
+  {
+    id: 'sig-cs-vector-clock-causality',
+    strand: '網路與通訊',
+    topic: '分散式向量時鐘 (Vector Clocks) 因果偏序判定',
+    problemSignal: '題目問及兩個向量時鐘如何判斷先後發生或並發衝突',
+    threeSecondRule: '【分量全小於等於為 happens-before，互有大小直接判定並發 (Concurrent)】！',
+    firstStepFormula: 'V_A \\le V_B \\iff \\forall i, V_A[i] \\le V_B[i] \\quad (\\text{若互有大小即 } V_A \\parallel V_B)',
+    exampleProblem: {
+      question: '若時鐘 A 為 [2, 1, 0]，時鐘 B 為 [1, 2, 0]，兩者之因果關係為何？',
+      quickSolve: '互有大小，直接判定為並發事件 (Concurrent)。',
+    },
+  },
+  {
+    id: 'sig-cs-speculative-decoding',
+    strand: '前沿AI演算法',
+    topic: '大模型推論投機解碼 (Speculative Decoding) 期望長度',
+    problemSignal: '題目問及草稿小模型產出 K 個候選且驗收率為 alpha 時的產出期望值',
+    threeSecondRule: '【看到等比級數求和直接套公式 E = (1 - alpha^(K+1))/(1 - alpha)】！',
+    firstStepFormula: 'E[\\tau] = \\frac{1 - \\alpha^{K+1}}{1 - \\alpha}, \\quad \\text{Speedup} = \\frac{E[\\tau] T_{\\text{target}}}{K T_{\\text{draft}} + T_{\\text{target}}}',
+    exampleProblem: {
+      question: 'K=4, 驗收率 alpha=0.75 時投機解碼期望產出多少個 Token？',
+      quickSolve: '約 (1 - 0.75^5) / 0.25 ≈ 3.05 個 Token。',
+    },
+  },
 ]

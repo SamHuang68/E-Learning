@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import type { LangId } from '../utils/storage'
 import { CsTopNav, type CsNavSection } from './components/CsTopNav'
 import { CsHierarchyTree } from './components/CsHierarchyTree'
@@ -131,7 +131,7 @@ export const CsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         xp={progress.xp}
         errorCount={progress.errorQuestions.length}
         completedCount={progress.completedQuestions.length}
-        totalQuestions={91}
+        totalQuestions={98}
       />
 
       {/* 核心主視窗 (零拉頁，單屏適配) */}
