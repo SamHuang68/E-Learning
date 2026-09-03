@@ -7,6 +7,7 @@ import { CsPractice } from './components/CsPractice'
 import { CsSignalsView } from './components/CsSignalsView'
 import { CsMockExam } from './components/CsMockExam'
 import { CsErrorVault } from './components/CsErrorVault'
+import { CsTextbookReader } from './components/CsTextbookReader'
 import { VonNeumannArchitectureLab } from './labs/VonNeumannArchitectureLab'
 import { PipelineHazardLab } from './labs/PipelineHazardLab'
 import { CacheMappingLab } from './labs/CacheMappingLab'
@@ -152,6 +153,13 @@ export const CsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
               if (unitId) setPracticeUnitId(unitId)
               setActiveSection(section)
             }}
+          />
+        )}
+
+        {activeSection === 'textbook' && (
+          <CsTextbookReader
+            onSelectSection={(sec) => setActiveSection(sec as CsNavSection)}
+            onEarnXp={handleEarnXp}
           />
         )}
 

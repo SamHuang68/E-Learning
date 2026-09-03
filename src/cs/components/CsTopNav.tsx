@@ -4,6 +4,7 @@ import type { LangId } from '../../utils/storage'
 
 export type CsNavSection =
   | 'hierarchy'
+  | 'textbook'
   | 'today'
   | 'practice'
   | 'signals'
@@ -225,6 +226,30 @@ export const CsTopNav: React.FC<Props> = ({
         >
           <span>🎯</span>
           <span>今日概覽</span>
+        </button>
+
+        {/* 2.5 教科書深度研讀 (非刷題、知識巨著) */}
+        <button
+          type="button"
+          onClick={() => onSelectSection('textbook')}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.35rem',
+            padding: '0.38rem 0.75rem',
+            borderRadius: '6px',
+            fontSize: '0.8rem',
+            fontWeight: activeSection === 'textbook' ? 800 : 600,
+            background: activeSection === 'textbook' ? 'rgba(56, 189, 248, 0.25)' : 'rgba(56, 189, 248, 0.08)',
+            color: activeSection === 'textbook' ? '#38bdf8' : '#7dd3fc',
+            border: activeSection === 'textbook' ? '1px solid #38bdf8' : '1px solid rgba(56, 189, 248, 0.3)',
+            cursor: 'pointer',
+            whiteSpace: 'nowrap',
+            transition: 'all 0.15s ease',
+          }}
+        >
+          <span>📖</span>
+          <span>教科書深研 (7大章)</span>
         </button>
 
         {/* 3. 課綱單元題庫 */}

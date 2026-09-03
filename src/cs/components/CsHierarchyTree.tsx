@@ -208,7 +208,7 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
                       </span>
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                       <span style={{ fontSize: '0.74rem', color: '#94a3b8' }}>
                         {completedInUnit}/{unit.questions.length} 題 ({unitRatio}%)
                       </span>
@@ -216,20 +216,39 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation()
-                          onNavigate('practice', unit.id)
+                          onNavigate('textbook')
                         }}
                         style={{
-                          padding: '0.25rem 0.65rem',
+                          padding: '0.25rem 0.6rem',
                           fontSize: '0.74rem',
                           borderRadius: '4px',
-                          background: 'rgba(6, 182, 212, 0.2)',
+                          background: 'rgba(56, 189, 248, 0.2)',
                           color: '#38bdf8',
-                          border: '1px solid rgba(6, 182, 212, 0.4)',
+                          border: '1px solid rgba(56, 189, 248, 0.4)',
                           cursor: 'pointer',
                           fontWeight: 700,
                         }}
                       >
-                        🚀 進入刷題
+                        📖 研讀專題
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          onNavigate('practice', unit.id)
+                        }}
+                        style={{
+                          padding: '0.25rem 0.6rem',
+                          fontSize: '0.74rem',
+                          borderRadius: '4px',
+                          background: 'rgba(16, 185, 129, 0.2)',
+                          color: '#34d399',
+                          border: '1px solid rgba(16, 185, 129, 0.4)',
+                          cursor: 'pointer',
+                          fontWeight: 700,
+                        }}
+                      >
+                        ✍️ 自我評量
                       </button>
                     </div>
                   </div>
