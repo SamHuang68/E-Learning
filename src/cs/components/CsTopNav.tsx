@@ -34,7 +34,7 @@ export const CsTopNav: React.FC<Props> = ({
   xp,
   errorCount = 0,
   completedCount = 0,
-  totalQuestions = 98,
+  totalQuestions = 105,
 }) => {
   const [showLabsDropdown, setShowLabsDropdown] = useState(false)
 
@@ -248,7 +248,7 @@ export const CsTopNav: React.FC<Props> = ({
           }}
         >
           <span>📚</span>
-          <span>7大單元題庫 (98題)</span>
+          <span>7大單元題庫 (105題)</span>
         </button>
 
         {/* 4. 3秒破題訊號卡 */}
@@ -272,10 +272,10 @@ export const CsTopNav: React.FC<Props> = ({
           }}
         >
           <span>⚡</span>
-          <span>破題訊號 (19組)</span>
+          <span>破題訊號 (21組)</span>
         </button>
 
-        {/* 5. 硬體全景架構圖 (Archify 五圖) */}
+        {/* 5. 硬體全景架構圖 (Archify 六圖) */}
         <button
           type="button"
           onClick={() => onSelectSection('arch-map')}
@@ -296,7 +296,7 @@ export const CsTopNav: React.FC<Props> = ({
           }}
         >
           <span>🏛️</span>
-          <span>硬體全景架構 (Archify 5圖)</span>
+          <span>硬體全景架構 (Archify 6圖)</span>
         </button>
 
         {/* 6. 動態實驗室下拉按鈕 */}

@@ -16,12 +16,12 @@ describe('計算機概論：知識階層樹架構與一頁全景整合單元測�
     ])
   })
 
-  it('7 大分支總計包含 98 道高品質大考真題，每單元恰好 14 道', () => {
+  it('7 大分支總計包含 105 道高品質大考真題，每單元恰好 15 道', () => {
     const totalQuestions = CS_CURRICULUM.reduce((sum, u) => sum + u.questions.length, 0)
-    expect(totalQuestions).toBe(98)
+    expect(totalQuestions).toBe(105)
 
     for (const unit of CS_CURRICULUM) {
-      expect(unit.questions.length).toBe(14)
+      expect(unit.questions.length).toBe(15)
       expect(unit.concepts.length).toBeGreaterThanOrEqual(4)
     }
   })
@@ -40,6 +40,6 @@ describe('計算機概論：知識階層樹架構與一頁全景整合單元測�
         expect(q.solution.length).toBeGreaterThanOrEqual(2)
       }
     }
-    expect(questionIds.size).toBe(98)
+    expect(questionIds.size).toBe(105)
   })
 })

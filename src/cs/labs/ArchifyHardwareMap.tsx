@@ -10,6 +10,7 @@ type DiagramKind =
   | 'cache-coherence'
   | 'process-lifecycle'
   | 'tcp-handshake'
+  | 'transformer-attention'
 
 export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
   const [selectedDiagram, setSelectedDiagram] = useState<DiagramKind>('ai-server')
@@ -78,6 +79,17 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
         { label: '2MSL DRAIN', title: 'TIME_WAIT & 2MSL', desc: '等待 2MSL 確保最終 ACK 到達並排空網路殘留封包', color: '#f43f5e' },
       ],
     },
+    'transformer-attention': {
+      title: 'Transformer 自注意力與 KV Cache 架構圖',
+      subtitle: 'QKV 線性投影、SRAM Tiling (FlashAttention-2) 與 HBM PagedAttention 記憶體流',
+      file: './archify/transformer-attention.html',
+      badge: 'Archify Architecture 2.16',
+      stats: [
+        { label: 'SRAM TILING', title: 'FlashAttention-2', desc: '在 256KB 晶上 SRAM 計算 Online Softmax 消除二次方訪存', color: '#06b6d4' },
+        { label: 'PAGED KV CACHE', title: 'HBM Paged Memory', desc: '仿照 OS 虛擬分頁消除顯存碎片，吞吐量暴增 2.5 倍', color: '#10b981' },
+        { label: 'TENSOR ENGINE', title: 'FP8 Matrix GEMM', desc: '非同步傳輸 TMA 與 Tensor Core 矩陣相乘雙倍 TFLOPS', color: '#f43f5e' },
+      ],
+    },
   }[selectedDiagram]
 
   return (
@@ -98,7 +110,7 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
         </div>
 
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
-          {/* 切換不同架構圖按鈕 (五向切換膠囊) */}
+          {/* 切換不同架構圖按鈕 (六向切換膠囊) */}
           <div style={{ display: 'flex', background: 'var(--line)', padding: '2px', borderRadius: '6px', flexWrap: 'wrap' }}>
             <button
               onClick={() => setSelectedDiagram('ai-server')}
@@ -174,6 +186,21 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
               }}
             >
               TCP 交握時序
+            </button>
+            <button
+              onClick={() => setSelectedDiagram('transformer-attention')}
+              style={{
+                padding: '0.35rem 0.65rem',
+                fontSize: '0.78rem',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                background: selectedDiagram === 'transformer-attention' ? 'var(--card-bg, #1e293b)' : 'transparent',
+                color: selectedDiagram === 'transformer-attention' ? 'var(--accent, #6366f1)' : 'var(--muted)',
+                fontWeight: selectedDiagram === 'transformer-attention' ? 700 : 500,
+              }}
+            >
+              Transformer 注意力
             </button>
           </div>
 

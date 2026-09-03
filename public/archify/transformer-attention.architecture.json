@@ -1,0 +1,215 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Transformer Attention & KV Cache Architecture",
+    "output": "transformer-attention.html",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "all-flow",
+        "label": "End-to-End Execution Flow",
+        "focus": [
+          "c_tok",
+          "c_qkv",
+          "c_sram",
+          "c_kvc",
+          "c_matmul",
+          "c_out"
+        ],
+        "note": "Token projection, SRAM tiling online softmax, and HBM KV Cache streaming."
+      },
+      {
+        "id": "kv-cache-path",
+        "label": "KV Cache Read Path",
+        "focus": [
+          "c_kvc",
+          "c_sram",
+          "c_matmul"
+        ],
+        "note": "PagedAttention streaming historical K and V vectors into on-chip SRAM blocks."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "c_tok",
+      "type": "external",
+      "label": "Token Embedding",
+      "sublabel": "Input IDs + RoPE Pos",
+      "pos": [
+        40,
+        260
+      ],
+      "size": [
+        130,
+        60
+      ]
+    },
+    {
+      "id": "c_qkv",
+      "type": "backend",
+      "label": "Q, K, V Projections",
+      "sublabel": "Dimension GEMMs",
+      "pos": [
+        270,
+        260
+      ],
+      "size": [
+        150,
+        60
+      ]
+    },
+    {
+      "id": "c_sram",
+      "type": "backend",
+      "label": "SRAM Tiling Buffer",
+      "sublabel": "FlashAttention-2 256KB",
+      "pos": [
+        530,
+        160
+      ],
+      "size": [
+        160,
+        60
+      ]
+    },
+    {
+      "id": "c_kvc",
+      "type": "database",
+      "label": "Paged KV Cache",
+      "sublabel": "Non-contiguous HBM3e",
+      "pos": [
+        530,
+        360
+      ],
+      "size": [
+        160,
+        60
+      ]
+    },
+    {
+      "id": "c_matmul",
+      "type": "cloud",
+      "label": "Tensor Core GEMM",
+      "sublabel": "FP8 Attention Matrix",
+      "pos": [
+        790,
+        160
+      ],
+      "size": [
+        160,
+        60
+      ]
+    },
+    {
+      "id": "c_out",
+      "type": "backend",
+      "label": "Output Projection",
+      "sublabel": "W_o Linear & RMSNorm",
+      "pos": [
+        790,
+        360
+      ],
+      "size": [
+        160,
+        60
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Frontend Token Flow",
+      "wraps": [
+        "c_tok",
+        "c_qkv"
+      ]
+    },
+    {
+      "kind": "security-group",
+      "label": "On-Chip SRAM & HBM Memory Flow",
+      "wraps": [
+        "c_sram",
+        "c_kvc",
+        "c_matmul",
+        "c_out"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "c1",
+      "from": "c_tok",
+      "to": "c_qkv",
+      "label": "Hidden X",
+      "variant": "default",
+      "labelDy": -14
+    },
+    {
+      "id": "c2",
+      "from": "c_qkv",
+      "to": "c_sram",
+      "label": "Query Tile",
+      "variant": "emphasis"
+    },
+    {
+      "id": "c3",
+      "from": "c_qkv",
+      "to": "c_kvc",
+      "label": "Append K, V",
+      "variant": "security"
+    },
+    {
+      "id": "c4",
+      "from": "c_kvc",
+      "to": "c_sram",
+      "label": "Paged DMA",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "c5",
+      "from": "c_sram",
+      "to": "c_matmul",
+      "label": "Load Tile",
+      "variant": "emphasis",
+      "labelDy": -14
+    },
+    {
+      "id": "c6",
+      "from": "c_matmul",
+      "to": "c_out",
+      "label": "Context O",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 24
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "FlashAttention IO-Aware Tiling",
+      "items": [
+        "Computes online Softmax scaling within 256KB on-chip SRAM",
+        "Eliminates reading and writing quadratic N x N attention matrix to HBM"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "PagedAttention Virtual Memory",
+      "items": [
+        "Partitions KV cache into non-contiguous physical pages like OS virtual memory",
+        "Zero memory waste from over-allocation, boosting batching throughput 2.5x"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "GEMM Tensor Acceleration",
+      "items": [
+        "FP8 mixed precision accelerates matrix multiplication with double TFLOPS",
+        "Hardware asynchronous copy (TMA) overlaps compute and global memory transfer"
+      ]
+    }
+  ]
+}

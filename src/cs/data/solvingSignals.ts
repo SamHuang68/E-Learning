@@ -498,4 +498,28 @@ export const CS_SOLVING_SIGNALS: CsSolvingSignal[] = [
       quickSolve: '約 (1 - 0.75^5) / 0.25 ≈ 3.05 個 Token。',
     },
   },
+  {
+    id: 'sig-cs-multipaxos-fastpath',
+    strand: '五大單元架構',
+    topic: '分散式 Multi-Paxos 穩態快速追加路徑',
+    problemSignal: '題目問及 Multi-Paxos 相較於 Basic Paxos 如何將日誌追加壓縮為 1 RTT',
+    threeSecondRule: '【Leader 確立後跳過 Phase 1 Prepare，直接發起 Phase 2 Accept 直選 1-RTT】！',
+    firstStepFormula: '\\text{Stable Leader} \\implies \\text{Skip Phase 1} \\implies \\text{Phase 2 (Accept)} = 1\\text{ RTT}',
+    exampleProblem: {
+      question: 'Multi-Paxos 在穩定 Leader 存在下，寫入一條新日誌最少需要幾個 RTT？',
+      quickSolve: '僅需 1 個 RTT (Phase 2 Accept / Accepted)。',
+    },
+  },
+  {
+    id: 'sig-cs-moe-capacity-factor',
+    strand: '前沿AI演算法',
+    topic: 'MoE 專家容量限制與輔助負載平衡損失',
+    problemSignal: '題目問及 Sparse MoE 如何計算專家容量上限與防止單一專家溢出',
+    threeSecondRule: '【總 Token / 專家數乘以容量因數 C，均勻分佈時 L_aux 取得最小值】！',
+    firstStepFormula: '\\text{Capacity} = \\left\\lceil \\frac{T}{E} \\cdot C \\right\\rceil, \\quad \\mathcal{L}_{\\text{aux}} = \\alpha E \\sum_{e=1}^E f_e P_e',
+    exampleProblem: {
+      question: '256 個 Token 均勻分配給 8 個專家 (C=1.0) 時丟包數為多少？',
+      quickSolve: '每個專家恰好 32 個 Token，丟包數為 0。',
+    },
+  },
 ]
