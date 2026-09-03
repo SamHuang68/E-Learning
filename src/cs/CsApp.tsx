@@ -1,19 +1,40 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, Suspense } from 'react'
 import type { LangId } from '../utils/storage'
 import { CsTopNav, type CsNavSection } from './components/CsTopNav'
 import { CsHierarchyTree } from './components/CsHierarchyTree'
 import { CsToday } from './components/CsToday'
-import { CsPractice } from './components/CsPractice'
-import { CsSignalsView } from './components/CsSignalsView'
-import { CsMockExam } from './components/CsMockExam'
-import { CsErrorVault } from './components/CsErrorVault'
-import { CsTextbookReader } from './components/CsTextbookReader'
-import { VonNeumannArchitectureLab } from './labs/VonNeumannArchitectureLab'
-import { PipelineHazardLab } from './labs/PipelineHazardLab'
-import { CacheMappingLab } from './labs/CacheMappingLab'
-import { AiMatrixTransformerLab } from './labs/AiMatrixTransformerLab'
-import { ArchifyHardwareMap } from './labs/ArchifyHardwareMap'
 import { loadCsProgress, saveCsProgress, type CsProgress } from './utils/csStorage'
+
+const CsPractice = React.lazy(() =>
+  import('./components/CsPractice').then((m) => ({ default: m.CsPractice }))
+)
+const CsSignalsView = React.lazy(() =>
+  import('./components/CsSignalsView').then((m) => ({ default: m.CsSignalsView }))
+)
+const CsMockExam = React.lazy(() =>
+  import('./components/CsMockExam').then((m) => ({ default: m.CsMockExam }))
+)
+const CsErrorVault = React.lazy(() =>
+  import('./components/CsErrorVault').then((m) => ({ default: m.CsErrorVault }))
+)
+const CsTextbookReader = React.lazy(() =>
+  import('./components/CsTextbookReader').then((m) => ({ default: m.CsTextbookReader }))
+)
+const VonNeumannArchitectureLab = React.lazy(() =>
+  import('./labs/VonNeumannArchitectureLab').then((m) => ({ default: m.VonNeumannArchitectureLab }))
+)
+const PipelineHazardLab = React.lazy(() =>
+  import('./labs/PipelineHazardLab').then((m) => ({ default: m.PipelineHazardLab }))
+)
+const CacheMappingLab = React.lazy(() =>
+  import('./labs/CacheMappingLab').then((m) => ({ default: m.CacheMappingLab }))
+)
+const AiMatrixTransformerLab = React.lazy(() =>
+  import('./labs/AiMatrixTransformerLab').then((m) => ({ default: m.AiMatrixTransformerLab }))
+)
+const ArchifyHardwareMap = React.lazy(() =>
+  import('./labs/ArchifyHardwareMap').then((m) => ({ default: m.ArchifyHardwareMap }))
+)
 
 interface Props {
   onBackHub: () => void
@@ -146,7 +167,14 @@ export const CsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
           width: '100%',
         }}
       >
-        {activeSection === 'hierarchy' && (
+        <Suspense
+          fallback={
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: '300px', color: '#94a3b8', fontSize: '0.86rem' }}>
+              載入計算機科學模組…
+            </div>
+          }
+        >
+          {activeSection === 'hierarchy' && (
           <CsHierarchyTree
             completedQuestions={progress.completedQuestions}
             onNavigate={(section, unitId) => {
@@ -242,6 +270,7 @@ export const CsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
             onRemoveError={handleRemoveError}
           />
         )}
+        </Suspense>
       </main>
     </div>
   )
