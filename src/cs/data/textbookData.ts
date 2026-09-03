@@ -472,36 +472,36 @@ export const CS_TEXTBOOK_CHAPTERS: TextbookChapter[] = [
       ],
     },
     architecturalDeepDive: {
-      sectionTitle: '本地端 AI PC (RTX 5080 + 96GB RAM) 與資料中心叢集微架構全景',
-      content: '現代 AI 運算硬體存在清晰的兩種工程型態：其一是「個人高階 AI PC / 本地端工作站」（以桌面多核心 CPU + 96GB 高容量 DDR5 系統主存 + PCIe Gen5 x16 直連 NVIDIA GeForce RTX 5080 16GB GDDR7，透過 Ollama 達成零資料外洩的本地端極速推論）；其二是「資料中心雲端超級伺服器」（以 1TB~2TB 伺服器 ECC RAM + 8 顆 H100/B200 透過專用 NVSwitch 網格達成 900 GB/s 以上 All-to-All 互聯）。絕不可將 PC 的 96GB 記憶體誤套在伺服器上，亦不可將只有機架式伺服器專屬的 NVSwitch 妄加於消費級 PC 之上。',
+      sectionTitle: '現代企業級 AI 伺服器 (DGX/HGX 業界標竿) 微架構與叢集全景',
+      content: '在電腦科學與人工智慧基礎設施領域，現代 AI 伺服器（如 NVIDIA DGX H100 / HGX B200）是支撐大模型千億參數訓練與巨量高併發推論的工業標準面貌。其核心特徵為「雙路伺服器 CPU 配備 2TB (2048GB) 高速 DDR5 ECC 註冊記憶體」、「8 顆 SXM 封裝旗艦 GPU（每顆具備 80GB~141GB HBM3e 顯存與數 TB/s 超高頻寬）」、以及「板載 4 顆專用 NVSwitch 晶片構建 900 GB/s 以上雙向 All-to-All 網格」。伺服器與消費級 PC 存在著截然不同的量級邊界：絕不能將個人 PC 的 96GB 記憶體與缺乏 NVSwitch 的 PCIe 單卡環境誤套為伺服器，伺服器必須完整呈現整個市場的宏觀面貌。',
       keySubsystems: [
         {
-          name: '第 5 代 Blackwell Tensor Core (RTX 5080)',
-          role: '本地端極速低精度乘累加',
-          technicalMechanism: '單晶片支援 FP8 (E4M3/E5M2) 與次世代 FP4 硬體矩陣運算，搭配 16GB GDDR7 (~1.0 TB/s 顯存頻寬)，為 8B~14B 規模模型提供滿速即時推論。',
+          name: '雙路伺服器主機子系統 (Dual CPUs + 2TB ECC RAM)',
+          role: '叢集節點作業系統調度與巨量資料快取',
+          technicalMechanism: '配備 32 條 DDR5-4800/5600 ECC RDIMM 記憶體，提供 2TB 龐大主存空間，並透過 PCIe Gen5 Switch 橋接 30TB 企業級 NVMe SSD 陣列。',
         },
         {
-          name: 'PCIe Gen5 x16 匯流排與 96GB DDR5 混和卸載',
-          role: '突破 16GB 顯存牆之主存擴展',
-          technicalMechanism: '以 64 GB/s 單向 (128 GB/s 雙向) 高速 PCIe 頻寬，將 70B 等超大模型以 Q4/Q8 分層卸載至 96GB DDR5 系統主存，兼顧本地運行能力與低延遲。',
+          name: '8x SXM 旗艦 Tensor Core GPU 運算矩陣',
+          role: '大規模低精度張量平行計算',
+          technicalMechanism: '8 顆 SXM 封裝 GPU 總計擁有超過 1TB 的 HBM3e 顯存，單節點提供高達 32 PFLOPS 的 FP8/FP4 峰值運算能力。',
         },
         {
-          name: '資料中心專用 NVSwitch 網格拓撲 (伺服器專屬對比)',
-          role: '雲端超巨模型張量平行 (TP)',
-          technicalMechanism: '專屬於 DGX/HGX 多卡機架，以 900 GB/s~1.8 TB/s 專用交換晶片消滅跨卡 All-Reduce 通訊瓶頸，需搭配 1TB~2TB 伺服器級 ECC 記憶體支撐。',
+          name: 'NVSwitch 900 GB/s 專用交換網格與 400Gb/s InfiniBand',
+          role: '消滅多卡平行通訊牆與跨節點 RDMA',
+          technicalMechanism: '以 4 顆板載 NVSwitch 晶片實現 8 卡全互聯雙向全對稱通訊，搭配 8 埠 400Gb/s InfiniBand NIC 實現極低延遲 GPUDirect RDMA。',
         },
       ],
     },
     industrialCaseStudies: [
       {
-        companyOrProject: '本地端 AI 邊緣工作站 (Local AI PC)',
-        systemName: 'RTX 5080 + 96GB DDR5 + Ollama 推論棧',
-        appliedSolution: '以本機端 Ollama 服務端點 (http://localhost:11434) 為核心，模型權重常駐 16GB GDDR7 與 96GB DDR5，實現無 API 延遲、零隱私洩漏、具備 torch.cuda.empty_cache() 動態保護的高效推論。',
+        companyOrProject: 'NVIDIA Enterprise',
+        systemName: 'DGX H100 / HGX B200 業界標竿 AI 伺服器',
+        appliedSolution: '標準配置 2TB 系統記憶體與 8 張 SXM 封裝 GPU，透過主機板內嵌之 4 顆 NVSwitch 晶片實現 3.2 Tbps 雙向對等穿透，專供千億參數預訓練。',
       },
       {
-        companyOrProject: 'NVIDIA Enterprise',
-        systemName: 'DGX H100/B200 超級伺服器叢集',
-        appliedSolution: '配備 2TB 系統記憶體與 8 張 SXM 封裝 GPU，透過主機板內嵌之 4 顆 NVSwitch 晶片實現 3.2 Tbps 雙向對等穿透，專供千億參數預訓練。',
+        companyOrProject: 'AI 叢集超算中心 (AI SuperPOD)',
+        systemName: 'Quantum-2 InfiniBand 雙層無阻塞 Fat-Tree 拓撲',
+        appliedSolution: '每台伺服器出 8 口 400Gb/s InfiniBand 直連 Leaf Switch，搭配 Rail-Optimized 佈線，消除節點間通訊熱點。',
       },
     ],
     deepThinkingQuestions: [

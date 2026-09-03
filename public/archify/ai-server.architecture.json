@@ -2,41 +2,258 @@
   "schema_version": 1,
   "diagram_type": "architecture",
   "meta": {
-    "title": "Modern AI Accelerated Server Architecture",
+    "title": "Modern Enterprise AI Server Architecture",
     "output": "ai-server-architecture.html",
     "quality_profile": "showcase",
+    "viewBox": [
+      1220,
+      620
+    ],
     "views": [
-      { "id": "inference-path", "label": "Local LLM Inference Path", "focus": ["client", "cpu-host", "pcie-bus", "gpu-0", "gpu-1"], "note": "End-to-end tensor flow from user query to distributed GPU tensor parallel execution." },
-      { "id": "memory-hierarchy", "label": "Memory and Storage Hierarchy", "focus": ["cpu-host", "host-ram", "nvme-ssd", "gpu-0"], "note": "Multi-tier memory transfers from NVMe model weights to Host RAM and GPU HBM3." }
+      {
+        "id": "training-flow",
+        "label": "Distributed Training & Tensor Parallel",
+        "focus": [
+          "client",
+          "host_cpu",
+          "pcie_switch",
+          "gpu_array",
+          "nvswitch",
+          "ib_fabric"
+        ],
+        "note": "All-to-All tensor parallel synchronization via NVSwitch and InfiniBand GPUDirect RDMA."
+      },
+      {
+        "id": "memory-hierarchy",
+        "label": "Multi-Tier Memory (2TB RAM & HBM3e)",
+        "focus": [
+          "host_ram",
+          "nvme_array",
+          "host_cpu",
+          "gpu_array"
+        ],
+        "note": "2TB DDR5 ECC server host memory and 8x HBM3e memory pool."
+      }
     ]
   },
   "components": [
-    { "id": "client", "type": "external", "label": "Web Client", "sublabel": "Browser / REST API", "pos": [40, 300], "size": [130, 60] },
-    { "id": "cpu-host", "type": "backend", "label": "Host CPU & Kernel", "sublabel": "Linux OS & Scheduler", "pos": [260, 300], "size": [150, 60] },
-    { "id": "host-ram", "type": "database", "label": "Host RAM (96GB)", "sublabel": "DDR5 Memory / Page Cache", "pos": [260, 150], "size": [150, 60] },
-    { "id": "nvme-ssd", "type": "database", "label": "NVMe Storage", "sublabel": "Model Weights & Checkpoints", "pos": [260, 450], "size": [150, 60] },
-    { "id": "pcie-bus", "type": "messagebus", "label": "PCIe Gen5 Bus", "sublabel": "64 GB/s Full-Duplex", "pos": [490, 300], "size": [140, 60] },
-    { "id": "gpu-0", "type": "cloud", "label": "GPU Accelerator 0", "sublabel": "Tensor Core + 16GB VRAM", "pos": [720, 200], "size": [160, 60] },
-    { "id": "gpu-1", "type": "cloud", "label": "GPU Accelerator 1", "sublabel": "Tensor Core + 16GB VRAM", "pos": [720, 400], "size": [160, 60] },
-    { "id": "nvswitch", "type": "messagebus", "label": "NVSwitch Fabric", "sublabel": "900 GB/s All-to-All Mesh", "pos": [940, 300], "size": [160, 60] }
+    {
+      "id": "client",
+      "type": "external",
+      "label": "Cluster Master",
+      "sublabel": "Slurm / K8s Orchestrator",
+      "pos": [
+        40,
+        280
+      ],
+      "size": [
+        140,
+        60
+      ]
+    },
+    {
+      "id": "host_cpu",
+      "type": "backend",
+      "label": "Dual Server CPUs",
+      "sublabel": "2x 64-Core Xeon / EPYC",
+      "pos": [
+        250,
+        280
+      ],
+      "size": [
+        160,
+        60
+      ]
+    },
+    {
+      "id": "host_ram",
+      "type": "database",
+      "label": "Host RAM (2TB ECC)",
+      "sublabel": "32x DDR5 RDIMMs",
+      "pos": [
+        250,
+        110
+      ],
+      "size": [
+        160,
+        60
+      ]
+    },
+    {
+      "id": "nvme_array",
+      "type": "database",
+      "label": "30TB NVMe Array",
+      "sublabel": "PCIe 5.0 Checkpoints",
+      "pos": [
+        250,
+        450
+      ],
+      "size": [
+        160,
+        60
+      ]
+    },
+    {
+      "id": "pcie_switch",
+      "type": "messagebus",
+      "label": "PCIe Gen5 Switch",
+      "sublabel": "Dual Host PCIe Fabric",
+      "pos": [
+        490,
+        280
+      ],
+      "size": [
+        150,
+        60
+      ]
+    },
+    {
+      "id": "gpu_array",
+      "type": "cloud",
+      "label": "8x SXM GPU Array",
+      "sublabel": "H100/H200 (8x 80-141GB HBM3e)",
+      "pos": [
+        720,
+        280
+      ],
+      "size": [
+        180,
+        60
+      ]
+    },
+    {
+      "id": "nvswitch",
+      "type": "messagebus",
+      "label": "NVSwitch Fabric",
+      "sublabel": "900 GB/s All-to-All per GPU",
+      "pos": [
+        980,
+        280
+      ],
+      "size": [
+        160,
+        60
+      ]
+    },
+    {
+      "id": "ib_fabric",
+      "type": "messagebus",
+      "label": "InfiniBand Network",
+      "sublabel": "8x 400Gb/s OSFP NICs",
+      "pos": [
+        720,
+        110
+      ],
+      "size": [
+        180,
+        60
+      ]
+    }
   ],
   "boundaries": [
-    { "kind": "region", "label": "Host Server Hardware", "wraps": ["cpu-host", "host-ram", "nvme-ssd", "pcie-bus"] },
-    { "kind": "security-group", "label": "GPU Acceleration Subsystem", "wraps": ["gpu-0", "gpu-1", "nvswitch"] }
+    {
+      "kind": "region",
+      "label": "Enterprise AI Server Node (e.g. DGX H100 / HGX B200)",
+      "wraps": [
+        "host_cpu",
+        "host_ram",
+        "nvme_array",
+        "pcie_switch",
+        "gpu_array",
+        "nvswitch"
+      ]
+    },
+    {
+      "kind": "security-group",
+      "label": "High-Bandwidth Interconnect & Scale-Out",
+      "wraps": [
+        "ib_fabric",
+        "nvswitch"
+      ]
+    }
   ],
   "connections": [
-    { "id": "c1", "from": "client", "to": "cpu-host", "label": "HTTP / IPC", "variant": "emphasis" },
-    { "id": "c2", "from": "cpu-host", "to": "host-ram", "label": "DRAM Bus", "fromSide": "top", "toSide": "bottom" },
-    { "id": "c3", "from": "nvme-ssd", "to": "cpu-host", "label": "Direct DMA", "fromSide": "top", "toSide": "bottom" },
-    { "id": "c4", "from": "cpu-host", "to": "pcie-bus", "label": "DMA Descriptors" },
-    { "id": "c5", "from": "pcie-bus", "to": "gpu-0", "label": "P2P Copy" },
-    { "id": "c6", "from": "pcie-bus", "to": "gpu-1", "label": "P2P Copy" },
-    { "id": "c7", "from": "gpu-0", "to": "nvswitch", "label": "All-Reduce" },
-    { "id": "c8", "from": "gpu-1", "to": "nvswitch", "label": "All-Reduce" }
+    {
+      "id": "c1",
+      "from": "client",
+      "to": "host_cpu",
+      "label": "Job Schedule",
+      "labelDy": -12,
+      "variant": "emphasis"
+    },
+    {
+      "id": "c2",
+      "from": "host_cpu",
+      "to": "host_ram",
+      "label": "DDR5 Channels",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "labelDx": 16
+    },
+    {
+      "id": "c3",
+      "from": "nvme_array",
+      "to": "host_cpu",
+      "label": "Storage DMA",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "labelDx": 16
+    },
+    {
+      "id": "c4",
+      "from": "host_cpu",
+      "to": "pcie_switch",
+      "label": "PCIe Gen5 Link",
+      "labelDy": -12
+    },
+    {
+      "id": "c5",
+      "from": "pcie_switch",
+      "to": "gpu_array",
+      "label": "Host DMA",
+      "labelDy": -12
+    },
+    {
+      "id": "c6",
+      "from": "gpu_array",
+      "to": "nvswitch",
+      "label": "NVLink Mesh",
+      "labelDy": -12
+    },
+    {
+      "id": "c7",
+      "from": "gpu_array",
+      "to": "ib_fabric",
+      "label": "GPUDirect RDMA",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "labelDx": 16
+    }
   ],
   "cards": [
-    { "dot": "cyan", "title": "Host Node", "items": ["Multi-core CPU coordinates Linux OS, processes and scheduling", "High capacity 96GB DDR5 RAM caches models and datasets"] },
-    { "dot": "emerald", "title": "Accelerated Compute", "items": ["Dual GPU setup with Tensor Cores for GEMM operations", "Dedicated high bandwidth VRAM eliminates memory bottlenecks"] },
-    { "dot": "rose", "title": "Interconnect Fabric", "items": ["PCIe Gen5 provides host-to-device streaming", "NVSwitch delivers 900 GB/s inter-GPU All-Reduce synchronization"] }
+    {
+      "dot": "cyan",
+      "title": "Dual-Socket Host Subsystem",
+      "items": [
+        "Dual 64-Core Server Processors manage Linux OS, NUMA nodes and cluster tasks",
+        "2TB (2048 GB) DDR5 ECC Registered RAM buffers multi-terabyte dataset and model cache"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "8x SXM AI GPU Accelerators",
+      "items": [
+        "8x SXM5/SXM6 H100/H200 Tensor Core GPUs with 640GB-1.1TB aggregate HBM3e",
+        "Delivers up to 32 PFLOPS FP8 compute with 3.35 TB/s HBM bandwidth per GPU"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "NVSwitch & Scale-Out Fabric",
+      "items": [
+        "4x NVSwitch chips provide 900 GB/s bidirectional all-to-all NVLink interconnect",
+        "8x 400Gb/s InfiniBand NICs with GPUDirect RDMA for scale-out distributed training"
+      ]
+    }
   ]
 }

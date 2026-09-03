@@ -3,17 +3,16 @@ import fs from 'fs'
 import path from 'path'
 
 describe('Archify SKILL 網頁架構可視化與應用整合測試', () => {
-  it('已生成高規格 Archify 高階 AI PC 與工作站全景架構圖 HTML (符合用戶真實系統)', () => {
-    const htmlPath = path.resolve(process.cwd(), 'public/archify/ai-pc-architecture.html')
+  it('已生成高規格 Archify 現代企業級 AI 伺服器全景架構圖 HTML (市場標竿 DGX/HGX SOTA)', () => {
+    const htmlPath = path.resolve(process.cwd(), 'public/archify/ai-server-architecture.html')
     expect(fs.existsSync(htmlPath)).toBe(true)
 
     const content = fs.readFileSync(htmlPath, 'utf8')
-    expect(content).toContain('Host CPU &amp; Kernel')
-    expect(content).toContain('Host RAM (96GB)')
-    expect(content).toContain('PCIe Gen5 x16 Bus')
-    expect(content).toContain('GeForce RTX 5080')
-    expect(content).toContain('Blackwell Tensor Core')
-    expect(content).toContain('Ollama Engine')
+    expect(content).toContain('Dual Server CPUs')
+    expect(content).toContain('Host RAM (2TB ECC)')
+    expect(content).toContain('8x SXM GPU Array')
+    expect(content).toContain('NVSwitch Fabric')
+    expect(content).toContain('InfiniBand Network')
   })
 
   it('已生成高規格 Archify 分散式儲存 LSM-Tree 架構圖 HTML', () => {
