@@ -68,9 +68,9 @@ describe('CSS Layout & Sidebar Overflow Regression Guard', () => {
     expect(cssContent).toContain('.grades-nav-group,')
   })
 
-  it('ensures .six-track-grid has responsive 1-col collapse on mobile', () => {
-    expect(cssContent).toContain('.six-track-grid {')
-    expect(cssContent).toMatch(/@media\s*\(max-width:\s*580px\)\s*\{[^}]*\.six-track-grid\s*\{[^}]*grid-template-columns:\s*1fr/s)
+  it('ensures .eight-track-grid has responsive 1-col collapse on mobile', () => {
+    expect(cssContent).toContain('.eight-track-grid {')
+    expect(cssContent).toMatch(/@media\s*\(max-width:\s*580px\)\s*\{[^}]*\.eight-track-grid\s*\{[^}]*grid-template-columns:\s*1fr/s)
   })
 
   it('ensures .lab-workspace-grid has single column collapse and svg max-width protection', () => {

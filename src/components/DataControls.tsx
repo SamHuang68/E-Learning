@@ -62,7 +62,7 @@ export function DataControls() {
       return
     }
     clearLocalProgressCache()
-    setNote('已清除六軌學習進度與學習事件摘要')
+    setNote('已清除八軌學習進度與學習事件摘要')
     window.dispatchEvent(new CustomEvent('e-learning:progress-hydrated'))
   }
 

@@ -336,10 +336,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
   return (
     <main className="hub unified-hub">
       <header className="hub-hero">
-        <div className="hub-topbar">
-          <p className="eyebrow">八軌學習平台</p>
-          <AuthPanel variant="compact" />
-        </div>
+        <p className="eyebrow">八軌學習平台</p>
         <h1>今天要學哪一軌？</h1>
         <p className="lede">
           數學、微積分、物理、化學、計算機概論、日語、多益與華語，同一個離線優先的練習系統。
@@ -367,7 +364,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
           <span className="section-subtext">8 軌</span>
         </div>
 
-        <div className="hub-grid six-track-grid">
+        <div className="hub-grid eight-track-grid">
           {tracks.map((track) => (
             <article key={track.id} className={`hub-card ${track.extraClass}`}>
               <button type="button" className="hub-card-hit" onClick={track.onClick}>
@@ -572,11 +569,13 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
             </div>
           </section>
 
+          <AuthPanel />
           <DataControls />
         </details>
       ) : (
         <details className="hub-more">
-          <summary>匯出／匯入進度</summary>
+          <summary>登入、匯出／匯入進度</summary>
+          <AuthPanel />
           <DataControls />
         </details>
       )}

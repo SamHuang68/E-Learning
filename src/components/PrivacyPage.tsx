@@ -63,7 +63,7 @@ export function PrivacyPage({ onBack }: Props) {
       <section className="privacy-block">
         <h2>你的控制</h2>
         <p>
-          在 Hub 可匯出／匯入六軌進度 JSON、清除全部學習進度；這不會刪除本機帳號、顯示／音效偏好、API 金鑰或課程設計器 presets。登入使用者可重設帳號進度；本機帳號也可從帳號卡永久刪除。
+          在 Hub 可匯出／匯入八軌進度 JSON、清除全部學習進度；這不會刪除本機帳號、顯示／音效偏好、API 金鑰或課程設計器 presets。登入使用者可重設帳號進度；本機帳號也可從帳號卡永久刪除。
         </p>
       </section>
       <section className="privacy-block">

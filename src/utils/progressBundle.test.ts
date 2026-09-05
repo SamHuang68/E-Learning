@@ -31,7 +31,7 @@ afterEach(() => {
   Object.defineProperty(globalThis, 'window', { value: originalWindow, configurable: true })
 })
 
-describe('six-track progress bundle', () => {
+describe('progress bundle', () => {
   it('round-trips canonical STEM keys and clears all learner progress', () => {
     const math = { gradeId: 'g4', xp: 44 }
     const physics = { gradeId: 'g9', xp: 55 }

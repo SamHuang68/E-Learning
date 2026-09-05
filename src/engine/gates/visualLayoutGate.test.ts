@@ -32,7 +32,7 @@ describe('Strict Review Gate: Visual Layout, 100vh Focus & Zero-Overflow Invaria
     expect(cssContent).toContain('.math-shell,')
     expect(cssContent).toContain('.physics-shell,')
     expect(cssContent).toContain('.chemistry-shell,')
-    expect(cssContent).toMatch(/@media\s*\(max-width:\s*580px\)\s*\{[^}]*\.six-track-grid\s*\{[^}]*grid-template-columns:\s*1fr/s)
+    expect(cssContent).toMatch(/@media\s*\(max-width:\s*580px\)\s*\{[^}]*\.eight-track-grid\s*\{[^}]*grid-template-columns:\s*1fr/s)
     expect(cssContent).toMatch(/@media\s*\(max-width:\s*680px\)\s*\{[^}]*\.lab-workspace-grid\s*\{[^}]*grid-template-columns:\s*1fr\s*!important/s)
   })
 

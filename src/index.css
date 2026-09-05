@@ -7720,28 +7720,28 @@ html.high-contrast { filter: contrast(125%); }
 }
 
 /* =========================================================
- * 7. 六大學習軌道網格與物理/化學專屬樣式 (Six Tracks Grid & Science Styles)
+ * 7. 八軌學習網格與物理/化學專屬樣式
  * ========================================================= */
-.six-track-grid {
+.eight-track-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr));
   gap: 1rem;
 }
 
 @media (max-width: 580px) {
-  .six-track-grid {
+  .eight-track-grid {
     grid-template-columns: 1fr;
   }
 }
 
 @media (min-width: 680px) and (max-width: 1023px) {
-  .six-track-grid {
+  .eight-track-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (min-width: 1024px) {
-  .six-track-grid {
+  .eight-track-grid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
@@ -8674,6 +8674,9 @@ html.high-contrast { filter: contrast(125%); }
   display: flex;
   align-items: center;
   color: var(--navy);
+}
+.hub-more .auth-panel {
+  margin: 0.75rem 0 1rem;
 }
 .auth-panel.is-compact {
   margin: 0;
