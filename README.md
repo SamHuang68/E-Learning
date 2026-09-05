@@ -1,9 +1,9 @@
-# E-Learning Hub｜語言 × 數學 × 微積分 × 物理 × 化學六軌學習
+# E-Learning Hub｜語言 × 數學 × 微積分 × 物理 × 化學 × 計算機概論八軌學習
 
 > 🏛️ **Sam Huang 專案總入口**：[https://samhuang68.github.io/](https://samhuang68.github.io/)
 > 🌐 **E-Learning 線上體驗站**：[https://samhuang68.github.io/E-Learning/](https://samhuang68.github.io/E-Learning/)
 
-同一個 Vite / React 專案內整合 JLPT 日語、TOEIC 多益英語、臺灣 108 課綱數學、微積分、物理與化學。未登入可本機試用；登入後進度可同步至 Supabase。託管於 GitHub Pages（靜態站）。
+同一個 Vite / React 專案內整合 JLPT 日語、TOEIC 多益英語、台湾華語、臺灣 108 課綱數學、微積分、物理、化學與計算機概論。未登入可本機試用；登入後進度可同步至 Supabase。託管於 GitHub Pages（靜態站）。
 
 ## 功能成熟度
 

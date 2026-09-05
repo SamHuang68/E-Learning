@@ -60,23 +60,23 @@ export const CsTopNav: React.FC<Props> = ({
         width: '100%',
         height: '56px',
         flexShrink: 0,
-        background: 'rgba(13, 17, 23, 0.92)',
+        background: '#ffffff',
         backdropFilter: 'blur(12px)',
-        borderBottom: '1px solid rgba(99, 102, 241, 0.25)',
+        borderBottom: '1px solid var(--line)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '0 1rem',
         gap: '0.75rem',
         zIndex: 50,
-        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+        boxShadow: 'none',
       }}
     >
       {/* 左側：品牌識別與指標膠囊 */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', minWidth: 'fit-content' }}>
         <button
           type="button"
-          onClick={() => onSelectSection('hierarchy')}
+          onClick={() => onSelectSection('today')}
           style={{
             background: 'none',
             border: 'none',
@@ -86,12 +86,12 @@ export const CsTopNav: React.FC<Props> = ({
             alignItems: 'center',
             gap: '0.45rem',
           }}
-          title="返回知識體系階層樹"
+          title="返回今日學習"
         >
           <span style={{ fontSize: '1.4rem' }}>💻</span>
           <div style={{ textAlign: 'left' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-              <span style={{ fontSize: '0.92rem', fontWeight: 900, color: '#f8fafc', letterSpacing: '-0.02em' }}>
+              <span style={{ fontSize: '0.92rem', fontWeight: 900, color: 'var(--ink)', letterSpacing: '-0.02em' }}>
                 計算機概論
               </span>
               <span
@@ -122,7 +122,7 @@ export const CsTopNav: React.FC<Props> = ({
               padding: '0.15rem 0.5rem',
               borderRadius: '999px',
               background: 'rgba(99, 102, 241, 0.15)',
-              color: '#818cf8',
+              color: '#4f46e5',
               fontWeight: 700,
               border: '1px solid rgba(99, 102, 241, 0.3)',
             }}
@@ -183,10 +183,10 @@ export const CsTopNav: React.FC<Props> = ({
             display: 'inline-flex',
             alignItems: 'center',
             gap: '0.25rem',
-            background: 'rgba(255, 255, 255, 0.03)',
+            background: 'var(--surface-soft)',
             padding: '0.2rem 0.35rem',
             borderRadius: '8px',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            border: '1px solid var(--line)',
           }}
         >
           <span style={{ fontSize: '0.68rem', color: '#94a3b8', fontWeight: 700, padding: '0 0.2rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
@@ -209,7 +209,7 @@ export const CsTopNav: React.FC<Props> = ({
                 activeSection === 'hierarchy'
                   ? 'linear-gradient(135deg, rgba(6, 182, 212, 0.25), rgba(99, 102, 241, 0.25))'
                   : 'transparent',
-              color: activeSection === 'hierarchy' ? '#38bdf8' : 'rgba(226, 232, 240, 0.85)',
+              color: activeSection === 'hierarchy' ? '#0369a1' : 'var(--muted)',
               border: activeSection === 'hierarchy' ? '1px solid #38bdf8' : '1px solid transparent',
               cursor: 'pointer',
               whiteSpace: 'nowrap',
@@ -233,7 +233,7 @@ export const CsTopNav: React.FC<Props> = ({
               fontSize: '0.78rem',
               fontWeight: activeSection === 'textbook' ? 800 : 600,
               background: activeSection === 'textbook' ? 'rgba(56, 189, 248, 0.25)' : 'rgba(56, 189, 248, 0.08)',
-              color: activeSection === 'textbook' ? '#38bdf8' : '#7dd3fc',
+              color: activeSection === 'textbook' ? '#0369a1' : 'var(--muted)',
               border: activeSection === 'textbook' ? '1px solid #38bdf8' : '1px solid rgba(56, 189, 248, 0.3)',
               cursor: 'pointer',
               whiteSpace: 'nowrap',
@@ -257,7 +257,7 @@ export const CsTopNav: React.FC<Props> = ({
               fontSize: '0.78rem',
               fontWeight: activeSection === 'arch-map' ? 800 : 600,
               background: activeSection === 'arch-map' ? 'rgba(16, 185, 129, 0.2)' : 'transparent',
-              color: activeSection === 'arch-map' ? '#34d399' : 'rgba(226, 232, 240, 0.85)',
+              color: activeSection === 'arch-map' ? '#047857' : 'var(--muted)',
               border: activeSection === 'arch-map' ? '1px solid #34d399' : '1px solid transparent',
               cursor: 'pointer',
               whiteSpace: 'nowrap',
@@ -282,7 +282,7 @@ export const CsTopNav: React.FC<Props> = ({
                 fontSize: '0.78rem',
                 fontWeight: isLabActive ? 800 : 600,
                 background: isLabActive ? 'rgba(168, 85, 247, 0.2)' : 'transparent',
-                color: isLabActive ? '#c084fc' : 'rgba(226, 232, 240, 0.85)',
+                color: isLabActive ? '#6d28d9' : 'var(--muted)',
                 border: isLabActive ? '1px solid #c084fc' : '1px solid transparent',
                 cursor: 'pointer',
                 whiteSpace: 'nowrap',
@@ -299,12 +299,12 @@ export const CsTopNav: React.FC<Props> = ({
                   position: 'absolute',
                   top: 'calc(100% + 6px)',
                   left: 0,
-                  background: '#0f172a',
+                  background: '#ffffff',
                   border: '1px solid rgba(168, 85, 247, 0.4)',
                   borderRadius: '8px',
                   padding: '0.4rem',
                   minWidth: '220px',
-                  boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
+                  boxShadow: 'var(--shadow)',
                   zIndex: 100,
                   display: 'flex',
                   flexDirection: 'column',
@@ -327,7 +327,7 @@ export const CsTopNav: React.FC<Props> = ({
                       borderRadius: '5px',
                       border: 'none',
                       background: activeSection === lab.id ? 'rgba(168, 85, 247, 0.25)' : 'transparent',
-                      color: activeSection === lab.id ? '#c084fc' : '#e2e8f0',
+                      color: activeSection === lab.id ? '#6d28d9' : 'var(--ink)',
                       cursor: 'pointer',
                       textAlign: 'left',
                       width: '100%',
@@ -357,7 +357,7 @@ export const CsTopNav: React.FC<Props> = ({
               fontSize: '0.78rem',
               fontWeight: activeSection === 'signals' ? 800 : 600,
               background: activeSection === 'signals' ? 'rgba(245, 158, 11, 0.2)' : 'transparent',
-              color: activeSection === 'signals' ? '#fbbf24' : 'rgba(226, 232, 240, 0.85)',
+              color: activeSection === 'signals' ? '#b45309' : 'var(--muted)',
               border: activeSection === 'signals' ? '1px solid #fbbf24' : '1px solid transparent',
               cursor: 'pointer',
               whiteSpace: 'nowrap',
@@ -375,10 +375,10 @@ export const CsTopNav: React.FC<Props> = ({
             display: 'inline-flex',
             alignItems: 'center',
             gap: '0.25rem',
-            background: 'rgba(255, 255, 255, 0.03)',
+            background: 'var(--surface-soft)',
             padding: '0.2rem 0.35rem',
             borderRadius: '8px',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            border: '1px solid var(--line)',
           }}
         >
           <span style={{ fontSize: '0.68rem', color: '#94a3b8', fontWeight: 700, padding: '0 0.2rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
@@ -398,7 +398,7 @@ export const CsTopNav: React.FC<Props> = ({
               fontSize: '0.78rem',
               fontWeight: activeSection === 'practice' ? 800 : 600,
               background: activeSection === 'practice' ? 'rgba(99, 102, 241, 0.25)' : 'transparent',
-              color: activeSection === 'practice' ? '#818cf8' : 'rgba(226, 232, 240, 0.85)',
+              color: activeSection === 'practice' ? '#3730a3' : 'var(--muted)',
               border: activeSection === 'practice' ? '1px solid #818cf8' : '1px solid transparent',
               cursor: 'pointer',
               whiteSpace: 'nowrap',
@@ -422,7 +422,7 @@ export const CsTopNav: React.FC<Props> = ({
               fontSize: '0.78rem',
               fontWeight: activeSection === 'mock' ? 800 : 600,
               background: activeSection === 'mock' ? 'rgba(244, 63, 94, 0.25)' : 'transparent',
-              color: activeSection === 'mock' ? '#fb7185' : 'rgba(226, 232, 240, 0.85)',
+              color: activeSection === 'mock' ? '#be123c' : 'var(--muted)',
               border: activeSection === 'mock' ? '1px solid #fb7185' : '1px solid transparent',
               cursor: 'pointer',
               whiteSpace: 'nowrap',
@@ -446,7 +446,7 @@ export const CsTopNav: React.FC<Props> = ({
               fontSize: '0.78rem',
               fontWeight: activeSection === 'errors' ? 800 : 600,
               background: activeSection === 'errors' ? 'rgba(239, 68, 68, 0.2)' : 'transparent',
-              color: activeSection === 'errors' ? '#f87171' : 'rgba(226, 232, 240, 0.85)',
+              color: activeSection === 'errors' ? '#b91c1c' : 'var(--muted)',
               border: activeSection === 'errors' ? '1px solid #f87171' : '1px solid transparent',
               cursor: 'pointer',
               whiteSpace: 'nowrap',
@@ -471,7 +471,7 @@ export const CsTopNav: React.FC<Props> = ({
             fontSize: '0.78rem',
             fontWeight: activeSection === 'today' ? 800 : 600,
             background: activeSection === 'today' ? 'rgba(99, 102, 241, 0.2)' : 'transparent',
-            color: activeSection === 'today' ? '#818cf8' : 'rgba(226, 232, 240, 0.85)',
+            color: activeSection === 'today' ? '#3730a3' : 'var(--muted)',
             border: activeSection === 'today' ? '1px solid #818cf8' : '1px solid transparent',
             cursor: 'pointer',
             whiteSpace: 'nowrap',

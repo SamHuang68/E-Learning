@@ -32,12 +32,14 @@ type Props = {
 
 export const ChemistryApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
   const [currentGradeId, setCurrentGradeId] = useState<ChemistryGradeId>(() => {
-    const stored = loadChemistryProgress().gradeId
-    return CHEMISTRY_GRADES[stored] ? stored : 'g10'
+    const stored = loadChemistryProgress()
+    if (!stored.completedQuestions.length && !stored.xp) return 'g7'
+    return CHEMISTRY_GRADES[stored.gradeId] ? stored.gradeId : 'g7'
   })
   const [currentUnitId, setCurrentUnitId] = useState<number>(() => {
     const stored = loadChemistryProgress()
-    return CHEMISTRY_GRADES[stored.gradeId]?.units.some((unit) => unit.id === stored.unitId)
+    const gradeId = !stored.completedQuestions.length && !stored.xp ? 'g7' : stored.gradeId
+    return CHEMISTRY_GRADES[gradeId]?.units.some((unit) => unit.id === stored.unitId)
       ? stored.unitId
       : 1
   })
@@ -48,7 +50,12 @@ export const ChemistryApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
   useEffect(() => {
     const refresh = () => {
       const stored = loadChemistryProgress()
-      const gradeId = CHEMISTRY_GRADES[stored.gradeId] ? stored.gradeId : 'g10'
+      const gradeId =
+        !stored.completedQuestions.length && !stored.xp
+          ? 'g7'
+          : CHEMISTRY_GRADES[stored.gradeId]
+            ? stored.gradeId
+            : 'g7'
       const unitId = CHEMISTRY_GRADES[gradeId].units.some((unit) => unit.id === stored.unitId)
         ? stored.unitId
         : 1

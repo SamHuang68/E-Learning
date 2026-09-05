@@ -30,11 +30,14 @@ type Props = {
 
 const items: { id: NavId; icon: string; label: string }[] = [
   { id: 'today', icon: '日', label: '今日學習' },
-  { id: 'signals', icon: '🎯', label: '句型動作判準 (3秒)' },
-  { id: 'kana', icon: 'あ', label: '五十音（基礎）' },
-  { id: 'builder', icon: '設', label: '課程設計器' },
+  { id: 'kana', icon: 'あ', label: '五十音' },
   { id: 'vocab', icon: 'Aa', label: '單字練習' },
   { id: 'grammar', icon: '文', label: '文法教室' },
+]
+
+const moreItems: { id: NavId; icon: string; label: string }[] = [
+  { id: 'signals', icon: '判', label: '句型判準' },
+  { id: 'builder', icon: '設', label: '課程設計器' },
   { id: 'placement', icon: '級', label: '分級測驗' },
   { id: 'mock', icon: '模', label: '模擬測驗' },
   { id: 'kanji', icon: '漢', label: '漢字實驗室' },
@@ -68,6 +71,19 @@ export function Sidebar({
 
       <nav aria-label="主選單">
         {items.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            className={nav === item.id ? 'active' : ''}
+            aria-current={nav === item.id ? 'page' : undefined}
+            onClick={() => onNav(item.id)}
+          >
+            <span>{item.icon}</span>
+            {item.label}
+          </button>
+        ))}
+        <p className="nav-heading">更多</p>
+        {moreItems.map((item) => (
           <button
             key={item.id}
             type="button"

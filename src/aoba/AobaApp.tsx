@@ -50,7 +50,7 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
   const { user, syncStatus } = useAuth()
   const [nav, setNav] = useState<NavId>(() => {
     if (window.location.hash.includes('builder')) return 'builder'
-    return 'kana'
+    return 'today'
   })
   const [progress, setProgress] = useState<ProgressState>(() => loadProgress())
   const [practice, setPractice] = useState<'vocab' | 'reading' | 'grammar' | null>(

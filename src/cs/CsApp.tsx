@@ -42,7 +42,7 @@ interface Props {
 }
 
 export const CsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
-  const [activeSection, setActiveSection] = useState<CsNavSection>('hierarchy')
+  const [activeSection, setActiveSection] = useState<CsNavSection>('today')
   const [practiceUnitId, setPracticeUnitId] = useState<string | undefined>(undefined)
   const [progress, setProgress] = useState<CsProgress>(() => loadCsProgress())
 
@@ -129,18 +129,7 @@ export const CsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
   }
 
   return (
-    <div
-      className="app-shell cs-shell"
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100vh',
-        width: '100vw',
-        overflow: 'hidden',
-        background: '#090d16',
-        color: '#f8fafc',
-      }}
-    >
+    <div className="app-shell cs-shell">
       {/* 頂部水平功能列 (取代側邊欄，一頁盡覽所有功能) */}
       <CsTopNav
         activeSection={activeSection}

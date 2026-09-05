@@ -33,12 +33,14 @@ type Props = {
 
 export const PhysicsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
   const [currentGradeId, setCurrentGradeId] = useState<PhysicsGradeId>(() => {
-    const stored = loadPhysicsProgress().gradeId
-    return PHYSICS_GRADES[stored] ? stored : 'g10'
+    const stored = loadPhysicsProgress()
+    if (!stored.completedQuestions.length && !stored.xp) return 'g7'
+    return PHYSICS_GRADES[stored.gradeId] ? stored.gradeId : 'g7'
   })
   const [currentUnitId, setCurrentUnitId] = useState<number>(() => {
     const stored = loadPhysicsProgress()
-    return getPhysicsUnit(stored.gradeId, stored.unitId)?.id ?? 1
+    const gradeId = !stored.completedQuestions.length && !stored.xp ? 'g7' : stored.gradeId
+    return getPhysicsUnit(gradeId, stored.unitId)?.id ?? 1
   })
   const [activeNav, setActiveNav] = useState<PhysicsNavId>('today')
   const [activeLabId, setActiveLabId] = useState<string | null>(null)
@@ -47,7 +49,12 @@ export const PhysicsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
   useEffect(() => {
     const refresh = () => {
       const stored = loadPhysicsProgress()
-      const gradeId = PHYSICS_GRADES[stored.gradeId] ? stored.gradeId : 'g10'
+      const gradeId =
+        !stored.completedQuestions.length && !stored.xp
+          ? 'g7'
+          : PHYSICS_GRADES[stored.gradeId]
+            ? stored.gradeId
+            : 'g7'
       const unitId = getPhysicsUnit(gradeId, stored.unitId)?.id ?? 1
       setProgress(stored)
       setCurrentGradeId(gradeId)
