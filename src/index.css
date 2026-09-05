@@ -1,19 +1,19 @@
 :root {
-  --bg: #ffffff;
-  --bg-deep: #f7f8fa;
-  --surface: #ffffff;
-  --surface-soft: #f4f6f8;
-  --ink: #1c2d3d;
-  --muted: #5d7083;
-  --line: #e2e8ef;
-  --navy: #1f4d63;
-  --navy-soft: #2f6f7e;
-  --accent: #2f9e6b;
-  --accent-soft: #e4f6ee;
-  --accent-border: #57c28d;
+  --bg: #f6f0e6;
+  --bg-deep: #efe6d8;
+  --surface: #fffcf7;
+  --surface-soft: #f3eadc;
+  --ink: #2c261f;
+  --muted: #6d6256;
+  --line: #e4d6c4;
+  --navy: #3f6f64;
+  --navy-soft: #5a8a7e;
+  --accent: #3f6f64;
+  --accent-soft: #e7f1ec;
+  --accent-border: #7eb8a6;
   --warm: #c45c5c;
-  --shadow: 0 8px 28px rgba(28, 45, 61, 0.06);
-  --radius: 18px;
+  --shadow: 0 10px 28px rgba(44, 38, 31, 0.07);
+  --radius: 20px;
   --font-sans: 'Zen Kaku Gothic New', 'Segoe UI', sans-serif;
   --font-display: 'Shippori Mincho', 'Times New Roman', serif;
   color-scheme: light;
@@ -126,8 +126,8 @@ strong {
   z-index: 2000;
   padding: 0.65rem 0.85rem;
   border-radius: 10px;
-  background: #0f172a;
-  color: #fff;
+  background: #3f6f64;
+  color: #fffcf7;
   transform: translateY(-160%);
 }
 
@@ -138,8 +138,8 @@ strong {
 /* Hub */
 .hub {
   min-height: 100vh;
-  padding: 2rem 1.5rem 3rem;
-  max-width: 1150px;
+  padding: 2.4rem 1.75rem 3.2rem;
+  max-width: 1180px;
   margin: 0 auto;
 }
 @media (max-width: 480px) {
@@ -228,7 +228,7 @@ strong {
 .stat-progress-bar i {
   display: block;
   height: 100%;
-  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+  background: linear-gradient(90deg, #3f6f64, #7eb8a6);
   border-radius: 999px;
   transition: width 0.4s ease;
 }
@@ -287,10 +287,10 @@ strong {
 .hub-card {
   text-align: left;
   padding: 0;
-  border-radius: 20px;
+  border-radius: 22px;
   background: var(--surface);
   border: 1px solid var(--line);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 8px 22px rgba(44, 38, 31, 0.05);
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -300,9 +300,9 @@ strong {
   overflow: hidden;
 }
 .hub-card:hover {
-  transform: translateY(-5px);
-  border-color: #3b82f6;
-  box-shadow: 0 12px 28px rgba(59, 130, 246, 0.12);
+  transform: translateY(-4px);
+  border-color: var(--accent-border);
+  box-shadow: 0 14px 28px rgba(63, 111, 100, 0.12);
 }
 .hub-card-header {
   display: flex;
@@ -316,12 +316,12 @@ strong {
   font-size: 0.75rem;
   font-weight: 800;
 }
-.track-status-pill.math { background: #eff6ff; color: #1d4ed8; }
-.track-status-pill.calculus { background: #f3e8ff; color: #7e22ce; }
-.track-status-pill.ja { background: #fdf2f8; color: #be185d; }
-.track-status-pill.en { background: #fefce8; color: #854d0e; }
-.track-status-pill.cs { background: #eff6ff; color: #1d4ed8; }
-.track-status-pill.zh { background: #fff7ed; color: #c2410c; }
+.track-status-pill.math { background: #e8f0ea; color: #2f5c4e; }
+.track-status-pill.calculus { background: #ece8f3; color: #4a3f63; }
+.track-status-pill.ja { background: #f6e8ea; color: #6b3a42; }
+.track-status-pill.en { background: #f6eedc; color: #6b5428; }
+.track-status-pill.cs { background: #e6eef2; color: #355a68; }
+.track-status-pill.zh { background: #f4e8dc; color: #6b4428; }
 
 .track-desc {
   margin: 0;
@@ -337,7 +337,7 @@ strong {
   margin: 0.25rem 0;
 }
 .track-highlight-badges span {
-  background: var(--surface-alt, #f8fafc);
+  background: var(--surface-alt, #f3eadc);
   border: 1px solid var(--line);
   padding: 0.2rem 0.5rem;
   border-radius: 6px;
@@ -358,7 +358,7 @@ strong {
   margin-top: 0.5rem;
   padding-top: 0.5rem;
   font-size: 0.92rem;
-  color: #2563eb;
+  color: var(--navy);
   display: flex;
   align-items: center;
   gap: 0.25rem;
@@ -370,20 +370,20 @@ strong {
   border-radius: 14px;
   display: grid;
   place-items: center;
-  background: linear-gradient(145deg, #10b981, #059669);
-  color: #ffffff;
+  background: linear-gradient(145deg, #5a8a7e, #3f6f64);
+  color: #fffcf7;
   font-family: var(--font-display);
   font-size: 1.4rem;
   font-weight: 800;
 }
 .hub-card-mark.math-mark {
-  background: linear-gradient(145deg, #2563eb, #1d4ed8);
+  background: linear-gradient(145deg, #6d8f9a, #3f6b78);
 }
 .hub-card-mark.calculus-mark {
-  background: linear-gradient(145deg, #8b5cf6, #6d28d9);
+  background: linear-gradient(145deg, #8b7aa8, #5c5278);
 }
 .hub-card-mark.toeic {
-  background: linear-gradient(145deg, #f59e0b, #d97706);
+  background: linear-gradient(145deg, #c4a06a, #a07d48);
 }
 
 /* 能力雷達頁籤切換器 */
@@ -418,12 +418,12 @@ strong {
 }
 .radar-tab-btn:hover {
   color: var(--ink);
-  background: var(--surface-alt, #f1f5f9);
+  background: var(--surface-alt, #efe6d8);
 }
 .radar-tab-btn.active {
-  background: #2563eb;
-  color: #ffffff;
-  border-color: #2563eb;
+  background: var(--navy);
+  color: #fffcf7;
+  border-color: var(--navy);
 }
 .hub-radar-display-wrapper {
   max-width: 960px;
@@ -484,7 +484,7 @@ strong {
   line-height: 1.35;
 }
 .badge-xp-tag {
-  background: #f1f5f9;
+  background: #efe6d8;
   border: 1px solid #cbd5e1;
   padding: 0.15rem 0.45rem;
   border-radius: 4px;
@@ -566,13 +566,13 @@ strong {
   border: none;
   padding: 0;
   font-size: inherit;
-  color: #2563eb;
+  color: #3f6f64;
   cursor: pointer;
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 .crumb-link-btn:hover {
-  color: #1d4ed8;
+  color: #2f5c4e;
 }
 .crumb-separator {
   color: var(--line-strong, #cbd5e1);
@@ -733,8 +733,8 @@ strong {
   overscroll-behavior-y: contain;
   box-sizing: border-box;
   padding: 0.5rem 0.6rem 0.75rem;
-  border-right: 1px solid rgba(201, 214, 227, 0.8);
-  background: rgba(255, 255, 255, 0.85);
+  border-right: 1px solid var(--line);
+  background: rgba(255, 252, 247, 0.92);
   backdrop-filter: blur(12px);
   display: flex;
   flex-direction: column;
@@ -742,7 +742,7 @@ strong {
   min-width: 0;
   scrollbar-gutter: stable;
   scrollbar-width: thin;
-  scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
+  scrollbar-color: rgba(148, 132, 112, 0.4) transparent;
 }
 
 .sidebar::-webkit-scrollbar,
@@ -866,9 +866,9 @@ strong {
   margin-top: auto;
   padding: 0.9rem;
   border-radius: 14px;
-  background: linear-gradient(160deg, #f7fbf9, #e8f2f7);
+  background: linear-gradient(160deg, #f7f1e6, #e7f1ec);
   flex-shrink: 0;
-  border: 1px solid rgba(47, 111, 126, 0.12);
+  border: 1px solid var(--line);
 }
 
 .course-summary strong {
@@ -3395,15 +3395,15 @@ footer {
 
 /* Hub 卡片樣式 */
 .hub-card.math {
-  border-top: 4px solid #3b82f6;
+  border-top: 4px solid #5a8a7e;
 }
 .hub-card.math:hover {
-  border-color: #2563eb;
+  border-color: #3f6f64;
   box-shadow: 0 12px 24px -4px rgba(37, 99, 235, 0.15);
 }
 .hub-card-mark.math-mark,
 .brand-mark.math-mark {
-  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  background: linear-gradient(135deg, #3f6f64, #5a8a7e);
   color: #fff;
   font-family: 'KaTeX_Math', serif, sans-serif;
   font-weight: bold;
@@ -3482,15 +3482,15 @@ footer {
 }
 
 .grade-pill-btn.selected {
-  background: #2563eb;
+  background: #3f6f64;
   color: #fff;
-  border-color: #2563eb;
+  border-color: #3f6f64;
   box-shadow: 0 1px 4px rgba(37, 99, 235, 0.25);
 }
 
 /* 數學今日儀表板 (MathToday) - 超緊湊一頁設計 */
 .math-hero-card.compact-hero {
-  background: linear-gradient(135deg, #1e3a8a, #2563eb);
+  background: linear-gradient(135deg, #2f5c4e, #3f6f64);
   color: #fff;
   border-radius: 10px;
   padding: 0.45rem 0.85rem;
@@ -3562,7 +3562,7 @@ footer {
 
 .btn-hero-primary {
   background: #fff;
-  color: #1e3a8a;
+  color: #2f5c4e;
   border: none;
   padding: 0.32rem 0.65rem;
   border-radius: 6px;
@@ -3670,13 +3670,13 @@ footer {
 }
 
 .unit-map-card:hover {
-  border-color: #3b82f6;
+  border-color: #5a8a7e;
   transform: translateY(-1px);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .unit-map-card.active {
-  border-color: #2563eb;
+  border-color: #3f6f64;
   background: #f8faff;
   box-shadow: 0 2px 6px rgba(37, 99, 235, 0.1);
 }
@@ -3691,7 +3691,7 @@ footer {
 .unit-seq {
   font-weight: 700;
   font-size: 0.72rem;
-  color: #2563eb;
+  color: #3f6f64;
 }
 
 .unit-strand {
@@ -3744,7 +3744,7 @@ footer {
 }
 
 .current-indicator {
-  color: #2563eb;
+  color: #3f6f64;
   font-weight: 700;
   white-space: nowrap;
 }
@@ -3769,14 +3769,14 @@ footer {
   border: 1px solid var(--line);
   border-radius: 6px;
   padding: 0.35rem 0.55rem;
-  border-left: 3px solid #3b82f6;
+  border-left: 3px solid #5a8a7e;
   min-width: 0;
 }
 
 .concept-idx {
   font-size: 0.65rem;
   font-weight: 700;
-  color: #2563eb;
+  color: #3f6f64;
   display: block;
   margin-bottom: 0.05rem;
   white-space: nowrap;
@@ -4036,8 +4036,8 @@ footer {
 }
 
 .option-btn.selected {
-  border-color: #2563eb;
-  background: #eff6ff;
+  border-color: #3f6f64;
+  background: #e7f1ec;
 }
 
 .option-btn.correct-opt {
@@ -4085,7 +4085,7 @@ footer {
 }
 
 .fill-text-input:focus {
-  border-color: #2563eb;
+  border-color: #3f6f64;
 }
 
 .action-buttons-row {
@@ -4113,7 +4113,7 @@ footer {
   font-size: 0.84rem;
   font-weight: 700;
   border-radius: 8px;
-  background: #2563eb;
+  background: #3f6f64;
   color: #fff;
   border: none;
   cursor: pointer;
@@ -4215,8 +4215,8 @@ footer {
 }
 
 .mock-tab.active {
-  background: #eff6ff;
-  color: #2563eb;
+  background: #e7f1ec;
+  color: #3f6f64;
 }
 
 .mock-intro-card {
@@ -4257,7 +4257,7 @@ footer {
 .mock-q-num {
   font-size: 0.85rem;
   font-weight: 700;
-  color: #2563eb;
+  color: #3f6f64;
   margin-bottom: 0.5rem;
 }
 
@@ -4286,8 +4286,8 @@ footer {
 }
 
 .mock-opt-btn.selected {
-  border-color: #2563eb;
-  background: #eff6ff;
+  border-color: #3f6f64;
+  background: #e7f1ec;
 }
 
 .score-hero {
@@ -4304,7 +4304,7 @@ footer {
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  background: #2563eb;
+  background: #3f6f64;
   color: #fff;
   display: flex;
   align-items: center;
@@ -4438,9 +4438,9 @@ footer {
   flex-direction: column;
   width: 18px;
   height: 120px;
-  background: #3b82f6;
+  background: #5a8a7e;
   border-radius: 4px;
-  border: 1px solid #1d4ed8;
+  border: 1px solid #2f5c4e;
 }
 .block-ten .segment {
   flex: 1;
@@ -4484,16 +4484,16 @@ footer {
   cursor: pointer;
 }
 .mult-header-cell {
-  background: #f1f5f9;
+  background: #efe6d8;
   font-weight: 700;
   color: #475569;
 }
 .mult-cell.selected {
-  background: #3b82f6;
+  background: #5a8a7e;
   color: #fff;
 }
 .mult-cell.highlighted {
-  background: #eff6ff;
+  background: #e7f1ec;
 }
 
 /* FractionLab */
@@ -4568,8 +4568,8 @@ footer {
   margin-bottom: 0.5rem;
 }
 .week-pill {
-  background: #eff6ff;
-  color: #1d4ed8;
+  background: #e7f1ec;
+  color: #2f5c4e;
   padding: 0.2rem 0.6rem;
   border-radius: 999px;
   font-size: 0.8rem;
@@ -4591,7 +4591,7 @@ footer {
   margin-top: 1.25rem;
 }
 .chunk-tab-card {
-  background: #f8fafc;
+  background: #f3eadc;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   padding: 0.85rem;
@@ -4603,13 +4603,13 @@ footer {
   gap: 0.25rem;
 }
 .chunk-tab-card:hover {
-  background: #f1f5f9;
+  background: #efe6d8;
   border-color: #cbd5e1;
 }
 .chunk-tab-card.active {
-  background: #eff6ff;
-  border-color: #3b82f6;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+  background: #e7f1ec;
+  border-color: #5a8a7e;
+  box-shadow: 0 2px 8px rgba(63, 111, 100, 0.15);
 }
 .chunk-num {
   font-size: 0.75rem;
@@ -4621,7 +4621,7 @@ footer {
   color: #0f172a;
 }
 .chunk-tab-card.active .chunk-en {
-  color: #1d4ed8;
+  color: #2f5c4e;
 }
 .chunk-zh {
   font-size: 0.85rem;
@@ -4715,7 +4715,7 @@ footer {
   gap: 0.35rem;
 }
 .btn-speed {
-  background: #f1f5f9;
+  background: #efe6d8;
   border: 1px solid #cbd5e1;
   padding: 0.3rem 0.6rem;
   border-radius: 6px;
@@ -4740,7 +4740,7 @@ footer {
   }
 }
 .step-card {
-  background: #f8fafc;
+  background: #f3eadc;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   padding: 1rem;
@@ -4749,8 +4749,8 @@ footer {
   transition: all 0.2s ease;
 }
 .step-card.active {
-  border-color: #3b82f6;
-  background: #eff6ff;
+  border-color: #5a8a7e;
+  background: #e7f1ec;
 }
 .step-num {
   display: inline-block;
@@ -4766,7 +4766,7 @@ footer {
   margin-bottom: 0.5rem;
 }
 .step-card.active .step-num {
-  background: #3b82f6;
+  background: #5a8a7e;
   color: #fff;
 }
 .step-card h4 {
@@ -4789,13 +4789,13 @@ footer {
   font-size: 1rem;
   font-weight: 700;
   border-radius: 8px;
-  background: #2563eb;
+  background: #3f6f64;
   color: #fff;
   border: none;
   cursor: pointer;
 }
 .btn-play-chunk:hover {
-  background: #1d4ed8;
+  background: #2f5c4e;
 }
 .action-hint {
   font-size: 0.85rem;
@@ -4819,7 +4819,7 @@ footer {
   display: flex;
   align-items: flex-start;
   gap: 1rem;
-  background: #f8fafc;
+  background: #f3eadc;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   padding: 1rem;
@@ -4854,7 +4854,7 @@ footer {
   color: #0369a1;
 }
 .btn-play-ex, .btn-play-mini {
-  background: #f1f5f9;
+  background: #efe6d8;
   border: 1px solid #cbd5e1;
   padding: 0.4rem 0.7rem;
   border-radius: 6px;
@@ -4892,7 +4892,7 @@ footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #f8fafc;
+  background: #f3eadc;
   padding: 0.5rem 0.75rem;
   border-radius: 6px;
 }
@@ -4948,8 +4948,8 @@ footer {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #0f172a;
-  color: #fff;
+  background: #3f6f64;
+  color: #fffcf7;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -4957,10 +4957,10 @@ footer {
   font-size: 0.85rem;
 }
 .turn-b .avatar {
-  background: #2563eb;
+  background: #3f6f64;
 }
 .bubble {
-  background: #f1f5f9;
+  background: #efe6d8;
   padding: 0.75rem 1rem;
   border-radius: 10px;
   flex: 1;
@@ -4990,7 +4990,7 @@ footer {
   margin-top: 1rem;
 }
 .prod-accordion {
-  background: #f8fafc;
+  background: #f3eadc;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   padding: 0.75rem 1rem;
@@ -5028,14 +5028,14 @@ footer {
   display: flex;
   align-items: flex-start;
   gap: 1rem;
-  background: #f8fafc;
+  background: #f3eadc;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   padding: 0.85rem 1rem;
 }
 .st-seq {
   font-weight: 700;
-  color: #3b82f6;
+  color: #5a8a7e;
   font-size: 1.1rem;
 }
 .st-en {
@@ -5064,7 +5064,7 @@ footer {
   border-bottom: 1px solid #e2e8f0;
 }
 .decision-table th {
-  background: #f8fafc;
+  background: #f3eadc;
   color: #475569;
   font-size: 0.85rem;
   font-weight: 700;
@@ -5084,7 +5084,7 @@ footer {
   gap: 0.5rem;
 }
 .pill-btn {
-  background: #f1f5f9;
+  background: #efe6d8;
   border: 1px solid #cbd5e1;
   padding: 0.4rem 0.85rem;
   border-radius: 999px;
@@ -5133,7 +5133,7 @@ footer {
 }
 
 .contrast-box {
-  background: #f8fafc;
+  background: #f3eadc;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   padding: 1rem;
@@ -5205,7 +5205,7 @@ footer {
   transition: all 0.2s ease;
 }
 .quiz-opt-btn:hover {
-  background: #f1f5f9;
+  background: #efe6d8;
 }
 .quiz-opt-btn.correct {
   background: #dcfce7;
@@ -5264,7 +5264,7 @@ footer {
   gap: 1rem;
 }
 .signal-card-item {
-  background: #f8fafc;
+  background: #f3eadc;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   padding: 1.2rem;
@@ -5279,7 +5279,7 @@ footer {
 }
 .signal-topic-badge {
   font-weight: 700;
-  color: #1e3a8a;
+  color: #2f5c4e;
   font-size: 0.95rem;
 }
 .signal-grade-tag {
@@ -5292,14 +5292,14 @@ footer {
 }
 .signal-trigger-box {
   background: #ffffff;
-  border-left: 3px solid #3b82f6;
+  border-left: 3px solid #5a8a7e;
   padding: 0.5rem 0.75rem;
   border-radius: 0 6px 6px 0;
 }
 .trigger-icon {
   font-size: 0.8rem;
   font-weight: 700;
-  color: #2563eb;
+  color: #3f6f64;
 }
 .trigger-text {
   margin: 0.2rem 0 0;
@@ -5339,7 +5339,7 @@ footer {
   text-align: center;
 }
 .example-details {
-  background: #f1f5f9;
+  background: #efe6d8;
   border-radius: 6px;
   padding: 0.5rem 0.75rem;
   font-size: 0.85rem;
@@ -5410,9 +5410,9 @@ footer {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 .visual-tab-card.active {
-  background: #eff6ff;
-  border-color: #3b82f6;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+  background: #e7f1ec;
+  border-color: #5a8a7e;
+  box-shadow: 0 4px 12px rgba(63, 111, 100, 0.15);
 }
 .tab-card-top {
   display: flex;
@@ -5427,7 +5427,7 @@ footer {
   color: #0f172a;
 }
 .visual-tab-card.active .tab-name {
-  color: #1d4ed8;
+  color: #2f5c4e;
 }
 .tab-desc {
   font-size: 0.78rem;
@@ -5484,7 +5484,7 @@ footer {
   }
 }
 .balance-visual-box {
-  background: #f8fafc;
+  background: #f3eadc;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 1rem;
@@ -5541,9 +5541,9 @@ footer {
   transition: all 0.2s ease;
 }
 .op-btn:hover:not(:disabled) {
-  background: #eff6ff;
-  border-color: #3b82f6;
-  color: #1d4ed8;
+  background: #e7f1ec;
+  border-color: #5a8a7e;
+  color: #2f5c4e;
 }
 .op-btn.highlight {
   background: #f0fdf4;
@@ -5600,7 +5600,7 @@ footer {
   }
 }
 .bar-visual-container {
-  background: #f8fafc;
+  background: #f3eadc;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   padding: 1.25rem;
@@ -5645,8 +5645,8 @@ footer {
 .bar-segment.ghost {
   background: repeating-linear-gradient(
     45deg,
-    #f1f5f9,
-    #f1f5f9 6px,
+    #efe6d8,
+    #efe6d8 6px,
     #e2e8f0 6px,
     #e2e8f0 12px
   );
@@ -5685,13 +5685,13 @@ footer {
   opacity: 0.5;
 }
 .step-flow-item.active {
-  border-color: #3b82f6;
-  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.1);
+  border-color: #5a8a7e;
+  box-shadow: 0 2px 6px rgba(63, 111, 100, 0.1);
 }
 .step-badge {
   font-size: 0.75rem;
-  background: #eff6ff;
-  color: #1d4ed8;
+  background: #e7f1ec;
+  color: #2f5c4e;
   padding: 0.15rem 0.5rem;
   border-radius: 4px;
   font-weight: 700;
@@ -5707,7 +5707,7 @@ footer {
 }
 .btn-next-step {
   flex: 1;
-  background: #2563eb;
+  background: #3f6f64;
   color: #ffffff;
   border: none;
   padding: 0.6rem;
@@ -5716,12 +5716,12 @@ footer {
   cursor: pointer;
 }
 .btn-next-step:hover:not(:disabled) {
-  background: #1d4ed8;
+  background: #2f5c4e;
 }
 
 /* 3. 代數拼圖 Algebra Tiles */
 .tiles-header-box {
-  background: #eff6ff;
+  background: #e7f1ec;
   border: 1px solid #bfdbfe;
   border-radius: 8px;
   padding: 0.75rem 1.25rem;
@@ -5751,7 +5751,7 @@ footer {
   }
 }
 .tiles-canvas-box {
-  background: #f8fafc;
+  background: #f3eadc;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   padding: 1.5rem;
@@ -5773,7 +5773,7 @@ footer {
   vertical-align: middle;
   margin-right: 4px;
 }
-.color-x2 { background: #3b82f6; }
+.color-x2 { background: #5a8a7e; }
 .color-x { background: #10b981; }
 .color-1 { background: #f59e0b; }
 
@@ -5809,7 +5809,7 @@ footer {
   border-radius: 4px;
 }
 .tile-x2 {
-  background: #3b82f6;
+  background: #5a8a7e;
   width: 120px;
   height: 120px;
   font-size: 1.2rem;
@@ -5876,7 +5876,7 @@ footer {
   }
 }
 .canvas-container {
-  background: #f8fafc;
+  background: #f3eadc;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   padding: 1rem;
@@ -5894,7 +5894,7 @@ footer {
 }
 .badge-i { color: #dc2626; background: #fee2e2; padding: 0.2rem 0.5rem; border-radius: 4px; }
 .badge-j { color: #16a34a; background: #dcfce7; padding: 0.2rem 0.5rem; border-radius: 4px; }
-.badge-det { color: #2563eb; background: #eff6ff; padding: 0.2rem 0.5rem; border-radius: 4px; }
+.badge-det { color: #3f6f64; background: #e7f1ec; padding: 0.2rem 0.5rem; border-radius: 4px; }
 .badge-det.flipped { color: #b91c1c; background: #fef2f2; }
 .matrix-canvas, .riemann-canvas {
   width: 100%;
@@ -5975,9 +5975,9 @@ footer {
   font-weight: 600;
 }
 .btn-mode.active {
-  background: #2563eb;
+  background: #3f6f64;
   color: #ffffff;
-  border-color: #2563eb;
+  border-color: #3f6f64;
 }
 .stat-row, .val-row {
   display: flex;
@@ -5992,7 +5992,7 @@ footer {
   color: #16a34a;
 }
 .proof-svg-box {
-  background: #f8fafc;
+  background: #f3eadc;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   padding: 1rem;
@@ -6015,7 +6015,7 @@ footer {
   font-weight: 700;
 }
 .proof-explanation-box {
-  background: #eff6ff;
+  background: #e7f1ec;
   border: 1px solid #bfdbfe;
   border-radius: 8px;
   padding: 0.85rem;
@@ -6031,7 +6031,7 @@ footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  background: linear-gradient(135deg, #e7f1ec 0%, #dbeafe 100%);
   border: 1px solid #93c5fd;
   border-radius: 10px;
   padding: 0.6rem 1rem;
@@ -6053,11 +6053,11 @@ footer {
 }
 .combo-text {
   font-size: 0.95rem;
-  color: #1e3a8a;
+  color: #2f5c4e;
   font-weight: 700;
 }
 .multiplier-pill {
-  background: #2563eb;
+  background: #3f6f64;
   color: #ffffff;
   padding: 0.15rem 0.5rem;
   border-radius: 999px;
@@ -6109,8 +6109,8 @@ footer {
   color: #0f172a;
 }
 .radar-avg-badge {
-  background: #eff6ff;
-  color: #1d4ed8;
+  background: #e7f1ec;
+  color: #2f5c4e;
   padding: 0.25rem 0.65rem;
   border-radius: 999px;
   font-weight: 700;
@@ -6134,7 +6134,7 @@ footer {
   margin-top: 0.75rem;
 }
 .insight-badge {
-  background: #f8fafc;
+  background: #f3eadc;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   padding: 0.5rem 0.75rem;
@@ -6228,7 +6228,7 @@ footer {
 
 .radar-weakness-plan .btn-plan-action {
   padding: 0.65rem 1.2rem;
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  background: linear-gradient(135deg, #3f6f64, #2f5c4e);
   color: #ffffff;
   border: none;
   border-radius: 10px;
@@ -6295,7 +6295,7 @@ button:active:not(:disabled),
 
 /* 1. 行動端虛擬數學鍵盤 */
 .math-keypad-panel {
-  background: #f8fafc;
+  background: #f3eadc;
   border: 1px solid #cbd5e1;
   border-radius: 12px;
   padding: 0.85rem;
@@ -6339,9 +6339,9 @@ button:active:not(:disabled),
   cursor: pointer;
 }
 .keypad-tab-btn.active {
-  background: #2563eb;
+  background: #3f6f64;
   color: #ffffff;
-  border-color: #2563eb;
+  border-color: #3f6f64;
 }
 .keypad-keys-grid {
   display: flex;
@@ -6366,7 +6366,7 @@ button:active:not(:disabled),
   min-height: 42px;
 }
 .key-btn:hover {
-  background: #f1f5f9;
+  background: #efe6d8;
   border-color: #94a3b8;
 }
 .key-btn:active {
@@ -6378,9 +6378,9 @@ button:active:not(:disabled),
   border-color: #fca5a5;
 }
 .key-btn.special {
-  background: #2563eb;
+  background: #3f6f64;
   color: #ffffff;
-  border-color: #2563eb;
+  border-color: #3f6f64;
   flex: 1.5;
 }
 
@@ -6412,7 +6412,7 @@ button:active:not(:disabled),
   flex-wrap: wrap;
 }
 .accent-chip {
-  background: #f1f5f9;
+  background: #efe6d8;
   border: 1px solid #cbd5e1;
   padding: 0.3rem 0.65rem;
   border-radius: 999px;
@@ -6424,19 +6424,19 @@ button:active:not(:disabled),
   gap: 0.3rem;
 }
 .accent-chip.active {
-  background: #eff6ff;
-  border-color: #3b82f6;
-  color: #1d4ed8;
+  background: #e7f1ec;
+  border-color: #5a8a7e;
+  color: #2f5c4e;
 }
 .accent-feature-tip {
-  background: #f8fafc;
-  border-left: 3px solid #3b82f6;
+  background: #f3eadc;
+  border-left: 3px solid #5a8a7e;
   padding: 0.45rem 0.75rem;
   font-size: 0.82rem;
   color: #475569;
 }
 .captions-display-box {
-  background: #f8fafc;
+  background: #f3eadc;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   padding: 1rem;
@@ -6470,7 +6470,7 @@ button:active:not(:disabled),
   gap: 0.5rem;
 }
 .btn-play-primary {
-  background: #2563eb;
+  background: #3f6f64;
   color: #ffffff;
   border: none;
   padding: 0.55rem 1rem;
@@ -6488,7 +6488,7 @@ button:active:not(:disabled),
   cursor: pointer;
 }
 .btn-shadowing-toggle {
-  background: #f1f5f9;
+  background: #efe6d8;
   border: 1px solid #cbd5e1;
   padding: 0.55rem 0.85rem;
   border-radius: 6px;
@@ -6516,9 +6516,9 @@ button:active:not(:disabled),
   cursor: pointer;
 }
 .speed-pill.active {
-  background: #2563eb;
+  background: #3f6f64;
   color: #ffffff;
-  border-color: #2563eb;
+  border-color: #3f6f64;
 }
 
 /* 3. WCAG 2.2 無障礙輔助控制器 */
@@ -6667,12 +6667,12 @@ button:active:not(:disabled),
   cursor: pointer;
 }
 .seg-btn.active {
-  background: #2563eb;
+  background: #3f6f64;
   color: #ffffff;
-  border-color: #2563eb;
+  border-color: #3f6f64;
 }
 .shortcuts-info-box {
-  background: #f8fafc;
+  background: #f3eadc;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   padding: 0.75rem;
@@ -6682,7 +6682,7 @@ button:active:not(:disabled),
   background: transparent;
   border: none;
   font-weight: 700;
-  color: #2563eb;
+  color: #3f6f64;
   cursor: pointer;
   font-size: 0.85rem;
 }
@@ -6767,7 +6767,7 @@ html.high-contrast { filter: contrast(125%); }
 }
 
 .studio-tab-btn.active {
-  background: #2563eb;
+  background: #3f6f64;
   color: #ffffff;
   box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
 }
@@ -6854,7 +6854,7 @@ html.high-contrast { filter: contrast(125%); }
 .legend-item .line.red { width: 14px; height: 2px; background: #f43f5e; }
 .legend-item .line.orange { width: 14px; height: 2px; background: #f59e0b; }
 .legend-item .line.purple-dash { width: 14px; height: 2px; background: #a855f7; }
-.legend-item .box.blue-fill { width: 10px; height: 10px; background: rgba(59, 130, 246, 0.5); border: 1px solid #2563eb; }
+.legend-item .box.blue-fill { width: 10px; height: 10px; background: rgba(63, 111, 100, 0.5); border: 1px solid #3f6f64; }
 
 /* 步驟推導解題器 */
 .step-by-step-solver-panel {
@@ -6910,7 +6910,7 @@ html.high-contrast { filter: contrast(125%); }
 }
 
 .formula-step-card.active {
-  border-color: #2563eb;
+  border-color: #3f6f64;
   background: rgba(37, 99, 235, 0.04);
 }
 
@@ -6924,7 +6924,7 @@ html.high-contrast { filter: contrast(125%); }
 .step-number-badge {
   font-size: 0.72rem;
   font-weight: 800;
-  background: #2563eb;
+  background: #3f6f64;
   color: #fff;
   padding: 0.15rem 0.45rem;
   border-radius: 4px;
@@ -7031,7 +7031,7 @@ html.high-contrast { filter: contrast(125%); }
   width: 100%;
   margin-top: 1rem;
   padding: 0.65rem;
-  background: #2563eb;
+  background: #3f6f64;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -7081,9 +7081,9 @@ html.high-contrast { filter: contrast(125%); }
 }
 
 .btn-mode-tab.active {
-  background: #2563eb;
+  background: #3f6f64;
   color: #fff;
-  border-color: #2563eb;
+  border-color: #3f6f64;
 }
 
 .assessment-topbar {
@@ -7104,13 +7104,13 @@ html.high-contrast { filter: contrast(125%); }
 
 .gauge-value {
   font-size: 1.15rem;
-  color: #2563eb;
+  color: #3f6f64;
 }
 
 .gauge-tag {
   font-size: 0.75rem;
   background: rgba(37, 99, 235, 0.1);
-  color: #2563eb;
+  color: #3f6f64;
   padding: 0.15rem 0.5rem;
   border-radius: 4px;
   font-weight: 700;
@@ -7136,15 +7136,15 @@ html.high-contrast { filter: contrast(125%); }
 }
 
 .btn-tier-pill.active {
-  background: #0f172a;
-  color: #fff;
+  background: #3f6f64;
+  color: #fffcf7;
   border-color: #0f172a;
 }
 
 .tier-badge {
   font-weight: 800;
   font-size: 0.7rem;
-  background: #3b82f6;
+  background: #5a8a7e;
   color: #fff;
   padding: 0.05rem 0.3rem;
   border-radius: 3px;
@@ -7274,7 +7274,7 @@ html.high-contrast { filter: contrast(125%); }
 .btn-close-modal {
   width: 100%;
   padding: 0.75rem;
-  background: #2563eb;
+  background: #3f6f64;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -7597,7 +7597,7 @@ html.high-contrast { filter: contrast(125%); }
   width: 100%;
   height: 6px;
   border-radius: 999px;
-  accent-color: #2563eb;
+  accent-color: #3f6f64;
   cursor: pointer;
 }
 
@@ -7632,9 +7632,9 @@ html.high-contrast { filter: contrast(125%); }
 }
 
 .btn-preset-pill:hover {
-  background: #eff6ff;
-  border-color: #3b82f6;
-  color: #1d4ed8;
+  background: #e7f1ec;
+  border-color: #5a8a7e;
+  color: #2f5c4e;
 }
 
 /* 4. 日語五十音卡片定位與導讀反饋 */
@@ -7678,10 +7678,10 @@ html.high-contrast { filter: contrast(125%); }
 [data-theme="dark"] .track-status-pill.calculus { background: rgba(139, 92, 246, 0.2); color: #c4b5fd; }
 [data-theme="dark"] .track-status-pill.ja { background: rgba(236, 72, 153, 0.2); color: #f472b6; }
 [data-theme="dark"] .track-status-pill.en { background: rgba(245, 158, 11, 0.2); color: #fcd34d; }
-[data-theme="dark"] .launch-action { color: #60a5fa; }
+[data-theme="dark"] .launch-action { color: #7eb8a6; }
 
 [data-theme="dark"] .hub-badge-item.unlocked {
-  border-color: #3b82f6;
+  border-color: #5a8a7e;
   background: linear-gradient(135deg, #111827 0%, rgba(30, 58, 138, 0.35) 100%);
 }
 
@@ -7936,7 +7936,7 @@ html.high-contrast { filter: contrast(125%); }
 }
 
 .vault-search-input:focus {
-  border-color: #3b82f6;
+  border-color: #5a8a7e;
 }
 
 .vault-select-filter {
@@ -8161,7 +8161,7 @@ html.high-contrast { filter: contrast(125%); }
   border: none;
   font-size: 0.74rem;
   font-weight: 700;
-  color: #2563eb;
+  color: #3f6f64;
   cursor: pointer;
   padding: 0;
   display: inline-flex;
@@ -8557,7 +8557,7 @@ html.high-contrast { filter: contrast(125%); }
   color: var(--navy);
 }
 .hub-card-mark.cs-mark {
-  background: linear-gradient(145deg, #2563eb, #3b82f6);
+  background: linear-gradient(145deg, #3f6f64, #5a8a7e);
   color: #fff;
 }
 .hub-card-mark.zh-mark {
