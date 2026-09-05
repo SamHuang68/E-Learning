@@ -2511,3 +2511,18 @@ export function getAllCsUnits(): CsUnit[] {
 export function getCsUnitById(id: string): CsUnit | undefined {
   return CS_CURRICULUM.find((u) => u.id === id)
 }
+
+export function getCsQuestionCount(): number {
+  return CS_CURRICULUM.reduce((sum, unit) => sum + unit.questions.length, 0)
+}
+
+export function isCsAdvancedUnit(unit: CsUnit): boolean {
+  return unit.band === '前沿AI'
+}
+
+/** First unfinished core unit (units 1–5). Advanced units stay off the default path. */
+export function getNextCsUnit(completedIds: string[]): CsUnit {
+  const core = CS_CURRICULUM.filter((unit) => !isCsAdvancedUnit(unit))
+  return core.find((unit) => unit.questions.some((q) => !completedIds.includes(q.id))) ?? core[0] ?? CS_CURRICULUM[0]
+}
+

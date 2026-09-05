@@ -1,5 +1,5 @@
 export { CsApp } from './CsApp'
-export { CS_CURRICULUM, getAllCsUnits, getCsUnitById } from './data/curriculum'
+export { CS_CURRICULUM, getAllCsUnits, getCsUnitById, getNextCsUnit, isCsAdvancedUnit } from './data/curriculum'
 export { CS_SOLVING_SIGNALS } from './data/solvingSignals'
 export { CS_MOCK_EXAMS } from './data/mockExams'
 export { loadCsProgress, saveCsProgress, type CsProgress } from './utils/csStorage'

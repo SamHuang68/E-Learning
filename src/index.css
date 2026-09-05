@@ -8729,9 +8729,194 @@ html.high-contrast { filter: contrast(125%); }
   color: var(--ink);
 }
 .cs-top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem;
+  width: 100%;
+  min-height: 56px;
+  flex-shrink: 0;
+  padding: 0.35rem 1rem;
   background: #ffffff;
   color: var(--ink);
+  border-bottom: 1px solid var(--line);
+  z-index: 50;
 }
+.cs-nav-brand .eyebrow {
+  margin: 0;
+}
+.cs-nav-brand-sub {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+.cs-nav-list {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+}
+.cs-nav-item {
+  min-height: 40px;
+  padding: 0.35rem 0.7rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.84rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.cs-nav-item.is-active {
+  color: var(--navy);
+  background: var(--surface-soft);
+  border-color: var(--line);
+}
+.cs-nav-menu {
+  position: relative;
+}
+.cs-nav-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 80;
+  min-width: 220px;
+  padding: 0.35rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+}
+.cs-nav-dropdown button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.45rem 0.65rem;
+  border-radius: 8px;
+  text-align: left;
+}
+.cs-nav-dropdown button:hover {
+  background: var(--surface-soft);
+}
+.cs-nav-dropdown strong {
+  font-size: 0.82rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.cs-nav-dropdown span {
+  font-size: 0.72rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+.cs-nav-badge {
+  display: inline-flex;
+  margin-left: 0.3rem;
+  min-width: 1.1rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background: var(--warm);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  justify-content: center;
+}
+.cs-advanced-tag {
+  display: inline-flex;
+  margin-left: 0.35rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface-soft);
+  color: var(--muted);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.cs-today {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 720px;
+}
+.cs-today-hero h1 {
+  margin: 0.2rem 0 0.45rem;
+  font-size: clamp(1.45rem, 3vw, 2rem);
+  color: var(--navy);
+}
+.cs-today-progress-line {
+  margin: 0.35rem 0 0;
+  font-size: 0.84rem;
+  color: var(--muted);
+}
+.cs-today-secondary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.85rem;
+}
+.cs-today-secondary button {
+  min-height: 40px;
+  color: var(--navy);
+  font-weight: 700;
+  font-size: 0.84rem;
+}
+.cs-today-radar {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  padding: 1rem 1.1rem;
+}
+.cs-radar-row {
+  margin-bottom: 0.7rem;
+}
+.cs-radar-row-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  margin-bottom: 0.25rem;
+}
+.cs-radar-bar {
+  height: 6px;
+  background: var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.cs-radar-bar i {
+  display: block;
+  height: 100%;
+  background: var(--navy);
+  border-radius: 999px;
+}
+.cs-main-viewport {
+  background: var(--bg);
+}
+
+@media (max-width: 900px) {
+  .cs-top-nav {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    min-height: 0;
+    padding: 0.5rem 0.75rem;
+  }
+  .cs-nav-list {
+    order: 3;
+    width: 100%;
+    padding-bottom: 0.15rem;
+  }
+  .cs-nav-dropdown {
+    left: auto;
+    right: 0;
+  }
+}
+
 @media (max-width: 720px) {
   .hub-stat-banner {
     grid-template-columns: repeat(2, minmax(0, 1fr));

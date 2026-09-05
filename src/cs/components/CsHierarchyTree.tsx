@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { CS_CURRICULUM } from '../data/curriculum'
+import { CS_CURRICULUM, isCsAdvancedUnit } from '../data/curriculum'
 import type { CsNavSection } from './CsTopNav'
 
 interface Props {
@@ -28,8 +28,8 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
       {/* 頂部：一頁式知識概覽指標看板 */}
       <div
         style={{
-          background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95))',
-          border: '1px solid rgba(99, 102, 241, 0.3)',
+          background: 'var(--surface)',
+          border: '1px solid var(--line)',
           borderRadius: '10px',
           padding: '0.85rem 1.25rem',
           display: 'flex',
@@ -37,31 +37,30 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
           alignItems: 'center',
           flexWrap: 'wrap',
           gap: '0.85rem',
-          boxShadow: '0 4px 15px rgba(0,0,0,0.25)',
+          boxShadow: 'var(--shadow)',
         }}
       >
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span style={{ fontSize: '1.3rem' }}>🌳</span>
-            <h1 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 900, color: '#f8fafc', letterSpacing: '-0.01em' }}>
-              計算機概論知識體系階層樹 (Knowledge Hierarchy)
+            <h1 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 900, color: 'var(--ink)', letterSpacing: '-0.01em' }}>
+              課綱
             </h1>
             <span
               style={{
                 fontSize: '0.72rem',
                 padding: '0.12rem 0.45rem',
                 borderRadius: '4px',
-                background: 'rgba(56, 189, 248, 0.15)',
-                color: '#38bdf8',
+                background: 'var(--surface-soft)',
+                color: 'var(--muted)',
                 fontWeight: 700,
-                border: '1px solid rgba(56, 189, 248, 0.3)',
+                border: '1px solid var(--line)',
               }}
             >
-              7 大領域 · 112 道題庫
+              單元 1–5 概論 · 6–7 進階
             </span>
           </div>
-          <p style={{ margin: '0.2rem 0 0', color: '#94a3b8', fontSize: '0.78rem' }}>
-            涵蓋從底層二進位數位邏輯、CPU微架構、作業系統、分散式網路，延伸至現代 AI 加速晶片與大模型前沿演算法的一頁全景圖。
+          <p style={{ margin: '0.2rem 0 0', color: 'var(--muted)', fontSize: '0.78rem' }}>
+            單元 1–5 為概論路徑；單元 6–7 標為進階，完成前面單元再讀。
           </p>
         </div>
 
@@ -69,15 +68,15 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', minWidth: '130px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem' }}>
-              <span style={{ color: '#94a3b8' }}>全域通關率</span>
-              <span style={{ fontWeight: 800, color: '#38bdf8' }}>{progressRatio}%</span>
+              <span style={{ color: 'var(--muted)' }}>完成率</span>
+              <span style={{ fontWeight: 800, color: 'var(--navy)' }}>{progressRatio}%</span>
             </div>
-            <div style={{ width: '100%', height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '999px', overflow: 'hidden' }}>
+            <div style={{ width: '100%', height: '6px', background: 'var(--line)', borderRadius: '999px', overflow: 'hidden' }}>
               <div style={{ width: `${progressRatio}%`, height: '100%', background: 'linear-gradient(90deg, #06b6d4, #6366f1)', borderRadius: '999px' }} />
             </div>
           </div>
 
-          <div style={{ display: 'flex', background: 'rgba(255,255,255,0.06)', padding: '2px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.1)' }}>
+          <div style={{ display: 'flex', background: 'var(--surface-soft)', padding: '2px', borderRadius: '6px', border: '1px solid var(--line)' }}>
             <button
               type="button"
               onClick={() => setViewMode('tree')}
@@ -86,13 +85,13 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
                 fontSize: '0.76rem',
                 borderRadius: '4px',
                 border: 'none',
-                background: viewMode === 'tree' ? 'rgba(99, 102, 241, 0.35)' : 'transparent',
-                color: viewMode === 'tree' ? '#818cf8' : '#94a3b8',
+                background: viewMode === 'tree' ? 'var(--surface)' : 'transparent',
+                color: viewMode === 'tree' ? 'var(--navy)' : 'var(--muted)',
                 fontWeight: viewMode === 'tree' ? 800 : 500,
                 cursor: 'pointer',
               }}
             >
-              🌳 樹狀展開
+              樹狀
             </button>
             <button
               type="button"
@@ -102,13 +101,13 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
                 fontSize: '0.76rem',
                 borderRadius: '4px',
                 border: 'none',
-                background: viewMode === 'matrix' ? 'rgba(99, 102, 241, 0.35)' : 'transparent',
-                color: viewMode === 'matrix' ? '#818cf8' : '#94a3b8',
+                background: viewMode === 'matrix' ? 'var(--surface)' : 'transparent',
+                color: viewMode === 'matrix' ? 'var(--navy)' : 'var(--muted)',
                 fontWeight: viewMode === 'matrix' ? 800 : 500,
                 cursor: 'pointer',
               }}
             >
-              🗂️ 矩陣卡片
+              卡片
             </button>
           </div>
         </div>
@@ -121,8 +120,8 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
           style={{
             flex: 1,
             minHeight: '480px',
-            background: 'rgba(11, 15, 25, 0.85)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            background: 'var(--surface)',
+            border: '1px solid var(--line)',
             borderRadius: '10px',
             padding: '1.25rem',
             overflowY: 'auto',
@@ -132,28 +131,13 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
           }}
         >
           {/* 樹根：Root Node */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', paddingBottom: '0.65rem', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-            <div
-              style={{
-                width: '42px',
-                height: '42px',
-                borderRadius: '8px',
-                background: 'linear-gradient(135deg, #06b6d4, #4f46e5)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '1.4rem',
-                boxShadow: '0 0 15px rgba(6, 182, 212, 0.4)',
-              }}
-            >
-              💻
-            </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', paddingBottom: '0.65rem', borderBottom: '1px solid var(--line)' }}>
             <div>
-              <div style={{ fontSize: '0.96rem', fontWeight: 900, color: '#f8fafc' }}>
-                計算機科學核心大樹 (Computer Science Knowledge Root)
+              <div style={{ fontSize: '0.96rem', fontWeight: 900, color: 'var(--ink)' }}>
+                計算機概論
               </div>
-              <div style={{ fontSize: '0.74rem', color: '#94a3b8' }}>
-                7 大分支主幹 · 點擊任一主幹展開核心概念葉節點 · 直達教科書專題研讀、單元題庫練習與專案實驗室
+              <div style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
+                點單元展開概念，再進讀本或練習。
               </div>
             </div>
           </div>
@@ -169,8 +153,8 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
                 <div
                   key={unit.id}
                   style={{
-                    border: isExpanded ? '1px solid rgba(99, 102, 241, 0.45)' : '1px solid rgba(255, 255, 255, 0.06)',
-                    background: isExpanded ? 'rgba(30, 41, 59, 0.65)' : 'rgba(15, 23, 42, 0.5)',
+                    border: isExpanded ? '1px solid var(--navy)' : '1px solid var(--line)',
+                    background: isExpanded ? 'var(--surface-soft)' : 'var(--surface)',
                     borderRadius: '8px',
                     padding: '0.75rem 1rem',
                     transition: 'all 0.15s ease',
@@ -194,7 +178,7 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
                           transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
                           transition: 'transform 0.15s ease',
                           fontSize: '0.82rem',
-                          color: '#818cf8',
+                          color: 'var(--navy)',
                         }}
                       >
                         ▶
@@ -204,20 +188,22 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
                           fontSize: '0.72rem',
                           padding: '0.1rem 0.45rem',
                           borderRadius: '4px',
-                          background: 'rgba(99, 102, 241, 0.2)',
-                          color: '#a5b4fc',
+                          background: 'var(--surface-soft)',
+                          color: 'var(--muted)',
                           fontWeight: 700,
+                          border: '1px solid var(--line)',
                         }}
                       >
-                        Branch {idx + 1}
+                        單元 {idx + 1}
                       </span>
-                      <span style={{ fontSize: '0.92rem', fontWeight: 800, color: '#f1f5f9' }}>
+                      <span style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--ink)' }}>
                         {unit.title}
                       </span>
+                      {isCsAdvancedUnit(unit) ? <span className="cs-advanced-tag">進階</span> : null}
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: '0.74rem', color: '#94a3b8' }}>
+                      <span style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
                         {completedInUnit}/{unit.questions.length} 題 ({unitRatio}%)
                       </span>
                       <button
@@ -230,14 +216,14 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
                           padding: '0.25rem 0.6rem',
                           fontSize: '0.74rem',
                           borderRadius: '4px',
-                          background: 'rgba(56, 189, 248, 0.2)',
-                          color: '#38bdf8',
-                          border: '1px solid rgba(56, 189, 248, 0.4)',
+                          background: 'var(--surface)',
+                          color: 'var(--navy)',
+                          border: '1px solid var(--line)',
                           cursor: 'pointer',
                           fontWeight: 700,
                         }}
                       >
-                        📖 研讀專題
+                        讀本
                       </button>
                       <button
                         type="button"
@@ -249,14 +235,14 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
                           padding: '0.25rem 0.6rem',
                           fontSize: '0.74rem',
                           borderRadius: '4px',
-                          background: 'rgba(16, 185, 129, 0.2)',
-                          color: '#34d399',
-                          border: '1px solid rgba(16, 185, 129, 0.4)',
+                          background: 'var(--navy)',
+                          color: '#fff',
+                          border: '1px solid var(--navy)',
                           cursor: 'pointer',
                           fontWeight: 700,
                         }}
                       >
-                        📚 題庫練習
+                        練習
                       </button>
                     </div>
                   </div>
@@ -267,22 +253,22 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
                       style={{
                         marginTop: '0.75rem',
                         paddingTop: '0.65rem',
-                        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+                        borderTop: '1px solid var(--line)',
                         display: 'flex',
                         flexDirection: 'column',
                         gap: '0.5rem',
                       }}
                     >
-                      <div style={{ fontSize: '0.76rem', color: '#cbd5e1', lineHeight: 1.5 }}>
+                      <div style={{ fontSize: '0.76rem', color: 'var(--ink)', lineHeight: 1.5 }}>
                         <strong>單元副標：</strong> {unit.subtitle}
                       </div>
 
                       {/* 概念葉節點清單 */}
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', marginTop: '0.2rem' }}>
-                        <div style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 700 }}>
-                          🌱 核心概念葉節點 (Leaf Concepts & Principles)：
+                        <div style={{ fontSize: '0.72rem', color: 'var(--muted)', fontWeight: 700 }}>
+                          核心概念
                         </div>
-                        <ul style={{ margin: 0, paddingLeft: '1.25rem', fontSize: '0.74rem', color: '#cbd5e1', lineHeight: 1.5 }}>
+                        <ul style={{ margin: 0, paddingLeft: '1.25rem', fontSize: '0.74rem', color: 'var(--ink)', lineHeight: 1.5 }}>
                           {unit.concepts.map((concept, cIdx) => (
                             <li key={cIdx} style={{ marginBottom: '0.25rem' }}>
                               {concept}
@@ -294,8 +280,8 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
                       {/* 關聯實作教具直通按鈕 */}
                       {unit.suggestedLab && (
                         <div style={{ marginTop: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                          <span style={{ fontSize: '0.72rem', color: '#a855f7', fontWeight: 700 }}>
-                            🔬 推薦探索教具：
+                          <span style={{ fontSize: '0.72rem', color: 'var(--navy)', fontWeight: 700 }}>
+                            實驗室
                           </span>
                           <button
                             type="button"
@@ -304,14 +290,14 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
                               padding: '0.25rem 0.65rem',
                               fontSize: '0.72rem',
                               borderRadius: '4px',
-                              background: 'rgba(168, 85, 247, 0.2)',
-                              color: '#c084fc',
-                              border: '1px solid rgba(168, 85, 247, 0.4)',
+                              background: 'var(--surface)',
+                              color: 'var(--navy)',
+                              border: '1px solid var(--line)',
                               cursor: 'pointer',
                               fontWeight: 700,
                             }}
                           >
-                            直通實驗室 ↗
+                            開啟實驗室
                           </button>
                         </div>
                       )}
@@ -341,15 +327,15 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
               <div
                 key={unit.id}
                 style={{
-                  background: 'rgba(15, 23, 42, 0.75)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  background: 'var(--surface)',
+                  border: '1px solid var(--line)',
                   borderRadius: '10px',
                   padding: '1rem',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
                   gap: '0.65rem',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                  boxShadow: 'var(--shadow)',
                 }}
               >
                 <div>
@@ -359,22 +345,24 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
                         fontSize: '0.68rem',
                         padding: '0.1rem 0.4rem',
                         borderRadius: '4px',
-                        background: 'rgba(99, 102, 241, 0.2)',
-                        color: '#818cf8',
+                        background: 'var(--surface-soft)',
+                        color: 'var(--muted)',
                         fontWeight: 700,
+                        border: '1px solid var(--line)',
                       }}
                     >
-                      單元 {idx + 1} · {unit.band}
+                      單元 {idx + 1}
                     </span>
-                    <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--muted)' }}>
                       {completedInUnit}/{unit.questions.length} 題 ({unitRatio}%)
                     </span>
                   </div>
 
-                  <h3 style={{ margin: '0.4rem 0 0.2rem', fontSize: '0.92rem', fontWeight: 800, color: '#f8fafc' }}>
+                  <h3 style={{ margin: '0.4rem 0 0.2rem', fontSize: '0.92rem', fontWeight: 800, color: 'var(--ink)' }}>
                     {unit.title}
+                    {isCsAdvancedUnit(unit) ? <span className="cs-advanced-tag">進階</span> : null}
                   </h3>
-                  <div style={{ fontSize: '0.72rem', color: '#94a3b8', lineHeight: 1.4 }}>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
                     {unit.subtitle}
                   </div>
                 </div>
@@ -388,14 +376,14 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
                       padding: '0.35rem 0',
                       fontSize: '0.74rem',
                       borderRadius: '5px',
-                      background: 'rgba(56, 189, 248, 0.2)',
-                      color: '#38bdf8',
-                      border: '1px solid rgba(56, 189, 248, 0.35)',
+                      background: 'var(--surface)',
+                      color: 'var(--navy)',
+                      border: '1px solid var(--line)',
                       cursor: 'pointer',
                       fontWeight: 700,
                     }}
                   >
-                    📖 研讀專題
+                    讀本
                   </button>
                   <button
                     type="button"
@@ -405,14 +393,14 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
                       padding: '0.35rem 0',
                       fontSize: '0.74rem',
                       borderRadius: '5px',
-                      background: 'rgba(16, 185, 129, 0.2)',
-                      color: '#34d399',
-                      border: '1px solid rgba(16, 185, 129, 0.35)',
+                      background: 'var(--navy)',
+                      color: '#fff',
+                      border: '1px solid var(--navy)',
                       cursor: 'pointer',
                       fontWeight: 700,
                     }}
                   >
-                    📚 題庫練習
+                    練習
                   </button>
                   {unit.suggestedLab && (
                     <button
@@ -422,14 +410,14 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
                         padding: '0.35rem 0.65rem',
                         fontSize: '0.74rem',
                         borderRadius: '5px',
-                        background: 'rgba(168, 85, 247, 0.2)',
-                        color: '#c084fc',
-                        border: '1px solid rgba(168, 85, 247, 0.35)',
+                        background: 'var(--surface)',
+                        color: 'var(--navy)',
+                        border: '1px solid var(--line)',
                         cursor: 'pointer',
                         fontWeight: 700,
                       }}
                     >
-                      教具
+                      實驗室
                     </button>
                   )}
                 </div>

@@ -21,472 +21,146 @@ interface Props {
   onSelectSection: (section: CsNavSection) => void
   onBackHub: () => void
   onSwitchLang: (lang: LangId) => void
-  xp: number
   errorCount?: number
-  completedCount?: number
-  totalQuestions?: number
 }
+
+const PRIMARY: Array<{ id: CsNavSection; label: string }> = [
+  { id: 'today', label: '今日' },
+  { id: 'hierarchy', label: '課綱' },
+  { id: 'textbook', label: '讀本' },
+]
+
+const LABS: Array<{ id: CsNavSection; title: string; desc: string; advanced?: boolean }> = [
+  { id: 'von-neumann', title: '指令週期', desc: '取指、解碼、寫回' },
+  { id: 'pipeline-hazard', title: '管線冒險', desc: 'Forwarding 與 Stall' },
+  { id: 'cache-mapping', title: '快取映射', desc: 'Tag · Index · Offset' },
+  { id: 'arch-map', title: '硬體架構圖', desc: '系統區塊關係' },
+  { id: 'ai-transformer', title: '矩陣與注意力', desc: '進階 · GEMM 與 Attention', advanced: true },
+]
+
+const PRACTICE: Array<{ id: CsNavSection; title: string; desc: string }> = [
+  { id: 'practice', title: '單元練習', desc: '依課綱作答' },
+  { id: 'signals', title: '破題訊號', desc: '對照常見題型' },
+]
+
+const EXAMS: Array<{ id: CsNavSection; title: string; desc: string }> = [
+  { id: 'mock', title: '模擬測驗', desc: '計時與等第' },
+  { id: 'errors', title: '錯題本', desc: '重練錯過的題' },
+]
+
+const LAB_IDS: CsNavSection[] = LABS.map((item) => item.id)
+const PRACTICE_IDS: CsNavSection[] = PRACTICE.map((item) => item.id)
+const EXAM_IDS: CsNavSection[] = EXAMS.map((item) => item.id)
 
 export const CsTopNav: React.FC<Props> = ({
   activeSection,
   onSelectSection,
   onBackHub,
   onSwitchLang,
-  xp,
   errorCount = 0,
-  completedCount = 0,
-  totalQuestions = 112,
 }) => {
-  const [showLabsDropdown, setShowLabsDropdown] = useState(false)
+  const [openMenu, setOpenMenu] = useState<'labs' | 'practice' | 'exams' | null>(null)
 
-  const isLabActive = [
-    'von-neumann',
-    'pipeline-hazard',
-    'cache-mapping',
-    'ai-transformer',
-  ].includes(activeSection)
+  function go(section: CsNavSection) {
+    onSelectSection(section)
+    setOpenMenu(null)
+  }
 
-  const LABS_LIST: Array<{ id: CsNavSection; title: string; desc: string; icon: string }> = [
-    { id: 'von-neumann', title: '五大單元實驗室', desc: '指令週期取指解碼寫回', icon: '⚙️' },
-    { id: 'pipeline-hazard', title: 'CPU 管線冒險', desc: '前推 Forwarding 與停頓 Stall', icon: '⚡' },
-    { id: 'cache-mapping', title: '快取映射實驗室', desc: 'Tag · Index · Offset 命中率', icon: '💾' },
-    { id: 'ai-transformer', title: 'AI 矩陣注意力', desc: 'SRAM Tiling & GEMM 算子融合', icon: '🤖' },
-  ]
+  function menuClass(active: boolean) {
+    return `cs-nav-item${active ? ' is-active' : ''}`
+  }
 
   return (
-    <header
-      className="cs-top-nav"
-      style={{
-        width: '100%',
-        height: '56px',
-        flexShrink: 0,
-        background: '#ffffff',
-        backdropFilter: 'blur(12px)',
-        borderBottom: '1px solid var(--line)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '0 1rem',
-        gap: '0.75rem',
-        zIndex: 50,
-        boxShadow: 'none',
-      }}
-    >
-      {/* 左側：品牌識別與指標膠囊 */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', minWidth: 'fit-content' }}>
-        <button
-          type="button"
-          onClick={() => onSelectSection('today')}
-          style={{
-            background: 'none',
-            border: 'none',
-            padding: 0,
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.45rem',
-          }}
-          title="返回今日學習"
-        >
-          <span style={{ fontSize: '1.4rem' }}>💻</span>
-          <div style={{ textAlign: 'left' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-              <span style={{ fontSize: '0.92rem', fontWeight: 900, color: 'var(--ink)', letterSpacing: '-0.02em' }}>
-                計算機概論
-              </span>
-              <span
-                style={{
-                  fontSize: '0.65rem',
-                  padding: '0.1rem 0.35rem',
-                  borderRadius: '4px',
-                  background: 'rgba(6, 182, 212, 0.18)',
-                  color: '#06b6d4',
-                  fontWeight: 700,
-                  border: '1px solid rgba(6, 182, 212, 0.35)',
-                }}
-              >
-                CS CORE
-              </span>
-            </div>
-            <span style={{ fontSize: '0.68rem', color: 'rgba(148, 163, 184, 0.85)', display: 'block', lineHeight: 1.1 }}>
-              軟硬體 · 五大單元 · 前沿AI
-            </span>
-          </div>
-        </button>
-
-        {/* 經驗值與錯題狀態膠囊 */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', marginLeft: '0.3rem' }}>
-          <span
-            style={{
-              fontSize: '0.72rem',
-              padding: '0.15rem 0.5rem',
-              borderRadius: '999px',
-              background: 'rgba(99, 102, 241, 0.15)',
-              color: '#4f46e5',
-              fontWeight: 700,
-              border: '1px solid rgba(99, 102, 241, 0.3)',
-            }}
-          >
-            ⚡ {xp} XP
-          </span>
-
-          <span
-            style={{
-              fontSize: '0.72rem',
-              padding: '0.15rem 0.5rem',
-              borderRadius: '999px',
-              background: 'rgba(16, 185, 129, 0.15)',
-              color: '#34d399',
-              fontWeight: 700,
-              border: '1px solid rgba(16, 185, 129, 0.3)',
-            }}
-          >
-            ✓ {completedCount}/{totalQuestions} 題
-          </span>
-
-          {errorCount > 0 && (
-            <button
-              type="button"
-              onClick={() => onSelectSection('errors')}
-              style={{
-                fontSize: '0.72rem',
-                padding: '0.15rem 0.5rem',
-                borderRadius: '999px',
-                background: 'rgba(239, 68, 68, 0.15)',
-                color: '#f87171',
-                fontWeight: 700,
-                border: '1px solid rgba(239, 68, 68, 0.35)',
-                cursor: 'pointer',
-              }}
-              title="點擊前往錯題本"
-            >
-              📕 {errorCount} 錯題
-            </button>
-          )}
-        </div>
+    <header className="cs-top-nav">
+      <div className="cs-nav-brand">
+        <p className="eyebrow">計算機概論</p>
+        <span className="cs-nav-brand-sub">從抽象層到指令如何執行</span>
       </div>
 
-      {/* 導覽列：劃分明確的【知識研讀 Domain】與【實戰評量 Domain】，題庫與測驗完全分開且為同等權重 */}
-      <nav
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.6rem',
-          overflowX: 'auto',
-          padding: '0 0.25rem',
-          scrollbarWidth: 'none',
-        }}
-      >
-        {/* === 領域一：知識體系與深度研讀 (Knowledge Domain) === */}
-        <div
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.25rem',
-            background: 'var(--surface-soft)',
-            padding: '0.2rem 0.35rem',
-            borderRadius: '8px',
-            border: '1px solid var(--line)',
-          }}
-        >
-          <span style={{ fontSize: '0.68rem', color: '#94a3b8', fontWeight: 700, padding: '0 0.2rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            知識研讀
-          </span>
+      <nav className="cs-nav-list" aria-label="計算機概論">
+        {PRIMARY.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            className={menuClass(activeSection === item.id)}
+            onClick={() => go(item.id)}
+          >
+            {item.label}
+          </button>
+        ))}
 
-          {/* 1. 知識階層樹 */}
+        <div className="cs-nav-menu">
           <button
             type="button"
-            onClick={() => onSelectSection('hierarchy')}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.3rem',
-              padding: '0.35rem 0.65rem',
-              borderRadius: '5px',
-              fontSize: '0.78rem',
-              fontWeight: activeSection === 'hierarchy' ? 800 : 600,
-              background:
-                activeSection === 'hierarchy'
-                  ? 'linear-gradient(135deg, rgba(6, 182, 212, 0.25), rgba(99, 102, 241, 0.25))'
-                  : 'transparent',
-              color: activeSection === 'hierarchy' ? '#0369a1' : 'var(--muted)',
-              border: activeSection === 'hierarchy' ? '1px solid #38bdf8' : '1px solid transparent',
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-              transition: 'all 0.15s ease',
-            }}
+            className={menuClass(LAB_IDS.includes(activeSection))}
+            aria-expanded={openMenu === 'labs'}
+            onClick={() => setOpenMenu((cur) => (cur === 'labs' ? null : 'labs'))}
           >
-            <span>🌳</span>
-            <span>階層樹</span>
+            實驗室
           </button>
-
-          {/* 2. 教科書深度研讀 (7大章學術長篇巨著) */}
-          <button
-            type="button"
-            onClick={() => onSelectSection('textbook')}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.3rem',
-              padding: '0.35rem 0.65rem',
-              borderRadius: '5px',
-              fontSize: '0.78rem',
-              fontWeight: activeSection === 'textbook' ? 800 : 600,
-              background: activeSection === 'textbook' ? 'rgba(56, 189, 248, 0.25)' : 'rgba(56, 189, 248, 0.08)',
-              color: activeSection === 'textbook' ? '#0369a1' : 'var(--muted)',
-              border: activeSection === 'textbook' ? '1px solid #38bdf8' : '1px solid rgba(56, 189, 248, 0.3)',
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-              transition: 'all 0.15s ease',
-            }}
-          >
-            <span>📖</span>
-            <span>教科書深研 (7章)</span>
-          </button>
-
-          {/* 3. 系統硬體架構圖 (Archify 7圖) */}
-          <button
-            type="button"
-            onClick={() => onSelectSection('arch-map')}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.3rem',
-              padding: '0.35rem 0.65rem',
-              borderRadius: '5px',
-              fontSize: '0.78rem',
-              fontWeight: activeSection === 'arch-map' ? 800 : 600,
-              background: activeSection === 'arch-map' ? 'rgba(16, 185, 129, 0.2)' : 'transparent',
-              color: activeSection === 'arch-map' ? '#047857' : 'var(--muted)',
-              border: activeSection === 'arch-map' ? '1px solid #34d399' : '1px solid transparent',
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-              transition: 'all 0.15s ease',
-            }}
-          >
-            <span>🏛️</span>
-            <span>硬體架構 (Archify 7圖)</span>
-          </button>
-
-          {/* 4. 動態實作教具下拉 */}
-          <div style={{ position: 'relative' }}>
-            <button
-              type="button"
-              onClick={() => setShowLabsDropdown(!showLabsDropdown)}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.3rem',
-                padding: '0.35rem 0.65rem',
-                borderRadius: '5px',
-                fontSize: '0.78rem',
-                fontWeight: isLabActive ? 800 : 600,
-                background: isLabActive ? 'rgba(168, 85, 247, 0.2)' : 'transparent',
-                color: isLabActive ? '#6d28d9' : 'var(--muted)',
-                border: isLabActive ? '1px solid #c084fc' : '1px solid transparent',
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-                transition: 'all 0.15s ease',
-              }}
-            >
-              <span>🔬</span>
-              <span>實作教具 ▾</span>
-            </button>
-
-            {showLabsDropdown && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: 'calc(100% + 6px)',
-                  left: 0,
-                  background: '#ffffff',
-                  border: '1px solid rgba(168, 85, 247, 0.4)',
-                  borderRadius: '8px',
-                  padding: '0.4rem',
-                  minWidth: '220px',
-                  boxShadow: 'var(--shadow)',
-                  zIndex: 100,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '0.2rem',
-                }}
-              >
-                {LABS_LIST.map((lab) => (
-                  <button
-                    key={lab.id}
-                    type="button"
-                    onClick={() => {
-                      onSelectSection(lab.id)
-                      setShowLabsDropdown(false)
-                    }}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem',
-                      padding: '0.45rem 0.65rem',
-                      borderRadius: '5px',
-                      border: 'none',
-                      background: activeSection === lab.id ? 'rgba(168, 85, 247, 0.25)' : 'transparent',
-                      color: activeSection === lab.id ? '#6d28d9' : 'var(--ink)',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      width: '100%',
-                    }}
-                  >
-                    <span style={{ fontSize: '1rem' }}>{lab.icon}</span>
-                    <div>
-                      <div style={{ fontSize: '0.78rem', fontWeight: 700 }}>{lab.title}</div>
-                      <div style={{ fontSize: '0.68rem', color: '#94a3b8' }}>{lab.desc}</div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* 5. 3秒破題訊號卡 */}
-          <button
-            type="button"
-            onClick={() => onSelectSection('signals')}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.3rem',
-              padding: '0.35rem 0.65rem',
-              borderRadius: '5px',
-              fontSize: '0.78rem',
-              fontWeight: activeSection === 'signals' ? 800 : 600,
-              background: activeSection === 'signals' ? 'rgba(245, 158, 11, 0.2)' : 'transparent',
-              color: activeSection === 'signals' ? '#b45309' : 'var(--muted)',
-              border: activeSection === 'signals' ? '1px solid #fbbf24' : '1px solid transparent',
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-              transition: 'all 0.15s ease',
-            }}
-          >
-            <span>⚡</span>
-            <span>破題訊號 (23組)</span>
-          </button>
+          {openMenu === 'labs' ? (
+            <div className="cs-nav-dropdown" role="menu">
+              {LABS.map((lab) => (
+                <button key={lab.id} type="button" onClick={() => go(lab.id)}>
+                  <strong>
+                    {lab.title}
+                    {lab.advanced ? <span className="cs-advanced-tag">進階</span> : null}
+                  </strong>
+                  <span>{lab.desc}</span>
+                </button>
+              ))}
+            </div>
+          ) : null}
         </div>
 
-        {/* === 領域二：實戰評量與能力檢驗 (Assessment Domain - 題庫與測驗完全分開，具備相同一級比重) === */}
-        <div
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.25rem',
-            background: 'var(--surface-soft)',
-            padding: '0.2rem 0.35rem',
-            borderRadius: '8px',
-            border: '1px solid var(--line)',
-          }}
-        >
-          <span style={{ fontSize: '0.68rem', color: '#94a3b8', fontWeight: 700, padding: '0 0.2rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            實戰評量
-          </span>
-
-          {/* 6. 單元題庫自主練習 (Formative Practice - 112題) */}
+        <div className="cs-nav-menu">
           <button
             type="button"
-            onClick={() => onSelectSection('practice')}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.3rem',
-              padding: '0.35rem 0.65rem',
-              borderRadius: '5px',
-              fontSize: '0.78rem',
-              fontWeight: activeSection === 'practice' ? 800 : 600,
-              background: activeSection === 'practice' ? 'rgba(99, 102, 241, 0.25)' : 'transparent',
-              color: activeSection === 'practice' ? '#3730a3' : 'var(--muted)',
-              border: activeSection === 'practice' ? '1px solid #818cf8' : '1px solid transparent',
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-              transition: 'all 0.15s ease',
-            }}
+            className={menuClass(PRACTICE_IDS.includes(activeSection))}
+            aria-expanded={openMenu === 'practice'}
+            onClick={() => setOpenMenu((cur) => (cur === 'practice' ? null : 'practice'))}
           >
-            <span>📚</span>
-            <span>單元題庫練習 (112題)</span>
+            練習
           </button>
-
-          {/* 7. 全真模擬測驗 (Summative Mock Exam - 全真計時與等第診斷) */}
-          <button
-            type="button"
-            onClick={() => onSelectSection('mock')}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.3rem',
-              padding: '0.35rem 0.65rem',
-              borderRadius: '5px',
-              fontSize: '0.78rem',
-              fontWeight: activeSection === 'mock' ? 800 : 600,
-              background: activeSection === 'mock' ? 'rgba(244, 63, 94, 0.25)' : 'transparent',
-              color: activeSection === 'mock' ? '#be123c' : 'var(--muted)',
-              border: activeSection === 'mock' ? '1px solid #fb7185' : '1px solid transparent',
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-              transition: 'all 0.15s ease',
-            }}
-          >
-            <span>📝</span>
-            <span>全真模擬測驗 (計時考)</span>
-          </button>
-
-          {/* 8. 個人錯題弱點本 */}
-          <button
-            type="button"
-            onClick={() => onSelectSection('errors')}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.3rem',
-              padding: '0.35rem 0.65rem',
-              borderRadius: '5px',
-              fontSize: '0.78rem',
-              fontWeight: activeSection === 'errors' ? 800 : 600,
-              background: activeSection === 'errors' ? 'rgba(239, 68, 68, 0.2)' : 'transparent',
-              color: activeSection === 'errors' ? '#b91c1c' : 'var(--muted)',
-              border: activeSection === 'errors' ? '1px solid #f87171' : '1px solid transparent',
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-              transition: 'all 0.15s ease',
-            }}
-          >
-            <span>❌</span>
-            <span>錯題本 {errorCount > 0 ? `(${errorCount})` : ''}</span>
-          </button>
+          {openMenu === 'practice' ? (
+            <div className="cs-nav-dropdown" role="menu">
+              {PRACTICE.map((item) => (
+                <button key={item.id} type="button" onClick={() => go(item.id)}>
+                  <strong>{item.title}</strong>
+                  <span>{item.desc}</span>
+                </button>
+              ))}
+            </div>
+          ) : null}
         </div>
 
-        {/* 9. 今日概覽 */}
-        <button
-          type="button"
-          onClick={() => onSelectSection('today')}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.3rem',
-            padding: '0.35rem 0.65rem',
-            borderRadius: '6px',
-            fontSize: '0.78rem',
-            fontWeight: activeSection === 'today' ? 800 : 600,
-            background: activeSection === 'today' ? 'rgba(99, 102, 241, 0.2)' : 'transparent',
-            color: activeSection === 'today' ? '#3730a3' : 'var(--muted)',
-            border: activeSection === 'today' ? '1px solid #818cf8' : '1px solid transparent',
-            cursor: 'pointer',
-            whiteSpace: 'nowrap',
-            transition: 'all 0.15s ease',
-          }}
-        >
-          <span>🎯</span>
-          <span>今日進度</span>
-        </button>
+        <div className="cs-nav-menu">
+          <button
+            type="button"
+            className={menuClass(EXAM_IDS.includes(activeSection))}
+            aria-expanded={openMenu === 'exams'}
+            onClick={() => setOpenMenu((cur) => (cur === 'exams' ? null : 'exams'))}
+          >
+            測驗
+            {errorCount > 0 ? <span className="cs-nav-badge">{errorCount}</span> : null}
+          </button>
+          {openMenu === 'exams' ? (
+            <div className="cs-nav-dropdown" role="menu">
+              {EXAMS.map((item) => (
+                <button key={item.id} type="button" onClick={() => go(item.id)}>
+                  <strong>
+                    {item.title}
+                    {item.id === 'errors' && errorCount > 0 ? `（${errorCount}）` : ''}
+                  </strong>
+                  <span>{item.desc}</span>
+                </button>
+              ))}
+            </div>
+          ) : null}
+        </div>
       </nav>
 
-      {/* 右側：學科切換工具 */}
-      <div style={{ minWidth: 'fit-content' }}>
-        <TrackSwitcher current="cs" onBackHub={onBackHub} onSwitchLang={onSwitchLang} />
-      </div>
+      <TrackSwitcher current="cs" onBackHub={onBackHub} onSwitchLang={onSwitchLang} />
     </header>
   )
 }

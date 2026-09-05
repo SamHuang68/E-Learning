@@ -139,10 +139,7 @@ export const CsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         }}
         onBackHub={onBackHub}
         onSwitchLang={onSwitchLang}
-        xp={progress.xp}
         errorCount={progress.errorQuestions.length}
-        completedCount={progress.completedQuestions.length}
-        totalQuestions={112}
       />
 
       {/* 核心主視窗 (零拉頁，單屏適配) */}
@@ -158,8 +155,8 @@ export const CsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
       >
         <Suspense
           fallback={
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: '300px', color: '#94a3b8', fontSize: '0.86rem' }}>
-              載入計算機科學模組…
+            <div className="module-fallback" role="status">
+              載入計算機概論…
             </div>
           }
         >
@@ -174,17 +171,14 @@ export const CsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         )}
 
         {activeSection === 'textbook' && (
-          <CsTextbookReader
-            onSelectSection={(sec) => setActiveSection(sec as CsNavSection)}
-            onEarnXp={handleEarnXp}
-          />
+          <CsTextbookReader onOpenArchMap={() => setActiveSection('arch-map')} />
         )}
 
-        {activeSection === 'today' && (
+          {activeSection === 'today' && (
           <CsToday
             progress={progress}
-            onNavigate={(section) => {
-              setPracticeUnitId(undefined)
+            onNavigate={(section, unitId) => {
+              setPracticeUnitId(unitId)
               setActiveSection(section as CsNavSection)
             }}
           />

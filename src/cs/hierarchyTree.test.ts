@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { CS_CURRICULUM, getAllCsUnits } from './data/curriculum'
+import { CS_CURRICULUM, getAllCsUnits, getNextCsUnit, isCsAdvancedUnit } from './data/curriculum'
 
 describe('計算機概論：知識階層樹架構與一頁全景整合單元測試', () => {
   it('全域課綱體系精確包含 7 大知識主幹分支', () => {
@@ -41,5 +41,19 @@ describe('計算機概論：知識階層樹架構與一頁全景整合單元測�
       }
     }
     expect(questionIds.size).toBe(112)
+  })
+
+  it('default path stays on core units and marks AI units as advanced', () => {
+    expect(getNextCsUnit([]).id).toBe('cs-unit-1-foundation')
+    const unit1Done = CS_CURRICULUM[0].questions.map((q) => q.id)
+    expect(getNextCsUnit(unit1Done).id).toBe('cs-unit-2-von-neumann')
+    expect(CS_CURRICULUM.filter(isCsAdvancedUnit).map((u) => u.id)).toEqual([
+      'cs-unit-6-ai-hardware',
+      'cs-unit-7-frontier-ai-models',
+    ])
+    const allCoreDone = CS_CURRICULUM.filter((unit) => !isCsAdvancedUnit(unit)).flatMap((unit) =>
+      unit.questions.map((q) => q.id),
+    )
+    expect(isCsAdvancedUnit(getNextCsUnit(allCoreDone))).toBe(false)
   })
 })
