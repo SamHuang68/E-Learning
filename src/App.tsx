@@ -1,44 +1,64 @@
-import { Suspense, useEffect, useRef, useState } from 'react'
+import { Suspense, useEffect, useRef, useState, type ComponentType, type LazyExoticComponent } from 'react'
 import { AuthProvider } from './auth/AuthProvider'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { PrivacyPage } from './components/PrivacyPage'
 import { AccessibilityControls } from './components/AccessibilityControls'
 import { Hub } from './Hub'
-import { saveLang, type AppView, type LangId } from './utils/storage'
+import { saveLang, type LangId } from './utils/storage'
 import { lazyWithRetry } from './utils/lazyWithRetry'
 import { parseTopViewHash, type TopView } from './utils/topRoute'
 
-const AobaApp = lazyWithRetry(
-  () => import('./aoba/AobaApp').then((m) => ({ default: m.AobaApp })),
-  'aoba',
-)
-const ToeicApp = lazyWithRetry(
-  () => import('./toeic/ToeicApp').then((m) => ({ default: m.ToeicApp })),
-  'toeic',
-)
-const MathApp = lazyWithRetry(
-  () => import('./math/MathApp').then((m) => ({ default: m.MathApp })),
-  'math',
-)
-const CalculusApp = lazyWithRetry(
-  () => import('./calculus/CalculusApp').then((m) => ({ default: m.CalculusApp })),
-  'calculus',
-)
-const PhysicsApp = lazyWithRetry(
-  () => import('./physics/PhysicsApp').then((m) => ({ default: m.PhysicsApp })),
-  'physics',
-)
-const ChemistryApp = lazyWithRetry(
-  () => import('./chemistry/ChemistryApp').then((m) => ({ default: m.ChemistryApp })),
-  'chemistry',
-)
-const CsApp = lazyWithRetry(
-  () => import('./cs/CsApp').then((m) => ({ default: m.CsApp })),
-  'cs',
-)
-const ChineseApp = lazyWithRetry(() =>
-  import('./chinese/ChineseApp').then((m) => ({ default: m.ChineseApp })),
-)
+type ModuleAppProps = {
+  onBackHub: () => void
+  onSwitchLang: (lang: LangId) => void
+}
+
+const MODULES: Record<
+  Exclude<LangId, never>,
+  { label: string; App: LazyExoticComponent<ComponentType<ModuleAppProps>> }
+> = {
+  ja: {
+    label: '日語模組',
+    App: lazyWithRetry(() => import('./aoba/AobaApp').then((m) => ({ default: m.AobaApp })), 'aoba'),
+  },
+  en: {
+    label: '多益模組',
+    App: lazyWithRetry(() => import('./toeic/ToeicApp').then((m) => ({ default: m.ToeicApp })), 'toeic'),
+  },
+  math: {
+    label: '臺灣數學模組',
+    App: lazyWithRetry(() => import('./math/MathApp').then((m) => ({ default: m.MathApp })), 'math'),
+  },
+  calculus: {
+    label: '微積分模組',
+    App: lazyWithRetry(
+      () => import('./calculus/CalculusApp').then((m) => ({ default: m.CalculusApp })),
+      'calculus',
+    ),
+  },
+  physics: {
+    label: '臺灣物理模組',
+    App: lazyWithRetry(
+      () => import('./physics/PhysicsApp').then((m) => ({ default: m.PhysicsApp })),
+      'physics',
+    ),
+  },
+  chemistry: {
+    label: '臺灣化學模組',
+    App: lazyWithRetry(
+      () => import('./chemistry/ChemistryApp').then((m) => ({ default: m.ChemistryApp })),
+      'chemistry',
+    ),
+  },
+  cs: {
+    label: '計算機概論模組',
+    App: lazyWithRetry(() => import('./cs/CsApp').then((m) => ({ default: m.CsApp })), 'cs'),
+  },
+  zh: {
+    label: '華語模組',
+    App: lazyWithRetry(() => import('./chinese/ChineseApp').then((m) => ({ default: m.ChineseApp })), 'zh'),
+  },
+}
 
 function readTopView(): TopView {
   return parseTopViewHash(window.location.hash)
@@ -112,7 +132,7 @@ function AppShell() {
     }
   }, [view])
 
-  function choose(next: AppView) {
+  function choose(next: LangId | 'hub') {
     focusRoute.current = true
     saveLang(next)
     setView(next)
@@ -128,105 +148,19 @@ function AppShell() {
     return <PrivacyPage onBack={() => choose('hub')} />
   }
 
-  if (view === 'zh') {
+  const mod = view === 'hub' ? null : MODULES[view]
+  if (mod) {
+    const ModuleApp = mod.App
     return (
-      <ErrorBoundary label="華語模組">
+      <ErrorBoundary label={mod.label}>
         <Suspense fallback={<ModuleFallback />}>
-          <ChineseApp
-            onBackHub={() => choose('hub')}
-            onSwitchLang={(lang: LangId) => choose(lang)}
-          />
+          <ModuleApp onBackHub={() => choose('hub')} onSwitchLang={(lang: LangId) => choose(lang)} />
         </Suspense>
       </ErrorBoundary>
     )
   }
-  if (view === 'ja') {
-    return (
-      <ErrorBoundary label="日語模組">
-        <Suspense fallback={<ModuleFallback />}>
-          <AobaApp
-            onBackHub={() => choose('hub')}
-            onSwitchLang={(lang: LangId) => choose(lang)}
-          />
-        </Suspense>
-      </ErrorBoundary>
-    )
-  }
-  if (view === 'en') {
-    return (
-      <ErrorBoundary label="多益模組">
-        <Suspense fallback={<ModuleFallback />}>
-          <ToeicApp
-            onBackHub={() => choose('hub')}
-            onSwitchLang={(lang: LangId) => choose(lang)}
-          />
-        </Suspense>
-      </ErrorBoundary>
-    )
-  }
-  if (view === 'math') {
-    return (
-      <ErrorBoundary label="臺灣數學模組">
-        <Suspense fallback={<ModuleFallback />}>
-          <MathApp
-            onBackHub={() => choose('hub')}
-            onSwitchLang={(lang: LangId) => choose(lang)}
-          />
-        </Suspense>
-      </ErrorBoundary>
-    )
-  }
-  if (view === 'calculus') {
-    return (
-      <ErrorBoundary label="微積分模組">
-        <Suspense fallback={<ModuleFallback />}>
-          <CalculusApp
-            onBackHub={() => choose('hub')}
-            onSwitchLang={(lang: LangId) => choose(lang)}
-          />
-        </Suspense>
-      </ErrorBoundary>
-    )
-  }
-  if (view === 'physics') {
-    return (
-      <ErrorBoundary label="臺灣物理模組">
-        <Suspense fallback={<ModuleFallback />}>
-          <PhysicsApp
-            onBackHub={() => choose('hub')}
-            onSwitchLang={(lang: LangId) => choose(lang)}
-          />
-        </Suspense>
-      </ErrorBoundary>
-    )
-  }
-  if (view === 'chemistry') {
-    return (
-      <ErrorBoundary label="臺灣化學模組">
-        <Suspense fallback={<ModuleFallback />}>
-          <ChemistryApp
-            onBackHub={() => choose('hub')}
-            onSwitchLang={(lang: LangId) => choose(lang)}
-          />
-        </Suspense>
-      </ErrorBoundary>
-    )
-  }
-  if (view === 'cs') {
-    return (
-      <ErrorBoundary label="計算機概論模組">
-        <Suspense fallback={<ModuleFallback />}>
-          <CsApp
-            onBackHub={() => choose('hub')}
-            onSwitchLang={(lang: LangId) => choose(lang)}
-          />
-        </Suspense>
-      </ErrorBoundary>
-    )
-  }
-  return (
-    <Hub onChoose={(lang) => choose(lang)} onOpenPrivacy={openPrivacy} />
-  )
+
+  return <Hub onChoose={(lang) => choose(lang)} onOpenPrivacy={openPrivacy} />
 }
 
 export default function App() {

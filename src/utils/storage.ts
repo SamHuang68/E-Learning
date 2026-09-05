@@ -3,6 +3,7 @@ import { LEARN_ORDER, type KanaScript, type LearnRowId } from '../data/kana'
 import { defaultItemState, type ItemState } from '../engine/srs'
 import type { ToeicBuilderConfig, ToeicCertificate } from '../toeic/data/certificates'
 import { PROGRESS_STORAGE_KEYS } from './progressKeys'
+import { parseTopViewHash } from './topRoute'
 
 /** Late-bound write-through hook (wired by cloudProgress to avoid circular imports). */
 let progressChangeHook: (() => void) | null = null
@@ -108,23 +109,19 @@ export type ToeicSavedPreset = {
 }
 
 export function loadLang(): AppView {
-  const hash = window.location.hash.replace('#', '').trim()
-  if (hash === 'en' || hash.startsWith('toeic')) return 'en'
-  if (hash === 'zh' || hash.startsWith('chinese') || hash.startsWith('huayu')) return 'zh'
-  if (hash === 'calculus' || hash.startsWith('calc')) return 'calculus'
-  if (hash === 'physics' || hash.startsWith('phys')) return 'physics'
-  if (hash === 'chemistry' || hash.startsWith('chem')) return 'chemistry'
-  if (hash === 'cs' || hash.startsWith('compsci') || hash.startsWith('computer')) return 'cs'
-  if (hash === 'math' || hash.startsWith('math')) return 'math'
-  if (
-    hash === 'ja' ||
-    hash.startsWith('aoba') ||
-    hash.startsWith('builder')
-  ) {
-    return 'ja'
+  const view = parseTopViewHash(window.location.hash)
+  return view === 'privacy' ? 'hub' : view
+}
+
+/** Last chosen track from localStorage (ignores current hash). */
+export function loadPreferredTrack(): LangId | null {
+  try {
+    const stored = normalizeLang(localStorage.getItem(LANG_KEY))
+    if (stored && stored !== 'hub') return stored
+  } catch {
+    /* ignore */
   }
-  // 預設進入 E-Learning 統一學習主頁 (Hub)
-  return 'hub'
+  return null
 }
 
 export function saveLang(view: AppView) {

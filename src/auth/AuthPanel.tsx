@@ -1,10 +1,15 @@
 import { useState, type FormEvent } from 'react'
 import { useAuth } from './AuthContext'
 
-export function AuthPanel() {
+type Props = {
+  variant?: 'full' | 'compact'
+}
+
+export function AuthPanel({ variant = 'full' }: Props) {
   const { configured, backendKind, loading, user, syncStatus, signIn, signUp, signOut, deleteAccount } =
     useAuth()
   const isLocal = backendKind === 'local'
+  const compact = variant === 'compact'
   const [mode, setMode] = useState<'signin' | 'signup'>('signin')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -12,6 +17,7 @@ export function AuthPanel() {
   const [message, setMessage] = useState<string | null>(null)
 
   if (!configured) {
+    if (compact) return null
     return (
       <section className="auth-panel" aria-label="帳號">
         <p className="auth-sync local">進度僅保存在本機（未設定雲端同步）</p>
@@ -20,6 +26,7 @@ export function AuthPanel() {
   }
 
   if (loading) {
+    if (compact) return null
     return (
       <section className="auth-panel" aria-label="帳號">
         <p className="auth-sync">檢查登入狀態…</p>
@@ -48,8 +55,8 @@ export function AuthPanel() {
   const syncLabel =
     syncStatus === 'synced'
       ? isLocal
-        ? '進度已保存（本機帳號）'
-        : '進度已同步'
+        ? '本機已保存'
+        : '已同步'
       : syncStatus === 'syncing'
         ? isLocal
           ? '保存中…'
@@ -58,44 +65,8 @@ export function AuthPanel() {
           ? '保存失敗（仍可本機使用）'
           : '僅本機'
 
-  if (user) {
-    async function removeLocalAccount() {
-      if (!confirm('確定刪除此瀏覽器中的本機帳號、密碼驗證資料與帳號進度？此動作無法復原。')) return
-      const error = await deleteAccount()
-      if (error) setMessage(error)
-    }
-
-    return (
-      <section className="auth-panel signed-in" aria-label="帳號">
-        <div className="auth-user-row">
-          <div>
-            <p className="eyebrow">帳號</p>
-            <p className="auth-email">{user.email}</p>
-            <p className={`auth-sync ${syncStatus}`}>{syncLabel}</p>
-          </div>
-          <button
-            type="button"
-            className="auth-btn ghost"
-            onClick={() => void signOut()}
-          >
-            登出
-          </button>
-          {isLocal ? (
-            <button
-              type="button"
-              className="auth-btn danger"
-              onClick={() => void removeLocalAccount()}
-            >
-              刪除本機帳號
-            </button>
-          ) : null}
-        </div>
-      </section>
-    )
-  }
-
-  return (
-    <section className="auth-panel" aria-label="登入或註冊">
+  const form = (
+    <>
       <div className="auth-mode">
         <button
           type="button"
@@ -118,11 +89,13 @@ export function AuthPanel() {
           註冊
         </button>
       </div>
-      <p className="auth-hint">
-        {isLocal
-          ? '未登入可本機試用；登入後進度會保存在此瀏覽器的本機帳號（不含 API 金鑰與課程設計器預設）。'
-          : '未登入可本機試用；登入後進度會同步到雲端（不含 API 金鑰與課程設計器預設）。'}
-      </p>
+      {!compact ? (
+        <p className="auth-hint">
+          {isLocal
+            ? '未登入可本機試用；登入後進度會保存在此瀏覽器的本機帳號（不含 API 金鑰與課程設計器預設）。'
+            : '未登入可本機試用；登入後進度會同步到雲端（不含 API 金鑰與課程設計器預設）。'}
+        </p>
+      ) : null}
       <form className="auth-form" onSubmit={onSubmit}>
         <label>
           Email
@@ -136,7 +109,7 @@ export function AuthPanel() {
         </label>
         {isLocal && mode === 'signup' ? (
           <p className="auth-warning" role="note">
-            本機帳號只保存在此瀏覽器，密碼驗證不等同雲端安全服務；請勿重複使用任何真實帳號密碼。
+            本機帳號只保存在此瀏覽器；請勿重複使用真實密碼。
           </p>
         ) : null}
         <label>
@@ -155,6 +128,49 @@ export function AuthPanel() {
         </button>
       </form>
       {message ? <p className="auth-message">{message}</p> : null}
+    </>
+  )
+
+  if (user) {
+    async function removeLocalAccount() {
+      if (!confirm('確定刪除此瀏覽器中的本機帳號、密碼驗證資料與帳號進度？此動作無法復原。')) return
+      const error = await deleteAccount()
+      if (error) setMessage(error)
+    }
+
+    return (
+      <section className={`auth-panel signed-in${compact ? ' is-compact' : ''}`} aria-label="帳號">
+        <div className="auth-user-row">
+          <div>
+            {!compact ? <p className="eyebrow">帳號</p> : null}
+            <p className="auth-email">{user.email}</p>
+            <p className={`auth-sync ${syncStatus}`}>{syncLabel}</p>
+          </div>
+          <button type="button" className="auth-btn ghost" onClick={() => void signOut()}>
+            登出
+          </button>
+          {isLocal && !compact ? (
+            <button type="button" className="auth-btn danger" onClick={() => void removeLocalAccount()}>
+              刪除本機帳號
+            </button>
+          ) : null}
+        </div>
+      </section>
+    )
+  }
+
+  if (compact) {
+    return (
+      <details className="auth-panel is-compact">
+        <summary>登入同步進度</summary>
+        {form}
+      </details>
+    )
+  }
+
+  return (
+    <section className="auth-panel" aria-label="登入或註冊">
+      {form}
       <p className={`auth-sync ${syncStatus}`}>僅本機</p>
     </section>
   )
