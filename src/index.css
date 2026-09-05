@@ -16,6 +16,7 @@
   --radius: 18px;
   --font-sans: 'Zen Kaku Gothic New', 'Segoe UI', sans-serif;
   --font-display: 'Shippori Mincho', 'Times New Roman', serif;
+  color-scheme: light;
   color: var(--ink);
   background: var(--bg);
   font-family: var(--font-sans);
@@ -6151,6 +6152,7 @@ footer {
 
 /* 3. 深色模式變數支援 (Dark Theme) */
 [data-theme="dark"] {
+  color-scheme: dark;
   --bg: #090d16;
   --bg-deep: #05080e;
   --surface: #111827;

@@ -361,6 +361,56 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
         </div>
       </header>
 
+      <section className="hub-section-block" aria-labelledby="tracks-title">
+        <div className="section-header-row">
+          <h2 id="tracks-title">選擇學習軌道</h2>
+          <span className="section-subtext">8 軌</span>
+        </div>
+
+        <div className="hub-grid six-track-grid">
+          {tracks.map((track) => (
+            <article key={track.id} className={`hub-card ${track.extraClass}`}>
+              <button type="button" className="hub-card-hit" onClick={track.onClick}>
+                <div className="hub-card-header">
+                  <div className={`hub-card-mark ${track.markClass}`}>{track.mark}</div>
+                  <span className={`track-status-pill ${track.pillClass}`}>{track.pill}</span>
+                </div>
+                <h3>{track.title}</h3>
+                <p className="track-desc">{track.desc}</p>
+                <div className="track-user-progress">
+                  <span>{track.progress}</span>
+                </div>
+                <b className="launch-action">{track.cta} →</b>
+              </button>
+              {track.id === 'en' ? (
+                <div className="track-lang-toggle" role="group" aria-label="多益解說語言">
+                  <button
+                    type="button"
+                    className={toeicLang === 'zh' ? 'is-active' : ''}
+                    onClick={() => {
+                      saveToeicInstructionLang('zh')
+                      setToeicLang('zh')
+                    }}
+                  >
+                    中文解說
+                  </button>
+                  <button
+                    type="button"
+                    className={toeicLang === 'ja' ? 'is-active' : ''}
+                    onClick={() => {
+                      saveToeicInstructionLang('ja')
+                      setToeicLang('ja')
+                    }}
+                  >
+                    日本語
+                  </button>
+                </div>
+              ) : null}
+            </article>
+          ))}
+        </div>
+      </section>
+
       {hasProgress ? (
         <section className="hub-stat-banner" aria-label="學習統計">
           <div className="stat-card level-stat">
@@ -437,56 +487,6 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
           </div>
         </section>
       ) : null}
-
-      <section className="hub-section-block" aria-labelledby="tracks-title">
-        <div className="section-header-row">
-          <h2 id="tracks-title">選擇學習軌道</h2>
-          <span className="section-subtext">8 軌</span>
-        </div>
-
-        <div className="hub-grid six-track-grid">
-          {tracks.map((track) => (
-            <article key={track.id} className={`hub-card ${track.extraClass}`}>
-              <button type="button" className="hub-card-hit" onClick={track.onClick}>
-                <div className="hub-card-header">
-                  <div className={`hub-card-mark ${track.markClass}`}>{track.mark}</div>
-                  <span className={`track-status-pill ${track.pillClass}`}>{track.pill}</span>
-                </div>
-                <h3>{track.title}</h3>
-                <p className="track-desc">{track.desc}</p>
-                <div className="track-user-progress">
-                  <span>{track.progress}</span>
-                </div>
-                <b className="launch-action">{track.cta} →</b>
-              </button>
-              {track.id === 'en' ? (
-                <div className="track-lang-toggle" role="group" aria-label="多益解說語言">
-                  <button
-                    type="button"
-                    className={toeicLang === 'zh' ? 'is-active' : ''}
-                    onClick={() => {
-                      saveToeicInstructionLang('zh')
-                      setToeicLang('zh')
-                    }}
-                  >
-                    中文解說
-                  </button>
-                  <button
-                    type="button"
-                    className={toeicLang === 'ja' ? 'is-active' : ''}
-                    onClick={() => {
-                      saveToeicInstructionLang('ja')
-                      setToeicLang('ja')
-                    }}
-                  >
-                    日本語
-                  </button>
-                </div>
-              ) : null}
-            </article>
-          ))}
-        </div>
-      </section>
 
       {hasProgress ? (
         <details className="hub-more">

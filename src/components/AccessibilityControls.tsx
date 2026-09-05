@@ -9,6 +9,38 @@ export type AccessibilitySettings = {
 }
 
 const STORAGE_KEY = LOCAL_PREFERENCE_KEYS.accessibility
+const LIGHT_MIGRATION_KEY = 'e-learning-a11y-light-v1'
+
+const DEFAULT_SETTINGS: AccessibilitySettings = {
+  fontSize: 'standard',
+  distractionFree: false,
+  highContrast: false,
+  darkMode: false,
+}
+
+function readA11ySettings(): AccessibilitySettings {
+  if (typeof localStorage === 'undefined') return DEFAULT_SETTINGS
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    const saved = raw
+      ? ({ ...DEFAULT_SETTINGS, ...(JSON.parse(raw) as Partial<AccessibilitySettings>) })
+      : DEFAULT_SETTINGS
+    // One-time: previously saved darkMode made the Hub look like the old black shell.
+    if (!localStorage.getItem(LIGHT_MIGRATION_KEY)) {
+      const next = { ...saved, darkMode: false }
+      localStorage.setItem(LIGHT_MIGRATION_KEY, '1')
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+      if (typeof document !== 'undefined') {
+        document.documentElement.removeAttribute('data-theme')
+      }
+      return next
+    }
+    return saved
+  } catch {
+    return DEFAULT_SETTINGS
+  }
+}
+
 
 /**
  * WCAG 2.2 AA 無障礙與認知輔助控制器 (AccessibilityControls)
@@ -20,22 +52,7 @@ export const AccessibilityControls: React.FC = () => {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
   const wasOpen = useRef(false)
-  const [settings, setSettings] = useState<AccessibilitySettings>(() => {
-    if (typeof localStorage !== 'undefined') {
-      try {
-        const saved = localStorage.getItem(STORAGE_KEY)
-        if (saved) return JSON.parse(saved) as AccessibilitySettings
-      } catch {
-        // ignore
-      }
-    }
-    return {
-      fontSize: 'standard',
-      distractionFree: false,
-      highContrast: false,
-      darkMode: false,
-    }
-  })
+  const [settings, setSettings] = useState<AccessibilitySettings>(() => readA11ySettings())
 
   // 同步樣式至 HTML Document Root
   useEffect(() => {
@@ -55,9 +72,14 @@ export const AccessibilityControls: React.FC = () => {
     if (settings.highContrast) root.classList.add('high-contrast')
     else root.classList.remove('high-contrast')
 
-    // 4. 深色模式
-    if (settings.darkMode) root.setAttribute('data-theme', 'dark')
-    else root.removeAttribute('data-theme')
+    // 4. 深色模式（預設白底；僅在使用者主動開啟時套用）
+    if (settings.darkMode) {
+      root.setAttribute('data-theme', 'dark')
+      root.style.colorScheme = 'dark'
+    } else {
+      root.removeAttribute('data-theme')
+      root.style.colorScheme = 'light'
+    }
 
     // 儲存
     if (typeof localStorage !== 'undefined') {
