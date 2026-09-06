@@ -224,6 +224,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
     title: string
     desc: string
     progress: string
+    catalog: string
     cta: string
     onClick: () => void
   }> = [
@@ -236,7 +237,8 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
       pillClass: 'math',
       title: '臺灣數學',
       desc: '國小到高中。KaTeX 算式、幾何教具與會考／學測模考。',
-      progress: `已解 ${mathDoneCount} 題 · ${mathProgress.stage.toUpperCase()}`,
+      progress: `你已解 ${mathDoneCount} 題`,
+      catalog: '題庫與幾何教具可練',
       cta: '進入數學',
       onClick: () => onChoose('math'),
     },
@@ -249,7 +251,8 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
       pillClass: 'calculus',
       title: '微積分',
       desc: '切線、黎曼和、FTC 與旋轉體動態實驗室。',
-      progress: `專題 ${calculusDoneCount} 題 · 實驗室 ${calculusLabCount} 項`,
+      progress: `你已解 ${calculusDoneCount} 題`,
+      catalog: '黎曼和與 FTC 實驗室可進',
       cta: '進入微積分',
       onClick: () => onChoose('calculus'),
     },
@@ -262,7 +265,8 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
       pillClass: 'physics',
       title: '物理',
       desc: '聲光力電到近代物理。拋體、光學、電路實驗室與模考。',
-      progress: `已解 ${physicsDoneCount} 題 · ${physicsProgress.xp} XP`,
+      progress: `你已解 ${physicsDoneCount} 題`,
+      catalog: '拋體、光學、電路實驗室可進',
       cta: '進入物理',
       onClick: () => onChoose('physics'),
     },
@@ -275,7 +279,8 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
       pillClass: 'chemistry',
       title: '化學',
       desc: '水溶液到有機。週期表、VSEPR、滴定曲線與破題卡。',
-      progress: `已解 ${chemistryDoneCount} 題 · ${chemistryProgress.xp} XP`,
+      progress: `你已解 ${chemistryDoneCount} 題`,
+      catalog: '滴定曲線與週期表可進',
       cta: '進入化學',
       onClick: () => onChoose('chemistry'),
     },
@@ -288,7 +293,8 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
       pillClass: 'cs',
       title: '計算機概論',
       desc: '馮紐曼架構、快取與管線，接到 GPU／Transformer。',
-      progress: `已解 ${csDoneCount} 題 · ${csProgress.xp} XP`,
+      progress: `你已解 ${csDoneCount} 題`,
+      catalog: '架構圖與題庫可進',
       cta: '進入計算機概論',
       onClick: () => onChoose('cs'),
     },
@@ -301,7 +307,8 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
       pillClass: 'ja',
       title: 'あおば日本語',
       desc: 'JLPT N5 到 N1。五十音、文法訊號與職場敬語。',
-      progress: `JLPT ${jaProgress.levelId.toUpperCase()} · 五十音 ${kanaCount}/104`,
+      progress: `你已掌握 ${kanaCount} 字`,
+      catalog: '五十音 104 字可練',
       cta: '進入日語',
       onClick: () => onChoose('ja'),
     },
@@ -314,7 +321,8 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
       pillClass: 'en',
       title: 'TOEIC 多益英語',
       desc: '商務語塊、四國口音與證書級距練習。',
-      progress: `證書 ${toeicProgress.certificateId.toUpperCase()} · ${toeicDoneCount} 語塊`,
+      progress: `你已練 ${toeicDoneCount} 語塊`,
+      catalog: '商務語塊與聽力可練',
       cta: toeicLang === 'ja' ? '日本語で学ぶ' : '進入英語',
       onClick: () => openToeic(toeicLang),
     },
@@ -326,12 +334,35 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
       pill: '日文學中文',
       pillClass: 'zh',
       title: '台湾華語',
-      desc: '四聲曲線、日中偽友詞與把字句／被字句判斷。',
-      progress: `${chineseProgress.xp || 0} XP · 偽友詞 ${chineseProgress.masteredFalseFriends?.length || 0}`,
+      desc: '四聲、日中偽友詞與把字句。對日文學習者保留「台湾」標。',
+      progress: `你已解 ${chineseProgress.masteredFalseFriends?.length || 0} 組偽友`,
+      catalog: '四聲與語法訊號可練',
       cta: '日本語で学ぶ',
       onClick: () => onChoose('zh'),
     },
   ]
+
+  const unstarted: LangId | null =
+    mathDoneCount === 0
+      ? 'math'
+      : calculusDoneCount === 0
+        ? 'calculus'
+        : physicsDoneCount === 0
+          ? 'physics'
+          : chemistryDoneCount === 0
+            ? 'chemistry'
+            : csDoneCount === 0
+              ? 'cs'
+              : kanaCount === 0 && (jaProgress.xp || 0) === 0
+                ? 'ja'
+                : toeicDoneCount === 0
+                  ? 'en'
+                  : (chineseProgress.xp || 0) === 0
+                    ? 'zh'
+                    : null
+  const todayId: LangId = unstarted ?? resumeId
+  const todayTrack = tracks.find((t) => t.id === todayId) ?? tracks[0]
+  const todayReason = unstarted ? '尚未作答' : '繼續本軌'
 
   return (
     <main className="hub unified-hub">
@@ -340,6 +371,9 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
         <h1>今天要學哪一軌？</h1>
         <p className="lede">
           數學、微積分、物理、化學、計算機概論、日語、多益與華語，同一個離線優先的練習系統。
+        </p>
+        <p className="section-subtext">
+          八軌 · 題庫／實驗室／語音可練 · 本機練習紀錄，不是能力鑑定
         </p>
         <div className="hub-hero-actions">
           <button
@@ -358,6 +392,21 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
         </div>
       </header>
 
+      <section className="hub-section-block" aria-label="今日建議路徑">
+        <p className="section-subtext">今日建議 · {todayReason}</p>
+        <h2>{todayTrack.title}</h2>
+        <p className="track-desc">{todayTrack.desc}</p>
+        <div className="hub-hero-actions">
+          <button
+            type="button"
+            className="hub-primary-cta"
+            onClick={todayTrack.onClick}
+          >
+            30 秒開始：{todayTrack.cta}
+          </button>
+        </div>
+      </section>
+
       <section className="hub-section-block" aria-labelledby="tracks-title">
         <div className="section-header-row">
           <h2 id="tracks-title">選擇學習軌道</h2>
@@ -374,6 +423,9 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
                 </div>
                 <h3>{track.title}</h3>
                 <p className="track-desc">{track.desc}</p>
+                <div className="track-user-progress">
+                  <span>{track.catalog}</span>
+                </div>
                 <div className="track-user-progress">
                   <span>{track.progress}</span>
                 </div>
@@ -593,6 +645,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
           隱私與資料說明
         </button>
         <span>MIT License · Sam Huang</span>
+        <span>本機練習紀錄，不是能力鑑定。</span>
       </footer>
     </main>
   )
