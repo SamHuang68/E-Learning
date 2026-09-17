@@ -57,6 +57,7 @@ import {
 } from '../chinese/utils/chineseStorage'
 
 setProgressChangeHook(() => {
+  noteLocalMutation()
   scheduleCloudPush()
 })
 
@@ -65,9 +66,11 @@ setProgressChangeHook(() => {
 if (typeof window !== 'undefined') {
   ;['math', 'physics', 'chemistry', 'cs'].forEach((track) => {
     window.addEventListener(`${track}:progress-updated`, () => {
+      noteLocalMutation()
       scheduleCloudPush()
     })
     window.addEventListener(`${track}:signals-mastery-updated`, () => {
+      noteLocalMutation()
       scheduleCloudPush()
     })
   })
@@ -96,11 +99,47 @@ export type CloudProgressRow = {
 
 export type SyncOutcome = 'migrated' | 'pulled' | 'merged' | 'skipped' | 'error'
 
+type ProgressBackend = {
+  from: (table: string) => {
+    select: (columns?: string) => {
+      eq: (column: string, value: string) => {
+        maybeSingle: () => Promise<{ data: unknown; error: { message: string } | null }>
+      }
+    }
+    upsert: (row: Record<string, unknown>) => Promise<{ error: { message: string } | null }>
+  }
+}
+
 let cloudUserId: string | null = null
+/** Incremented on every setCloudUserId so in-flight hydrates can abort. */
+let sessionGeneration = 0
 /** Blocks write-through until first pull/migrate finishes (avoids racing stale local). */
 let allowPush = false
+/** Local mutations while push is blocked; must be flushed before claiming synced. */
+let pendingDirty = false
+/** Suppress dirty flags while hydrate applies a merged bundle. */
+let applyingRemote = false
 let pushTimer: ReturnType<typeof setTimeout> | null = null
 let pushInFlight: Promise<void> | null = null
+let backendOverride: ProgressBackend | null = null
+
+export function getCloudSessionGeneration(): number {
+  return sessionGeneration
+}
+
+/** Test-only: wrap or stub the progress table client (stale SELECT, delayed fetch). */
+export function __setCloudProgressBackendForTests(backend: ProgressBackend | null) {
+  backendOverride = backend
+}
+
+function getProgressBackend(): ProgressBackend | null {
+  if (backendOverride) return backendOverride
+  return getSupabase() as unknown as ProgressBackend | null
+}
+
+function isCurrentSession(userId: string, generation: number): boolean {
+  return cloudUserId === userId && sessionGeneration === generation
+}
 
 type SyncListener = (status: SyncUiStatus) => void
 export type SyncUiStatus = 'local-only' | 'syncing' | 'synced' | 'error'
@@ -126,15 +165,20 @@ export function subscribeSyncStatus(fn: SyncListener): () => void {
 }
 
 export function setCloudUserId(userId: string | null) {
+  sessionGeneration += 1
   cloudUserId = userId
   allowPush = false
-  if (!userId) {
-    if (pushTimer) {
-      clearTimeout(pushTimer)
-      pushTimer = null
-    }
-    emit('local-only')
+  pendingDirty = false
+  if (pushTimer) {
+    clearTimeout(pushTimer)
+    pushTimer = null
   }
+  if (!userId) emit('local-only')
+}
+
+function noteLocalMutation() {
+  if (applyingRemote) return
+  pendingDirty = true
 }
 
 function loadSignalMap(key: string): SignalMasteryMap {
@@ -233,6 +277,49 @@ function upsertPayload(userId: string, bundle: LocalBundle, updatedAt: string) {
   }
 }
 
+function trackXp(value: unknown): number {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return 0
+  const xp = Number((value as { xp?: unknown }).xp)
+  return Number.isFinite(xp) ? xp : 0
+}
+
+function sameTimestamp(sent: string, read: unknown): boolean {
+  if (typeof read !== 'string') return false
+  if (read === sent) return true
+  const a = Date.parse(sent)
+  const b = Date.parse(read)
+  return Number.isFinite(a) && a === b
+}
+
+function signalProof(value: unknown): string {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return ''
+  return Object.keys(value as object)
+    .sort()
+    .join(',')
+}
+
+/** Proof the upsert landed: matching user, timestamp, XP, and signal keys. */
+function writeMatchesReadback(
+  sent: ReturnType<typeof upsertPayload>,
+  read: Record<string, unknown>,
+): boolean {
+  if (read.user_id !== sent.user_id) return false
+  if (!sameTimestamp(sent.updated_at, read.updated_at)) return false
+  if (trackXp(read.aoba) !== trackXp(sent.aoba)) return false
+  if (trackXp(read.kana) !== trackXp(sent.kana)) return false
+  if (trackXp(read.toeic) !== trackXp(sent.toeic)) return false
+  if (trackXp(read.math) !== trackXp(sent.math)) return false
+  if (trackXp(read.physics) !== trackXp(sent.physics)) return false
+  if (trackXp(read.chemistry) !== trackXp(sent.chemistry)) return false
+  if (trackXp(read.cs) !== trackXp(sent.cs)) return false
+  if (trackXp(read.chinese) !== trackXp(sent.chinese)) return false
+  if (signalProof(read.math_signals) !== signalProof(sent.math_signals)) return false
+  if (signalProof(read.physics_signals) !== signalProof(sent.physics_signals)) return false
+  if (signalProof(read.chemistry_signals) !== signalProof(sent.chemistry_signals)) return false
+  if (signalProof(read.cs_signals) !== signalProof(sent.cs_signals)) return false
+  return true
+}
+
 const CLOUD_SELECT_COLUMNS =
   'user_id, aoba, kana, toeic, math, physics, chemistry, cs, chinese, math_signals, physics_signals, chemistry_signals, cs_signals, lang, meta, updated_at'
 
@@ -240,7 +327,7 @@ async function upsertAndVerify(
   userId: string,
   bundle: LocalBundle,
 ): Promise<boolean> {
-  const sb = getSupabase()
+  const sb = getProgressBackend()
   if (!sb) return false
   const updatedAt = new Date().toISOString()
   const payload = upsertPayload(userId, bundle, updatedAt)
@@ -248,36 +335,40 @@ async function upsertAndVerify(
   if (error) return false
   const { data, error: readError } = await sb
     .from('user_progress')
-    .select('user_id, updated_at')
+    .select(CLOUD_SELECT_COLUMNS)
     .eq('user_id', userId)
     .maybeSingle()
-  if (readError || !data) return false
-  const row = data as { user_id?: string; updated_at?: string }
-  return row.user_id === userId && typeof row.updated_at === 'string'
+  if (readError || !data || typeof data !== 'object') return false
+  return writeMatchesReadback(payload, data as Record<string, unknown>)
 }
 
 function applyBundle(bundle: LocalBundle) {
-  applyCloudBundle({
-    aoba: bundle.aoba,
-    kana: bundle.kana,
-    toeic: bundle.toeic,
-    math: bundle.math,
-    physics: bundle.physics,
-    chemistry: bundle.chemistry,
-    cs: bundle.cs,
-    chinese: bundle.chinese,
-    mathSignals: bundle.mathSignals,
-    physicsSignals: bundle.physicsSignals,
-    chemistrySignals: bundle.chemistrySignals,
-    csSignals: bundle.csSignals,
-    lang: bundle.lang,
-    meta: bundle.meta,
-  })
-  saveMathProgress(bundle.math)
-  savePhysicsProgress(bundle.physics)
-  saveChemistryProgress(bundle.chemistry)
-  saveCsProgress(bundle.cs)
-  saveChineseProgress(bundle.chinese)
+  applyingRemote = true
+  try {
+    applyCloudBundle({
+      aoba: bundle.aoba,
+      kana: bundle.kana,
+      toeic: bundle.toeic,
+      math: bundle.math,
+      physics: bundle.physics,
+      chemistry: bundle.chemistry,
+      cs: bundle.cs,
+      chinese: bundle.chinese,
+      mathSignals: bundle.mathSignals,
+      physicsSignals: bundle.physicsSignals,
+      chemistrySignals: bundle.chemistrySignals,
+      csSignals: bundle.csSignals,
+      lang: bundle.lang,
+      meta: bundle.meta,
+    })
+    saveMathProgress(bundle.math)
+    savePhysicsProgress(bundle.physics)
+    saveChemistryProgress(bundle.chemistry)
+    saveCsProgress(bundle.cs)
+    saveChineseProgress(bundle.chinese)
+  } finally {
+    applyingRemote = false
+  }
 }
 
 function mergeLearningMeta(local: LearningMeta, cloud: LearningMeta): LearningMeta {
@@ -442,15 +533,22 @@ function normalizeRow(data: Record<string, unknown>): Omit<CloudProgressRow, 'us
 }
 
 /** After sign-in: upload local if no cloud row; otherwise merge then verify. */
-export async function hydrateFromCloud(userId: string): Promise<SyncOutcome> {
-  const sb = getSupabase()
+export async function hydrateFromCloud(
+  userId: string,
+  expectedGeneration?: number,
+): Promise<SyncOutcome> {
+  const sb = getProgressBackend()
   if (!sb) {
     emit('local-only')
     return 'skipped'
   }
 
-  cloudUserId = userId
+  if (cloudUserId == null) cloudUserId = userId
+  const gen = expectedGeneration ?? sessionGeneration
+  if (!isCurrentSession(userId, gen)) return 'skipped'
+
   emit('syncing')
+  const stillCurrent = () => isCurrentSession(userId, gen)
 
   try {
     const { data, error } = await sb
@@ -459,16 +557,17 @@ export async function hydrateFromCloud(userId: string): Promise<SyncOutcome> {
       .eq('user_id', userId)
       .maybeSingle()
 
+    if (!stillCurrent()) return 'skipped'
     if (error) throw error
 
     const local = localBundle()
 
     if (!data) {
+      if (!stillCurrent()) return 'skipped'
       const verified = await upsertAndVerify(userId, local)
+      if (!stillCurrent()) return 'skipped'
       if (!verified) throw new Error('migrate-unverified')
-      allowPush = true
-      emit('synced')
-      return 'migrated'
+      return await finishHydrate(userId, stillCurrent, 'migrated')
     }
 
     const row = normalizeRow(data as Record<string, unknown>)
@@ -490,18 +589,20 @@ export async function hydrateFromCloud(userId: string): Promise<SyncOutcome> {
     }
 
     const merged = mergeBundles(local, cloud)
+    if (!stillCurrent()) return 'skipped'
     applyBundle(merged)
+    if (!stillCurrent()) return 'skipped'
     const verified = await upsertAndVerify(userId, merged)
+    if (!stillCurrent()) return 'skipped'
     if (!verified) {
       allowPush = false
       emit('error')
       return 'error'
     }
-    allowPush = true
-    emit('synced')
     const bothSides = localHasProgress(local) && cloudHasProgress(cloud)
-    return bothSides ? 'merged' : 'pulled'
+    return await finishHydrate(userId, stillCurrent, bothSides ? 'merged' : 'pulled')
   } catch {
+    if (!stillCurrent()) return 'skipped'
     // A failed pull must never unlock write-through: stale local state could
     // overwrite a cloud row that we were unable to read.
     allowPush = false
@@ -510,8 +611,37 @@ export async function hydrateFromCloud(userId: string): Promise<SyncOutcome> {
   }
 }
 
+async function finishHydrate(
+  userId: string,
+  stillCurrent: () => boolean,
+  outcome: Exclude<SyncOutcome, 'error' | 'skipped'>,
+): Promise<SyncOutcome> {
+  if (!stillCurrent()) return 'skipped'
+  if (pendingDirty) {
+    pendingDirty = false
+    const latest = localBundle()
+    const verifiedLatest = await upsertAndVerify(userId, latest)
+    if (!stillCurrent()) return 'skipped'
+    if (!verifiedLatest) {
+      allowPush = false
+      emit('error')
+      return 'error'
+    }
+  }
+  if (!stillCurrent()) return 'skipped'
+  if (pendingDirty) {
+    allowPush = true
+    scheduleCloudPush()
+    emit('syncing')
+    return outcome
+  }
+  allowPush = true
+  emit('synced')
+  return outcome
+}
+
 export async function pushProgressNow(): Promise<boolean> {
-  const sb = getSupabase()
+  const sb = getProgressBackend()
   if (!sb || !cloudUserId || !allowPush) return false
 
   emit('syncing')
@@ -519,6 +649,7 @@ export async function pushProgressNow(): Promise<boolean> {
     const bundle = localBundle()
     const verified = await upsertAndVerify(cloudUserId, bundle)
     if (!verified) throw new Error('push-unverified')
+    pendingDirty = false
     emit('synced')
     return true
   } catch {
@@ -529,7 +660,12 @@ export async function pushProgressNow(): Promise<boolean> {
 
 /** Debounced write-through after localStorage saves. */
 export function scheduleCloudPush() {
-  if (!allowPush || !cloudUserId || !isSupabaseConfigured()) return
+  if (applyingRemote) return
+  if (!cloudUserId || !isSupabaseConfigured()) return
+  if (!allowPush) {
+    pendingDirty = true
+    return
+  }
   if (pushTimer) clearTimeout(pushTimer)
   pushTimer = setTimeout(() => {
     pushTimer = null
@@ -549,7 +685,7 @@ export async function flushCloudPush(): Promise<void> {
 
 /** Reset cloud progress to defaults and mirror locally. */
 export async function resetCloudProgress(): Promise<boolean> {
-  const sb = getSupabase()
+  const sb = getProgressBackend()
   if (!sb || !cloudUserId) return false
 
   const fresh: LocalBundle = {
