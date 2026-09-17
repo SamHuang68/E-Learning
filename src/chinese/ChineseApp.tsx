@@ -87,7 +87,7 @@ export const ChineseApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
   }
 
   return (
-    <div className="math-app-shell chinese-app-shell" style={{ display: 'flex', width: '100vw', height: '100vh', overflow: 'hidden' }}>
+    <div className="math-app-shell chinese-app-shell">
       {/* 左側導覽列 */}
       <ChineseSidebar
         activeSection={section}
@@ -98,31 +98,10 @@ export const ChineseApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         errorCount={progress.errorQuestions.length}
       />
 
-      {/* 右側主要內容區：嚴格 100vh 內部平滑滾動，零外捲 */}
-      <main
-        className="content chinese-main-content"
-        style={{
-          flex: 1,
-          height: '100vh',
-          overflowY: 'auto',
-          padding: '1.2rem 1.5rem',
-          minWidth: 0,
-          background: 'var(--bg)',
-        }}
-      >
+      {/* 右側主要內容區 */}
+      <main className="content chinese-main-content">
         {/* 頂部語言學習方向切換膠囊 */}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: '1rem',
-            paddingBottom: '0.6rem',
-            borderBottom: '1px solid var(--line)',
-            flexWrap: 'wrap',
-            gap: '0.5rem',
-          }}
-        >
+        <div className="chinese-lang-toolbar">
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <span style={{ fontSize: '0.74rem', color: 'var(--muted)', fontWeight: 600 }}>{t('zh.learnDir')}</span>
             <span style={{ fontSize: '0.74rem', padding: '0.15rem 0.5rem', borderRadius: '999px', background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', fontWeight: 700 }}>

@@ -150,7 +150,7 @@ export const ChineseSidebar: React.FC<Props> = ({
       </div>
 
       {/* 導航項目清單 */}
-      <nav style={{ padding: '0.6rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+      <nav className="chinese-nav">
         {NAV_ITEMS.map((item) => {
           const isActive = activeSection === item.id
           return (
@@ -177,8 +177,8 @@ export const ChineseSidebar: React.FC<Props> = ({
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <span style={{ fontSize: '1.05rem' }}>{item.icon}</span>
                 <div>
-                  <div style={{ fontSize: '0.84rem', lineHeight: 1.2 }}>{t(item.titleKey)}</div>
-                  <div style={{ fontSize: '0.65rem', color: 'var(--muted)', lineHeight: 1.2 }}>{item.subtitle}</div>
+                  <div className="zh-nav-title">{t(item.titleKey)}</div>
+                  <div className="zh-nav-sub">{item.subtitle}</div>
                 </div>
               </div>
               {item.badge && (
