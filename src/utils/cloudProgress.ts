@@ -120,7 +120,13 @@ let pendingDirty = false
 /** Suppress dirty flags while hydrate applies a merged bundle. */
 let applyingRemote = false
 let pushTimer: ReturnType<typeof setTimeout> | null = null
-let pushInFlight: Promise<void> | null = null
+/** Serialised drain of write-through upserts (one in-flight at a time). */
+let drainInFlight: Promise<boolean> | null = null
+/**
+ * Monotonic revision / generation token for local mutations.
+ * A late upsert must not clear dirty or emit `synced` unless it still matches.
+ */
+let pushRevision = 0
 let backendOverride: ProgressBackend | null = null
 
 export function getCloudSessionGeneration(): number {
@@ -169,6 +175,7 @@ export function setCloudUserId(userId: string | null) {
   cloudUserId = userId
   allowPush = false
   pendingDirty = false
+  pushRevision += 1
   if (pushTimer) {
     clearTimeout(pushTimer)
     pushTimer = null
@@ -179,6 +186,7 @@ export function setCloudUserId(userId: string | null) {
 function noteLocalMutation() {
   if (applyingRemote) return
   pendingDirty = true
+  pushRevision += 1
 }
 
 function loadSignalMap(key: string): SignalMasteryMap {
@@ -640,22 +648,69 @@ async function finishHydrate(
   return outcome
 }
 
-export async function pushProgressNow(): Promise<boolean> {
-  const sb = getProgressBackend()
-  if (!sb || !cloudUserId || !allowPush) return false
+type PushOnceResult = 'synced' | 'stale' | 'error' | 'skipped'
 
+/**
+ * One upsert of the current local bundle. Captures `pushRevision` at start;
+ * a slower older write that finishes after a newer mutation must not clear
+ * dirty or broadcast `synced`.
+ */
+async function pushProgressOnce(): Promise<PushOnceResult> {
+  const sb = getProgressBackend()
+  if (!sb || !cloudUserId || !allowPush) return 'skipped'
+
+  const userId = cloudUserId
+  const gen = sessionGeneration
+  const revision = pushRevision
   emit('syncing')
   try {
     const bundle = localBundle()
-    const verified = await upsertAndVerify(cloudUserId, bundle)
+    const verified = await upsertAndVerify(userId, bundle)
+    if (!isCurrentSession(userId, gen)) return 'skipped'
+    if (revision !== pushRevision) return 'stale'
     if (!verified) throw new Error('push-unverified')
     pendingDirty = false
     emit('synced')
-    return true
+    return 'synced'
   } catch {
-    emit('error')
-    return false
+    if (isCurrentSession(userId, gen)) emit('error')
+    return 'error'
   }
+}
+
+async function drainPushes(forceOnce: boolean): Promise<boolean> {
+  let forced = forceOnce
+  let guard = 0
+  while (allowPush && cloudUserId && (pendingDirty || forced) && guard < 8) {
+    forced = false
+    guard += 1
+    const last = await pushProgressOnce()
+    if (last === 'error' || last === 'skipped') return false
+    if (last === 'synced') return true
+    // stale: a newer revision exists — loop and push the latest bundle
+  }
+  return lastStatus === 'synced' && !pendingDirty
+}
+
+function enqueueDrain(forceOnce: boolean): Promise<boolean> {
+  if (drainInFlight) {
+    return drainInFlight.then(async (ok) => {
+      if (pendingDirty && allowPush && cloudUserId) {
+        return enqueueDrain(false)
+      }
+      return ok && lastStatus === 'synced' && !pendingDirty
+    })
+  }
+  drainInFlight = drainPushes(forceOnce).finally(() => {
+    drainInFlight = null
+  })
+  return drainInFlight
+}
+
+export async function pushProgressNow(): Promise<boolean> {
+  const sb = getProgressBackend()
+  if (!sb || !cloudUserId || !allowPush) return false
+  return enqueueDrain(true)
 }
 
 /** Debounced write-through after localStorage saves. */
@@ -669,7 +724,7 @@ export function scheduleCloudPush() {
   if (pushTimer) clearTimeout(pushTimer)
   pushTimer = setTimeout(() => {
     pushTimer = null
-    pushInFlight = pushProgressNow().then(() => undefined)
+    void enqueueDrain(false)
   }, 400)
 }
 
@@ -677,10 +732,19 @@ export async function flushCloudPush(): Promise<void> {
   if (pushTimer) {
     clearTimeout(pushTimer)
     pushTimer = null
-    await pushProgressNow()
+  }
+  if (!cloudUserId || !allowPush) {
+    if (drainInFlight) await drainInFlight
     return
   }
-  if (pushInFlight) await pushInFlight
+  if (drainInFlight) {
+    await drainInFlight
+    if (pendingDirty && allowPush && cloudUserId) {
+      await enqueueDrain(false)
+    }
+    return
+  }
+  if (pendingDirty) await enqueueDrain(false)
 }
 
 /** Reset cloud progress to defaults and mirror locally. */

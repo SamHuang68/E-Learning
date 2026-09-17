@@ -176,18 +176,56 @@ function maxFsrsReview(map: unknown): number {
   return Object.values(map).reduce<number>((max, item) => Math.max(max, lastReviewMs(item)), 0)
 }
 
-function responseIdentity(entry: unknown): string {
-  if (!isRecord(entry)) return JSON.stringify(entry)
-  if (typeof entry.id === 'string' && entry.id.length > 0) return `id:${entry.id}`
-  const itemId = typeof entry.itemId === 'string' ? entry.itemId : ''
+function scalarId(value: unknown): string {
+  if (typeof value === 'string' && value.length > 0) return value
+  if (typeof value === 'number' && Number.isFinite(value)) return String(value)
+  return ''
+}
+
+/**
+ * Stable event identity: prefer id / nonce / timestamp when present so two
+ * distinct attempts are kept even if IRT fields stringify the same.
+ * Identical content without those ids shares a content fingerprint and must
+ * not be treated as extra evidence (θ inflate).
+ */
+export function responseIdentity(entry: unknown): string {
+  if (!isRecord(entry)) return `raw:${JSON.stringify(entry)}`
+  const itemId = scalarId(entry.itemId)
+  const eventId = scalarId(entry.id)
+  if (eventId) return `id:${itemId}:${eventId}`
+  const nonce = scalarId(entry.nonce)
+  if (nonce) return `nonce:${itemId}:${nonce}`
   const answeredAt =
-    typeof entry.answeredAt === 'string'
-      ? entry.answeredAt
-      : typeof entry.timestamp === 'string'
-        ? entry.timestamp
-        : ''
+    scalarId(entry.answeredAt) ||
+    scalarId(entry.timestamp) ||
+    scalarId(entry.ts) ||
+    scalarId(entry.answered_at)
   if (itemId && answeredAt) return `t:${itemId}:${answeredAt}`
-  return `r:${JSON.stringify(entry)}`
+  return `c:${contentFingerprint(entry)}`
+}
+
+function contentFingerprint(entry: Record<string, unknown>): string {
+  return JSON.stringify({
+    itemId: entry.itemId ?? null,
+    isCorrect: entry.isCorrect ?? null,
+    difficulty: entry.difficulty ?? null,
+    discrimination: entry.discrimination ?? null,
+    pseudoGuessing: entry.pseudoGuessing ?? null,
+    responseTimeSec: entry.responseTimeSec ?? null,
+  })
+}
+
+function identitySet(entries: unknown): Set<string> {
+  const list = Array.isArray(entries) ? entries : []
+  return new Set(list.map((entry) => responseIdentity(entry)))
+}
+
+function sameIdentitySet(left: Set<string>, right: Set<string>): boolean {
+  if (left.size !== right.size) return false
+  for (const key of left) {
+    if (!right.has(key)) return false
+  }
+  return true
 }
 
 /** Union distinct calculus responses; never drop the shorter side. */
@@ -228,8 +266,10 @@ function finiteTheta(value: unknown): number | null {
 
 /**
  * θ rule: keep it consistent with retained evidence, never |θ| magnitude.
- * Prefer the side whose FSRS map has the newer max(lastReview) as the prior;
- * if merged responses exist, re-estimate θ from that unioned history.
+ * Prefer the side whose FSRS map has the newer max(lastReview) as the prior.
+ * Re-estimate only when the union added distinct event identities; identical
+ * content without distinct ids must not inflate θ by counting the same
+ * attempt twice against an already-estimated prior.
  */
 export function mergeCalculusTheta(
   local: Record<string, unknown>,
@@ -246,6 +286,22 @@ export function mergeCalculusTheta(
     Array.isArray(merged.calculusResponses) ? merged.calculusResponses : [],
   )
   if (responses.length === 0) return chosenPrior
+
+  const mergedIds = identitySet(merged.calculusResponses)
+  const localIds = identitySet(local.calculusResponses)
+  const cloudIds = identitySet(cloud.calculusResponses)
+  if (sameIdentitySet(mergedIds, localIds) && sameIdentitySet(mergedIds, cloudIds)) {
+    return chosenPrior
+  }
+  const priorIds = cloudReview > localReview ? cloudIds : localIds
+  if (sameIdentitySet(mergedIds, priorIds)) {
+    const priorTheta =
+      cloudReview > localReview
+        ? finiteTheta(cloud.calculusTheta)
+        : finiteTheta(local.calculusTheta)
+    if (priorTheta != null) return priorTheta
+    return chosenPrior
+  }
   return estimateAbilityTheta(responses, chosenPrior).theta
 }
 
