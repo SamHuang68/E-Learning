@@ -1,6 +1,12 @@
 import type { CSSProperties } from 'react'
 import type { JlptLevel, Unit } from '../data/course'
 import { useI18n } from '../i18n/i18n'
+import {
+  aobaUnitChromeTitle,
+  jlptMapDesc,
+  jlptMapTitle,
+  jlptTierLabel,
+} from '../i18n/jlptChrome'
 import type { ProgressState } from '../utils/storage'
 import { HeroArt } from './HeroArt'
 
@@ -41,7 +47,7 @@ export function TodayView({
   dailyDone,
   dailyGoal,
 }: Props) {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const srsGuideUrl = `${import.meta.env.BASE_URL}srs-review.html`
   const vocabPct = Math.round((progress.vocabDone / unit.words) * 100)
   const readingPct = Math.round((progress.readingDone / unit.reading) * 100)
@@ -57,7 +63,7 @@ export function TodayView({
       >
         <div>
           <span className="unit-pill">
-            {level.band} · {level.tier} · Unit {unit.id}
+            {level.band} · {jlptTierLabel(level.tier, t)} · Unit {unit.id}
           </span>
           <h2>{unit.titleJa}</h2>
           <p>{level.audience}</p>
@@ -185,7 +191,7 @@ export function TodayView({
           </li>
         </ul>
         <p>
-          {t('todayView.audience', { tier: level.tier, band: level.band })}
+          {t('todayView.audience', { tier: jlptTierLabel(level.tier, t), band: level.band })}
         </p>
         <button type="button" className="text-link" onClick={onOpenBuilder}>
           {t('todayView.builder')}
@@ -207,8 +213,8 @@ export function TodayView({
       </button>
 
       <div className="unit-map">
-        <h3>{level.mapTitle}</h3>
-        <p>{level.mapDesc}</p>
+        <h3>{jlptMapTitle(level, t)}</h3>
+        <p>{jlptMapDesc(level, t)}</p>
         <div>
           {level.units.map((u) => (
             <button
@@ -218,7 +224,7 @@ export function TodayView({
               onClick={() => onSelectUnit(u.id)}
             >
               {u.id}
-              <small>{u.title}</small>
+              <small>{aobaUnitChromeTitle(locale, u)}</small>
             </button>
           ))}
         </div>

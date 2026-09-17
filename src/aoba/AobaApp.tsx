@@ -3,6 +3,11 @@ import type { ReactNode } from 'react'
 import { useAuth } from '../auth/AuthContext'
 import { useI18n } from '../i18n/i18n'
 import type { MessageKey } from '../i18n/messages'
+import {
+  aobaLevelOptionLabel,
+  aobaUnitChromeTitle,
+  jlptTierLabel,
+} from '../i18n/jlptChrome'
 import { Breadcrumbs } from '../components/Breadcrumbs'
 import { KanaLab } from '../components/KanaLab'
 import { KanjiLab } from '../components/KanjiLab'
@@ -50,7 +55,7 @@ type Props = {
 
 export function AobaApp({ onBackHub, onSwitchLang }: Props) {
   const { user, syncStatus } = useAuth()
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const [nav, setNav] = useState<NavId>(() => {
     if (window.location.hash.includes('builder')) return 'builder'
     return 'today'
@@ -502,8 +507,8 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
         <Breadcrumbs
           items={[
             { label: t('ja.crumb'), onClick: () => handleNav('today') },
-            { label: `${level.band} (${level.tier})`, onClick: () => handleNav('today') },
-            { label: t('chrome.unitN', { n: unit.id, title: unit.title }), active: nav === 'today' && !practice && !special },
+            { label: `${level.band} (${jlptTierLabel(level.tier, t)})`, onClick: () => handleNav('today') },
+            { label: t('chrome.unitN', { n: unit.id, title: aobaUnitChromeTitle(locale, unit) }), active: nav === 'today' && !practice && !special },
             ...(nav !== 'today' || practice || special ? [{ label: title, active: true }] : []),
           ]}
         />
@@ -515,7 +520,7 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
 
         <header className="topbar">
           <div>
-            <p className="eyebrow">JLPT · {level.tier}</p>
+            <p className="eyebrow">JLPT · {jlptTierLabel(level.tier, t)}</p>
             <h1>{title}</h1>
           </div>
 
@@ -545,7 +550,7 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
                   >
                     {jlptLevels.map((l) => (
                       <option key={l.id} value={l.id}>
-                        {l.band} · {l.tier}
+                        {aobaLevelOptionLabel(l, t)}
                       </option>
                     ))}
                   </select>
@@ -566,7 +571,7 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
                   >
                     {level.units.map((u) => (
                       <option key={u.id} value={u.id}>
-                        Unit {u.id} · {u.title}
+                        Unit {u.id} · {aobaUnitChromeTitle(locale, u)}
                       </option>
                     ))}
                   </select>
@@ -582,7 +587,7 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
 
         <div className="alignment-note">
           <strong>
-            級距：{level.band}（{level.tier}）
+            {t('ja.alignBand', { band: level.band, tier: jlptTierLabel(level.tier, t) })}
             {learningMeta.proUnlocked ? ' · Pro' : ' · Free'}
           </strong>
           <span>{level.audience}</span>

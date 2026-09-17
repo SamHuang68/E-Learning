@@ -3,6 +3,7 @@ import type { JlptLevel, Unit } from '../data/course'
 import type { LangId } from '../utils/storage'
 import { TrackSwitcher } from './TrackSwitcher'
 import { useI18n } from '../i18n/i18n'
+import { jlptTierLabel } from '../i18n/jlptChrome'
 
 export type NavId =
   | 'kana'
@@ -126,7 +127,7 @@ export function Sidebar({
         >
           <strong>
             {level.band}
-            <small>{level.tier}</small>
+            <small>{jlptTierLabel(level.tier, t)}</small>
           </strong>
           <span>{level.scoreHint}</span>
         </div>
