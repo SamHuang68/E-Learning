@@ -277,9 +277,10 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
 
           <div className="header-actions">
             {/* 年級下拉選單 */}
-            <label className="unit-select">
+            <label className="unit-select" htmlFor="math-grade-select">
               <span>選擇年級</span>
               <select
+                id="math-grade-select"
                 value={progress.gradeId}
                 onChange={(e) => handleSelectGrade(e.target.value as MathGradeId)}
               >
@@ -292,9 +293,10 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
             </label>
 
             {/* 單元下拉選單 */}
-            <label className="unit-select">
+            <label className="unit-select" htmlFor="math-unit-select">
               <span>單元</span>
               <select
+                id="math-unit-select"
                 value={progress.unitId}
                 onChange={(e) => handleSelectUnit(Number(e.target.value))}
               >

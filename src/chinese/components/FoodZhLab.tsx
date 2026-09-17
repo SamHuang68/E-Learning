@@ -72,6 +72,7 @@ export const FoodZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
         <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
           <select
+            aria-label="甜度"
             value={sweetness}
             onChange={(e) => setSweetness(e.target.value)}
             style={{
@@ -91,6 +92,7 @@ export const FoodZhLab: React.FC<Props> = ({ onEarnXp }) => {
           </select>
 
           <select
+            aria-label="冰量"
             value={iceLevel}
             onChange={(e) => setIceLevel(e.target.value)}
             style={{

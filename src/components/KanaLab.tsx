@@ -294,9 +294,10 @@ export function KanaLab({ onXp, onProgressChange }: Props) {
           ))}
         </div>
 
-        <label className="row-select">
+        <label className="row-select" htmlFor="kana-row-select">
           <span>練習行</span>
           <select
+            id="kana-row-select"
             value={activeRow}
             onChange={(e) => setActiveRow(e.target.value as LearnRowId)}
           >

@@ -443,8 +443,9 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
       <div className="vault-toolbar">
         <div className="vault-toolbar-row">
           <input
-            type="text"
+            type="search"
             className="vault-search-input"
+            aria-label="搜尋化學錯題"
             placeholder="🔍 搜尋化學錯題關鍵字、反應式或考點..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -452,6 +453,8 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
 
           <select
             className="vault-select-filter"
+            aria-label="錯題來源篩選"
+            id="chemistry-vault-source"
             value={selectedSource}
             onChange={(e) => setSelectedSource(e.target.value)}
           >
@@ -462,6 +465,8 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
 
           <select
             className="vault-select-filter"
+            aria-label="錯題難度篩選"
+            id="chemistry-vault-difficulty"
             value={selectedDifficulty}
             onChange={(e) => setSelectedDifficulty(e.target.value)}
           >

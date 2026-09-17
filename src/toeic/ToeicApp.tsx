@@ -823,9 +823,10 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
             <h1>{title}</h1>
           </div>
           <div className="header-actions">
-            <label className="unit-select">
+            <label className="unit-select" htmlFor="toeic-cert-select">
               <span>證書級距</span>
               <select
+                id="toeic-cert-select"
                 value={progress.certificateId}
                 onChange={(e) =>
                   patch({
@@ -845,9 +846,10 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
                 ))}
               </select>
             </label>
-            <label className="unit-select">
+            <label className="unit-select" htmlFor="toeic-unit-select">
               <span>單元</span>
               <select
+                id="toeic-unit-select"
                 value={progress.unitId}
                 onChange={(e) =>
                   patch({

@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { ContentProvenance } from '../../components/ContentProvenance'
 
 interface Props {
   onEarnXp?: (amount: number) => void
@@ -111,7 +112,7 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
             <span style={{ fontSize: '1.4rem' }}>🏛️</span>
-            <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800 }}>{diagramMeta.title}</h2>
+            <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700 }}>{diagramMeta.title}</h2>
             <span style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#6366f1', padding: '0.15rem 0.5rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 700 }}>
               {diagramMeta.badge}
             </span>
@@ -123,8 +124,10 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
 
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
           {/* 切換不同架構圖按鈕 (七向切換膠囊) */}
-          <div style={{ display: 'flex', background: 'var(--line)', padding: '2px', borderRadius: '6px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', background: 'var(--line)', padding: '2px', borderRadius: '6px', flexWrap: 'wrap' }} role="group" aria-label="選擇架構圖">
             <button
+              type="button"
+              aria-pressed={selectedDiagram === 'ai-server'}
               onClick={() => setSelectedDiagram('ai-server')}
               style={{
                 padding: '0.35rem 0.65rem',
@@ -140,6 +143,8 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
               AI 伺服器 (DGX/HGX)
             </button>
             <button
+              type="button"
+              aria-pressed={selectedDiagram === 'lsm-tree'}
               onClick={() => setSelectedDiagram('lsm-tree')}
               style={{
                 padding: '0.35rem 0.65rem',
@@ -155,6 +160,8 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
               LSM-Tree
             </button>
             <button
+              type="button"
+              aria-pressed={selectedDiagram === 'cache-coherence'}
               onClick={() => setSelectedDiagram('cache-coherence')}
               style={{
                 padding: '0.35rem 0.65rem',
@@ -170,6 +177,8 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
               MESI 匯流排
             </button>
             <button
+              type="button"
+              aria-pressed={selectedDiagram === 'process-lifecycle'}
               onClick={() => setSelectedDiagram('process-lifecycle')}
               style={{
                 padding: '0.35rem 0.65rem',
@@ -185,6 +194,8 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
               行程生命週期
             </button>
             <button
+              type="button"
+              aria-pressed={selectedDiagram === 'tcp-handshake'}
               onClick={() => setSelectedDiagram('tcp-handshake')}
               style={{
                 padding: '0.35rem 0.65rem',
@@ -200,6 +211,8 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
               TCP 交握時序
             </button>
             <button
+              type="button"
+              aria-pressed={selectedDiagram === 'transformer-attention'}
               onClick={() => setSelectedDiagram('transformer-attention')}
               style={{
                 padding: '0.35rem 0.65rem',
@@ -215,6 +228,8 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
               Transformer 注意力
             </button>
             <button
+              type="button"
+              aria-pressed={selectedDiagram === 'percolator-txn'}
               onClick={() => setSelectedDiagram('percolator-txn')}
               style={{
                 padding: '0.35rem 0.65rem',
@@ -260,7 +275,7 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
         {diagramMeta.stats.map((stat, idx) => (
           <div key={idx} style={{ background: 'var(--card-bg, rgba(255,255,255,0.05))', border: '1px solid var(--line)', padding: '0.75rem', borderRadius: '8px' }}>
             <div style={{ fontSize: '0.75rem', color: stat.color, fontWeight: 700 }}>{stat.label}</div>
-            <div style={{ fontSize: '0.92rem', fontWeight: 800, marginTop: '0.2rem' }}>{stat.title}</div>
+            <div style={{ fontSize: '0.92rem', fontWeight: 700, marginTop: '0.2rem' }}>{stat.title}</div>
             <div style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.2rem' }}>{stat.desc}</div>
           </div>
         ))}
@@ -291,6 +306,13 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
           }}
         />
       </div>
+      <ContentProvenance>
+        {selectedDiagram === 'ai-server'
+          ? 'VERIFY：DGX/HGX 規格依公開產品資料整理（雙路 CPU、SXM GPU、NVSwitch、InfiniBand），非正式認證或實機量測。'
+          : selectedDiagram === 'transformer-attention'
+            ? 'VERIFY：FlashAttention / PagedAttention 描述依公開論文與實作文件整理，數值為教學示意。'
+            : 'VERIFY：架構圖為教學示意，請以原始論文／RFC／廠商文件核對實作細節。'}
+      </ContentProvenance>
     </div>
   )
 }
