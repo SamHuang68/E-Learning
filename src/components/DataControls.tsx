@@ -62,7 +62,7 @@ export function DataControls() {
       return
     }
     clearLocalProgressCache()
-    setNote('已清除八軌學習進度與學習事件摘要')
+    setNote('已清除八軌學習進度（含華語與資訊）與破題訊號、學習事件摘要')
     window.dispatchEvent(new CustomEvent('e-learning:progress-hydrated'))
   }
 
@@ -87,7 +87,7 @@ export function DataControls() {
       <p className="eyebrow">資料</p>
       <h2>匯出／匯入與重設</h2>
       <p className="data-controls-lede">
-        匯出內容包含日語、五十音、多益、數學、物理、化學進度、學習事件摘要與軌道偏好；本機帳號、無障礙／音效設定、Groq 金鑰與課程設計器 presets 不會匯出。
+        匯出內容包含日語（含五十音）、多益、華語、數學、物理、化學、資訊進度、STEM／資訊破題訊號、學習事件摘要與軌道偏好；微積分工作台參數僅本次工作階段。本機帳號、無障礙／音效設定、Groq 金鑰與課程設計器 presets 不會匯出。
       </p>
       <div className="data-controls-actions">
         <button type="button" className="auth-btn ghost" onClick={downloadExport}>

@@ -2,6 +2,9 @@
  * 台湾華語・中国語：學習進度與狀態管理 (Chinese Learning Storage)
  */
 
+import { PROGRESS_STORAGE_KEYS } from '../../utils/progressKeys'
+import { notifyProgressChanged } from '../../utils/storage'
+
 export interface ChineseProgressState {
   xp: number
   masteredTones: number[]
@@ -12,7 +15,7 @@ export interface ChineseProgressState {
   errorQuestions: string[]
 }
 
-const CHINESE_PROGRESS_KEY = 'chinese_learning_progress_v1'
+const CHINESE_PROGRESS_KEY = PROGRESS_STORAGE_KEYS.chinese
 
 // 記憶體備援（用於 SSR 或 Node/Vitest 測試環境）
 let memoryStorage: Record<string, string> = {}
@@ -69,6 +72,7 @@ export function loadChineseProgress(): ChineseProgressState {
 export function saveChineseProgress(progress: ChineseProgressState) {
   try {
     setStorageItem(CHINESE_PROGRESS_KEY, JSON.stringify(progress))
+    notifyProgressChanged()
   } catch {
     /* ignore */
   }

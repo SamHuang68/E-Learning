@@ -1,4 +1,5 @@
 import type { ASTNode } from './ast'
+import { isEulerName } from './ast'
 
 /**
  * 代數化簡器 (Simplifier)：消除 0、1、負號與基本恆等式
@@ -145,6 +146,31 @@ export function differentiateAST(node: ASTNode, wrt = 'x'): ASTNode {
                 left,
                 right: { type: 'constant', value: n - 1 },
               },
+            },
+            right: uPrime,
+          })
+        }
+        // (e^u)' = e^u * u'
+        if (left.type === 'variable' && isEulerName(left.name)) {
+          const uPrime = differentiateAST(right, wrt)
+          return simplifyAST({
+            type: 'binary',
+            op: '*',
+            left: node,
+            right: uPrime,
+          })
+        }
+        // (a^u)' = a^u * ln(a) * u'（底為正常數）
+        if (left.type === 'constant' && left.value > 0) {
+          const uPrime = differentiateAST(right, wrt)
+          return simplifyAST({
+            type: 'binary',
+            op: '*',
+            left: {
+              type: 'binary',
+              op: '*',
+              left: node,
+              right: { type: 'func', name: 'ln', arg: left },
             },
             right: uPrime,
           })

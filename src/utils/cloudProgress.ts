@@ -34,15 +34,27 @@ import {
   saveChemistryProgress,
   type ChemistryProgressState,
 } from '../chemistry/utils/chemistryStorage'
+import {
+  DEFAULT_CS_PROGRESS,
+  loadCsProgress,
+  saveCsProgress,
+  type CsProgress,
+} from '../cs/utils/csStorage'
+import {
+  defaultChineseProgress,
+  loadChineseProgress,
+  saveChineseProgress,
+  type ChineseProgressState,
+} from '../chinese/utils/chineseStorage'
 
 setProgressChangeHook(() => {
   scheduleCloudPush()
 })
 
-// Canonical STEM progress stores emit track-specific events; route all of them
+// Canonical STEM/CS progress stores emit track-specific events; route all of them
 // through the same debounced cloud writer.
 if (typeof window !== 'undefined') {
-  ;['math', 'physics', 'chemistry'].forEach((track) => {
+  ;['math', 'physics', 'chemistry', 'cs'].forEach((track) => {
     window.addEventListener(`${track}:progress-updated`, () => {
       scheduleCloudPush()
     })
@@ -57,6 +69,8 @@ export type CloudProgressRow = {
   math: MathProgressState
   physics: PhysicsProgressState
   chemistry: ChemistryProgressState
+  cs: CsProgress
+  chinese: ChineseProgressState
   lang: AppView
   meta: LearningMeta
   updated_at: string
@@ -113,37 +127,57 @@ function localBundle() {
     math: loadMathProgress(),
     physics: loadPhysicsProgress(),
     chemistry: loadChemistryProgress(),
+    cs: loadCsProgress(),
+    chinese: loadChineseProgress(),
     lang: loadLang(),
     meta: loadLearningMeta(),
   }
+}
+
+function defaultCsProgress(): CsProgress {
+  return { ...DEFAULT_CS_PROGRESS }
 }
 
 function normalizeLang(value: unknown): AppView {
   if (
     value === 'ja' ||
     value === 'en' ||
+    value === 'zh' ||
     value === 'math' ||
     value === 'calculus' ||
     value === 'physics' ||
     value === 'chemistry' ||
+    value === 'cs' ||
     value === 'hub'
   ) return value
   if (value === 'aoba') return 'ja'
   if (value === 'toeic') return 'en'
   if (value === 'calc') return 'calculus'
+  if (value === 'chinese' || value === 'mandarin' || value === 'huayu') return 'zh'
   return 'hub'
 }
 
+function normalizeTrackJson<T extends object>(
+  value: unknown,
+  fallbackFactory: () => T,
+  local: T,
+): T {
+  if (value && typeof value === 'object' && Object.keys(value as object).length > 0) {
+    return { ...fallbackFactory(), ...(value as Partial<T>) }
+  }
+  return local
+}
+
 function normalizeRow(data: Record<string, unknown>): Omit<CloudProgressRow, 'user_id'> {
-  const math = data.math && typeof data.math === 'object' && Object.keys(data.math).length > 0
-    ? { ...defaultMathProgress(), ...(data.math as Partial<MathProgressState>) }
-    : loadMathProgress()
-  const physics = data.physics && typeof data.physics === 'object' && Object.keys(data.physics).length > 0
-    ? { ...defaultPhysicsProgress(), ...(data.physics as Partial<PhysicsProgressState>) }
-    : loadPhysicsProgress()
-  const chemistry = data.chemistry && typeof data.chemistry === 'object' && Object.keys(data.chemistry).length > 0
-    ? { ...defaultChemistryProgress(), ...(data.chemistry as Partial<ChemistryProgressState>) }
-    : loadChemistryProgress()
+  const math = normalizeTrackJson(data.math, defaultMathProgress, loadMathProgress())
+  const physics = normalizeTrackJson(data.physics, defaultPhysicsProgress, loadPhysicsProgress())
+  const chemistry = normalizeTrackJson(data.chemistry, defaultChemistryProgress, loadChemistryProgress())
+  const cs = normalizeTrackJson(data.cs, defaultCsProgress, loadCsProgress())
+  const chinese = normalizeTrackJson(
+    data.chinese ?? data.zh,
+    defaultChineseProgress,
+    loadChineseProgress(),
+  )
 
   return {
     aoba: (data.aoba as ProgressState) ?? loadProgress(),
@@ -152,6 +186,8 @@ function normalizeRow(data: Record<string, unknown>): Omit<CloudProgressRow, 'us
     math,
     physics,
     chemistry,
+    cs,
+    chinese,
     lang: normalizeLang(data.lang),
     meta: (data.meta as LearningMeta) ?? defaultLearningMeta(),
     updated_at:
@@ -175,7 +211,7 @@ export async function hydrateFromCloud(userId: string): Promise<SyncOutcome> {
   try {
     const { data, error } = await sb
       .from('user_progress')
-      .select('user_id, aoba, kana, toeic, math, physics, chemistry, lang, meta, updated_at')
+      .select('user_id, aoba, kana, toeic, math, physics, chemistry, cs, chinese, lang, meta, updated_at')
       .eq('user_id', userId)
       .maybeSingle()
 
@@ -191,6 +227,8 @@ export async function hydrateFromCloud(userId: string): Promise<SyncOutcome> {
         math: bundle.math,
         physics: bundle.physics,
         chemistry: bundle.chemistry,
+        cs: bundle.cs,
+        chinese: bundle.chinese,
         lang: bundle.lang,
         meta: bundle.meta,
         updated_at: new Date().toISOString(),
@@ -209,12 +247,16 @@ export async function hydrateFromCloud(userId: string): Promise<SyncOutcome> {
       math: row.math,
       physics: row.physics,
       chemistry: row.chemistry,
+      cs: row.cs,
+      chinese: row.chinese,
       lang: row.lang,
       meta: row.meta,
     })
     saveMathProgress(row.math)
     savePhysicsProgress(row.physics)
     saveChemistryProgress(row.chemistry)
+    saveCsProgress(row.cs)
+    saveChineseProgress(row.chinese)
     allowPush = true
     emit('synced')
     return 'pulled'
@@ -242,6 +284,8 @@ export async function pushProgressNow(): Promise<boolean> {
       math: bundle.math,
       physics: bundle.physics,
       chemistry: bundle.chemistry,
+      cs: bundle.cs,
+      chinese: bundle.chinese,
       lang: bundle.lang,
       meta: bundle.meta,
       updated_at: new Date().toISOString(),
@@ -294,6 +338,8 @@ export async function resetCloudProgress(): Promise<boolean> {
     math: defaultMathProgress(),
     physics: defaultPhysicsProgress(),
     chemistry: defaultChemistryProgress(),
+    cs: defaultCsProgress(),
+    chinese: defaultChineseProgress(),
     lang: 'hub' as AppView,
     meta: defaultLearningMeta(),
   }
@@ -310,6 +356,8 @@ export async function resetCloudProgress(): Promise<boolean> {
     saveMathProgress(fresh.math)
     savePhysicsProgress(fresh.physics)
     saveChemistryProgress(fresh.chemistry)
+    saveCsProgress(fresh.cs)
+    saveChineseProgress(fresh.chinese)
     allowPush = true
     emit('synced')
     return true

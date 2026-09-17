@@ -9,6 +9,7 @@ export const PROGRESS_STORAGE_KEYS = {
   physics: 'physics-learning-progress',
   chemistry: 'chemistry-learning-progress',
   cs: 'cs-learning-progress',
+  chinese: 'chinese_learning_progress_v1',
   mathSignals: 'math_signals_mastery_v1',
   physicsSignals: 'physics_signals_mastery_v1',
   chemistrySignals: 'chemistry_signals_mastery_v1',

@@ -1,8 +1,18 @@
 import type { ASTNode } from './ast'
 
+export class MathParseError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'MathParseError'
+  }
+}
+
 /**
  * 簡易數學字串/表達式解析器 (Pratt / Recursive Descent Parser)
  * 支援多項式、有理函數、三角函數、指數與對數解析
+ *
+ * 優先序（由低到高）：加減 → 乘除／隱式乘法 → 單元正負號 → 右結合冪次 → 主詞
+ * 因此 `-x^2` 解析為 `-(x^2)`，而非 `(-x)^2`。
  */
 export class MathParser {
   private pos = 0
@@ -15,7 +25,13 @@ export class MathParser {
 
   parse(): ASTNode {
     this.pos = 0
+    if (!this.input) {
+      throw new MathParseError('空表達式')
+    }
     const node = this.parseExpression()
+    if (this.pos < this.input.length) {
+      throw new MathParseError(`多餘字元「${this.input.slice(this.pos)}」`)
+    }
     return node
   }
 
@@ -42,23 +58,24 @@ export class MathParser {
   }
 
   private parseMulDiv(): ASTNode {
-    let left = this.parsePower()
-    while (this.peek() === '*' || this.peek() === '/') {
-      const op = this.next() as '*' | '/'
-      const right = this.parsePower()
-      left = { type: 'binary', op, left, right }
+    let left = this.parseUnary()
+    while (true) {
+      const ch = this.peek()
+      if (ch === '*' || ch === '/') {
+        const op = this.next() as '*' | '/'
+        const right = this.parseUnary()
+        left = { type: 'binary', op, left, right }
+        continue
+      }
+      // 隱式乘法：2x、2sin(x)、(x+1)(x-1)
+      if (this.canStartPrimary()) {
+        const right = this.parseUnary()
+        left = { type: 'binary', op: '*', left, right }
+        continue
+      }
+      break
     }
     return left
-  }
-
-  private parsePower(): ASTNode {
-    let base = this.parseUnary()
-    if (this.peek() === '^') {
-      this.next() // consume '^'
-      const exponent = this.parsePower() // 右結合
-      base = { type: 'binary', op: '^', left: base, right: exponent }
-    }
-    return base
   }
 
   private parseUnary(): ASTNode {
@@ -70,7 +87,29 @@ export class MathParser {
       this.next()
       return { type: 'unary', op: '-', expr: this.parseUnary() }
     }
-    return this.parsePrimary()
+    return this.parsePower()
+  }
+
+  private parsePower(): ASTNode {
+    const base = this.parsePrimary()
+    if (this.peek() === '^') {
+      this.next() // consume '^'
+      const exponent = this.parseUnary() // 右結合，且允許 2^-3
+      return { type: 'binary', op: '^', left: base, right: exponent }
+    }
+    return base
+  }
+
+  private canStartPrimary(): boolean {
+    const ch = this.peek()
+    return ch === '(' || /[0-9.]/.test(ch) || /[a-zA-Z]/.test(ch)
+  }
+
+  private expectClosingParen(): void {
+    if (this.peek() !== ')') {
+      throw new MathParseError('括號未閉合')
+    }
+    this.next()
   }
 
   private parsePrimary(): ASTNode {
@@ -80,63 +119,77 @@ export class MathParser {
     if (ch === '(') {
       this.next()
       const expr = this.parseExpression()
-      if (this.peek() === ')') this.next()
+      this.expectClosingParen()
       return expr
     }
 
     // 數字
     if (/[\d.]/.test(ch)) {
       let numStr = ''
+      let dotCount = 0
       while (/[\d.]/.test(this.peek())) {
-        numStr += this.next()
+        const digit = this.next()
+        if (digit === '.') {
+          dotCount += 1
+          if (dotCount > 1) {
+            throw new MathParseError('數字格式無效')
+          }
+        }
+        numStr += digit
+      }
+      if (numStr === '.' || Number.isNaN(Number(numStr))) {
+        throw new MathParseError('數字格式無效')
       }
       return { type: 'constant', value: parseFloat(numStr) }
     }
 
-    // 變數或內建函數 (sin, cos, tan, exp, ln, sqrt, x)
+    // 變數或內建函數 (sin, cos, tan, exp, ln, sqrt, x)；e / pi 為常數名稱
     if (/[a-zA-Z]/.test(ch)) {
       let ident = ''
       while (/[a-zA-Z]/.test(this.peek())) {
         ident += this.next()
       }
 
-      if (['sin', 'cos', 'tan', 'exp', 'ln', 'sqrt'].includes(ident.toLowerCase())) {
-        const funcName = ident.toLowerCase() as 'sin' | 'cos' | 'tan' | 'exp' | 'ln' | 'sqrt'
+      if (['sin', 'cos', 'tan', 'exp', 'ln', 'log', 'sqrt'].includes(ident.toLowerCase())) {
+        const raw = ident.toLowerCase()
+        const funcName = (raw === 'log' ? 'ln' : raw) as 'sin' | 'cos' | 'tan' | 'exp' | 'ln' | 'sqrt'
         if (this.peek() === '(') {
           this.next()
           const arg = this.parseExpression()
-          if (this.peek() === ')') this.next()
+          this.expectClosingParen()
           return { type: 'func', name: funcName, arg }
         }
-        const arg = this.parsePrimary()
+        if (!this.canStartPrimary()) {
+          throw new MathParseError(`函數 ${funcName} 缺少引數`)
+        }
+        const arg = this.parseUnary()
         return { type: 'func', name: funcName, arg }
       }
 
       return { type: 'variable', name: ident }
     }
 
-    // 預設 fallback
-    this.next()
-    return { type: 'constant', value: 0 }
+    if (!ch) {
+      throw new MathParseError('表達式不完整')
+    }
+    throw new MathParseError(`無法解析「${ch}」`)
   }
 }
 
 export function parseMathExpression(exprStr: string): ASTNode {
+  const parser = new MathParser(exprStr)
+  return parser.parse()
+}
+
+export function tryParseMathExpression(
+  exprStr: string,
+): { ok: true; ast: ASTNode } | { ok: false; error: string } {
   try {
-    const parser = new MathParser(exprStr)
-    return parser.parse()
-  } catch {
-    // 預設二次拋物線
+    return { ok: true, ast: parseMathExpression(exprStr) }
+  } catch (err) {
     return {
-      type: 'binary',
-      op: '+',
-      left: {
-        type: 'binary',
-        op: '^',
-        left: { type: 'variable', name: 'x' },
-        right: { type: 'constant', value: 2 },
-      },
-      right: { type: 'constant', value: 1 },
+      ok: false,
+      error: err instanceof Error ? err.message : '無法解析表達式',
     }
   }
 }
