@@ -149,7 +149,6 @@ export const CsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
           flex: 1,
           minHeight: 0,
           overflowY: 'auto',
-          padding: '0.85rem 1.25rem',
           width: '100%',
         }}
       >

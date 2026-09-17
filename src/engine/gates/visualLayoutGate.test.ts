@@ -42,4 +42,10 @@ describe('Strict Review Gate: Visual Layout, 100vh Focus & Zero-Overflow Invaria
     expect(cssContent).toContain('[data-theme="dark"] .signal-rule-box')
     expect(cssContent).toContain('[data-theme="dark"] .signal-rule-box.chemistry')
   })
+
+  it('[GATE-VISUAL-SHARED-CHROME] STEM shells share later-track sidebar width token (260px)', () => {
+    expect(cssContent).toMatch(/--track-sidebar-width:\s*260px/)
+    expect(cssContent).toMatch(/\.math-shell\s*\{[^}]*var\(--track-sidebar-width\)/s)
+    expect((cssContent.match(/font-weight:\s*800/g) ?? []).length).toBe(3)
+  })
 })
