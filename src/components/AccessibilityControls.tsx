@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { LOCAL_PREFERENCE_KEYS } from '../utils/progressKeys'
+import { useI18n } from '../i18n/i18n'
 
 export type AccessibilitySettings = {
   fontSize: 'standard' | 'large' | 'extra-large'
@@ -47,6 +48,7 @@ function readA11ySettings(): AccessibilitySettings {
  * 支援無干擾專注模式、字體縮放、高對比切換與鍵盤快捷鍵說明。
  */
 export const AccessibilityControls: React.FC = () => {
+  const { t } = useI18n()
   const [isOpen, setIsOpen] = useState<boolean>(false)
   const [showShortcuts, setShowShortcuts] = useState<boolean>(false)
   const dialogRef = useRef<HTMLDialogElement>(null)
@@ -110,18 +112,18 @@ export const AccessibilityControls: React.FC = () => {
   return (
     <>
       {/* 浮動無障礙按鈕 */}
-      <aside className="a11y-floating-dock" aria-label="無障礙輔助控制">
+      <aside className="a11y-floating-dock" aria-label={t('a11y.dock')}>
         <button
           ref={triggerRef}
           type="button"
           className="btn-a11y-trigger"
           onClick={() => setIsOpen((prev) => !prev)}
-          title="開啟無障礙與學習輔助設定"
+          title={t('a11y.open')}
           aria-expanded={isOpen}
           aria-controls="a11y-settings-dialog"
         >
           <span className="a11y-icon">♿</span>
-          <span className="a11y-text">無障礙輔助</span>
+          <span className="a11y-text">{t('a11y.trigger')}</span>
         </button>
       </aside>
 
@@ -147,12 +149,12 @@ export const AccessibilityControls: React.FC = () => {
         }}
       >
             <div className="a11y-dialog-header">
-              <h3 id="a11y-dialog-title">♿ 無障礙與認知輔助設定 (WCAG 2.2)</h3>
+              <h3 id="a11y-dialog-title">{t('a11y.title')}</h3>
               <button
                 type="button"
                 className="btn-close"
                 onClick={() => setIsOpen(false)}
-                aria-label="關閉設定"
+                aria-label={t('common.close')}
               >
                 ✕
               </button>
@@ -161,7 +163,7 @@ export const AccessibilityControls: React.FC = () => {
             <div className="a11y-settings-body">
               {/* 1. 字體大小 */}
               <div className="setting-row">
-                <span className="setting-label">🔤 閱讀字體大小：</span>
+                <span className="setting-label">{t('a11y.font')}</span>
                 <div className="segmented-btn-group">
                   <button
                     type="button"
@@ -169,7 +171,7 @@ export const AccessibilityControls: React.FC = () => {
                     className={`seg-btn ${settings.fontSize === 'standard' ? 'active' : ''}`}
                     onClick={() => setSettings((s) => ({ ...s, fontSize: 'standard' }))}
                   >
-                    100% 標準
+                    {t('a11y.font100')}
                   </button>
                   <button
                     type="button"
@@ -177,7 +179,7 @@ export const AccessibilityControls: React.FC = () => {
                     className={`seg-btn ${settings.fontSize === 'large' ? 'active' : ''}`}
                     onClick={() => setSettings((s) => ({ ...s, fontSize: 'large' }))}
                   >
-                    115% 舒適
+                    {t('a11y.font115')}
                   </button>
                   <button
                     type="button"
@@ -185,7 +187,7 @@ export const AccessibilityControls: React.FC = () => {
                     className={`seg-btn ${settings.fontSize === 'extra-large' ? 'active' : ''}`}
                     onClick={() => setSettings((s) => ({ ...s, fontSize: 'extra-large' }))}
                   >
-                    130% 大字
+                    {t('a11y.font130')}
                   </button>
                 </div>
               </div>
@@ -193,8 +195,8 @@ export const AccessibilityControls: React.FC = () => {
               {/* 2. 深色主題 */}
               <div className="setting-row toggle-row">
                 <div>
-                  <span className="setting-label" id="a11y-dark-label">🌙 深色模式 (Dark Theme)：</span>
-                  <p className="setting-desc">降低螢幕眩光，適合夜間與長時間專注學習。</p>
+                  <span className="setting-label" id="a11y-dark-label">{t('a11y.dark')}</span>
+                  <p className="setting-desc">{t('a11y.darkDesc')}</p>
                 </div>
                 <input
                   type="checkbox"
@@ -208,8 +210,8 @@ export const AccessibilityControls: React.FC = () => {
               {/* 3. 無干擾專注模式 */}
               <div className="setting-row toggle-row">
                 <div>
-                  <span className="setting-label" id="a11y-focus-label">🎯 無干擾專注模式 (Distraction-Free)：</span>
-                  <p className="setting-desc">隱藏背景動畫與非必要裝飾，專注於題目思考。</p>
+                  <span className="setting-label" id="a11y-focus-label">{t('a11y.focus')}</span>
+                  <p className="setting-desc">{t('a11y.focusDesc')}</p>
                 </div>
                 <input
                   type="checkbox"
@@ -225,8 +227,8 @@ export const AccessibilityControls: React.FC = () => {
               {/* 4. 高對比模式 */}
               <div className="setting-row toggle-row">
                 <div>
-                  <span className="setting-label" id="a11y-contrast-label">👁️ 高對比強化 (High Contrast)：</span>
-                  <p className="setting-desc">增強文字與背景明暗邊界，提升可讀性。</p>
+                  <span className="setting-label" id="a11y-contrast-label">{t('a11y.contrast')}</span>
+                  <p className="setting-desc">{t('a11y.contrastDesc')}</p>
                 </div>
                 <input
                   type="checkbox"
@@ -244,14 +246,14 @@ export const AccessibilityControls: React.FC = () => {
                   className="btn-show-shortcuts"
                   onClick={() => setShowShortcuts((prev) => !prev)}
                 >
-                  ⌨️ 全站鍵盤快捷鍵速查 {showShortcuts ? '▲' : '▼'}
+                  {t('a11y.shortcuts')} {showShortcuts ? '▲' : '▼'}
                 </button>
                 {showShortcuts && (
                   <ul className="shortcuts-list">
-                    <li><code>1</code> ~ <code>4</code>：快速選擇選項 A ~ D</li>
-                    <li><code>Enter</code>：提交答案或進入下一題</li>
-                    <li><code>H</code>：展開蘇格拉底階梯提示</li>
-                    <li><code>Space</code>：播放多益/五十音語音</li>
+                    <li>{t('a11y.sc.1')}</li>
+                    <li>{t('a11y.sc.2')}</li>
+                    <li>{t('a11y.sc.3')}</li>
+                    <li>{t('a11y.sc.4')}</li>
                   </ul>
                 )}
               </div>

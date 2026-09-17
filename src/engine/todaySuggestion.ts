@@ -1,7 +1,11 @@
 import type { LangId } from '../utils/storage'
 
+export type TodaySuggestionReasonKey = 'due' | 'resume' | 'preferred' | 'catalog'
+
 export type TodaySuggestion = {
   id: LangId
+  reasonKey: TodaySuggestionReasonKey
+  dueCount?: number
   reason: string
 }
 
@@ -22,17 +26,27 @@ export function pickTodaySuggestion(input: TodaySuggestionInput): TodaySuggestio
 
   if (dueEntries.length > 0) {
     const [id, count] = dueEntries[0]
-    return { id, reason: `到期複習 ${count} 項` }
+    return {
+      id,
+      reasonKey: 'due',
+      dueCount: count,
+      reason: `到期複習 ${count} 項`,
+    }
   }
 
   if (input.preferred) {
     return {
       id: input.preferred,
+      reasonKey: input.hasProgress ? 'resume' : 'preferred',
       reason: input.hasProgress ? '繼續上次軌道' : '你上次選擇的軌道',
     }
   }
 
-  return { id: 'math', reason: '目錄起點（尚未選擇軌道）' }
+  return {
+    id: 'math',
+    reasonKey: 'catalog',
+    reason: '目錄起點（尚未選擇軌道）',
+  }
 }
 
 export function dueCountBySrsItems(

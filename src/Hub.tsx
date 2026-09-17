@@ -39,6 +39,8 @@ import { loadChemistryProgress } from './chemistry/utils/chemistryStorage'
 import { loadCsProgress } from './cs/utils/csStorage'
 import { loadChineseProgress } from './chinese/utils/chineseStorage'
 import { isAudioMuted, toggleAudioMute, playClickSound } from './engine/audioSynthesizer'
+import { LocaleToggle, useI18n } from './i18n/i18n'
+import type { MessageKey } from './i18n/messages'
 
 type Props = {
   onChoose: (lang: LangId) => void
@@ -47,15 +49,15 @@ type Props = {
 
 type RadarTab = LangId
 
-const TRACK_LABEL: Record<LangId, string> = {
-  math: '臺灣數學',
-  calculus: '微積分',
-  physics: '物理',
-  chemistry: '化學',
-  cs: '計算機概論',
-  ja: '日語',
-  en: '多益英語',
-  zh: '台湾華語',
+const TRACK_LABEL_KEYS: Record<LangId, MessageKey> = {
+  math: 'track.math',
+  calculus: 'track.calculus',
+  physics: 'track.physics',
+  chemistry: 'track.chemistry',
+  cs: 'track.cs',
+  ja: 'track.ja',
+  en: 'track.en',
+  zh: 'track.zh',
 }
 
 function weekStudyFlags(meta: LearningMeta): boolean[] {
@@ -80,6 +82,7 @@ function weekStudyFlags(meta: LearningMeta): boolean[] {
  * 八軌入口：數學、微積分、物理、化學、計算機概論、日語、多益、華語。
  */
 export function Hub({ onChoose, onOpenPrivacy }: Props) {
+  const { t } = useI18n()
   const [activeRadarTab, setActiveRadarTab] = useState<RadarTab>('math')
   const [tick, setTick] = useState(0)
   const [isMuted, setIsMuted] = useState(() => isAudioMuted())
@@ -211,7 +214,15 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
   const preferred = loadPreferredTrack()
   const resumeId: LangId = preferred ?? 'math'
   const weekFlags = weekStudyFlags(learningMeta)
-  const weekLabels = ['一', '二', '三', '四', '五', '六', '日']
+  const weekLabels: Array<{ key: MessageKey; day: string }> = [
+    { key: 'hub.weekday.1', day: t('hub.weekday.1') },
+    { key: 'hub.weekday.2', day: t('hub.weekday.2') },
+    { key: 'hub.weekday.3', day: t('hub.weekday.3') },
+    { key: 'hub.weekday.4', day: t('hub.weekday.4') },
+    { key: 'hub.weekday.5', day: t('hub.weekday.5') },
+    { key: 'hub.weekday.6', day: t('hub.weekday.6') },
+    { key: 'hub.weekday.7', day: t('hub.weekday.7') },
+  ]
   const longIntervalCount = Object.values(learningMeta.items).filter(
     (it) => (it.intervalDays || 0) >= 21 || (it.correctStreak || 0) >= 3,
   ).length
@@ -250,13 +261,13 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
       mark: '∑',
       markClass: 'math-mark',
       extraClass: 'math-track-card',
-      pill: 'K-12 全學段',
+      pill: t('hub.math.pill'),
       pillClass: 'math',
-      title: '臺灣數學',
-      desc: '國小到高中。KaTeX 算式、幾何教具與會考／學測模考。',
-      progress: `你已解 ${mathDoneCount} 題`,
-      catalog: '題庫與幾何教具可練',
-      cta: '進入數學',
+      title: t('track.math'),
+      desc: t('hub.math.desc'),
+      progress: t('hub.solved', { count: mathDoneCount }),
+      catalog: t('hub.math.catalog'),
+      cta: t('hub.math.cta'),
       onClick: () => onChoose('math'),
     },
     {
@@ -264,13 +275,13 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
       mark: '∫',
       markClass: 'calculus-mark',
       extraClass: 'calculus-track-card',
-      pill: '數甲 · 大一先修',
+      pill: t('hub.calculus.pill'),
       pillClass: 'calculus',
-      title: '微積分',
-      desc: '切線、黎曼和、FTC 與旋轉體動態實驗室。',
-      progress: `你已解 ${calculusDoneCount} 題`,
-      catalog: '黎曼和與 FTC 實驗室可進',
-      cta: '進入微積分',
+      title: t('track.calculus'),
+      desc: t('hub.calculus.desc'),
+      progress: t('hub.solved', { count: calculusDoneCount }),
+      catalog: t('hub.calculus.catalog'),
+      cta: t('hub.calculus.cta'),
       onClick: () => onChoose('calculus'),
     },
     {
@@ -278,13 +289,13 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
       mark: '物',
       markClass: 'physics-mark',
       extraClass: 'physics-track-card',
-      pill: '國中＋高中',
+      pill: t('hub.physics.pill'),
       pillClass: 'physics',
-      title: '物理',
-      desc: '聲光力電到近代物理。拋體、光學、電路實驗室與模考。',
-      progress: `你已解 ${physicsDoneCount} 題`,
-      catalog: '拋體、光學、電路實驗室可進',
-      cta: '進入物理',
+      title: t('track.physics'),
+      desc: t('hub.physics.desc'),
+      progress: t('hub.solved', { count: physicsDoneCount }),
+      catalog: t('hub.physics.catalog'),
+      cta: t('hub.physics.cta'),
       onClick: () => onChoose('physics'),
     },
     {
@@ -292,13 +303,13 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
       mark: '化',
       markClass: 'chemistry-mark',
       extraClass: 'chemistry-track-card',
-      pill: '國中＋高中',
+      pill: t('hub.chemistry.pill'),
       pillClass: 'chemistry',
-      title: '化學',
-      desc: '水溶液到有機。週期表、VSEPR、滴定曲線與破題卡。',
-      progress: `你已解 ${chemistryDoneCount} 題`,
-      catalog: '滴定曲線與週期表可進',
-      cta: '進入化學',
+      title: t('track.chemistry'),
+      desc: t('hub.chemistry.desc'),
+      progress: t('hub.solved', { count: chemistryDoneCount }),
+      catalog: t('hub.chemistry.catalog'),
+      cta: t('hub.chemistry.cta'),
       onClick: () => onChoose('chemistry'),
     },
     {
@@ -306,13 +317,13 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
       mark: 'CS',
       markClass: 'cs-mark',
       extraClass: 'cs-track-card',
-      pill: '軟硬體 · AI',
+      pill: t('hub.cs.pill'),
       pillClass: 'cs',
-      title: '計算機概論',
-      desc: '馮紐曼架構、快取與管線，接到 GPU／Transformer。',
-      progress: `你已解 ${csDoneCount} 題`,
-      catalog: '架構圖與題庫可進',
-      cta: '進入計算機概論',
+      title: t('track.cs'),
+      desc: t('hub.cs.desc'),
+      progress: t('hub.solved', { count: csDoneCount }),
+      catalog: t('hub.cs.catalog'),
+      cta: t('hub.cs.cta'),
       onClick: () => onChoose('cs'),
     },
     {
@@ -320,13 +331,13 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
       mark: 'あ',
       markClass: '',
       extraClass: 'jp-track-card',
-      pill: '中文學日文',
+      pill: t('hub.ja.pill'),
       pillClass: 'ja',
-      title: 'あおば日本語',
-      desc: 'JLPT N5 到 N1。五十音、文法訊號與職場敬語。',
-      progress: `你已掌握 ${kanaCount} 字`,
-      catalog: '五十音 104 字可練',
-      cta: '進入日語',
+      title: t('hub.ja.title'),
+      desc: t('hub.ja.desc'),
+      progress: t('hub.masteredKana', { count: kanaCount }),
+      catalog: t('hub.ja.catalog'),
+      cta: t('hub.ja.cta'),
       onClick: () => onChoose('ja'),
     },
     {
@@ -334,13 +345,13 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
       mark: 'T',
       markClass: 'toeic',
       extraClass: 'en-track-card',
-      pill: toeicLang === 'ja' ? '日本語解説' : '中文解說',
+      pill: toeicLang === 'ja' ? t('hub.en.pillJa') : t('hub.en.pillZh'),
       pillClass: 'en',
-      title: 'TOEIC 多益英語',
-      desc: '商務語塊、四國口音與證書級距練習。',
-      progress: `你已練 ${toeicDoneCount} 語塊`,
-      catalog: '商務語塊與聽力可練',
-      cta: toeicLang === 'ja' ? '日本語で学ぶ' : '進入英語',
+      title: t('hub.en.title'),
+      desc: t('hub.en.desc'),
+      progress: t('hub.practicedChunks', { count: toeicDoneCount }),
+      catalog: t('hub.en.catalog'),
+      cta: toeicLang === 'ja' ? t('hub.en.ctaJa') : t('hub.en.ctaZh'),
       onClick: () => openToeic(toeicLang),
     },
     {
@@ -348,31 +359,46 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
       mark: '華',
       markClass: 'zh-mark',
       extraClass: 'zh-track-card',
-      pill: '日文學中文',
+      pill: t('hub.zh.pill'),
       pillClass: 'zh',
-      title: '台湾華語',
-      desc: '四聲、日中偽友詞與把字句。對日文學習者保留「台湾」標。',
-      progress: `你已解 ${chineseProgress.masteredFalseFriends?.length || 0} 組偽友`,
-      catalog: '四聲與語法訊號可練',
-      cta: '日本語で学ぶ',
+      title: t('hub.zh.title'),
+      desc: t('hub.zh.desc'),
+      progress: t('hub.falseFriends', { count: chineseProgress.masteredFalseFriends?.length || 0 }),
+      catalog: t('hub.zh.catalog'),
+      cta: t('hub.zh.cta'),
       onClick: () => onChoose('zh'),
     },
   ]
 
   const todayId: LangId = todaySuggestion.id
-  const todayTrack = tracks.find((t) => t.id === todayId) ?? tracks[0]
-  const todayReason = todaySuggestion.reason
+  const todayTrack = tracks.find((track) => track.id === todayId) ?? tracks[0]
+  const todayReason =
+    todaySuggestion.reasonKey === 'due'
+      ? t('today.due', { count: todaySuggestion.dueCount ?? 0 })
+      : t(
+          todaySuggestion.reasonKey === 'resume'
+            ? 'today.resume'
+            : todaySuggestion.reasonKey === 'preferred'
+              ? 'today.preferred'
+              : 'today.catalog',
+        )
+  const resumeLabel = t(TRACK_LABEL_KEYS[resumeId])
 
   return (
     <main className="hub unified-hub">
       <header className="hub-hero">
-        <p className="eyebrow">八軌學習平台</p>
-        <h1>今天要學哪一軌？</h1>
+        <div className="hub-topbar">
+          <div>
+            <p className="eyebrow">{t('hub.eyebrow')}</p>
+            <h1>{t('hub.title')}</h1>
+          </div>
+          <LocaleToggle />
+        </div>
         <p className="lede">
-          數學、微積分、物理、化學、計算機概論、日語、多益與華語，同一個離線優先的練習系統。
+          {t('hub.lede')}
         </p>
         <p className="section-subtext">
-          八軌 · 題庫／實驗室／語音可練 · 本機練習紀錄，不是能力鑑定
+          {t('hub.subtext')}
         </p>
         <div className="hub-hero-actions">
           <button
@@ -383,16 +409,16 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
               else onChoose(resumeId)
             }}
           >
-            {hasProgress && preferred ? `繼續：${TRACK_LABEL[resumeId]}` : `從${TRACK_LABEL[resumeId]}開始`}
+            {hasProgress && preferred ? t('hub.continue', { track: resumeLabel }) : t('hub.start', { track: resumeLabel })}
           </button>
           <a className="hub-secondary-cta" href="#tracks-title">
-            看全部軌道
+            {t('hub.seeAll')}
           </a>
         </div>
       </header>
 
-      <section className="hub-section-block" aria-label="今日建議路徑">
-        <p className="section-subtext">今日建議 · {todayReason}</p>
+      <section className="hub-section-block hub-today-block" aria-label={t('hub.todayLabel')}>
+        <p className="section-subtext">{t('hub.todayLabel')} · {todayReason}</p>
         <h2>{todayTrack.title}</h2>
         <p className="track-desc">{todayTrack.desc}</p>
         <div className="hub-hero-actions">
@@ -401,15 +427,15 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
             className="hub-primary-cta"
             onClick={todayTrack.onClick}
           >
-            30 秒開始：{todayTrack.cta}
+            {t('hub.todayCta', { cta: todayTrack.cta })}
           </button>
         </div>
       </section>
 
       <section className="hub-section-block" aria-labelledby="tracks-title">
         <div className="section-header-row">
-          <h2 id="tracks-title">選擇學習軌道</h2>
-          <span className="section-subtext">8 軌</span>
+          <h2 id="tracks-title">{t('hub.tracksTitle')}</h2>
+          <span className="section-subtext">{t('hub.tracksCount')}</span>
         </div>
 
         <div className="hub-grid eight-track-grid">
@@ -431,7 +457,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
                 <b className="launch-action">{track.cta} →</b>
               </button>
               {track.id === 'en' ? (
-                <div className="track-lang-toggle" role="group" aria-label="多益解說語言">
+                <div className="track-lang-toggle" role="group" aria-label={t('hub.toeicExplain')}>
                   <button
                     type="button"
                     className={toeicLang === 'zh' ? 'is-active' : ''}
@@ -440,7 +466,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
                       setToeicLang('zh')
                     }}
                   >
-                    中文解說
+                    {t('hub.toeicZh')}
                   </button>
                   <button
                     type="button"
@@ -450,7 +476,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
                       setToeicLang('ja')
                     }}
                   >
-                    日本語
+                    {t('hub.toeicJa')}
                   </button>
                 </div>
               ) : null}
@@ -460,11 +486,11 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
       </section>
 
       {hasProgress ? (
-        <section className="hub-stat-banner" aria-label="學習統計">
+        <section className="hub-stat-banner" aria-label={t('hub.stats')}>
           <div className="stat-card level-stat">
             <span className="stat-icon" aria-hidden="true">Lv</span>
             <div className="stat-info">
-              <span className="stat-label">等級</span>
+              <span className="stat-label">{t('hub.level')}</span>
               <strong>Lv.{levelInfo.currentLevel}</strong>
               <small>{totalXp} XP</small>
             </div>
@@ -475,19 +501,19 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
           <div className="stat-card streak-stat">
             <span className="stat-icon" aria-hidden="true">日</span>
             <div className="stat-info">
-              <span className="stat-label">連續學習</span>
-              <strong>{learningMeta.streak} 天</strong>
-              <small>有連勝防護</small>
+              <span className="stat-label">{t('hub.streak')}</span>
+              <strong>{t('hub.streakDays', { count: learningMeta.streak })}</strong>
+              <small>{t('hub.streakShield')}</small>
             </div>
           </div>
           <div className="stat-card daily-stat">
             <span className="stat-icon" aria-hidden="true">今</span>
             <div className="stat-info">
-              <span className="stat-label">今日目標</span>
+              <span className="stat-label">{t('hub.dailyGoal')}</span>
               <strong>
-                {daily.done} / {daily.goal} 卡
+                {t('hub.dailyCards', { done: daily.done, goal: daily.goal })}
               </strong>
-              <small>達成率 {daily.pct}%</small>
+              <small>{t('hub.dailyPct', { pct: daily.pct })}</small>
             </div>
             <div className="stat-progress-bar">
               <i style={{ width: `${daily.pct}%` }} />
@@ -498,10 +524,10 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
               {isMuted ? '靜' : '聲'}
             </span>
             <div className="stat-info">
-              <span className="stat-label">音效</span>
-              <strong>{isMuted ? '已靜音' : '開啟'}</strong>
+              <span className="stat-label">{t('hub.audio')}</span>
+              <strong>{isMuted ? t('hub.muted') : t('hub.soundOn')}</strong>
               <button type="button" className="pill-btn audio-toggle" onClick={handleToggleAudio}>
-                {isMuted ? '開啟音效' : '靜音'}
+                {isMuted ? t('hub.unmute') : t('hub.mute')}
               </button>
             </div>
           </div>
@@ -509,27 +535,30 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
       ) : null}
 
       {hasProgress && scheduledCount > 0 ? (
-        <section className="fsrs-memory-dashboard" aria-label="語文複習">
+        <section className="fsrs-memory-dashboard" aria-label={t('hub.review')}>
           <div className="fsrs-copy">
             <div className="fsrs-icon" aria-hidden="true">記</div>
             <div>
               <div className="fsrs-title-row">
-                <strong>語文間隔複習</strong>
-                <span className="fsrs-chip">已排程 {scheduledCount} 張</span>
+                <strong>{t('hub.srsTitle')}</strong>
+                <span className="fsrs-chip">{t('hub.scheduled', { count: scheduledCount })}</span>
               </div>
               <p>
-                長間隔 {longIntervalCount} 張 · 連勝加成 +{Math.min(50, learningMeta.streak * 5)}% XP
+                {t('hub.srsMeta', {
+                  long: longIntervalCount,
+                  bonus: Math.min(50, learningMeta.streak * 5),
+                })}
               </p>
             </div>
           </div>
-          <div className="week-heat" aria-label="本週實際學習日">
-            {weekLabels.map((day, dIdx) => (
-              <div key={day} className="week-heat-day">
+          <div className="week-heat" aria-label={t('hub.weekHeat')}>
+            {weekLabels.map((item, dIdx) => (
+              <div key={item.key} className="week-heat-day">
                 <div
                   className={`week-heat-cell${weekFlags[dIdx] ? ' is-active' : ''}`}
-                  title={weekFlags[dIdx] ? `星期${day} 有學習紀錄` : `星期${day} 無紀錄`}
+                  title={weekFlags[dIdx] ? t('hub.weekHas', { day: item.day }) : t('hub.weekNone', { day: item.day })}
                 />
-                <span>{day}</span>
+                <span>{item.day}</span>
               </div>
             ))}
           </div>
@@ -538,13 +567,13 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
 
       {hasProgress ? (
         <details className="hub-more">
-          <summary>進度、雷達與資料備份</summary>
+          <summary>{t('hub.moreProgress')}</summary>
 
           <section className="hub-section-block" aria-labelledby="radar-title">
             <div className="section-header-row">
-              <h2 id="radar-title">練習覆蓋雷達</h2>
+              <h2 id="radar-title">{t('hub.radarTitle')}</h2>
               <div className="radar-tab-switcher">
-                {(Object.keys(TRACK_LABEL) as LangId[]).map((id) => (
+                {(Object.keys(TRACK_LABEL_KEYS) as LangId[]).map((id) => (
                   <button
                     key={id}
                     type="button"
@@ -552,7 +581,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
                     aria-pressed={activeRadarTab === id}
                     onClick={() => setActiveRadarTab(id)}
                   >
-                    {TRACK_LABEL[id]}
+                    {t(TRACK_LABEL_KEYS[id])}
                   </button>
                 ))}
               </div>
@@ -562,14 +591,17 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
               <KnowledgeRadar radar={activeRadar} size={340} />
               <div className="radar-weakness-plan">
                 <div className="plan-info">
-                  <span className="plan-tag">本機練習紀錄 · 下一步</span>
+                  <span className="plan-tag">{t('hub.radarTag')}</span>
                   <strong>
-                    可先探索：{activeRadar.weakestDimension.label}（{activeRadar.weakestDimension.score}/100）
+                    {t('hub.radarExplore', {
+                      label: activeRadar.weakestDimension.label,
+                      score: activeRadar.weakestDimension.score,
+                    })}
                   </strong>
-                  <p>依本機作答與實驗室次數換算，不是能力測驗。</p>
+                  <p>{t('hub.radarNote')}</p>
                 </div>
                 <button type="button" className="btn-plan-action" onClick={() => onChoose(activeRadarTab)}>
-                  前往{TRACK_LABEL[activeRadarTab]}
+                  {t('hub.goTrack', { track: t(TRACK_LABEL_KEYS[activeRadarTab]) })}
                 </button>
               </div>
             </div>
@@ -577,7 +609,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
 
           <section className="hub-section-block" aria-labelledby="badges-title">
             <div className="section-header-row">
-              <h2 id="badges-title">微認證</h2>
+              <h2 id="badges-title">{t('hub.badgesTitle')}</h2>
             </div>
             <div className="hub-badges-grid">
               {BADGE_CATALOG.map((badge) => {
@@ -626,7 +658,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
         </details>
       ) : (
         <details className="hub-more">
-          <summary>登入、匯出／匯入進度</summary>
+          <summary>{t('hub.moreAuth')}</summary>
           <AuthPanel />
           <DataControls />
         </details>
@@ -642,10 +674,10 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
           GitHub
         </a>
         <button type="button" className="hub-link" onClick={onOpenPrivacy}>
-          隱私與資料說明
+          {t('hub.privacy')}
         </button>
-        <span>MIT License · Sam Huang</span>
-        <span>本機練習紀錄，不是能力鑑定。</span>
+        <span>{t('hub.license')}</span>
+        <span>{t('hub.footerNote')}</span>
       </footer>
     </main>
   )

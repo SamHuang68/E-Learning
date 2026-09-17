@@ -13,8 +13,10 @@ import {
   importProgressBundle,
   loadLearningMeta,
 } from '../utils/storage'
+import { useI18n } from '../i18n/i18n'
 
 export function DataControls() {
+  const { t } = useI18n()
   const { user, backendKind } = useAuth()
   const isLocal = backendKind === 'local'
   const fileRef = useRef<HTMLInputElement>(null)
@@ -34,7 +36,7 @@ export function DataControls() {
     a.download = `e-learning-progress-${bundle.exportedAt.slice(0, 10)}.json`
     a.click()
     URL.revokeObjectURL(url)
-    setNote('已匯出進度（不含 API 金鑰與 presets）')
+    setNote(t('data.exported'))
   }
 
   function onImportFile(file: File | undefined) {
@@ -45,94 +47,90 @@ export function DataControls() {
         const parsed = JSON.parse(String(reader.result))
         const ok = importProgressBundle(parsed)
         if (!ok) {
-          setNote('匯入失敗：檔案格式不正確')
+          setNote(t('data.importFailFormat'))
           return
         }
-        setNote('已匯入進度；若已登入將寫入雲端')
+        setNote(t('data.imported'))
         window.dispatchEvent(new CustomEvent('e-learning:progress-hydrated'))
       } catch {
-        setNote('匯入失敗：無法解析 JSON')
+        setNote(t('data.importFailJson'))
       }
     }
     reader.readAsText(file)
   }
 
   function clearLocal() {
-    if (!confirm('確定清除全部本機學習進度？（不會刪除本機帳號、顯示／音效設定、Groq 金鑰與 presets）')) {
+    if (!confirm(t('data.clearConfirm'))) {
       return
     }
     clearLocalProgressCache()
-    setNote('已清除八軌學習進度（含華語與資訊）與破題訊號、學習事件摘要')
+    setNote(t('data.cleared'))
     window.dispatchEvent(new CustomEvent('e-learning:progress-hydrated'))
   }
 
   async function resetCloud() {
-    const scope = isLocal ? '帳號' : '雲端'
-    if (
-      !confirm(
-        `確定重設${scope}進度？將恢復預設進度並覆寫本機進度快取。`,
-      )
-    ) {
+    const scope = isLocal ? t('data.scopeAccount') : t('data.scopeCloud')
+    if (!confirm(t('data.resetConfirm', { scope }))) {
       return
     }
     const ok = await resetCloudProgress()
-    setNote(ok ? `已重設${scope}進度` : `重設${scope}進度失敗`)
+    setNote(ok ? t('data.resetOk', { scope }) : t('data.resetFail', { scope }))
     if (ok) {
       window.dispatchEvent(new CustomEvent('e-learning:progress-hydrated'))
     }
   }
 
   return (
-    <section className="data-controls" aria-label="資料控制">
-      <p className="eyebrow">資料</p>
-      <h2>匯出／匯入與重設</h2>
+    <section className="data-controls" aria-label={t('data.aria')}>
+      <p className="eyebrow">{t('data.eyebrow')}</p>
+      <h2>{t('data.title')}</h2>
       <p className="data-controls-lede">
-        匯出內容包含日語（含五十音）、多益、華語、數學、物理、化學、資訊進度、STEM／資訊破題訊號、學習事件摘要與軌道偏好；微積分工作台參數僅本次工作階段。本機帳號、無障礙／音效設定、Groq 金鑰與課程設計器 presets 不會匯出。
+        {t('data.lede')}
       </p>
       <div className="data-controls-actions">
         <button type="button" className="auth-btn ghost" onClick={downloadExport}>
-          匯出 JSON
+          {t('data.exportJson')}
         </button>
         <button
           type="button"
           className="auth-btn ghost"
           onClick={() => fileRef.current?.click()}
         >
-          匯入 JSON
+          {t('data.importJson')}
         </button>
         <button type="button" className="auth-btn ghost" onClick={clearLocal}>
-          清除全部學習進度
+          {t('data.clear')}
         </button>
         {user ? (
           <button type="button" className="auth-btn danger" onClick={() => void resetCloud()}>
-            {isLocal ? '重設帳號進度' : '重設雲端進度'}
+            {isLocal ? t('data.resetLocal') : t('data.resetCloud')}
           </button>
         ) : null}
       </div>
 
       <div style={{ marginTop: '1.25rem' }}>
-        <p className="eyebrow">ANKI / CSV 匯出</p>
+        <p className="eyebrow">{t('data.anki')}</p>
         <div className="data-controls-actions" style={{ marginTop: '0.4rem' }}>
           <button
             type="button"
             className="auth-btn ghost"
             onClick={exportToeicChunksToAnki}
           >
-            ⚡ 匯出 TOEIC 商務語塊 (Anki CSV)
+            {t('data.ankiToeic')}
           </button>
           <button
             type="button"
             className="auth-btn ghost"
             onClick={exportJapaneseSignalsToAnki}
           >
-            🎯 匯出日語動作訊號 (Anki CSV)
+            {t('data.ankiJa')}
           </button>
           <button
             type="button"
             className="auth-btn ghost"
             onClick={exportMathSignalsToAnki}
           >
-            📐 匯出數學破題訊號 (Anki CSV)
+            {t('data.ankiMath')}
           </button>
         </div>
       </div>
@@ -153,7 +151,7 @@ export function DataControls() {
         className="ghost"
         onClick={() => setMetaTick((n) => n + 1)}
       >
-        重新整理事件統計
+        {t('data.refresh')}
       </button>
     </section>
   )

@@ -4,6 +4,7 @@ import { ALL_MATH_GRADES } from '../data/gradeStore'
 import type { MathProgressState } from '../utils/mathStorage'
 import type { LangId } from '../../utils/storage'
 import { TrackSwitcher } from '../../components/TrackSwitcher'
+import { useI18n } from '../../i18n/i18n'
 
 export type MathNavId = 'today' | 'practice' | 'mock' | 'vault' | 'labs' | 'visual' | 'calculus'
 
@@ -30,20 +31,21 @@ export const MathSidebar: React.FC<Props> = ({
   onBackHub,
   onSwitchLang,
 }) => {
+  const { t } = useI18n()
   const stages: Array<{ id: MathStage; title: string; grades: MathGradeId[] }> = [
     {
       id: 'elementary',
-      title: '國小階段 (G1 ~ G6)',
+      title: t('math.stage.elementary'),
       grades: ['g1', 'g2', 'g3', 'g4', 'g5', 'g6'],
     },
     {
       id: 'junior',
-      title: '國中階段 (G7 ~ G9)',
+      title: t('math.stage.junior'),
       grades: ['g7', 'g8', 'g9'],
     },
     {
       id: 'senior',
-      title: '高中階段 (G10 ~ G12)',
+      title: t('math.stage.senior'),
       grades: ['g10', 'g11', 'g12'],
     },
   ]
@@ -52,17 +54,17 @@ export const MathSidebar: React.FC<Props> = ({
     <aside className="sidebar math-sidebar">
       <TrackSwitcher current="math" onBackHub={onBackHub} onSwitchLang={onSwitchLang} />
       {/* 品牌商標 */}
-      <button type="button" className="brand brand-button" onClick={() => onNav('today')} aria-label="返回數學今日學習">
+      <button type="button" className="brand brand-button" onClick={() => onNav('today')} aria-label={t('math.backToday')}>
         <div className="brand-mark math-mark">∑</div>
         <div>
-          <strong>臺灣數學 108課綱</strong>
-          <span className="brand-sub">K-12 全學段學習</span>
+          <strong>{t('math.brand')}</strong>
+          <span className="brand-sub">{t('math.brandSub')}</span>
         </div>
       </button>
 
       {/* 主功能導覽 */}
-      <nav className="nav-group" aria-label="數學核心功能">
-        <p className="nav-heading">學習功能</p>
+      <nav className="nav-group" aria-label={t('nav.mathAria')}>
+        <p className="nav-heading">{t('nav.learning')}</p>
         <button
           type="button"
           className={`nav-item ${activeNav === 'today' ? 'active' : ''}`}
@@ -70,7 +72,7 @@ export const MathSidebar: React.FC<Props> = ({
           aria-current={activeNav === 'today' ? 'page' : undefined}
         >
           <span className="nav-icon">📅</span>
-          <span className="nav-label">今日學習 (首頁)</span>
+          <span className="nav-label">{t('nav.todayHome')}</span>
         </button>
         <button
           type="button"
@@ -79,7 +81,7 @@ export const MathSidebar: React.FC<Props> = ({
           aria-current={activeNav === 'practice' ? 'page' : undefined}
         >
           <span className="nav-icon">✏️</span>
-          <span className="nav-label">單元題庫練習</span>
+          <span className="nav-label">{t('nav.practice')}</span>
         </button>
         <button
           type="button"
@@ -88,7 +90,7 @@ export const MathSidebar: React.FC<Props> = ({
           aria-current={activeNav === 'mock' ? 'page' : undefined}
         >
           <span className="nav-icon">📝</span>
-          <span className="nav-label">會考／學測模考</span>
+          <span className="nav-label">{t('nav.mockMath')}</span>
         </button>
         <button
           type="button"
@@ -97,7 +99,7 @@ export const MathSidebar: React.FC<Props> = ({
           aria-current={activeNav === 'vault' ? 'page' : undefined}
         >
           <span className="nav-icon">📖</span>
-          <span className="nav-label">錯題本 ({progress.errorQuestions.length})</span>
+          <span className="nav-label">{t('nav.vault', { count: progress.errorQuestions.length })}</span>
         </button>
         <button
           type="button"
@@ -106,7 +108,7 @@ export const MathSidebar: React.FC<Props> = ({
           aria-current={activeNav === 'visual' ? 'page' : undefined}
         >
           <span className="nav-icon">🎨</span>
-          <span className="nav-label">幾何圖示解題</span>
+          <span className="nav-label">{t('nav.visual')}</span>
         </button>
         <button
           type="button"
@@ -115,7 +117,7 @@ export const MathSidebar: React.FC<Props> = ({
           aria-current={activeNav === 'labs' ? 'page' : undefined}
         >
           <span className="nav-icon">🧪</span>
-          <span className="nav-label">互動教具實驗室</span>
+          <span className="nav-label">{t('nav.labs')}</span>
         </button>
         <button
           type="button"
@@ -124,13 +126,13 @@ export const MathSidebar: React.FC<Props> = ({
           aria-current={activeNav === 'calculus' ? 'page' : undefined}
         >
           <span className="nav-icon">∫</span>
-          <span className="nav-label">微積分專題</span>
+          <span className="nav-label">{t('nav.calculusTopic')}</span>
         </button>
       </nav>
 
       {/* 12 年級快速切換 */}
-      <nav className="nav-group grades-nav-group" aria-label="年級切換">
-        <p className="nav-heading">年級與學段切換</p>
+      <nav className="nav-group grades-nav-group" aria-label={t('nav.gradeAria')}>
+        <p className="nav-heading">{t('nav.grades')}</p>
         {stages.map((stg) => (
           <div key={stg.id} className="stage-block">
             <span className="stage-title">{stg.title}</span>
