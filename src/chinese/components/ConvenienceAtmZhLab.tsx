@@ -73,7 +73,10 @@ export const ConvenienceAtmZhLab: React.FC<Props> = ({ onEarnXp }) => {
         </div>
 
         <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          <label htmlFor="atm-action" className="sr-only">超商 ATM 服務</label>
           <select
+            id="atm-action"
+            aria-label="超商 ATM 服務"
             value={atmAction}
             onChange={(e) => setAtmAction(e.target.value)}
             style={{

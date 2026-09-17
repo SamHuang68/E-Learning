@@ -76,7 +76,10 @@ export const BobaZhLab: React.FC<Props> = ({ onEarnXp }) => {
         </div>
 
         <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          <label htmlFor="boba-tea-base" className="sr-only">茶底</label>
           <select
+            id="boba-tea-base"
+            aria-label="茶底"
             value={teaBase}
             onChange={(e) => setTeaBase(e.target.value)}
             style={{ padding: '0.3rem 0.45rem', borderRadius: '6px', border: '1px solid var(--line)', background: 'var(--surface)', color: 'var(--text)', fontSize: '0.74rem' }}
@@ -87,7 +90,10 @@ export const BobaZhLab: React.FC<Props> = ({ onEarnXp }) => {
             <option value="珍珠奶茶">珍珠奶茶</option>
           </select>
 
+          <label htmlFor="boba-sweetness" className="sr-only">甜度</label>
           <select
+            id="boba-sweetness"
+            aria-label="甜度"
             value={sweetness}
             onChange={(e) => setSweetness(e.target.value)}
             style={{ padding: '0.3rem 0.45rem', borderRadius: '6px', border: '1px solid var(--line)', background: 'var(--surface)', color: 'var(--text)', fontSize: '0.74rem' }}
@@ -99,7 +105,10 @@ export const BobaZhLab: React.FC<Props> = ({ onEarnXp }) => {
             <option value="全糖 (十分糖)">全糖 (十分)</option>
           </select>
 
+          <label htmlFor="boba-ice-level" className="sr-only">冰量</label>
           <select
+            id="boba-ice-level"
+            aria-label="冰量"
             value={iceLevel}
             onChange={(e) => setIceLevel(e.target.value)}
             style={{ padding: '0.3rem 0.45rem', borderRadius: '6px', border: '1px solid var(--line)', background: 'var(--surface)', color: 'var(--text)', fontSize: '0.74rem' }}
@@ -112,7 +121,10 @@ export const BobaZhLab: React.FC<Props> = ({ onEarnXp }) => {
             <option value="溫熱">溫熱</option>
           </select>
 
+          <label htmlFor="boba-topping" className="sr-only">加料</label>
           <select
+            id="boba-topping"
+            aria-label="加料"
             value={topping}
             onChange={(e) => setTopping(e.target.value)}
             style={{ padding: '0.3rem 0.45rem', borderRadius: '6px', border: '1px solid var(--line)', background: 'var(--surface)', color: 'var(--text)', fontSize: '0.74rem' }}
