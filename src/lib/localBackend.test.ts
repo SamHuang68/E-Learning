@@ -18,6 +18,8 @@ import {
 import { defaultMathProgress, loadMathProgress, saveMathProgress } from '../math/utils/mathStorage'
 import { defaultPhysicsProgress, loadPhysicsProgress, savePhysicsProgress } from '../physics/utils/physicsStorage'
 import { defaultChemistryProgress, loadChemistryProgress, saveChemistryProgress } from '../chemistry/utils/chemistryStorage'
+import { DEFAULT_CS_PROGRESS, loadCsProgress, saveCsProgress } from '../cs/utils/csStorage'
+import { defaultChineseProgress, loadChineseProgress, saveChineseProgress } from '../chinese/utils/chineseStorage'
 import { LOCAL_PREFERENCE_KEYS, PROGRESS_STORAGE_KEYS } from '../utils/progressKeys'
 
 class MemoryStorage {
@@ -47,6 +49,9 @@ function installBrowserGlobals() {
     new MemoryStorage() as unknown as Storage
   ;(globalThis as unknown as { window: unknown }).window = {
     location: { hash: '' },
+    dispatchEvent: () => true,
+    addEventListener: () => {},
+    removeEventListener: () => {},
   }
 }
 
@@ -236,6 +241,8 @@ describe('progress sync via cloudProgress (offline)', () => {
     saveMathProgress({ ...defaultMathProgress(), xp: 31 })
     savePhysicsProgress({ ...defaultPhysicsProgress(), xp: 32 })
     saveChemistryProgress({ ...defaultChemistryProgress(), xp: 33 })
+    saveCsProgress({ ...DEFAULT_CS_PROGRESS, xp: 34, completedQuestions: ['cs-1'] })
+    saveChineseProgress({ ...defaultChineseProgress(), xp: 35, masteredPinyin: ['bo'] })
     expect(loadToeicProgress().xp).toBe(50)
 
     // First login: no cloud row yet -> migrate local up to the backend.
@@ -261,6 +268,8 @@ describe('progress sync via cloudProgress (offline)', () => {
       math: defaultMathProgress(),
       physics: defaultPhysicsProgress(),
       chemistry: defaultChemistryProgress(),
+      cs: DEFAULT_CS_PROGRESS,
+      chinese: defaultChineseProgress(),
       lang: 'hub',
       meta: defaultLearningMeta(),
     })
@@ -273,5 +282,9 @@ describe('progress sync via cloudProgress (offline)', () => {
     expect(loadMathProgress().xp).toBe(31)
     expect(loadPhysicsProgress().xp).toBe(32)
     expect(loadChemistryProgress().xp).toBe(33)
+    expect(loadCsProgress().xp).toBe(34)
+    expect(loadChineseProgress().xp).toBe(35)
+    expect(loadCsProgress().completedQuestions).toEqual(['cs-1'])
+    expect(loadChineseProgress().masteredPinyin).toEqual(['bo'])
   })
 })

@@ -522,7 +522,7 @@ export function appendLearningEvent(
 }
 
 export type ProgressExportBundle = {
-  version: 2 | 3
+  version: 2 | 3 | 4
   exportedAt: string
   aoba: ProgressState
   kana: KanaProgress
@@ -530,35 +530,47 @@ export type ProgressExportBundle = {
   math?: unknown
   physics?: unknown
   chemistry?: unknown
+  cs?: unknown
+  chinese?: unknown
+  mathSignals?: unknown
+  physicsSignals?: unknown
+  chemistrySignals?: unknown
+  csSignals?: unknown
   lang: AppView
   meta: LearningMeta
 }
 
+function readProgressJson(key: string): unknown {
+  try {
+    const raw = localStorage.getItem(key)
+    return raw ? JSON.parse(raw) : null
+  } catch {
+    return null
+  }
+}
+
+function writeProgressJson(key: string, value: unknown) {
+  if (value === undefined || value === null) return
+  localStorage.setItem(key, JSON.stringify(value))
+}
+
 /** Progress-only export. Never includes Groq API key or builder presets. */
 export function exportProgressBundle(): ProgressExportBundle {
-  let mathData: unknown = null
-  let physicsData: unknown = null
-  let chemistryData: unknown = null
-  try {
-    const rawM = localStorage.getItem(PROGRESS_STORAGE_KEYS.math)
-    if (rawM) mathData = JSON.parse(rawM)
-    const rawP = localStorage.getItem(PROGRESS_STORAGE_KEYS.physics)
-    if (rawP) physicsData = JSON.parse(rawP)
-    const rawC = localStorage.getItem(PROGRESS_STORAGE_KEYS.chemistry)
-    if (rawC) chemistryData = JSON.parse(rawC)
-  } catch {
-    /* ignore */
-  }
-
   return {
-    version: 3,
+    version: 4,
     exportedAt: new Date().toISOString(),
     aoba: loadProgress(),
     kana: loadKanaProgress(),
     toeic: loadToeicProgress(),
-    math: mathData,
-    physics: physicsData,
-    chemistry: chemistryData,
+    math: readProgressJson(PROGRESS_STORAGE_KEYS.math),
+    physics: readProgressJson(PROGRESS_STORAGE_KEYS.physics),
+    chemistry: readProgressJson(PROGRESS_STORAGE_KEYS.chemistry),
+    cs: readProgressJson(PROGRESS_STORAGE_KEYS.cs),
+    chinese: readProgressJson(PROGRESS_STORAGE_KEYS.chinese),
+    mathSignals: readProgressJson(PROGRESS_STORAGE_KEYS.mathSignals),
+    physicsSignals: readProgressJson(PROGRESS_STORAGE_KEYS.physicsSignals),
+    chemistrySignals: readProgressJson(PROGRESS_STORAGE_KEYS.chemistrySignals),
+    csSignals: readProgressJson(PROGRESS_STORAGE_KEYS.csSignals),
     lang: loadLang(),
     meta: loadLearningMeta(),
   }
@@ -568,7 +580,7 @@ export function importProgressBundle(raw: unknown): boolean {
   if (!raw || typeof raw !== 'object') return false
   const data = raw as Record<string, unknown>
   const version = data.version
-  if (version !== 1 && version !== 2 && version !== 3) return false
+  if (version !== 1 && version !== 2 && version !== 3 && version !== 4) return false
   if (!data.aoba || !data.kana || !data.toeic) return false
 
   applyCloudBundle({
@@ -578,6 +590,12 @@ export function importProgressBundle(raw: unknown): boolean {
     math: data.math,
     physics: data.physics,
     chemistry: data.chemistry,
+    cs: data.cs,
+    chinese: data.chinese ?? data.zh,
+    mathSignals: data.mathSignals,
+    physicsSignals: data.physicsSignals,
+    chemistrySignals: data.chemistrySignals,
+    csSignals: data.csSignals,
     lang: normalizeLang(typeof data.lang === 'string' ? data.lang : null) ?? 'hub',
     meta: normalizeLearningMeta(data.meta),
   })
@@ -593,6 +611,12 @@ export function applyCloudBundle(bundle: {
   math?: unknown
   physics?: unknown
   chemistry?: unknown
+  cs?: unknown
+  chinese?: unknown
+  mathSignals?: unknown
+  physicsSignals?: unknown
+  chemistrySignals?: unknown
+  csSignals?: unknown
   lang: AppView
   meta?: LearningMeta
 }) {
@@ -605,15 +629,15 @@ export function applyCloudBundle(bundle: {
     TOEIC_PROGRESS_KEY,
     JSON.stringify({ ...defaultToeicProgress(), ...bundle.toeic }),
   )
-  if (bundle.math) {
-    localStorage.setItem(PROGRESS_STORAGE_KEYS.math, JSON.stringify(bundle.math))
-  }
-  if (bundle.physics) {
-    localStorage.setItem(PROGRESS_STORAGE_KEYS.physics, JSON.stringify(bundle.physics))
-  }
-  if (bundle.chemistry) {
-    localStorage.setItem(PROGRESS_STORAGE_KEYS.chemistry, JSON.stringify(bundle.chemistry))
-  }
+  writeProgressJson(PROGRESS_STORAGE_KEYS.math, bundle.math)
+  writeProgressJson(PROGRESS_STORAGE_KEYS.physics, bundle.physics)
+  writeProgressJson(PROGRESS_STORAGE_KEYS.chemistry, bundle.chemistry)
+  writeProgressJson(PROGRESS_STORAGE_KEYS.cs, bundle.cs)
+  writeProgressJson(PROGRESS_STORAGE_KEYS.chinese, bundle.chinese)
+  writeProgressJson(PROGRESS_STORAGE_KEYS.mathSignals, bundle.mathSignals)
+  writeProgressJson(PROGRESS_STORAGE_KEYS.physicsSignals, bundle.physicsSignals)
+  writeProgressJson(PROGRESS_STORAGE_KEYS.chemistrySignals, bundle.chemistrySignals)
+  writeProgressJson(PROGRESS_STORAGE_KEYS.csSignals, bundle.csSignals)
   localStorage.setItem(
     LEARNING_META_KEY,
     JSON.stringify(normalizeLearningMeta(bundle.meta)),

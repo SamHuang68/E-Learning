@@ -13,6 +13,8 @@ create table if not exists public.user_progress (
   math jsonb not null default '{}'::jsonb,
   physics jsonb not null default '{}'::jsonb,
   chemistry jsonb not null default '{}'::jsonb,
+  cs jsonb not null default '{}'::jsonb,
+  chinese jsonb not null default '{}'::jsonb,
   lang text not null default 'hub',
   meta jsonb not null default '{}'::jsonb,
   updated_at timestamptz not null default now()
