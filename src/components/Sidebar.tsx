@@ -2,6 +2,8 @@ import type { CSSProperties } from 'react'
 import type { JlptLevel, Unit } from '../data/course'
 import type { LangId } from '../utils/storage'
 import { TrackSwitcher } from './TrackSwitcher'
+import { useI18n } from '../i18n/i18n'
+import { jlptTierLabel } from '../i18n/jlptChrome'
 
 export type NavId =
   | 'kana'
@@ -28,21 +30,21 @@ type Props = {
   onSwitchLang: (lang: LangId) => void
 }
 
-const items: { id: NavId; icon: string; label: string }[] = [
-  { id: 'today', icon: '日', label: '今日學習' },
-  { id: 'kana', icon: 'あ', label: '五十音' },
-  { id: 'vocab', icon: 'Aa', label: '單字練習' },
-  { id: 'grammar', icon: '文', label: '文法教室' },
+const ITEM_KEYS: Array<{ id: NavId; icon: string; labelKey: 'ja.nav.today' | 'ja.nav.kana' | 'ja.nav.vocab' | 'ja.nav.grammar' }> = [
+  { id: 'today', icon: '日', labelKey: 'ja.nav.today' },
+  { id: 'kana', icon: 'あ', labelKey: 'ja.nav.kana' },
+  { id: 'vocab', icon: 'Aa', labelKey: 'ja.nav.vocab' },
+  { id: 'grammar', icon: '文', labelKey: 'ja.nav.grammar' },
 ]
 
-const moreItems: { id: NavId; icon: string; label: string }[] = [
-  { id: 'signals', icon: '判', label: '句型判準' },
-  { id: 'builder', icon: '設', label: '課程設計器' },
-  { id: 'placement', icon: '級', label: '分級測驗' },
-  { id: 'mock', icon: '模', label: '模擬測驗' },
-  { id: 'kanji', icon: '漢', label: '漢字實驗室' },
-  { id: 'scenario', icon: '場', label: '情境任務' },
-  { id: 'speaking', icon: '話', label: '口說跟讀' },
+const MORE_KEYS: Array<{ id: NavId; icon: string; labelKey: 'ja.nav.signals' | 'ja.nav.builder' | 'ja.nav.placement' | 'ja.nav.mock' | 'ja.nav.kanji' | 'ja.nav.scenario' | 'ja.nav.speaking' }> = [
+  { id: 'signals', icon: '判', labelKey: 'ja.nav.signals' },
+  { id: 'builder', icon: '設', labelKey: 'ja.nav.builder' },
+  { id: 'placement', icon: '級', labelKey: 'ja.nav.placement' },
+  { id: 'mock', icon: '模', labelKey: 'ja.nav.mock' },
+  { id: 'kanji', icon: '漢', labelKey: 'ja.nav.kanji' },
+  { id: 'scenario', icon: '場', labelKey: 'ja.nav.scenario' },
+  { id: 'speaking', icon: '話', labelKey: 'ja.nav.speaking' },
 ]
 
 export function Sidebar({
@@ -56,6 +58,7 @@ export function Sidebar({
   onBackHub,
   onSwitchLang,
 }: Props) {
+  const { t } = useI18n()
   return (
     <aside className="sidebar">
       <TrackSwitcher current="ja" onBackHub={onBackHub} onSwitchLang={onSwitchLang} />
@@ -64,13 +67,13 @@ export function Sidebar({
           あ
         </div>
         <div>
-          <strong>あおば Aoba</strong>
-          <span>JLPT 級距學習</span>
+          <strong>{t('ja.brand')}</strong>
+          <span>{t('ja.brandSub')}</span>
         </div>
       </div>
 
-      <nav aria-label="主選單">
-        {items.map((item) => (
+      <nav aria-label={t('nav.jaAria')}>
+        {ITEM_KEYS.map((item) => (
           <button
             key={item.id}
             type="button"
@@ -79,11 +82,11 @@ export function Sidebar({
             onClick={() => onNav(item.id)}
           >
             <span>{item.icon}</span>
-            {item.label}
+            {t(item.labelKey)}
           </button>
         ))}
-        <p className="nav-heading">更多</p>
-        {moreItems.map((item) => (
+        <p className="nav-heading">{t('nav.more')}</p>
+        {MORE_KEYS.map((item) => (
           <button
             key={item.id}
             type="button"
@@ -92,16 +95,16 @@ export function Sidebar({
             onClick={() => onNav(item.id)}
           >
             <span>{item.icon}</span>
-            {item.label}
+            {t(item.labelKey)}
           </button>
         ))}
       </nav>
 
       <div className="course-summary">
         <p className="eyebrow">FOUNDATION</p>
-        <strong>五十音進度</strong>
+        <strong>{t('ja.kanaProgress')}</strong>
         <span>
-          已掌握 {kanaMastered}/{kanaTotal} · 平／片假名（非學校必修補強）
+          {t('ja.kanaMeta', { done: kanaMastered, total: kanaTotal })}
         </span>
         <div className="kana-progress-bar" aria-hidden="true">
           <i
@@ -124,12 +127,12 @@ export function Sidebar({
         >
           <strong>
             {level.band}
-            <small>{level.tier}</small>
+            <small>{jlptTierLabel(level.tier, t)}</small>
           </strong>
           <span>{level.scoreHint}</span>
         </div>
         <span style={{ display: 'block', marginTop: '0.45rem' }}>
-          本課 {unit.words} Words · Unit {unit.id}
+          {t('ja.unitMeta', { words: unit.words, id: unit.id })}
         </span>
         <div className="unit-dots" aria-hidden="true">
           {level.units.map((u) => (

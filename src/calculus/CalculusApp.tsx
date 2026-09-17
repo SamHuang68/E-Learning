@@ -10,6 +10,7 @@ import { useCalculusLearningCoordinator } from '../math/calculus/hooks/useCalcul
 import { CALCULUS_BADGES } from '../math/calculus/data/calculusBadges'
 import type { CalculusLabMode, RiemannMethod, CalculusProblem } from '../math/calculus/types'
 import type { LangId } from '../utils/storage'
+import { useI18n } from '../i18n/i18n'
 
 type Props = {
   onBackHub: () => void
@@ -32,6 +33,7 @@ const PRESET_FORMULAS = [
  * 提供 7 大幾何動態實驗室、符號推導解題器、4 階 IRT 自適應挑戰與微認證成就館。
  */
 export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
+  const { t } = useI18n()
   const [activeNav, setActiveNav] = useState<CalculusNavId>('canvas_lab')
   const [mode, setMode] = useState<CalculusLabMode>('tangent_secant')
   const [expression, setExpression] = useState<string>('x^2 - 2*x + 2')
@@ -80,10 +82,13 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
   }
 
   const navLabelMap: Record<CalculusNavId, string> = {
-    canvas_lab: '幾何動態實驗室',
-    step_solver: '步驟式推導解題器',
-    adaptive_practice: '4 階練習（本機 IRT 估計）',
-    badges: '微認證成就館',
+    canvas_lab: t('calculus.canvas'),
+    step_solver: t('calculus.solver'),
+    adaptive_practice: t('calculus.practiceNav'),
+    badges: t('calculus.badges', {
+      unlocked: newlyUnlockedBadges.length,
+      total: CALCULUS_BADGES.length,
+    }),
   }
 
   return (
@@ -105,7 +110,7 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         {/* 頂部導航軌跡麵包屑 */}
         <Breadcrumbs
           items={[
-            { label: '∫ 微積分互動專題', onClick: () => setActiveNav('canvas_lab') },
+            { label: t('calculus.crumb'), onClick: () => setActiveNav('canvas_lab') },
             { label: navLabelMap[activeNav], active: true },
           ]}
         />
@@ -114,15 +119,15 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         <header className="topbar calculus-topbar">
           <div>
             <p className="eyebrow">
-              臺灣 108 課綱數甲 · AP Calculus BC · 大一微積分先修
+              {t('calculus.eyebrow')}
             </p>
-            <h1>∫ 微積分互動專題 (Calculus Studio)</h1>
+            <h1>∫ {t('calculus.brand')} (Calculus Studio)</h1>
           </div>
 
           <div className="header-actions">
             {/* 預設公式快速挑選 */}
             <label className="unit-select formula-select" htmlFor="calculus-preset-fn">
-              <span>示範函數</span>
+              <span>{t('calculus.demoFn')}</span>
               <select
                 id="calculus-preset-fn"
                 value={expression}
@@ -136,14 +141,14 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
               </select>
             </label>
 
-            <div className="theta-indicator" title="本機 2PL IRT 估計，非正式能力鑑定">
-              <small>本機 IRT 估計 θ</small>
+            <div className="theta-indicator" title={t('calculus.thetaTitle')}>
+              <small>{t('calculus.theta')}</small>
               <strong>{currentTheta >= 0 ? `+${currentTheta.toFixed(2)}` : currentTheta.toFixed(2)}</strong>
             </div>
 
             <div className="xp">
               <span>★</span>
-              <strong>本次工作階段</strong>
+              <strong>{t('calculus.session')}</strong>
             </div>
           </div>
         </header>

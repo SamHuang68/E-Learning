@@ -1,4 +1,6 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react'
+import { loadUiLocale } from '../i18n/locale'
+import { translate } from '../i18n/messages'
 
 type Props = {
   children: ReactNode
@@ -22,6 +24,8 @@ export class ErrorBoundary extends Component<Props, State> {
 
   render() {
     if (this.state.error) {
+      const t = (key: Parameters<typeof translate>[1], vars?: Record<string, string | number>) =>
+        translate(loadUiLocale(), key, vars)
       const isChunkError =
         this.state.error.message.includes('dynamically imported module') ||
         this.state.error.message.includes('Failed to fetch') ||
@@ -29,14 +33,14 @@ export class ErrorBoundary extends Component<Props, State> {
 
       return (
         <div className="error-boundary" role="alert">
-          <p className="eyebrow">發生錯誤</p>
-          <h1>{isChunkError ? '系統已更新至新版本' : '模組載入或執行失敗'}</h1>
+          <p className="eyebrow">{t('error.eyebrow')}</p>
+          <h1>{isChunkError ? t('error.chunkTitle') : t('error.failTitle')}</h1>
           <p className="lede">
             {isChunkError
-              ? '網站剛發布了最新更新，瀏覽器需重新整理以載入最新學習資源。'
+              ? t('error.chunkBody')
               : this.props.label
-                ? `「${this.props.label}」暫時無法顯示。`
-                : '畫面暫時無法顯示。'}
+                ? t('error.moduleBody', { label: this.props.label })
+                : t('error.genericBody')}
           </p>
           <p className="error-boundary-detail">{this.state.error.message}</p>
           <div className="error-boundary-actions">
@@ -51,10 +55,10 @@ export class ErrorBoundary extends Component<Props, State> {
                 }
               }}
             >
-              {isChunkError ? '🔄 立即載入最新版' : '重試'}
+              {isChunkError ? t('error.reload') : t('common.retry')}
             </button>
             <a className="auth-btn ghost" href="#hub" onClick={() => this.setState({ error: null })}>
-              回 Hub
+              {t('error.backHub')}
             </a>
           </div>
         </div>

@@ -2,6 +2,7 @@ import React from 'react'
 import type { LangId } from '../../utils/storage'
 import type { CalculusLabMode } from '../../math/calculus/types'
 import { TrackSwitcher } from '../../components/TrackSwitcher'
+import { useI18n } from '../../i18n/i18n'
 
 export type CalculusNavId = 'canvas_lab' | 'step_solver' | 'adaptive_practice' | 'badges'
 
@@ -16,64 +17,6 @@ type Props = {
   onBackHub: () => void
   onSwitchLang: (lang: LangId) => void
 }
-
-const CALCULUS_UNITS: Array<{
-  id: CalculusLabMode
-  unitNum: number
-  title: string
-  subtitle: string
-  icon: string
-}> = [
-  {
-    id: 'limit_epsilon',
-    unitNum: 1,
-    title: '極限與連續性逼近',
-    subtitle: 'ε-δ 動態定義與夾擠',
-    icon: '🎯',
-  },
-  {
-    id: 'tangent_secant',
-    unitNum: 2,
-    title: '導數與割線切線逼近',
-    subtitle: '割線斜率趨近瞬時變化率',
-    icon: '📈',
-  },
-  {
-    id: 'optimization_mvt',
-    unitNum: 3,
-    title: '均值定理與極值最佳化',
-    subtitle: 'Rolle 定理與臨界點切線',
-    icon: '⚖️',
-  },
-  {
-    id: 'riemann_sum',
-    unitNum: 4,
-    title: '黎曼和與定積分面積',
-    subtitle: '矩形分割、梯形法與誤差',
-    icon: '📊',
-  },
-  {
-    id: 'ftc_accumulation',
-    unitNum: 5,
-    title: '微積分基本定理 (FTC)',
-    subtitle: '累積面積變化率與原函數',
-    icon: '🔄',
-  },
-  {
-    id: 'solids_revolution',
-    unitNum: 6,
-    title: '旋轉體體積切片',
-    subtitle: '圓盤法與薄殼法 3D 展開',
-    icon: '🍩',
-  },
-  {
-    id: 'taylor_series',
-    unitNum: 7,
-    title: '泰勒級數多項式逼近',
-    subtitle: '高階導數與局部多項式擬合',
-    icon: '✨',
-  },
-]
 
 /**
  * 微積分專屬左側導覽列 (CalculusSidebar)
@@ -90,21 +33,37 @@ export const CalculusSidebar: React.FC<Props> = ({
   onBackHub,
   onSwitchLang,
 }) => {
+  const { t } = useI18n()
+  const CALCULUS_UNITS_I18N: Array<{
+    id: CalculusLabMode
+    unitNum: number
+    title: string
+    subtitle: string
+    icon: string
+  }> = [
+    { id: 'limit_epsilon', unitNum: 1, title: t('calculus.u1.title'), subtitle: t('calculus.u1.sub'), icon: '🎯' },
+    { id: 'tangent_secant', unitNum: 2, title: t('calculus.u2.title'), subtitle: t('calculus.u2.sub'), icon: '📈' },
+    { id: 'optimization_mvt', unitNum: 3, title: t('calculus.u3.title'), subtitle: t('calculus.u3.sub'), icon: '⚖️' },
+    { id: 'riemann_sum', unitNum: 4, title: t('calculus.u4.title'), subtitle: t('calculus.u4.sub'), icon: '📊' },
+    { id: 'ftc_accumulation', unitNum: 5, title: t('calculus.u5.title'), subtitle: t('calculus.u5.sub'), icon: '🔄' },
+    { id: 'solids_revolution', unitNum: 6, title: t('calculus.u6.title'), subtitle: t('calculus.u6.sub'), icon: '🍩' },
+    { id: 'taylor_series', unitNum: 7, title: t('calculus.u7.title'), subtitle: t('calculus.u7.sub'), icon: '✨' },
+  ]
   return (
     <aside className="sidebar calculus-sidebar">
       <TrackSwitcher current="calculus" onBackHub={onBackHub} onSwitchLang={onSwitchLang} />
       {/* 品牌標誌 */}
-      <button type="button" className="brand brand-button" onClick={() => onNav('canvas_lab')} aria-label="返回微積分幾何實驗室">
+      <button type="button" className="brand brand-button" onClick={() => onNav('canvas_lab')} aria-label={t('calculus.backLab')}>
         <div className="brand-mark calculus-mark">∫</div>
         <div>
-          <strong>微積分互動專題</strong>
-          <span className="brand-sub">Calculus Studio</span>
+          <strong>{t('calculus.brand')}</strong>
+          <span className="brand-sub">{t('calculus.brandSub')}</span>
         </div>
       </button>
 
       {/* 主功能導覽 */}
-      <nav className="nav-group" aria-label="微積分核心功能">
-        <p className="nav-heading">微積分工作台</p>
+      <nav className="nav-group" aria-label={t('nav.calculusAria')}>
+        <p className="nav-heading">{t('calculus.workbench')}</p>
         <button
           type="button"
           className={`nav-item ${activeNav === 'canvas_lab' ? 'active' : ''}`}
@@ -112,7 +71,7 @@ export const CalculusSidebar: React.FC<Props> = ({
           aria-current={activeNav === 'canvas_lab' ? 'page' : undefined}
         >
           <span className="nav-icon">🎨</span>
-          <span className="nav-label">幾何動態實驗室 (Canvas)</span>
+          <span className="nav-label">{t('calculus.canvas')}</span>
         </button>
         <button
           type="button"
@@ -121,7 +80,7 @@ export const CalculusSidebar: React.FC<Props> = ({
           aria-current={activeNav === 'step_solver' ? 'page' : undefined}
         >
           <span className="nav-icon">📝</span>
-          <span className="nav-label">步驟式推導解題器</span>
+          <span className="nav-label">{t('calculus.solver')}</span>
         </button>
         <button
           type="button"
@@ -130,7 +89,7 @@ export const CalculusSidebar: React.FC<Props> = ({
           aria-current={activeNav === 'adaptive_practice' ? 'page' : undefined}
         >
           <span className="nav-icon">🎯</span>
-          <span className="nav-label">4 階練習（本機 θ: {currentTheta >= 0 ? `+${currentTheta.toFixed(2)}` : currentTheta.toFixed(2)}）</span>
+          <span className="nav-label">{t('calculus.practice', { theta: currentTheta >= 0 ? `+${currentTheta.toFixed(2)}` : currentTheta.toFixed(2) })}</span>
         </button>
         <button
           type="button"
@@ -139,14 +98,14 @@ export const CalculusSidebar: React.FC<Props> = ({
           aria-current={activeNav === 'badges' ? 'page' : undefined}
         >
           <span className="nav-icon">🏆</span>
-          <span className="nav-label">微認證成就館 ({unlockedBadgeCount}/{totalBadgeCount})</span>
+          <span className="nav-label">{t('calculus.badges', { unlocked: unlockedBadgeCount, total: totalBadgeCount })}</span>
         </button>
       </nav>
 
       {/* 7 大課題快速導覽 */}
-      <nav className="nav-group calculus-units-nav" aria-label="微積分核心課題">
-        <p className="nav-heading">7 大核心課題教具</p>
-        {CALCULUS_UNITS.map((u) => {
+      <nav className="nav-group calculus-units-nav" aria-label={t('calculus.unitsAria')}>
+        <p className="nav-heading">{t('calculus.units')}</p>
+        {CALCULUS_UNITS_I18N.map((u) => {
           const isSelected = activeNav === 'canvas_lab' && currentMode === u.id
           return (
             <button
@@ -161,7 +120,7 @@ export const CalculusSidebar: React.FC<Props> = ({
             >
               <span className="nav-icon">{u.icon}</span>
               <div className="unit-nav-label">
-                <strong>單元 {u.unitNum} · {u.title}</strong>
+                <strong>{t('calculus.unitLabel', { n: u.unitNum, title: u.title })}</strong>
                 <small>{u.subtitle}</small>
               </div>
             </button>
@@ -172,3 +131,4 @@ export const CalculusSidebar: React.FC<Props> = ({
   )
 }
 export default CalculusSidebar
+

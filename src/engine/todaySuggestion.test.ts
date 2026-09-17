@@ -9,6 +9,8 @@ describe('pickTodaySuggestion', () => {
       hasProgress: true,
     })
     expect(suggestion.id).toBe('en')
+    expect(suggestion.reasonKey).toBe('due')
+    expect(suggestion.dueCount).toBe(3)
     expect(suggestion.reason).toContain('到期複習')
   })
 
@@ -19,6 +21,7 @@ describe('pickTodaySuggestion', () => {
       hasProgress: true,
     })
     expect(suggestion.id).toBe('physics')
+    expect(suggestion.reasonKey).toBe('resume')
     expect(suggestion.reason).toBe('繼續上次軌道')
   })
 
@@ -29,6 +32,7 @@ describe('pickTodaySuggestion', () => {
       hasProgress: false,
     })
     expect(suggestion.id).toBe('math')
+    expect(suggestion.reasonKey).toBe('catalog')
     expect(suggestion.reason).toContain('目錄起點')
   })
 })

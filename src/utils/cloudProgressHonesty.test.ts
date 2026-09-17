@@ -2,9 +2,12 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { getSupabase } from '../lib/supabase'
 import {
   __setCloudProgressBackendForTests,
+  flushCloudPush,
   getSyncStatus,
   hydrateFromCloud,
+  pushProgressNow,
   setCloudUserId,
+  subscribeSyncStatus,
 } from './cloudProgress'
 import {
   defaultKanaProgress,
@@ -231,5 +234,112 @@ describe('cloud progress honesty (Host Gate R1–R3)', () => {
     expect(upsertedXp.at(-1)).toBe(25)
     const stored = await inner.from('user_progress').select('*').eq('user_id', userId).maybeSingle()
     expect((stored.data as { toeic?: { xp?: number } } | null)?.toeic?.xp).toBe(25)
+  })
+})
+
+describe('cloud progress honesty (concurrent push revision)', () => {
+  it('R4: a slower older upsert must not emit synced or leave cloud behind a newer payload', async () => {
+    const userId = 'race-revision-user'
+    saveToeicProgress({ ...defaultToeicProgress(), xp: 5 })
+    const inner = getSupabase()!
+    setCloudUserId(userId)
+    expect(await hydrateFromCloud(userId)).toBe('migrated')
+    expect(getSyncStatus()).toBe('synced')
+
+    let releaseFirst!: () => void
+    const firstGate = new Promise<void>((resolve) => {
+      releaseFirst = resolve
+    })
+    let firstStarted!: () => void
+    const firstStartedGate = new Promise<void>((resolve) => {
+      firstStarted = resolve
+    })
+    let delayWriteThrough = false
+    const upsertedXp: number[] = []
+    const syncedAtXp: number[] = []
+    const unsub = subscribeSyncStatus((status) => {
+      if (status === 'synced') syncedAtXp.push(loadToeicProgress().xp)
+    })
+
+    __setCloudProgressBackendForTests(
+      wrapProgressBackend(inner, {
+        async beforeUpsert(row) {
+          const xp = Number((row.toeic as { xp?: number } | undefined)?.xp) || 0
+          upsertedXp.push(xp)
+          if (delayWriteThrough && xp === 10) {
+            firstStarted()
+            await firstGate
+          }
+        },
+      }),
+    )
+
+    delayWriteThrough = true
+    saveToeicProgress({ ...defaultToeicProgress(), xp: 10 })
+    const older = pushProgressNow()
+    await firstStartedGate
+    saveToeicProgress({ ...defaultToeicProgress(), xp: 99 })
+    const newer = pushProgressNow()
+    releaseFirst()
+    const [olderOk, newerOk] = await Promise.all([older, newer])
+    await flushCloudPush()
+    unsub()
+
+    expect(newerOk).toBe(true)
+    expect(olderOk === true || getSyncStatus() === 'synced').toBe(true)
+    expect(getSyncStatus()).toBe('synced')
+    expect(upsertedXp.filter((xp) => xp === 10 || xp === 99).at(-1)).toBe(99)
+    expect(syncedAtXp.at(-1)).toBe(99)
+    const stored = await inner.from('user_progress').select('*').eq('user_id', userId).maybeSingle()
+    expect((stored.data as { toeic?: { xp?: number } } | null)?.toeic?.xp).toBe(99)
+  })
+
+  it('R5: mutation during an in-flight push keeps dirty until the latest revision lands', async () => {
+    const userId = 'stale-completion-user'
+    saveToeicProgress({ ...defaultToeicProgress(), xp: 3 })
+    const inner = getSupabase()!
+    setCloudUserId(userId)
+    expect(await hydrateFromCloud(userId)).toBe('migrated')
+
+    let release!: () => void
+    const gate = new Promise<void>((resolve) => {
+      release = resolve
+    })
+    let started!: () => void
+    const startedGate = new Promise<void>((resolve) => {
+      started = resolve
+    })
+    let delayWriteThrough = false
+    const statuses: string[] = []
+    const unsub = subscribeSyncStatus((status) => {
+      statuses.push(status)
+    })
+
+    __setCloudProgressBackendForTests(
+      wrapProgressBackend(inner, {
+        async beforeUpsert(row) {
+          const xp = Number((row.toeic as { xp?: number } | undefined)?.xp) || 0
+          if (delayWriteThrough && xp === 20) {
+            started()
+            await gate
+          }
+        },
+      }),
+    )
+
+    delayWriteThrough = true
+    saveToeicProgress({ ...defaultToeicProgress(), xp: 20 })
+    const push = pushProgressNow()
+    await startedGate
+    saveToeicProgress({ ...defaultToeicProgress(), xp: 40 })
+    expect(getSyncStatus()).toBe('syncing')
+    release()
+    expect(await push).toBe(true)
+    unsub()
+    expect(getSyncStatus()).toBe('synced')
+    expect(statuses.includes('synced')).toBe(true)
+    const stored = await inner.from('user_progress').select('*').eq('user_id', userId).maybeSingle()
+    expect((stored.data as { toeic?: { xp?: number } } | null)?.toeic?.xp).toBe(40)
+    expect(loadToeicProgress().xp).toBe(40)
   })
 })

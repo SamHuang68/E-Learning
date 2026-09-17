@@ -3064,7 +3064,8 @@ footer {
   .physics-shell,
   .chemistry-shell,
   .cs-shell,
-  .toeic-shell {
+  .toeic-shell,
+  .chinese-app-shell {
     grid-template-columns: minmax(0, 1fr) !important;
     height: auto !important;
     min-height: 100vh;
@@ -3077,7 +3078,8 @@ footer {
   .calculus-sidebar,
   .physics-sidebar,
   .chemistry-sidebar,
-  .cs-sidebar {
+  .cs-sidebar,
+  .chinese-sidebar {
     position: sticky;
     top: 0;
     height: auto !important;
@@ -3111,8 +3113,9 @@ footer {
   .math-sidebar nav,
   .calculus-sidebar nav,
   .physics-sidebar nav,
-  .chemistry-sidebar nav {
-    flex-direction: row;
+  .chemistry-sidebar nav,
+  .chinese-sidebar nav {
+    flex-direction: row !important;
     align-items: center;
     overflow-x: auto;
     width: 100%;
@@ -3135,7 +3138,8 @@ footer {
   .math-sidebar nav button,
   .calculus-sidebar nav button,
   .physics-sidebar nav button,
-  .chemistry-sidebar nav button {
+  .chemistry-sidebar nav button,
+  .chinese-sidebar nav button {
     flex: 0 0 auto;
     width: auto;
     white-space: nowrap;
@@ -8955,3 +8959,192 @@ html.high-contrast { filter: contrast(125%); }
   line-height: 1.45;
   color: var(--muted);
 }
+
+/* Post-PR#8: locale toggle + incremental chrome / mobile readability */
+.locale-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.18rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  flex-shrink: 0;
+}
+.locale-toggle button {
+  min-height: 36px;
+  min-width: 44px;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+.locale-toggle button.is-active {
+  background: var(--navy);
+  color: #fffcf7;
+}
+.locale-toggle.is-compact button {
+  min-height: 32px;
+  min-width: 40px;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.72rem;
+}
+
+.sidebar-chrome {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+.sidebar-chrome-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.35rem;
+  align-items: stretch;
+}
+.sidebar-chrome .hub-back {
+  min-height: 44px;
+  margin: 0;
+  border: 1px solid var(--line);
+  background: var(--surface-soft);
+  border-radius: 10px;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.82rem;
+  text-align: left;
+}
+
+.privacy-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.35rem;
+}
+
+.hub-today-block {
+  padding: 1.15rem 1.2rem 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: 0 6px 18px rgba(44, 38, 31, 0.04);
+}
+.hub-hero .lede {
+  max-width: 42rem;
+  line-height: 1.65;
+  color: var(--muted);
+}
+.hub-card-hit {
+  gap: 0.6rem;
+}
+.track-desc {
+  line-height: 1.55;
+}
+
+.chinese-app-shell {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--bg);
+}
+.chinese-main-content {
+  flex: 1;
+  min-width: 0;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 1.2rem 1.5rem;
+  background: var(--bg);
+}
+.chinese-lang-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.chinese-nav {
+  padding: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.zh-nav-title {
+  font-size: 0.84rem;
+  line-height: 1.2;
+}
+.zh-nav-sub {
+  font-size: 0.65rem;
+  color: var(--muted);
+  line-height: 1.2;
+}
+.chinese-sidebar,
+.cs-sidebar {
+  width: 260px;
+  min-width: 260px;
+  flex-shrink: 0;
+}
+.sidebar-brand-box {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--line);
+}
+.hub {
+  padding-bottom: 4.75rem;
+}
+
+@media (max-width: 390px) {
+  .hub {
+    padding: 1rem 0.85rem 4.75rem;
+  }
+  .hub-hero h1 {
+    font-size: 1.7rem;
+    line-height: 1.25;
+  }
+  .hub-card-hit {
+    padding: 1.05rem 1rem 0.9rem;
+  }
+  .privacy-page {
+    padding: 1.25rem 1rem 2.25rem;
+  }
+  .hub-today-block {
+    padding: 0.95rem 0.9rem 1.05rem;
+  }
+  .stat-card {
+    padding: 0.95rem 1rem;
+  }
+}
+
+@media (max-width: 860px) {
+  .chinese-app-shell {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+  .chinese-main-content {
+    height: auto;
+    overflow: visible;
+    padding: 1rem 0.85rem 4.5rem;
+  }
+  .chinese-sidebar,
+  .cs-sidebar {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    flex-shrink: 1;
+  }
+  .chinese-sidebar .sidebar-brand-box {
+    display: none;
+  }
+  .zh-nav-sub {
+    display: none;
+  }
+  .sidebar-chrome-row {
+    grid-template-columns: 1fr;
+  }
+}
+

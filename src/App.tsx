@@ -7,6 +7,7 @@ import { Hub } from './Hub'
 import { saveLang, type LangId } from './utils/storage'
 import { lazyWithRetry } from './utils/lazyWithRetry'
 import { parseTopViewHash, type TopView } from './utils/topRoute'
+import { LocaleProvider, useI18n } from './i18n/i18n'
 
 type ModuleAppProps = {
   onBackHub: () => void
@@ -15,47 +16,47 @@ type ModuleAppProps = {
 
 const MODULES: Record<
   Exclude<LangId, never>,
-  { label: string; App: LazyExoticComponent<ComponentType<ModuleAppProps>> }
+  { labelKey: 'app.module.ja' | 'app.module.en' | 'app.module.math' | 'app.module.calculus' | 'app.module.physics' | 'app.module.chemistry' | 'app.module.cs' | 'app.module.zh'; App: LazyExoticComponent<ComponentType<ModuleAppProps>> }
 > = {
   ja: {
-    label: '日語模組',
+    labelKey: 'app.module.ja',
     App: lazyWithRetry(() => import('./aoba/AobaApp').then((m) => ({ default: m.AobaApp })), 'aoba'),
   },
   en: {
-    label: '多益模組',
+    labelKey: 'app.module.en',
     App: lazyWithRetry(() => import('./toeic/ToeicApp').then((m) => ({ default: m.ToeicApp })), 'toeic'),
   },
   math: {
-    label: '臺灣數學模組',
+    labelKey: 'app.module.math',
     App: lazyWithRetry(() => import('./math/MathApp').then((m) => ({ default: m.MathApp })), 'math'),
   },
   calculus: {
-    label: '微積分模組',
+    labelKey: 'app.module.calculus',
     App: lazyWithRetry(
       () => import('./calculus/CalculusApp').then((m) => ({ default: m.CalculusApp })),
       'calculus',
     ),
   },
   physics: {
-    label: '臺灣物理模組',
+    labelKey: 'app.module.physics',
     App: lazyWithRetry(
       () => import('./physics/PhysicsApp').then((m) => ({ default: m.PhysicsApp })),
       'physics',
     ),
   },
   chemistry: {
-    label: '臺灣化學模組',
+    labelKey: 'app.module.chemistry',
     App: lazyWithRetry(
       () => import('./chemistry/ChemistryApp').then((m) => ({ default: m.ChemistryApp })),
       'chemistry',
     ),
   },
   cs: {
-    label: '計算機概論模組',
+    labelKey: 'app.module.cs',
     App: lazyWithRetry(() => import('./cs/CsApp').then((m) => ({ default: m.CsApp })), 'cs'),
   },
   zh: {
-    label: '華語模組',
+    labelKey: 'app.module.zh',
     App: lazyWithRetry(() => import('./chinese/ChineseApp').then((m) => ({ default: m.ChineseApp })), 'zh'),
   },
 }
@@ -65,14 +66,16 @@ function readTopView(): TopView {
 }
 
 function ModuleFallback() {
+  const { t } = useI18n()
   return (
     <div className="module-fallback" role="status">
-      載入學習模組…
+      {t('common.loadingModule')}
     </div>
   )
 }
 
 function AppShell() {
+  const { t } = useI18n()
   const [view, setView] = useState<TopView>(() => readTopView())
   const focusRoute = useRef(false)
 
@@ -87,16 +90,16 @@ function AppShell() {
 
   useEffect(() => {
     const titles: Record<TopView, string> = {
-      hub: 'E-Learning Hub',
-      math: '臺灣數學學習｜E-Learning Hub',
-      calculus: '微積分互動專題｜E-Learning Hub',
-      physics: '臺灣物理學習 (國中+高中)｜E-Learning Hub',
-      chemistry: '臺灣化學學習 (國中+高中)｜E-Learning Hub',
-      cs: '計算機概論 (軟硬體與現代AI)｜E-Learning Hub',
-      ja: '日本語學習｜E-Learning Hub',
-      en: 'TOEIC 英語學習｜E-Learning Hub',
-      zh: '台湾華語・中国語學習 (日本語で学ぶ)｜E-Learning Hub',
-      privacy: '隱私與資料說明｜E-Learning Hub',
+      hub: t('title.hub'),
+      math: t('title.math'),
+      calculus: t('title.calculus'),
+      physics: t('title.physics'),
+      chemistry: t('title.chemistry'),
+      cs: t('title.cs'),
+      ja: t('title.ja'),
+      en: t('title.en'),
+      zh: t('title.zh'),
+      privacy: t('title.privacy'),
     }
     document.title = titles[view]
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
@@ -130,7 +133,7 @@ function AppShell() {
       observer?.disconnect()
       if (timeoutId) window.clearTimeout(timeoutId)
     }
-  }, [view])
+  }, [view, t])
 
   function choose(next: LangId | 'hub') {
     focusRoute.current = true
@@ -152,7 +155,7 @@ function AppShell() {
   if (mod) {
     const ModuleApp = mod.App
     return (
-      <ErrorBoundary label={mod.label}>
+      <ErrorBoundary label={t(mod.labelKey)}>
         <Suspense fallback={<ModuleFallback />}>
           <ModuleApp onBackHub={() => choose('hub')} onSwitchLang={(lang: LangId) => choose(lang)} />
         </Suspense>
@@ -165,26 +168,35 @@ function AppShell() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <ErrorBoundary label="應用程式">
-        <a
-          className="skip-link"
-          href="#main-content"
-          onClick={(event) => {
-            event.preventDefault()
-            const main = document.querySelector<HTMLElement>('main')
-            if (main) {
-              main.id = 'main-content'
-              main.tabIndex = -1
-              main.focus()
-            }
-          }}
-        >
-          跳到主要內容
-        </a>
-        <AccessibilityControls />
-        <AppShell />
-      </ErrorBoundary>
-    </AuthProvider>
+    <LocaleProvider>
+      <AuthProvider>
+        <AppChrome />
+      </AuthProvider>
+    </LocaleProvider>
+  )
+}
+
+function AppChrome() {
+  const { t } = useI18n()
+  return (
+    <ErrorBoundary label={t('error.appLabel')}>
+      <a
+        className="skip-link"
+        href="#main-content"
+        onClick={(event) => {
+          event.preventDefault()
+          const main = document.querySelector<HTMLElement>('main')
+          if (main) {
+            main.id = 'main-content'
+            main.tabIndex = -1
+            main.focus()
+          }
+        }}
+      >
+        {t('common.skipToContent')}
+      </a>
+      <AccessibilityControls />
+      <AppShell />
+    </ErrorBoundary>
   )
 }

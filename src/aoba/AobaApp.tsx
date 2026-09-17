@@ -1,6 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useAuth } from '../auth/AuthContext'
+import { useI18n } from '../i18n/i18n'
+import type { MessageKey } from '../i18n/messages'
+import {
+  aobaLevelOptionLabel,
+  aobaUnitChromeTitle,
+  jlptTierLabel,
+} from '../i18n/jlptChrome'
 import { Breadcrumbs } from '../components/Breadcrumbs'
 import { KanaLab } from '../components/KanaLab'
 import { KanjiLab } from '../components/KanjiLab'
@@ -48,6 +55,7 @@ type Props = {
 
 export function AobaApp({ onBackHub, onSwitchLang }: Props) {
   const { user, syncStatus } = useAuth()
+  const { t, locale } = useI18n()
   const [nav, setNav] = useState<NavId>(() => {
     if (window.location.hash.includes('builder')) return 'builder'
     return 'today'
@@ -63,7 +71,7 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
     loadLearningMeta(),
   )
   const [builderSeed, setBuilderSeed] = useState<Partial<BuilderConfig>>()
-  const [speakingHint, setSpeakingHint] = useState('音訊待命')
+  const [audioLive, setAudioLive] = useState(false)
   const [kanaTotals, setKanaTotals] = useState(initialKanaTotals)
   const handleKanaProgress = useCallback((mastered: number, total: number) => {
     setKanaTotals((prev) =>
@@ -365,8 +373,8 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
         <KanaLab
           onXp={(amount) => {
             patchProgress({ xp: progress.xp + amount })
-            setSpeakingHint('導讀完成 +XP')
-            window.setTimeout(() => setSpeakingHint('音訊待命'), 1200)
+            setAudioLive(true)
+            window.setTimeout(() => setAudioLive(false), 1200)
           }}
           onProgressChange={handleKanaProgress}
         />
@@ -443,39 +451,40 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
     )
   }
 
-  const title = special
+  const titleKey: MessageKey = special
     ? special === 'review'
-      ? '今日複習'
+      ? 'ja.nav.review'
       : special === 'mock'
-        ? '模擬測驗'
-        : '分級測驗'
+        ? 'ja.nav.mock'
+        : 'ja.nav.placement'
     : practice
       ? practice === 'vocab'
-        ? '單字練習'
+        ? 'ja.nav.vocab'
         : practice === 'reading'
-          ? '閱讀練習'
-          : '文法教室'
+          ? 'ja.nav.reading'
+          : 'ja.nav.grammar'
       : nav === 'signals'
-        ? '句型動作判準 (3秒決策樹)'
+        ? 'ja.nav.signalsTree'
         : nav === 'kana'
-          ? '五十音教室'
+          ? 'ja.nav.kanaRoom'
           : nav === 'builder'
-            ? '課程設計器'
+            ? 'ja.nav.builder'
             : nav === 'vocab'
-              ? '單字練習'
+              ? 'ja.nav.vocab'
               : nav === 'grammar'
-                ? '文法教室'
+                ? 'ja.nav.grammar'
                 : nav === 'kanji'
-                  ? '漢字實驗室'
+                  ? 'ja.nav.kanji'
                   : nav === 'scenario'
-                    ? '情境任務'
+                    ? 'ja.nav.scenario'
                     : nav === 'speaking'
-                      ? '口說跟讀'
+                      ? 'ja.nav.speaking'
                       : nav === 'mock'
-                        ? '模擬測驗'
+                        ? 'ja.nav.mock'
                         : nav === 'placement'
-                          ? '分級測驗'
-                          : '今日學習'
+                          ? 'ja.nav.placement'
+                          : 'ja.nav.today'
+  const title = t(titleKey)
 
   const sidebarNav: NavId =
     practice || special === 'review' ? 'today' : special === 'mock' ? 'mock' : special === 'placement' ? 'placement' : nav
@@ -497,9 +506,9 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
       <section className="content">
         <Breadcrumbs
           items={[
-            { label: 'あおば日語', onClick: () => handleNav('today') },
-            { label: `${level.band} (${level.tier})`, onClick: () => handleNav('today') },
-            { label: `單元 ${unit.id} · ${unit.title}`, active: nav === 'today' && !practice && !special },
+            { label: t('ja.crumb'), onClick: () => handleNav('today') },
+            { label: `${level.band} (${jlptTierLabel(level.tier, t)})`, onClick: () => handleNav('today') },
+            { label: t('chrome.unitN', { n: unit.id, title: aobaUnitChromeTitle(locale, unit) }), active: nav === 'today' && !practice && !special },
             ...(nav !== 'today' || practice || special ? [{ label: title, active: true }] : []),
           ]}
         />
@@ -511,21 +520,21 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
 
         <header className="topbar">
           <div>
-            <p className="eyebrow">JLPT · {level.tier}</p>
+            <p className="eyebrow">JLPT · {jlptTierLabel(level.tier, t)}</p>
             <h1>{title}</h1>
           </div>
 
           <div className="header-actions">
             <div
-              className={`audio-status ${speakingHint.includes('導讀') ? 'live' : 'idle'}`}
+              className={`audio-status ${audioLive ? 'live' : 'idle'}`}
               aria-live="polite"
             >
-              <span>{speakingHint}</span>
+              <span>{audioLive ? t('chrome.audioDone') : t('chrome.audioIdle')}</span>
             </div>
             {nav !== 'kana' && nav !== 'kanji' && (
               <>
                 <label className="unit-select" htmlFor="aoba-level-select">
-                  <span>JLPT 級距</span>
+                  <span>{t('ja.levelSelect')}</span>
                   <select
                     id="aoba-level-select"
                     value={progress.levelId}
@@ -541,13 +550,13 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
                   >
                     {jlptLevels.map((l) => (
                       <option key={l.id} value={l.id}>
-                        {l.band} · {l.tier}
+                        {aobaLevelOptionLabel(l, t)}
                       </option>
                     ))}
                   </select>
                 </label>
                 <label className="unit-select" htmlFor="aoba-unit-select">
-                  <span>選擇單元</span>
+                  <span>{t('ja.unitSelect')}</span>
                   <select
                     id="aoba-unit-select"
                     value={progress.unitId}
@@ -562,7 +571,7 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
                   >
                     {level.units.map((u) => (
                       <option key={u.id} value={u.id}>
-                        Unit {u.id} · {u.title}
+                        Unit {u.id} · {aobaUnitChromeTitle(locale, u)}
                       </option>
                     ))}
                   </select>
@@ -578,7 +587,7 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
 
         <div className="alignment-note">
           <strong>
-            級距：{level.band}（{level.tier}）
+            {t('ja.alignBand', { band: level.band, tier: jlptTierLabel(level.tier, t) })}
             {learningMeta.proUnlocked ? ' · Pro' : ' · Free'}
           </strong>
           <span>{level.audience}</span>
@@ -593,13 +602,13 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
           <span>
             {user
               ? syncStatus === 'synced'
-                ? '進度已同步至雲端'
+                ? t('chrome.syncOk')
                 : syncStatus === 'syncing'
-                  ? '進度同步中…'
+                  ? t('chrome.syncing')
                   : syncStatus === 'error'
-                    ? '雲端同步失敗（本機仍可用）'
-                    : '已登入・本機快取'
-              : '未登入・進度僅保存在這台裝置'}
+                    ? t('chrome.syncFail')
+                    : t('chrome.signedCache')
+              : t('chrome.guestLocal')}
           </span>
         </footer>
       </section>

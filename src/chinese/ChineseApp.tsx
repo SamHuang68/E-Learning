@@ -46,6 +46,7 @@ import { ChineseMockExam } from './components/ChineseMockExam'
 import { ChineseErrorVault } from './components/ChineseErrorVault'
 import { loadChineseProgress, saveChineseProgress } from './utils/chineseStorage'
 import type { LangId } from '../utils/storage'
+import { useI18n } from '../i18n/i18n'
 
 interface Props {
   onBackHub: () => void
@@ -53,6 +54,7 @@ interface Props {
 }
 
 export const ChineseApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
+  const { t } = useI18n()
   const [section, setSection] = useState<ChineseNavSection>('today')
   const [progress, setProgress] = useState(() => loadChineseProgress())
 
@@ -85,57 +87,37 @@ export const ChineseApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
   }
 
   return (
-    <div className="math-app-shell chinese-app-shell" style={{ display: 'flex', width: '100vw', height: '100vh', overflow: 'hidden' }}>
+    <div className="math-app-shell chinese-app-shell">
       {/* 左側導覽列 */}
       <ChineseSidebar
         activeSection={section}
         onSelectSection={setSection}
         onBackHub={onBackHub}
+        onSwitchLang={onSwitchLang}
         xp={progress.xp}
         errorCount={progress.errorQuestions.length}
       />
 
-      {/* 右側主要內容區：嚴格 100vh 內部平滑滾動，零外捲 */}
-      <main
-        className="content chinese-main-content"
-        style={{
-          flex: 1,
-          height: '100vh',
-          overflowY: 'auto',
-          padding: '1.2rem 1.5rem',
-          minWidth: 0,
-          background: 'var(--bg)',
-        }}
-      >
+      {/* 右側主要內容區 */}
+      <main className="content chinese-main-content">
         {/* 頂部語言學習方向切換膠囊 */}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: '1rem',
-            paddingBottom: '0.6rem',
-            borderBottom: '1px solid var(--line)',
-            flexWrap: 'wrap',
-            gap: '0.5rem',
-          }}
-        >
+        <div className="chinese-lang-toolbar">
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span style={{ fontSize: '0.74rem', color: 'var(--muted)', fontWeight: 600 }}>🌐 語言學習方向：</span>
+            <span style={{ fontSize: '0.74rem', color: 'var(--muted)', fontWeight: 600 }}>{t('zh.learnDir')}</span>
             <span style={{ fontSize: '0.74rem', padding: '0.15rem 0.5rem', borderRadius: '999px', background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', fontWeight: 700 }}>
-              🇯🇵 日本語 ➜ 🇹🇼 台湾華語・繁體中文
+              {t('zh.learnDirValue')}
             </span>
           </div>
 
           <div style={{ display: 'flex', gap: '0.3rem', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.7rem', color: 'var(--muted)' }}>切換其他語言：</span>
+            <span style={{ fontSize: '0.7rem', color: 'var(--muted)' }}>{t('zh.switchOther')}</span>
             <button
               type="button"
               className="pill-btn"
               style={{ fontSize: '0.7rem', padding: '0.15rem 0.4rem' }}
               onClick={() => onSwitchLang('ja')}
             >
-              あおば日語
+              {t('zh.toJa')}
             </button>
             <button
               type="button"
@@ -143,7 +125,7 @@ export const ChineseApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
               style={{ fontSize: '0.7rem', padding: '0.15rem 0.4rem' }}
               onClick={() => onSwitchLang('en')}
             >
-              TOEIC 英語
+              {t('zh.toEn')}
             </button>
           </div>
         </div>

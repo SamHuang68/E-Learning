@@ -1,78 +1,76 @@
+import { LocaleToggle, useI18n } from '../i18n/i18n'
+
 type Props = {
   onBack: () => void
 }
 
 export function PrivacyPage({ onBack }: Props) {
+  const { t } = useI18n()
   return (
     <main className="privacy-page">
-      <button type="button" className="hub-back privacy-back" onClick={onBack}>
-        ← 回 Hub
-      </button>
+      <div className="privacy-toolbar">
+        <button type="button" className="hub-back privacy-back" onClick={onBack}>
+          {t('privacy.back')}
+        </button>
+        <LocaleToggle />
+      </div>
       <header className="hub-hero">
-        <p className="eyebrow">PRIVACY</p>
-        <h1>隱私與資料說明</h1>
+        <p className="eyebrow">{t('privacy.eyebrow')}</p>
+        <h1>{t('privacy.title')}</h1>
         <p className="lede">
-          本站為靜態前端（GitHub Pages）＋可選的 Supabase 帳號同步。以下說明我們存什麼、不存什麼。
+          {t('privacy.lede')}
         </p>
       </header>
 
       <section className="privacy-block">
-        <h2>本機快取（localStorage）</h2>
-        <p>
-          未登入時，學習進度只存在你的瀏覽器。登入後仍會以本機作為快取，並與雲端同步。
-        </p>
+        <h2>{t('privacy.localTitle')}</h2>
+        <p>{t('privacy.localP')}</p>
         <ul>
-          <li>日語 JLPT、五十音、多益、華語、數學、物理、化學、資訊的進度、錯題、實驗與模擬考紀錄</li>
-          <li>學習事件摘要、連續學習、上次選擇軌道，以及數學／物理／化學／資訊 3 秒破題訊號卡狀態</li>
-          <li>無障礙顯示與音效偏好（只留在本機，不包含於進度 JSON）</li>
-          <li>使用本機帳號時：Email、本機 session、帳號識別碼、密碼驗證值與該帳號的進度列；請勿重複使用真實帳號密碼</li>
-          <li>課程設計器預設組（僅本機，不上雲）</li>
-          <li>你自行貼上的 Groq API 金鑰（僅本機，不上雲、不匯出）</li>
+          <li>{t('privacy.local.1')}</li>
+          <li>{t('privacy.local.2')}</li>
+          <li>{t('privacy.local.3')}</li>
+          <li>{t('privacy.local.4')}</li>
+          <li>{t('privacy.local.5')}</li>
+          <li>{t('privacy.local.6')}</li>
         </ul>
       </section>
 
       <section className="privacy-block">
-        <h2>雲端進度（登入後）</h2>
-        <p>
-          若已設定 Supabase，登入帳號後會在資料庫保存你的學習進度列（RLS：僅本人可讀寫）。
-        </p>
+        <h2>{t('privacy.cloudTitle')}</h2>
+        <p>{t('privacy.cloudP')}</p>
         <ul>
-          <li>欄位：aoba / kana / toeic / math / physics / chemistry / cs / chinese / math_signals / physics_signals / chemistry_signals / cs_signals（JSON）、lang、meta、updated_at</li>
-          <li>首次登入：若雲端尚無資料，會上傳目前本機進度並讀回驗證；若已有資料，與本機合併後寫回，不會靜默覆蓋。驗證成功才顯示「已同步」。</li>
+          <li>{t('privacy.cloud.1')}</li>
+          <li>{t('privacy.cloud.2')}</li>
         </ul>
       </section>
 
       <section className="privacy-block">
-        <h2>不會上傳的內容</h2>
+        <h2>{t('privacy.noUploadTitle')}</h2>
         <ul>
-          <li>Groq API key（BYOK，只留在本機）</li>
-          <li>課程設計器 presets（可能含個人提示詞）</li>
-          <li>無障礙與音效偏好、本機帳號密碼驗證資料</li>
+          <li>{t('privacy.noUpload.1')}</li>
+          <li>{t('privacy.noUpload.2')}</li>
+          <li>{t('privacy.noUpload.3')}</li>
         </ul>
       </section>
 
       <section className="privacy-block">
-        <h2>第三方</h2>
+        <h2>{t('privacy.thirdTitle')}</h2>
         <ul>
-          <li>Google Fonts：載入網頁字型時可能向 Google 發出請求</li>
-          <li>Supabase：帳號驗證與進度儲存（僅在設定並登入時）</li>
-          <li>Groq：僅在你於課程設計器貼上金鑰並產生內容時，由瀏覽器直接呼叫</li>
+          <li>{t('privacy.third.1')}</li>
+          <li>{t('privacy.third.2')}</li>
+          <li>{t('privacy.third.3')}</li>
         </ul>
       </section>
 
       <section className="privacy-block">
-        <h2>你的控制</h2>
-        <p>
-          在 Hub 可匯出／匯入八軌進度 JSON（日語含五十音、多益、華語、數學、物理、化學、資訊，以及 STEM／資訊破題訊號），並可清除這些本機進度；微積分工作台參數僅本次工作階段，不含於 JSON。這不會刪除本機帳號、顯示／音效偏好、API 金鑰或課程設計器 presets。登入使用者可重設帳號進度；本機帳號也可從帳號卡永久刪除。
-        </p>
+        <h2>{t('privacy.controlTitle')}</h2>
+        <p>{t('privacy.controlP')}</p>
       </section>
       <section className="privacy-block">
-        <h2>開發者與專案授權</h2>
+        <h2>{t('privacy.devTitle')}</h2>
+        <p>{t('privacy.devP')}</p>
         <p>
-          本 E-Learning 平台為 Sam Huang 開發之開源教育科技專案（MIT License）。源碼庫請訪問：
-        </p>
-        <p>
-          👉 <a href="https://github.com/SamHuang68/E-Learning" target="_blank" rel="noopener noreferrer"><strong>GitHub 專案開源庫 (SamHuang68/E-Learning) ↗</strong></a>
+          👉 <a href="https://github.com/SamHuang68/E-Learning" target="_blank" rel="noopener noreferrer"><strong>{t('privacy.devLink')}</strong></a>
         </p>
       </section>
     </main>

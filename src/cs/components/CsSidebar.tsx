@@ -1,6 +1,7 @@
 import React from 'react'
 import { TrackSwitcher } from '../../components/TrackSwitcher'
 import type { LangId } from '../../utils/storage'
+import { useI18n } from '../../i18n/i18n'
 
 export type CsNavSection =
   | 'today'
@@ -31,17 +32,18 @@ export const CsSidebar: React.FC<Props> = ({
   xp,
   errorCount = 0,
 }) => {
+  const { t } = useI18n()
   const NAV_ITEMS: Array<{ id: CsNavSection; icon: string; title: string; subtitle: string; badge?: string }> = [
-    { id: 'today', icon: '💻', title: '今日學習總覽', subtitle: '全景探索與指標' },
-    { id: 'practice', icon: '📚', title: '課綱單元題庫', subtitle: '7大單元完整特訓' },
-    { id: 'signals', icon: '⚡', title: '3秒破題訊號卡', subtitle: '15組秒殺決策翻轉' },
-    { id: 'arch-map', icon: '🏛️', title: '硬體全景架構圖', subtitle: 'Archify 互動可視化', badge: 'NEW' },
-    { id: 'von-neumann', icon: '⚙️', title: '五大單元實驗室', subtitle: '取指解碼執行寫回' },
-    { id: 'pipeline-hazard', icon: '⚡', title: 'CPU 管線冒險', subtitle: 'Forwarding & Stall' },
-    { id: 'cache-mapping', icon: '💾', title: '快取位址映射', subtitle: 'Tag · Index · Offset' },
-    { id: 'ai-transformer', icon: '🤖', title: 'AI 矩陣與注意力', subtitle: 'GPU GEMM & Attention' },
-    { id: 'mock', icon: '📝', title: '期中期末模擬考', subtitle: '計時標準評量診斷' },
-    { id: 'errors', icon: '📕', title: '錯題弱點本', subtitle: '盲點複習掌握', badge: errorCount > 0 ? `${errorCount}` : undefined },
+    { id: 'today', icon: '💻', title: t('cs.nav.today'), subtitle: t('cs.nav.todaySub') },
+    { id: 'practice', icon: '📚', title: t('cs.nav.practice'), subtitle: t('cs.nav.practiceSub') },
+    { id: 'signals', icon: '⚡', title: t('cs.nav.signals'), subtitle: t('cs.nav.signalsSub') },
+    { id: 'arch-map', icon: '🏛️', title: t('cs.nav.arch'), subtitle: t('cs.nav.archSub'), badge: 'NEW' },
+    { id: 'von-neumann', icon: '⚙️', title: t('cs.nav.von'), subtitle: t('cs.nav.vonSub') },
+    { id: 'pipeline-hazard', icon: '⚡', title: t('cs.nav.pipe'), subtitle: t('cs.nav.pipeSub') },
+    { id: 'cache-mapping', icon: '💾', title: t('cs.nav.cache'), subtitle: t('cs.nav.cacheSub') },
+    { id: 'ai-transformer', icon: '🤖', title: t('cs.nav.ai'), subtitle: t('cs.nav.aiSub') },
+    { id: 'mock', icon: '📝', title: t('cs.nav.mock'), subtitle: t('cs.nav.mockSub') },
+    { id: 'errors', icon: '📕', title: t('cs.nav.errors'), subtitle: t('cs.nav.errorsSub'), badge: errorCount > 0 ? `${errorCount}` : undefined },
   ]
 
   return (
@@ -54,12 +56,12 @@ export const CsSidebar: React.FC<Props> = ({
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <span style={{ fontSize: '1.4rem' }}>💻</span>
           <div>
-            <h2 style={{ fontSize: '0.95rem', margin: 0, fontWeight: 800 }}>計算機概論</h2>
-            <span style={{ fontSize: '0.72rem', color: 'var(--muted)' }}>軟硬體 · 五大單元 · 前沿AI</span>
+            <h2 style={{ fontSize: '0.95rem', margin: 0, fontWeight: 700 }}>{t('cs.brand')}</h2>
+            <span style={{ fontSize: '0.72rem', color: 'var(--muted)' }}>{t('cs.brandSub')}</span>
           </div>
         </div>
         <div style={{ marginTop: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem' }}>
-          <span style={{ color: 'var(--muted)' }}>累積經驗值</span>
+          <span style={{ color: 'var(--muted)' }}>{t('nav.xp')}</span>
           <span style={{ fontWeight: 700, color: '#2563eb' }}>{xp} XP</span>
         </div>
       </div>

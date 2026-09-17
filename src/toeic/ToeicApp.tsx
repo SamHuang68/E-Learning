@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useAuth } from '../auth/AuthContext'
+import { useI18n } from '../i18n/i18n'
+import type { MessageKey } from '../i18n/messages'
 import { Breadcrumbs } from '../components/Breadcrumbs'
 import { MockExam } from '../components/MockExam'
 import { PlacementTest } from '../components/PlacementTest'
@@ -76,6 +78,7 @@ type Props = {
 
 export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
   const { user, syncStatus } = useAuth()
+  const { t, locale } = useI18n()
   const [nav, setNav] = useState<ToeicNavId>('today')
   const [progress, setProgress] = useState<ToeicProgress>(() => loadToeicProgress())
   const [instructionLang, setInstructionLang] = useState<'zh' | 'ja'>(() => loadToeicInstructionLang())
@@ -262,41 +265,42 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
     )
   }
 
-  const title = special
+  const titleKey: MessageKey = special
     ? special === 'review'
-      ? '今日複習'
+      ? 'en.nav.review'
       : special === 'mock'
-        ? '模擬測驗'
-        : '分級測驗'
+        ? 'en.nav.mock'
+        : 'en.nav.placement'
     : practice
       ? practice === 'vocab'
-        ? '單字練習'
+        ? 'en.nav.vocab'
         : practice === 'listening'
-          ? '聽力練習'
-          : '文法教室'
+          ? 'en.nav.listening'
+          : 'en.nav.grammar'
       : nav === 'chunks'
-        ? '商務語塊 (Business Chunks)'
+        ? 'en.nav.chunks'
         : nav === 'story'
-          ? '微故事對照複習'
+          ? 'chrome.storyReview'
           : nav === 'phonics'
-            ? '發音基礎'
+            ? 'en.nav.phonics'
             : nav === 'builder'
-              ? '課程設計器'
+              ? 'en.nav.builder'
               : nav === 'vocab'
-                ? '單字練習'
+                ? 'en.nav.vocab'
                 : nav === 'listening'
-                  ? '聽力練習'
+                  ? 'en.nav.listening'
                   : nav === 'grammar'
-                    ? '文法教室'
+                    ? 'en.nav.grammar'
                     : nav === 'scenario'
-                      ? '情境任務'
+                      ? 'en.nav.scenario'
                       : nav === 'speaking'
-                        ? '口說跟讀'
+                        ? 'en.nav.speaking'
                         : nav === 'mock'
-                          ? '模擬測驗'
+                          ? 'en.nav.mock'
                           : nav === 'placement'
-                            ? '分級測驗'
-                            : '今日學習'
+                            ? 'en.nav.placement'
+                            : 'en.nav.today'
+  const title = t(titleKey)
 
   function renderContent() {
     if (special === 'review') {
@@ -805,9 +809,9 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
       <section className="content">
         <Breadcrumbs
           items={[
-            { label: 'TOEIC 多益', onClick: () => setNav('today') },
-            { label: `${cert.name} (${cert.scoreMin}–${cert.scoreMax})`, onClick: () => setNav('today') },
-            { label: `單元 ${unit.id} · ${unit.title}`, active: nav === 'today' && !practice && !special },
+            { label: t('en.crumb'), onClick: () => setNav('today') },
+            { label: `${locale === 'en' ? cert.nameEn : cert.name} (${cert.scoreMin}–${cert.scoreMax})`, onClick: () => setNav('today') },
+            { label: t('chrome.unitN', { n: unit.id, title: locale === 'en' ? unit.titleEn : unit.title }), active: nav === 'today' && !practice && !special },
             ...(nav !== 'today' || practice || special ? [{ label: title, active: true }] : []),
           ]}
         />
@@ -824,7 +828,7 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
           </div>
           <div className="header-actions">
             <label className="unit-select" htmlFor="toeic-cert-select">
-              <span>證書級距</span>
+              <span>{t('en.certSelect')}</span>
               <select
                 id="toeic-cert-select"
                 value={progress.certificateId}
@@ -841,13 +845,13 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
               >
                 {toeicCertificates.map((c) => (
                   <option key={c.id} value={c.id}>
-                    {c.name}（{c.scoreMin}–{c.scoreMax}）
+                    {locale === 'en' ? c.nameEn : c.name}（{c.scoreMin}–{c.scoreMax}）
                   </option>
                 ))}
               </select>
             </label>
             <label className="unit-select" htmlFor="toeic-unit-select">
-              <span>單元</span>
+              <span>{t('chrome.unit')}</span>
               <select
                 id="toeic-unit-select"
                 value={progress.unitId}
@@ -862,7 +866,7 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
               >
                 {cert.units.map((u) => (
                   <option key={u.id} value={u.id}>
-                    Unit {u.id} · {u.title}
+                    Unit {u.id} · {locale === 'en' ? u.titleEn : u.title}
                   </option>
                 ))}
               </select>
@@ -876,7 +880,7 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
 
         <div className="alignment-note">
           <strong>
-            {cert.name} · {cert.scoreMin}–{cert.scoreMax}
+            {locale === 'en' ? cert.nameEn : cert.name} · {cert.scoreMin}–{cert.scoreMax}
             {learningMeta.proUnlocked ? ' · Pro' : ' · Free'}
           </strong>
           <span>{cert.audience}</span>
@@ -891,13 +895,13 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
           <span>
             {user
               ? syncStatus === 'synced'
-                ? 'Progress synced to cloud'
+                ? t('chrome.syncOk')
                 : syncStatus === 'syncing'
-                  ? 'Syncing…'
+                  ? t('chrome.syncing')
                   : syncStatus === 'error'
-                    ? 'Cloud sync failed (local still works)'
-                    : 'Signed in · local cache'
-              : 'Guest · progress saved on this device'}
+                    ? t('chrome.syncFail')
+                    : t('chrome.signedCache')
+              : t('chrome.guestLocal')}
           </span>
         </footer>
       </section>
