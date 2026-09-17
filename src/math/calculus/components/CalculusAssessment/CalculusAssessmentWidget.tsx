@@ -39,9 +39,9 @@ export const CalculusAssessmentWidget: React.FC<Props> = ({
       {/* 頂部能力與階梯標題 */}
       <div className="assessment-topbar">
         <div className="theta-gauge-box">
-          <span className="gauge-label">2PL IRT 微積分能力估計 (θ)：</span>
+          <span className="gauge-label">本機 2PL IRT 估計 θ（非正式鑑定）：</span>
           <strong className="gauge-value">{currentTheta >= 0 ? `+${currentTheta.toFixed(2)}` : currentTheta.toFixed(2)}</strong>
-          <span className="gauge-tag">{currentTheta >= 1.0 ? '大師級 (Master)' : currentTheta >= 0 ? '進階中 (Proficient)' : '奠基中 (Foundation)'}</span>
+          <span className="gauge-tag">{currentTheta >= 1.0 ? '作答估計帶：偏難' : currentTheta >= 0 ? '作答估計帶：中間' : '作答估計帶：偏易'}</span>
         </div>
 
         <div className="tier-pills-row">

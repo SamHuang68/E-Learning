@@ -1,5 +1,7 @@
 import type { MathGradeId, MathStage } from '../data/curriculum'
 import { PROGRESS_STORAGE_KEYS } from '../../utils/progressKeys'
+import type { FsrsItemState } from '../../engine/fsrs'
+import type { UserResponse } from '../../engine/adaptive'
 
 export type MathProgressState = {
   stage: MathStage
@@ -10,6 +12,10 @@ export type MathProgressState = {
   errorQuestions: string[]
   examScores: Record<string, number>
   labCompleted: string[]
+  /** Persisted calculus IRT θ — not a formal ability score. */
+  calculusTheta?: number
+  calculusFsrs?: Record<string, FsrsItemState>
+  calculusResponses?: UserResponse[]
 }
 
 const MATH_PROGRESS_KEY = PROGRESS_STORAGE_KEYS.math

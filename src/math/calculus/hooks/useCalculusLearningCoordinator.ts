@@ -8,24 +8,45 @@ import { type FsrsItemState, defaultFsrsItemState } from '../../../engine/fsrs'
 import { type UserResponse } from '../../../engine/adaptive'
 import { type TelemetryEvent } from '../../../engine/stealthAssessment'
 import { type GamificationState, defaultGamificationState } from '../../../engine/gamification'
-import { recordMathAnswer } from '../../utils/mathStorage'
+import { loadMathProgress, recordMathAnswer, saveMathProgress } from '../../utils/mathStorage'
 import { CALCULUS_BADGES, type CalculusBadge } from '../data/calculusBadges'
 import type { CalculusProblem } from '../types'
 
+const RESPONSE_LIMIT = 200
+
+function persistCoordinatorState(next: {
+  theta: number
+  fsrs: Record<string, FsrsItemState>
+  responses: UserResponse[]
+}) {
+  const current = loadMathProgress()
+  saveMathProgress({
+    ...current,
+    calculusTheta: next.theta,
+    calculusFsrs: next.fsrs,
+    calculusResponses: next.responses.slice(-RESPONSE_LIMIT),
+  })
+}
+
 export function useCalculusLearningCoordinator() {
-  const [fsrsMap, setFsrsMap] = useState<Record<string, FsrsItemState>>({})
-  const [userResponses, setUserResponses] = useState<UserResponse[]>([])
+  const persisted = loadMathProgress()
+  const [fsrsMap, setFsrsMap] = useState<Record<string, FsrsItemState>>(
+    () => persisted.calculusFsrs ?? {},
+  )
+  const [userResponses, setUserResponses] = useState<UserResponse[]>(
+    () => persisted.calculusResponses ?? [],
+  )
   const [telemetries] = useState<TelemetryEvent[]>([])
   const [gameState, setGameState] = useState<GamificationState>(() => defaultGamificationState())
   const [lastPipelineResult, setLastPipelineResult] = useState<CognitivePipelineResponse | null>(null)
   const [newlyUnlockedBadges, setNewlyUnlockedBadges] = useState<CalculusBadge[]>([])
-  const [currentTheta, setCurrentTheta] = useState<number>(0.0)
+  const [currentTheta, setCurrentTheta] = useState<number>(() => persisted.calculusTheta ?? 0)
 
   const handleSolveProblem = useCallback(
     async (problem: CalculusProblem, isCorrect: boolean) => {
       const packet: LearningSubmissionPacket = {
         itemId: problem.id,
-        track: 'math',
+        track: 'calculus',
         conceptTag: problem.conceptTag,
         userAnswer: isCorrect ? 'correct' : 'wrong',
         correctAnswer: 'correct',
@@ -46,13 +67,11 @@ export function useCalculusLearningCoordinator() {
         gameState,
       )
 
-      // 同步全域數學進度與連勝
       recordMathAnswer(problem.id, isCorrect, isCorrect ? 15 : 2)
 
-      // 更新內部狀態
-      setFsrsMap((prev) => ({ ...prev, [problem.id]: result.fsrsState }))
-      setUserResponses((prev) => [
-        ...prev,
+      const nextFsrs = { ...fsrsMap, [problem.id]: result.fsrsState }
+      const nextResponses: UserResponse[] = [
+        ...userResponses,
         {
           itemId: problem.id,
           isCorrect,
@@ -61,12 +80,19 @@ export function useCalculusLearningCoordinator() {
           pseudoGuessing: 0.2,
           responseTimeSec: 6.0,
         },
-      ])
+      ].slice(-RESPONSE_LIMIT)
+
+      setFsrsMap(nextFsrs)
+      setUserResponses(nextResponses)
       setGameState(result.gamification.currentState)
       setLastPipelineResult(result)
       setCurrentTheta(result.abilityEstimate.theta)
+      persistCoordinatorState({
+        theta: result.abilityEstimate.theta,
+        fsrs: nextFsrs,
+        responses: nextResponses,
+      })
 
-      // 檢查徽章解鎖
       const unlocked: CalculusBadge[] = []
       if (isCorrect) {
         if (problem.targetMode === 'tangent_secant') {

@@ -85,4 +85,19 @@ describe('LearningCoordinator (Unified Cognitive Facade)', () => {
     expect(radar.track).toBe('math')
     expect(radar.dimensions.length).toBe(5)
   })
+
+  it('accepts all eight LearningTrackId values for radar refresh', () => {
+    const tracks = ['math', 'calculus', 'physics', 'chemistry', 'cs', 'ja', 'en', 'zh'] as const
+    for (const track of tracks) {
+      const radar = coordinator.refreshTrackRadar(track, {
+        completedQuestions: ['q1'],
+        examScores: {},
+        labCompleted: [],
+        cardsDone: 1,
+        theta: 0.2,
+      })
+      expect(radar.track).toBe(track)
+      expect(radar.dimensions.length).toBeGreaterThan(0)
+    }
+  })
 })

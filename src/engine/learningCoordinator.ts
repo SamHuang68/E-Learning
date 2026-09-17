@@ -10,9 +10,27 @@ import { diagnoseError, type ErrorDiagnosisResult } from './errorTaxonomy'
 import { getHeuristicScaffoldHints, requestSocraticHintFromOllama, type HintLevel, type QuestionContext } from './scaffoldedHints'
 import { computeStealthAssessment, type StealthCompetencyProfile, type TelemetryEvent } from './stealthAssessment'
 import { recordAnswerGamification, type GamificationState, type Badge } from './gamification'
-import { computeMathRadar, computeAobaRadar, computeToeicRadar, type TrackRadar } from './radar'
+import {
+  computeMathRadar,
+  computeCalculusRadar,
+  computePhysicsRadar,
+  computeChemistryRadar,
+  computeCsRadar,
+  computeAobaRadar,
+  computeToeicRadar,
+  computeChineseRadar,
+  type TrackRadar,
+} from './radar'
 
-export type LearningTrackId = 'math' | 'ja' | 'en'
+export type LearningTrackId =
+  | 'math'
+  | 'calculus'
+  | 'physics'
+  | 'chemistry'
+  | 'cs'
+  | 'ja'
+  | 'en'
+  | 'zh'
 
 export type UniversalExerciseItem = IrtItem & {
   track: LearningTrackId
@@ -213,10 +231,39 @@ export class LearningCoordinator {
       streak?: number
       chunkCount?: number
       examScore?: number
+      theta?: number
     },
   ): TrackRadar {
     if (track === 'math') {
       return computeMathRadar(
+        data.completedQuestions ?? [],
+        data.examScores ?? {},
+        data.labCompleted ?? [],
+      )
+    }
+    if (track === 'calculus') {
+      return computeCalculusRadar(
+        data.theta ?? 0,
+        data.completedQuestions?.length ?? data.cardsDone ?? 0,
+        data.labCompleted?.length ?? 0,
+      )
+    }
+    if (track === 'physics') {
+      return computePhysicsRadar(
+        data.completedQuestions ?? [],
+        data.examScores ?? {},
+        data.labCompleted ?? [],
+      )
+    }
+    if (track === 'chemistry') {
+      return computeChemistryRadar(
+        data.completedQuestions ?? [],
+        data.examScores ?? {},
+        data.labCompleted ?? [],
+      )
+    }
+    if (track === 'cs') {
+      return computeCsRadar(
         data.completedQuestions ?? [],
         data.examScores ?? {},
         data.labCompleted ?? [],
@@ -230,10 +277,18 @@ export class LearningCoordinator {
         data.streak ?? 0,
       )
     }
+    if (track === 'zh') {
+      return computeChineseRadar(
+        data.cardsDone ?? 0,
+        data.kanjiMastered ?? 0,
+        data.speakingDone ?? 0,
+        data.chunkCount ?? 0,
+      )
+    }
     return computeToeicRadar(
       data.cardsDone ?? 0,
       data.chunkCount ?? 0,
-      data.examScore ?? 750,
+      data.examScore ?? 0,
     )
   }
 }

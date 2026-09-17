@@ -130,7 +130,7 @@ export const CalculusSidebar: React.FC<Props> = ({
           aria-current={activeNav === 'adaptive_practice' ? 'page' : undefined}
         >
           <span className="nav-icon">🎯</span>
-          <span className="nav-label">4 階能力挑戰 (θ: {currentTheta >= 0 ? `+${currentTheta.toFixed(2)}` : currentTheta.toFixed(2)})</span>
+          <span className="nav-label">4 階練習（本機 θ: {currentTheta >= 0 ? `+${currentTheta.toFixed(2)}` : currentTheta.toFixed(2)}）</span>
         </button>
         <button
           type="button"
