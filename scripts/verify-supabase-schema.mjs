@@ -5,12 +5,13 @@ const root = process.cwd()
 const schemaPath = path.join(root, 'supabase', 'schema.sql')
 const migrationPath = path.join(root, 'supabase', 'migrations', '20260901010000_add_stem_progress_columns.sql')
 const csChineseMigrationPath = path.join(root, 'supabase', 'migrations', '20260917080000_add_cs_chinese_progress_columns.sql')
+const signalsMigrationPath = path.join(root, 'supabase', 'migrations', '20260917120000_add_signal_mastery_columns.sql')
 const preflightPath = path.join(root, 'supabase', 'checks', '20260901010000_add_stem_progress.preflight.sql')
 const postflightPath = path.join(root, 'supabase', 'checks', '20260901010000_add_stem_progress.postflight.sql')
 const cloudProgressPath = path.join(root, 'src', 'utils', 'cloudProgress.ts')
 
-const [schema, migration, csChineseMigration, preflight, postflight, cloudProgress] = await Promise.all(
-  [schemaPath, migrationPath, csChineseMigrationPath, preflightPath, postflightPath, cloudProgressPath]
+const [schema, migration, csChineseMigration, signalsMigration, preflight, postflight, cloudProgress] = await Promise.all(
+  [schemaPath, migrationPath, csChineseMigrationPath, signalsMigrationPath, preflightPath, postflightPath, cloudProgressPath]
     .map((file) => readFile(file, 'utf8')),
 )
 
@@ -41,6 +42,20 @@ for (const track of ['cs', 'chinese']) {
   const migrationColumn = new RegExp(`add\\s+column\\s+if\\s+not\\s+exists\\s+${track}\\s+jsonb\\s+not\\s+null\\s+default\\s+'\\{\\}'::jsonb`, 'i')
   assert(migrationColumn.test(csChineseMigration), `CS/Chinese migration is missing the ${track} additive contract.`)
 }
+
+const signalColumns = ['math_signals', 'physics_signals', 'chemistry_signals', 'cs_signals']
+for (const track of signalColumns) {
+  const schemaColumn = new RegExp(`\\b${track}\\s+jsonb\\s+not\\s+null\\s+default\\s+'\\{\\}'::jsonb`, 'i')
+  assert(schemaColumn.test(schema), `Fresh-install schema is missing the ${track} JSONB contract.`)
+  const migrationColumn = new RegExp(`add\\s+column\\s+if\\s+not\\s+exists\\s+${track}\\s+jsonb\\s+not\\s+null\\s+default\\s+'\\{\\}'::jsonb`, 'i')
+  assert(migrationColumn.test(signalsMigration), `Signals migration is missing the ${track} additive contract.`)
+  assert(cloudProgress.includes(track), `Cloud progress contract does not mention ${track}.`)
+}
+
+assert(/^\s*begin;/im.test(signalsMigration) && /^\s*commit;/im.test(signalsMigration), 'Signals migration must be a single explicit transaction.')
+assert(/set\s+local\s+lock_timeout/i.test(signalsMigration), 'Signals migration must bound lock acquisition time.')
+assert(/set\s+local\s+statement_timeout/i.test(signalsMigration), 'Signals migration must bound statement execution time.')
+assert(/relrowsecurity/i.test(signalsMigration), 'Signals migration must fail closed when RLS is disabled.')
 
 assert(!/alter\s+table\s+public\.user_progress\s+add\s+column/i.test(schema), 'Fresh-install schema must not embed historical add-column migrations.')
 assert(/^\s*begin;/im.test(migration) && /^\s*commit;/im.test(migration), 'Migration must be a single explicit transaction.')
@@ -77,5 +92,6 @@ console.log(JSON.stringify({
   tracks: eightTrackCloud,
   migration: path.relative(root, migrationPath).replaceAll('\\', '/'),
   csChineseMigration: path.relative(root, csChineseMigrationPath).replaceAll('\\', '/'),
+  signalsMigration: path.relative(root, signalsMigrationPath).replaceAll('\\', '/'),
   checks: checkCount,
 }))

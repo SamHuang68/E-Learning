@@ -18,6 +18,11 @@ import {
 } from './engine/gamification'
 import { dailyProgress, todayKey } from './engine/habits'
 import {
+  pickTodaySuggestion,
+  dueCountBySrsItems,
+  dueCountFromFsrsMap,
+} from './engine/todaySuggestion'
+import {
   loadLearningMeta,
   loadProgress,
   loadKanaProgress,
@@ -133,7 +138,11 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
   )
   const calculusDoneCount = mathProgress.completedQuestions.filter((id) => id.startsWith('calc-prob-')).length
   const calculusLabCount = mathProgress.labCompleted.includes('calculus') ? 1 : 0
-  const calculusRadar = computeCalculusRadar(0, calculusDoneCount, calculusLabCount)
+  const calculusRadar = computeCalculusRadar(
+    mathProgress.calculusTheta ?? 0,
+    calculusDoneCount,
+    calculusLabCount,
+  )
   const physicsRadar = computePhysicsRadar(
     physicsProgress.completedQuestions,
     physicsProgress.examScores,
@@ -207,6 +216,14 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
     (it) => (it.intervalDays || 0) >= 21 || (it.correctStreak || 0) >= 3,
   ).length
   const scheduledCount = Object.keys(learningMeta.items).length
+  const dueByTrack = dueCountBySrsItems(learningMeta.items)
+  const calculusDue = dueCountFromFsrsMap(mathProgress.calculusFsrs)
+  if (calculusDue > 0) dueByTrack.calculus = (dueByTrack.calculus ?? 0) + calculusDue
+  const todaySuggestion = pickTodaySuggestion({
+    preferred,
+    dueByTrack,
+    hasProgress,
+  })
 
   function openToeic(lang: 'zh' | 'ja') {
     saveToeicInstructionLang(lang)
@@ -342,27 +359,9 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
     },
   ]
 
-  const unstarted: LangId | null =
-    mathDoneCount === 0
-      ? 'math'
-      : calculusDoneCount === 0
-        ? 'calculus'
-        : physicsDoneCount === 0
-          ? 'physics'
-          : chemistryDoneCount === 0
-            ? 'chemistry'
-            : csDoneCount === 0
-              ? 'cs'
-              : kanaCount === 0 && (jaProgress.xp || 0) === 0
-                ? 'ja'
-                : toeicDoneCount === 0
-                  ? 'en'
-                  : (chineseProgress.xp || 0) === 0
-                    ? 'zh'
-                    : null
-  const todayId: LangId = unstarted ?? resumeId
+  const todayId: LangId = todaySuggestion.id
   const todayTrack = tracks.find((t) => t.id === todayId) ?? tracks[0]
-  const todayReason = unstarted ? '尚未作答' : '繼續本軌'
+  const todayReason = todaySuggestion.reason
 
   return (
     <main className="hub unified-hub">
@@ -550,6 +549,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
                     key={id}
                     type="button"
                     className={`radar-tab-btn ${activeRadarTab === id ? 'active' : ''}`}
+                    aria-pressed={activeRadarTab === id}
                     onClick={() => setActiveRadarTab(id)}
                   >
                     {TRACK_LABEL[id]}

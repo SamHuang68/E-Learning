@@ -1,7 +1,6 @@
 import {
   useEffect,
   useMemo,
-  useRef,
   useState,
   type ReactNode,
 } from 'react'
@@ -14,6 +13,7 @@ import {
 import { deleteLocalProfile } from './deleteLocalProfile'
 import {
   flushCloudPush,
+  getCloudSessionGeneration,
   hydrateFromCloud,
   setCloudUserId,
   subscribeSyncStatus,
@@ -26,7 +26,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(configured)
   const [session, setSession] = useState<Session | null>(null)
   const [syncStatus, setSyncStatus] = useState<SyncUiStatus>('local-only')
-  const hydrateGen = useRef(0)
 
   useEffect(() => subscribeSyncStatus(setSyncStatus), [])
 
@@ -47,14 +46,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async function applySession(next: Session | null) {
       setSession(next)
       const userId = next?.user?.id ?? null
-      const gen = ++hydrateGen.current
       setCloudUserId(userId)
+      const gen = getCloudSessionGeneration()
       if (userId) {
-        await hydrateFromCloud(userId)
-        if (cancelled || gen !== hydrateGen.current) return
-        window.dispatchEvent(new CustomEvent('e-learning:progress-hydrated'))
+        const outcome = await hydrateFromCloud(userId, gen)
+        if (cancelled || gen !== getCloudSessionGeneration()) return
+        if (outcome !== 'error' && outcome !== 'skipped') {
+          window.dispatchEvent(new CustomEvent('e-learning:progress-hydrated'))
+        }
       }
-      if (!cancelled && gen === hydrateGen.current) setLoading(false)
+      if (!cancelled && gen === getCloudSessionGeneration()) setLoading(false)
     }
 
     void sb.auth.getSession().then(({ data }) => {

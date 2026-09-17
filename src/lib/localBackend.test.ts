@@ -6,9 +6,11 @@ import {
   hydrateFromCloud,
   pushProgressNow,
   setCloudUserId,
+  getSyncStatus,
 } from '../utils/cloudProgress'
 import {
   applyCloudBundle,
+  clearLocalProgressCache,
   defaultKanaProgress,
   defaultLearningMeta,
   defaultToeicProgress,
@@ -286,5 +288,66 @@ describe('progress sync via cloudProgress (offline)', () => {
     expect(loadChineseProgress().xp).toBe(35)
     expect(loadCsProgress().completedQuestions).toEqual(['cs-1'])
     expect(loadChineseProgress().masteredPinyin).toEqual(['bo'])
+  })
+
+  it('does not claim synced or write-through until hydrate verifies', async () => {
+    const sb = createLocalBackend()
+    await sb.from('user_progress').upsert({
+      user_id: 'locked-user',
+      toeic: { ...defaultToeicProgress(), xp: 99 },
+      updated_at: new Date().toISOString(),
+    })
+    saveToeicProgress({ ...defaultToeicProgress(), xp: 1 })
+    setCloudUserId('locked-user')
+    expect(getSyncStatus()).toBe('local-only')
+    expect(await pushProgressNow()).toBe(false)
+    const still = await sb.from('user_progress').select('*').eq('user_id', 'locked-user').maybeSingle()
+    expect((still.data as { toeic?: { xp?: number } } | null)?.toeic?.xp).toBe(99)
+  })
+
+  it('merges local and cloud progress instead of silently clobbering', async () => {
+    const userId = 'merge-user'
+    saveMathProgress({ ...defaultMathProgress(), xp: 20, completedQuestions: ['local-q'] })
+    const sb = getSupabase()
+    await sb!.from('user_progress').upsert({
+      user_id: userId,
+      math: { ...defaultMathProgress(), xp: 10, completedQuestions: ['cloud-q'] },
+      aoba: { levelId: 'n5n4', unitId: 1, xp: 0, vocabDone: 0, readingDone: 0, grammarStarted: false },
+      kana: defaultKanaProgress(),
+      toeic: defaultToeicProgress(),
+      physics: defaultPhysicsProgress(),
+      chemistry: defaultChemistryProgress(),
+      cs: DEFAULT_CS_PROGRESS,
+      chinese: defaultChineseProgress(),
+      lang: 'hub',
+      meta: defaultLearningMeta(),
+      updated_at: new Date().toISOString(),
+    })
+
+    const outcome = await hydrateFromCloud(userId)
+    expect(outcome).toBe('merged')
+    expect(getSyncStatus()).toBe('synced')
+    expect(loadMathProgress().xp).toBe(20)
+    expect(loadMathProgress().completedQuestions).toEqual(expect.arrayContaining(['local-q', 'cloud-q']))
+  })
+
+  it('round-trips STEM/CS signal mastery through cloud hydrate', async () => {
+    const userId = 'signals-user'
+    localStorage.setItem(PROGRESS_STORAGE_KEYS.mathSignals, JSON.stringify({ algebra: 'mastered' }))
+    localStorage.setItem(PROGRESS_STORAGE_KEYS.physicsSignals, JSON.stringify({ force: true }))
+    localStorage.setItem(PROGRESS_STORAGE_KEYS.chemistrySignals, JSON.stringify({ mole: 'review' }))
+    localStorage.setItem(PROGRESS_STORAGE_KEYS.csSignals, JSON.stringify({ cache: true }))
+
+    expect(await hydrateFromCloud(userId)).toBe('migrated')
+    expect(getSyncStatus()).toBe('synced')
+
+    clearLocalProgressCache()
+    expect(localStorage.getItem(PROGRESS_STORAGE_KEYS.mathSignals)).toBeNull()
+
+    expect(await hydrateFromCloud(userId)).toBe('pulled')
+    expect(JSON.parse(localStorage.getItem(PROGRESS_STORAGE_KEYS.mathSignals) ?? '{}')).toEqual({ algebra: 'mastered' })
+    expect(JSON.parse(localStorage.getItem(PROGRESS_STORAGE_KEYS.physicsSignals) ?? '{}')).toEqual({ force: true })
+    expect(JSON.parse(localStorage.getItem(PROGRESS_STORAGE_KEYS.chemistrySignals) ?? '{}')).toEqual({ mole: 'review' })
+    expect(JSON.parse(localStorage.getItem(PROGRESS_STORAGE_KEYS.csSignals) ?? '{}')).toEqual({ cache: true })
   })
 })

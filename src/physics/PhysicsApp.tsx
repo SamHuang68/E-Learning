@@ -156,9 +156,10 @@ export const PhysicsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
           </div>
 
           <div className="header-actions">
-            <label className="unit-select">
+            <label className="unit-select" htmlFor="physics-grade-select">
               <span>切換年級</span>
               <select
+                id="physics-grade-select"
                 value={currentGradeId}
                 onChange={(e) => handleSelectGrade(e.target.value as PhysicsGradeId)}
               >
@@ -171,9 +172,10 @@ export const PhysicsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
               </select>
             </label>
 
-            <label className="unit-select">
+            <label className="unit-select" htmlFor="physics-unit-select">
               <span>切換單元</span>
               <select
+                id="physics-unit-select"
                 value={currentUnitId}
                 onChange={(e) => persistSelection(currentGradeId, Number(e.target.value))}
               >

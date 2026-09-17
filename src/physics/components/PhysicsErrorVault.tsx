@@ -389,8 +389,9 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
       <div className="vault-toolbar">
         <div className="vault-toolbar-row">
           <input
-            type="text"
+            type="search"
             className="vault-search-input"
+            aria-label="搜尋物理錯題"
             placeholder="🔍 搜尋錯題關鍵字、公式或考點..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -398,6 +399,8 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
 
           <select
             className="vault-select-filter"
+            aria-label="錯題來源篩選"
+            id="physics-vault-source"
             value={selectedSource}
             onChange={(e) => setSelectedSource(e.target.value)}
           >
@@ -408,6 +411,8 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
 
           <select
             className="vault-select-filter"
+            aria-label="錯題難度篩選"
+            id="physics-vault-difficulty"
             value={selectedDifficulty}
             onChange={(e) => setSelectedDifficulty(e.target.value)}
           >

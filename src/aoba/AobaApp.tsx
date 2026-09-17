@@ -524,9 +524,10 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
             </div>
             {nav !== 'kana' && nav !== 'kanji' && (
               <>
-                <label className="unit-select">
+                <label className="unit-select" htmlFor="aoba-level-select">
                   <span>JLPT 級距</span>
                   <select
+                    id="aoba-level-select"
                     value={progress.levelId}
                     onChange={(e) =>
                       patchProgress({
@@ -545,9 +546,10 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
                     ))}
                   </select>
                 </label>
-                <label className="unit-select">
+                <label className="unit-select" htmlFor="aoba-unit-select">
                   <span>選擇單元</span>
                   <select
+                    id="aoba-unit-select"
                     value={progress.unitId}
                     onChange={(e) =>
                       patchProgress({

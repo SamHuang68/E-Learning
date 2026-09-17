@@ -112,8 +112,9 @@ export const CalculusLabPanel: React.FC<Props> = ({
 
       {/* 函數選擇器與輸入框 */}
       <div className="form-group expr-select-group">
-        <label>快速挑選經典函數：</label>
+        <label htmlFor="calculus-preset-classic">快速挑選經典函數：</label>
         <select
+          id="calculus-preset-classic"
           value={expression}
           onChange={(e) => {
             const chosen = PRESET_FUNCTIONS.find((p) => p.expr === e.target.value)

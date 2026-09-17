@@ -15,6 +15,10 @@ create table if not exists public.user_progress (
   chemistry jsonb not null default '{}'::jsonb,
   cs jsonb not null default '{}'::jsonb,
   chinese jsonb not null default '{}'::jsonb,
+  math_signals jsonb not null default '{}'::jsonb,
+  physics_signals jsonb not null default '{}'::jsonb,
+  chemistry_signals jsonb not null default '{}'::jsonb,
+  cs_signals jsonb not null default '{}'::jsonb,
   lang text not null default 'hub',
   meta jsonb not null default '{}'::jsonb,
   updated_at timestamptz not null default now()

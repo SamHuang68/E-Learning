@@ -82,7 +82,7 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
   const navLabelMap: Record<CalculusNavId, string> = {
     canvas_lab: '幾何動態實驗室',
     step_solver: '步驟式推導解題器',
-    adaptive_practice: '4 階能力挑戰 (IRT)',
+    adaptive_practice: '4 階練習（本機 IRT 估計）',
     badges: '微認證成就館',
   }
 
@@ -95,7 +95,7 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         currentMode={mode}
         onSelectMode={setMode}
         currentTheta={currentTheta}
-        unlockedBadgeCount={newlyUnlockedBadges.length > 0 ? newlyUnlockedBadges.length : 2}
+        unlockedBadgeCount={newlyUnlockedBadges.length}
         totalBadgeCount={CALCULUS_BADGES.length}
         onBackHub={onBackHub}
         onSwitchLang={onSwitchLang}
@@ -121,9 +121,10 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
 
           <div className="header-actions">
             {/* 預設公式快速挑選 */}
-            <label className="unit-select formula-select">
+            <label className="unit-select formula-select" htmlFor="calculus-preset-fn">
               <span>示範函數</span>
               <select
+                id="calculus-preset-fn"
                 value={expression}
                 onChange={(e) => handleSelectPreset(e.target.value)}
               >
@@ -135,8 +136,8 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
               </select>
             </label>
 
-            <div className="theta-indicator">
-              <small>能力值 (IRT θ)</small>
+            <div className="theta-indicator" title="本機 2PL IRT 估計，非正式能力鑑定">
+              <small>本機 IRT 估計 θ</small>
               <strong>{currentTheta >= 0 ? `+${currentTheta.toFixed(2)}` : currentTheta.toFixed(2)}</strong>
             </div>
 
