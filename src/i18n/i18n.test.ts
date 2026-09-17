@@ -45,6 +45,22 @@ describe('i18n dictionary', () => {
     expect(loadUiLocale()).toBe('zh-Hant')
   })
 
+  it('translates primary chrome holes Codex flagged', () => {
+    expect(translate('en', 'cs.top.today')).toBe('Today')
+    expect(translate('en', 'cs.top.practice')).toBe('Practice')
+    expect(translate('en', 'cs.top.textbook')).toBe('Reader')
+    expect(translate('en', 'ja.nav.today')).toBe('Today')
+    expect(translate('en', 'ja.levelSelect')).toBe('JLPT band')
+    expect(translate('en', 'ja.unitSelect')).toBe('Choose unit')
+    expect(translate('en', 'en.nav.today')).toBe('Today')
+    expect(translate('en', 'en.certSelect')).toBe('Certificate band')
+    expect(translate('en', 'todayView.start')).toMatch(/Start/)
+    expect(translate('en', 'todayView.review')).toMatch(/review/i)
+    expect(translate('zh-Hant', 'cs.top.today')).toBe('今日')
+    expect(translate('en', 'cs.top.today')).not.toBe(translate('zh-Hant', 'cs.top.today'))
+    expect(translate('en', 'ja.levelSelect')).not.toBe(translate('zh-Hant', 'ja.levelSelect'))
+  })
+
   it('leaves unknown placeholders intact', () => {
     expect(interpolate('Hello {name}', { other: 'x' })).toBe('Hello {name}')
     const key = 'hub.solved' satisfies MessageKey

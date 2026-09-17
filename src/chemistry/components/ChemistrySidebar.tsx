@@ -27,7 +27,7 @@ export const ChemistrySidebar: React.FC<Props> = ({
   onBackHub,
   onSwitchLang,
 }) => {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const stages: Array<{ id: ChemistryStage; title: string; grades: ChemistryGradeId[] }> = [
     {
       id: 'junior',
@@ -128,7 +128,7 @@ export const ChemistrySidebar: React.FC<Props> = ({
                     className={`grade-pill-btn ${isSelected ? 'selected' : ''}`}
                     style={isSelected ? { background: '#059669', borderColor: '#059669' } : {}}
                     onClick={() => onSelectGrade(gid)}
-                    title={info.name}
+                    title={locale === 'en' ? info.nameEn : info.name}
                     aria-pressed={isSelected}
                   >
                     {gid.toUpperCase()}

@@ -31,7 +31,7 @@ export const MathSidebar: React.FC<Props> = ({
   onBackHub,
   onSwitchLang,
 }) => {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const stages: Array<{ id: MathStage; title: string; grades: MathGradeId[] }> = [
     {
       id: 'elementary',
@@ -147,7 +147,7 @@ export const MathSidebar: React.FC<Props> = ({
                     className={`grade-pill-btn ${isSelected ? 'selected' : ''}`}
                     onClick={() => onSelectGrade(gid)}
                     aria-pressed={isSelected}
-                    title={g.name}
+                    title={locale === 'en' ? g.nameEn : g.name}
                   >
                     {gid.toUpperCase()}
                   </button>

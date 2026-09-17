@@ -25,6 +25,7 @@ import { CircuitLab } from './labs/CircuitLab'
 import { BuoyancyLab } from './labs/BuoyancyLab'
 import { Breadcrumbs } from '../components/Breadcrumbs'
 import type { LangId } from '../utils/storage'
+import { useI18n } from '../i18n/i18n'
 
 type Props = {
   onBackHub: () => void
@@ -32,6 +33,7 @@ type Props = {
 }
 
 export const PhysicsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
+  const { t, locale } = useI18n()
   const [currentGradeId, setCurrentGradeId] = useState<PhysicsGradeId>(() => {
     const stored = loadPhysicsProgress()
     if (!stored.completedQuestions.length && !stored.xp) return 'g7'
@@ -115,18 +117,18 @@ export const PhysicsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
   }
 
   const breadcrumbItems = [
-    { label: '⚛️ 臺灣物理 108課綱', onClick: () => setActiveNav('today') },
-    { label: gradeInfo.name, onClick: () => setActiveNav('today') },
+    { label: t('physics.brand'), onClick: () => setActiveNav('today') },
+    { label: locale === 'en' ? gradeInfo.nameEn : gradeInfo.name, onClick: () => setActiveNav('today') },
     ...(activeNav === 'practice'
-      ? [{ label: `單元 ${currentUnit.id}：${currentUnit.title}` }]
+      ? [{ label: t('chrome.unitNColon', { n: currentUnit.id, title: currentUnit.title }) }]
       : activeNav === 'mock'
-      ? [{ label: '會考/學測/分科模擬測驗' }]
+      ? [{ label: t('chrome.mockCap') }]
       : activeNav === 'vault'
-      ? [{ label: '錯題筆記本' }]
+      ? [{ label: t('chrome.vault') }]
       : activeNav === 'signals'
-      ? [{ label: '3秒破題訊號卡' }]
+      ? [{ label: t('nav.signals3s') }]
       : activeNav === 'labs'
-      ? [{ label: '物理互動實驗室' }]
+      ? [{ label: t('chrome.physicsLabs') }]
       : []),
   ]
 
@@ -152,28 +154,30 @@ export const PhysicsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
             <p className="eyebrow" style={{ color: '#0369a1' }}>
               PHYSICS · {gradeInfo.band} · {gradeInfo.nameEn}
             </p>
-            <h1>{gradeInfo.name}</h1>
+            <h1>{locale === 'en' ? gradeInfo.nameEn : gradeInfo.name}</h1>
           </div>
 
           <div className="header-actions">
             <label className="unit-select" htmlFor="physics-grade-select">
-              <span>切換年級</span>
+              <span>{t('chrome.switchGrade')}</span>
               <select
                 id="physics-grade-select"
                 value={currentGradeId}
                 onChange={(e) => handleSelectGrade(e.target.value as PhysicsGradeId)}
               >
-                <option value="g7">國中七年級 (G7 基礎測量)</option>
-                <option value="g8">國中八年級 (G8 波動光學浮力)</option>
-                <option value="g9">國中九年級 (G9 運動牛頓電磁)</option>
-                <option value="g10">高中十年級 (G10 必修物理)</option>
-                <option value="g11">高中十一年級 (G11 選修力學波動)</option>
-                <option value="g12">高中十二年級 (G12 選修電磁近代)</option>
+                {(Object.keys(PHYSICS_GRADES) as PhysicsGradeId[]).map((gid) => {
+                  const info = PHYSICS_GRADES[gid]
+                  return (
+                    <option key={gid} value={gid}>
+                      {locale === 'en' ? info.nameEn : info.name}
+                    </option>
+                  )
+                })}
               </select>
             </label>
 
             <label className="unit-select" htmlFor="physics-unit-select">
-              <span>切換單元</span>
+              <span>{t('chrome.switchUnit')}</span>
               <select
                 id="physics-unit-select"
                 value={currentUnitId}
@@ -181,7 +185,7 @@ export const PhysicsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
               >
                 {gradeInfo.units.map((u) => (
                   <option key={u.id} value={u.id}>
-                    單元 {u.id}：{u.title}
+                    {t('chrome.unitNColon', { n: u.id, title: u.title })}
                   </option>
                 ))}
               </select>

@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react'
 import type { ToeicCertificate, ToeicUnit } from '../data/certificates'
 import type { ToeicProgress } from '../../utils/storage'
 import { speakEnglish } from '../../utils/speech'
+import { useI18n } from '../../i18n/i18n'
 
 type Props = {
   cert: ToeicCertificate
@@ -40,6 +41,7 @@ export function ToeicToday({
   dailyDone,
   dailyGoal,
 }: Props) {
+  const { t, locale } = useI18n()
   const srsGuideUrl = `${import.meta.env.BASE_URL}srs-review.html`
   const vocabPct = Math.round((progress.vocabDone / unit.words) * 100)
   const listenPct = Math.round((progress.listeningDone / unit.listening) * 100)
@@ -55,7 +57,7 @@ export function ToeicToday({
       >
         <div>
           <span className="unit-pill">
-            {cert.name} · {cert.scoreMin}–{cert.scoreMax} · Unit {unit.id}
+            {locale === 'en' ? cert.nameEn : cert.name} · {cert.scoreMin}–{cert.scoreMax} · Unit {unit.id}
           </span>
           <h2>{unit.titleEn}</h2>
           <p>{cert.audience}</p>
@@ -67,7 +69,7 @@ export function ToeicToday({
                 onStartVocab()
               }}
             >
-              Start learning →
+              {t('todayView.start')}
             </button>
             <span>
               Vocab {unit.words} · Listening {unit.listening} · Grammar 1
@@ -112,18 +114,18 @@ export function ToeicToday({
             disabled={dueCount <= 0}
             onClick={onStartReview}
           >
-            Today Review →
+            {t('todayView.review')}
           </button>
           <a
             className="srs-guide-link"
             href={srsGuideUrl}
             target="_blank"
             rel="noreferrer"
-            aria-label="了解複習機制（另開新分頁，建議使用桌面）"
+            aria-label={t('todayView.srsGuideAria')}
           >
-            了解複習機制（桌面）↗
+            {t('todayView.srsGuide')}
           </a>
-          <span className="srs-guide-mobile-note">互動圖請用桌面開啟</span>
+          <span className="srs-guide-mobile-note">{t('todayView.srsMobile')}</span>
         </div>
       </div>
 
@@ -131,15 +133,15 @@ export function ToeicToday({
         <div className="daily-review">
           <div>
             <p className="eyebrow">FOUNDATION</p>
-            <h2>先打好發音與基礎字？</h2>
-            <span>橘／棕級建議先完成字母與高頻字語音導讀。</span>
+            <h2>{t('en.foundationTitle')}</h2>
+            <span>{t('en.foundationBody')}</span>
           </div>
           <button
             type="button"
             className="primary-btn inline"
             onClick={onOpenPhonics}
           >
-            Phonics →
+            {t('en.phonicsCta')}
           </button>
         </div>
       )}
@@ -147,7 +149,7 @@ export function ToeicToday({
       <div className="section-heading">
         <div>
           <p className="eyebrow">TODAY&apos;S PLAN</p>
-          <h2>本單元學習路徑</h2>
+          <h2>{t('todayView.planTitle')}</h2>
         </div>
         <span>Vocab → Listening → Grammar</span>
       </div>
@@ -156,7 +158,7 @@ export function ToeicToday({
         <button type="button" onClick={onStartVocab}>
           <i>V</i>
           <span>TASK 01</span>
-          <h3>{unit.title}</h3>
+          <h3>{locale === 'en' ? unit.titleEn : unit.title}</h3>
           <p>
             {progress.vocabDone}/{unit.words} words
           </p>
@@ -233,7 +235,7 @@ export function ToeicToday({
               onClick={() => onSelectUnit(u.id)}
             >
               {u.id}
-              <small>{u.title}</small>
+              <small>{locale === 'en' ? u.titleEn : u.title}</small>
             </button>
           ))}
         </div>

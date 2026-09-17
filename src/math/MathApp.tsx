@@ -23,6 +23,7 @@ import { PythagorasLab } from './labs/PythagorasLab'
 import { UnitCircleLab } from './labs/UnitCircleLab'
 import { CalculusStudio } from './calculus/CalculusStudio'
 import type { LangId } from '../utils/storage'
+import { useI18n } from '../i18n/i18n'
 
 type Props = {
   onBackHub: () => void
@@ -34,6 +35,7 @@ type Props = {
  * 涵蓋國小 1~6 年級、國中 7~9 年級、高中 10~12 年級完整架構。
  */
 export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
+  const { t, locale } = useI18n()
   const [progress, setProgress] = useState<MathProgressState>(() => loadMathProgress())
   const [activeNav, setActiveNav] = useState<MathNavId>('today')
   const [activeLabId, setActiveLabId] = useState<string | null>(null)
@@ -242,24 +244,24 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
       <section className="content math-content">
         <Breadcrumbs
           items={[
-            { label: '臺灣數學 108課綱', onClick: () => setActiveNav('today') },
-            { label: `${gradeInfo.name} (${gradeInfo.band})`, onClick: () => setActiveNav('today') },
-            { label: `單元 ${currentUnit.id} · ${currentUnit.title}`, active: activeNav === 'today' },
+            { label: t('math.brand'), onClick: () => setActiveNav('today') },
+            { label: `${locale === 'en' ? gradeInfo.nameEn : gradeInfo.name} (${gradeInfo.band})`, onClick: () => setActiveNav('today') },
+            { label: t('chrome.unitN', { n: currentUnit.id, title: currentUnit.title }), active: activeNav === 'today' },
             ...(activeNav !== 'today'
               ? [
                   {
                     label:
                       activeNav === 'practice'
-                        ? '題庫練習'
+                        ? t('chrome.practiceBank')
                         : activeNav === 'mock'
-                          ? '模考測驗'
+                          ? t('chrome.mockTest')
                           : activeNav === 'vault'
-                            ? '錯題本'
+                            ? t('chrome.vault')
                             : activeNav === 'visual'
-                              ? '幾何圖示'
+                              ? t('chrome.visual')
                               : activeNav === 'calculus'
-                                ? '微積分專題'
-                                : '互動教具',
+                                ? t('nav.calculusTopic')
+                                : t('chrome.labs'),
                     active: true,
                   },
                 ]
@@ -270,15 +272,15 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         <header className="topbar">
           <div>
             <p className="eyebrow">
-              臺灣 108 課綱 · {gradeInfo.band} · {gradeInfo.nameEn}
+              {t('chrome.curriculum108')} · {gradeInfo.band} · {gradeInfo.nameEn}
             </p>
-            <h1>{gradeInfo.name}</h1>
+            <h1>{locale === 'en' ? gradeInfo.nameEn : gradeInfo.name}</h1>
           </div>
 
           <div className="header-actions">
             {/* 年級下拉選單 */}
             <label className="unit-select" htmlFor="math-grade-select">
-              <span>選擇年級</span>
+              <span>{t('chrome.chooseGrade')}</span>
               <select
                 id="math-grade-select"
                 value={progress.gradeId}
@@ -286,7 +288,7 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
               >
                 {Object.values(ALL_MATH_GRADES).map((g) => (
                   <option key={g.id} value={g.id}>
-                    {g.name} ({g.band})
+                    {locale === 'en' ? g.nameEn : g.name} ({g.band})
                   </option>
                 ))}
               </select>
@@ -294,7 +296,7 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
 
             {/* 單元下拉選單 */}
             <label className="unit-select" htmlFor="math-unit-select">
-              <span>單元</span>
+              <span>{t('chrome.unit')}</span>
               <select
                 id="math-unit-select"
                 value={progress.unitId}
@@ -302,7 +304,7 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
               >
                 {gradeInfo.units.map((u) => (
                   <option key={u.id} value={u.id}>
-                    單元 {u.id} · {u.title}
+                    {t('chrome.unitN', { n: u.id, title: u.title })}
                   </option>
                 ))}
               </select>

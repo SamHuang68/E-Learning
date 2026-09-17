@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import { TrackSwitcher } from '../../components/TrackSwitcher'
+import { useI18n } from '../../i18n/i18n'
+import type { MessageKey } from '../../i18n/messages'
 import type { LangId } from '../../utils/storage'
 
 export type CsNavSection =
@@ -24,28 +26,28 @@ interface Props {
   errorCount?: number
 }
 
-const PRIMARY: Array<{ id: CsNavSection; label: string }> = [
-  { id: 'today', label: '今日' },
-  { id: 'hierarchy', label: '課綱' },
-  { id: 'textbook', label: '讀本' },
+const PRIMARY: Array<{ id: CsNavSection; labelKey: MessageKey }> = [
+  { id: 'today', labelKey: 'cs.top.today' },
+  { id: 'hierarchy', labelKey: 'cs.top.curriculum' },
+  { id: 'textbook', labelKey: 'cs.top.textbook' },
 ]
 
-const LABS: Array<{ id: CsNavSection; title: string; desc: string; advanced?: boolean }> = [
-  { id: 'von-neumann', title: '指令週期', desc: '取指、解碼、寫回' },
-  { id: 'pipeline-hazard', title: '管線冒險', desc: 'Forwarding 與 Stall' },
-  { id: 'cache-mapping', title: '快取映射', desc: 'Tag · Index · Offset' },
-  { id: 'arch-map', title: '硬體架構圖', desc: '系統區塊關係' },
-  { id: 'ai-transformer', title: '矩陣與注意力', desc: '進階 · GEMM 與 Attention', advanced: true },
+const LABS: Array<{ id: CsNavSection; titleKey: MessageKey; descKey: MessageKey; advanced?: boolean }> = [
+  { id: 'von-neumann', titleKey: 'cs.lab.von', descKey: 'cs.lab.vonDesc' },
+  { id: 'pipeline-hazard', titleKey: 'cs.lab.pipe', descKey: 'cs.lab.pipeDesc' },
+  { id: 'cache-mapping', titleKey: 'cs.lab.cache', descKey: 'cs.lab.cacheDesc' },
+  { id: 'arch-map', titleKey: 'cs.lab.arch', descKey: 'cs.lab.archDesc' },
+  { id: 'ai-transformer', titleKey: 'cs.lab.ai', descKey: 'cs.lab.aiDesc', advanced: true },
 ]
 
-const PRACTICE: Array<{ id: CsNavSection; title: string; desc: string }> = [
-  { id: 'practice', title: '單元練習', desc: '依課綱作答' },
-  { id: 'signals', title: '破題訊號', desc: '對照常見題型' },
+const PRACTICE: Array<{ id: CsNavSection; titleKey: MessageKey; descKey: MessageKey }> = [
+  { id: 'practice', titleKey: 'cs.prac.unit', descKey: 'cs.prac.unitDesc' },
+  { id: 'signals', titleKey: 'cs.prac.signals', descKey: 'cs.prac.signalsDesc' },
 ]
 
-const EXAMS: Array<{ id: CsNavSection; title: string; desc: string }> = [
-  { id: 'mock', title: '模擬測驗', desc: '計時與等第' },
-  { id: 'errors', title: '錯題本', desc: '重練錯過的題' },
+const EXAMS: Array<{ id: CsNavSection; titleKey: MessageKey; descKey: MessageKey }> = [
+  { id: 'mock', titleKey: 'cs.exam.mock', descKey: 'cs.exam.mockDesc' },
+  { id: 'errors', titleKey: 'cs.exam.errors', descKey: 'cs.exam.errorsDesc' },
 ]
 
 const LAB_IDS: CsNavSection[] = LABS.map((item) => item.id)
@@ -59,6 +61,7 @@ export const CsTopNav: React.FC<Props> = ({
   onSwitchLang,
   errorCount = 0,
 }) => {
+  const { t } = useI18n()
   const [openMenu, setOpenMenu] = useState<'labs' | 'practice' | 'exams' | null>(null)
 
   function go(section: CsNavSection) {
@@ -73,11 +76,11 @@ export const CsTopNav: React.FC<Props> = ({
   return (
     <header className="cs-top-nav">
       <div className="cs-nav-brand">
-        <p className="eyebrow">計算機概論</p>
-        <span className="cs-nav-brand-sub">從抽象層到指令如何執行</span>
+        <p className="eyebrow">{t('cs.brand')}</p>
+        <span className="cs-nav-brand-sub">{t('cs.lead')}</span>
       </div>
 
-      <nav className="cs-nav-list" aria-label="計算機概論">
+      <nav className="cs-nav-list" aria-label={t('cs.navAria')}>
         {PRIMARY.map((item) => (
           <button
             key={item.id}
@@ -85,7 +88,7 @@ export const CsTopNav: React.FC<Props> = ({
             className={menuClass(activeSection === item.id)}
             onClick={() => go(item.id)}
           >
-            {item.label}
+            {t(item.labelKey)}
           </button>
         ))}
 
@@ -96,17 +99,17 @@ export const CsTopNav: React.FC<Props> = ({
             aria-expanded={openMenu === 'labs'}
             onClick={() => setOpenMenu((cur) => (cur === 'labs' ? null : 'labs'))}
           >
-            實驗室
+            {t('cs.top.labs')}
           </button>
           {openMenu === 'labs' ? (
             <div className="cs-nav-dropdown" role="menu">
               {LABS.map((lab) => (
                 <button key={lab.id} type="button" onClick={() => go(lab.id)}>
                   <strong>
-                    {lab.title}
-                    {lab.advanced ? <span className="cs-advanced-tag">進階</span> : null}
+                    {t(lab.titleKey)}
+                    {lab.advanced ? <span className="cs-advanced-tag">{t('cs.top.advanced')}</span> : null}
                   </strong>
-                  <span>{lab.desc}</span>
+                  <span>{t(lab.descKey)}</span>
                 </button>
               ))}
             </div>
@@ -120,14 +123,14 @@ export const CsTopNav: React.FC<Props> = ({
             aria-expanded={openMenu === 'practice'}
             onClick={() => setOpenMenu((cur) => (cur === 'practice' ? null : 'practice'))}
           >
-            練習
+            {t('cs.top.practice')}
           </button>
           {openMenu === 'practice' ? (
             <div className="cs-nav-dropdown" role="menu">
               {PRACTICE.map((item) => (
                 <button key={item.id} type="button" onClick={() => go(item.id)}>
-                  <strong>{item.title}</strong>
-                  <span>{item.desc}</span>
+                  <strong>{t(item.titleKey)}</strong>
+                  <span>{t(item.descKey)}</span>
                 </button>
               ))}
             </div>
@@ -141,7 +144,7 @@ export const CsTopNav: React.FC<Props> = ({
             aria-expanded={openMenu === 'exams'}
             onClick={() => setOpenMenu((cur) => (cur === 'exams' ? null : 'exams'))}
           >
-            測驗
+            {t('cs.top.exams')}
             {errorCount > 0 ? <span className="cs-nav-badge">{errorCount}</span> : null}
           </button>
           {openMenu === 'exams' ? (
@@ -149,10 +152,10 @@ export const CsTopNav: React.FC<Props> = ({
               {EXAMS.map((item) => (
                 <button key={item.id} type="button" onClick={() => go(item.id)}>
                   <strong>
-                    {item.title}
+                    {t(item.titleKey)}
                     {item.id === 'errors' && errorCount > 0 ? `（${errorCount}）` : ''}
                   </strong>
-                  <span>{item.desc}</span>
+                  <span>{t(item.descKey)}</span>
                 </button>
               ))}
             </div>
