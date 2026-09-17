@@ -87,4 +87,49 @@ describe('CSS Layout & Sidebar Overflow Regression Guard', () => {
     expect(cssContent).toContain('[data-theme="dark"] .physics-today-view .unit-seq')
     expect(cssContent).toContain('[data-theme="dark"] .chemistry-today-view .unit-seq')
   })
+
+  it('unifies STEM / later-track chrome via shared sidebar width and padding tokens', () => {
+    expect(cssContent).toMatch(/--track-sidebar-width:\s*260px/)
+    expect(cssContent).toMatch(/--track-sidebar-padding:/)
+    expect(cssContent).toMatch(/--track-nav-item-padding:/)
+    expect(cssContent).toMatch(/--track-content-padding:/)
+    expect(cssContent).toMatch(/--track-title-size:/)
+    expect(cssContent).toMatch(/\.app-shell\s*\{[^}]*grid-template-columns:\s*var\(--track-sidebar-width\)/s)
+    expect(cssContent).toMatch(/\.math-shell\s*\{[^}]*grid-template-columns:\s*var\(--track-sidebar-width\)/s)
+    expect(cssContent).toMatch(/\.calculus-shell\s*\{[^}]*grid-template-columns:\s*var\(--track-sidebar-width\)/s)
+    expect(cssContent).toMatch(/\.physics-shell,\s*\n\.chemistry-shell\s*\{[^}]*var\(--track-sidebar-width\)/s)
+    expect(cssContent).toMatch(/\.chinese-sidebar,\s*\n\.cs-sidebar\s*\{[^}]*width:\s*var\(--track-sidebar-width\)/s)
+    expect(cssContent).not.toMatch(/\.math-shell\s*\{[^}]*220px/s)
+  })
+
+  it('keeps font-weight: 800 count in src/index.css at 3', () => {
+    const matches = cssContent.match(/font-weight:\s*800/g) ?? []
+    expect(matches).toHaveLength(3)
+  })
+
+  it('puts calculus topbar spacing on the shared topbar tokens', () => {
+    expect(cssContent).toMatch(/--track-topbar-gap:\s*0\.75rem/)
+    expect(cssContent).toMatch(/--track-topbar-margin:\s*0\.75rem/)
+    expect(cssContent).toMatch(/\.topbar\s*\{[^}]*gap:\s*var\(--track-topbar-gap\)/s)
+    expect(cssContent).toMatch(/\.topbar\s*\{[^}]*margin-bottom:\s*var\(--track-topbar-margin\)/s)
+    const leftover = cssContent.match(/\.calculus-topbar\s*\{[^}]*\}/g) ?? []
+    for (const block of leftover) {
+      expect(block).not.toMatch(/1\.25rem/)
+      expect(block).not.toMatch(/gap:\s*1rem/)
+      expect(block).not.toMatch(/margin-bottom:\s*1/)
+    }
+    expect(cssContent).toMatch(
+      /@media\s*\(max-width:\s*860px\)\s*\{[\s\S]*?\.topbar,\s*\n\s*\.calculus-topbar\s*\{/,
+    )
+  })
+
+  it('keeps calculus mobile padding on the same STEM content/sidebar tokens', () => {
+    expect(cssContent).toMatch(/--track-content-padding-mobile:\s*1rem/)
+    expect(cssContent).toMatch(/\.calculus-sidebar\s*\{[^}]*padding:\s*var\(--track-sidebar-padding\)/s)
+    const contentBlock = cssContent.match(/\.calculus-content\s*\{[^}]*\}/)?.[0] ?? ''
+    expect(contentBlock).not.toMatch(/padding:/)
+    expect(cssContent).toMatch(
+      /@media\s*\(max-width:\s*860px\)\s*\{[\s\S]*?\.content,\s*\n\s*\.calculus-content,[\s\S]*?padding:\s*var\(--track-content-padding-mobile\)/,
+    )
+  })
 })
