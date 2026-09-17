@@ -23,6 +23,9 @@
   --track-nav-font: 0.84rem;
   --track-nav-icon: 24px;
   --track-content-padding: 1rem 1.4rem 1.5rem;
+  --track-content-padding-mobile: 1rem;
+  --track-topbar-gap: 0.75rem;
+  --track-topbar-margin: 0.75rem;
   --track-title-size: clamp(1.35rem, 2.4vw, 1.75rem);
   --track-hero-title-size: clamp(1.22rem, 2.6vw, 1.5rem);
   --hub-card-gap: 1.25rem;
@@ -958,9 +961,10 @@ strong {
 .topbar {
   display: flex;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: var(--track-topbar-gap);
   align-items: center;
-  margin-bottom: 0.75rem;
+  margin-bottom: var(--track-topbar-margin);
+  flex-wrap: wrap;
 }
 
 .topbar h1 {
@@ -3184,7 +3188,8 @@ footer {
     font-size: 1.15rem;
   }
 
-  .topbar {
+  .topbar,
+  .calculus-topbar {
     position: relative;
     flex-direction: column;
     gap: 0.7rem;
@@ -3347,8 +3352,12 @@ footer {
     justify-content: flex-start;
   }
 
-  .content {
-    padding: 1rem;
+  .content,
+  .calculus-content,
+  .math-content,
+  .physics-content,
+  .chemistry-content {
+    padding: var(--track-content-padding-mobile);
     max-width: 100vw;
     height: auto;
     max-height: none;
@@ -7332,6 +7341,8 @@ html.high-contrast { filter: contrast(125%); }
   overflow-y: auto;
   max-height: 100vh;
   box-sizing: border-box;
+  padding: var(--track-sidebar-padding);
+  gap: var(--track-sidebar-gap);
 }
 
 .calculus-shell {
@@ -7341,19 +7352,9 @@ html.high-contrast { filter: contrast(125%); }
 }
 
 .calculus-content {
-  padding: var(--track-content-padding);
   max-width: 1300px;
   width: 100%;
   box-sizing: border-box;
-}
-
-.calculus-topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.25rem;
-  flex-wrap: wrap;
-  gap: 1rem;
 }
 
 .formula-select select {

@@ -106,4 +106,30 @@ describe('CSS Layout & Sidebar Overflow Regression Guard', () => {
     const matches = cssContent.match(/font-weight:\s*800/g) ?? []
     expect(matches).toHaveLength(3)
   })
+
+  it('puts calculus topbar spacing on the shared topbar tokens', () => {
+    expect(cssContent).toMatch(/--track-topbar-gap:\s*0\.75rem/)
+    expect(cssContent).toMatch(/--track-topbar-margin:\s*0\.75rem/)
+    expect(cssContent).toMatch(/\.topbar\s*\{[^}]*gap:\s*var\(--track-topbar-gap\)/s)
+    expect(cssContent).toMatch(/\.topbar\s*\{[^}]*margin-bottom:\s*var\(--track-topbar-margin\)/s)
+    const leftover = cssContent.match(/\.calculus-topbar\s*\{[^}]*\}/g) ?? []
+    for (const block of leftover) {
+      expect(block).not.toMatch(/1\.25rem/)
+      expect(block).not.toMatch(/gap:\s*1rem/)
+      expect(block).not.toMatch(/margin-bottom:\s*1/)
+    }
+    expect(cssContent).toMatch(
+      /@media\s*\(max-width:\s*860px\)\s*\{[\s\S]*?\.topbar,\s*\n\s*\.calculus-topbar\s*\{/,
+    )
+  })
+
+  it('keeps calculus mobile padding on the same STEM content/sidebar tokens', () => {
+    expect(cssContent).toMatch(/--track-content-padding-mobile:\s*1rem/)
+    expect(cssContent).toMatch(/\.calculus-sidebar\s*\{[^}]*padding:\s*var\(--track-sidebar-padding\)/s)
+    const contentBlock = cssContent.match(/\.calculus-content\s*\{[^}]*\}/)?.[0] ?? ''
+    expect(contentBlock).not.toMatch(/padding:/)
+    expect(cssContent).toMatch(
+      /@media\s*\(max-width:\s*860px\)\s*\{[\s\S]*?\.content,\s*\n\s*\.calculus-content,[\s\S]*?padding:\s*var\(--track-content-padding-mobile\)/,
+    )
+  })
 })
