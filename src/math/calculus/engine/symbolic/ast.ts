@@ -9,6 +9,24 @@ export type ASTNode =
   | { type: 'unary'; op: '-'; expr: ASTNode }
   | { type: 'func'; name: 'sin' | 'cos' | 'tan' | 'exp' | 'ln' | 'sqrt'; arg: ASTNode }
 
+export function isEulerName(name: string): boolean {
+  return name === 'e' || name === 'E'
+}
+
+export function isPiName(name: string): boolean {
+  return name === 'pi' || name === 'PI' || name === 'Pi'
+}
+
+/** 畫布／圖例用的有限數值格式；NaN／Infinity 不偽裝成一般實數。 */
+export function formatCalcNumber(n: number): string {
+  if (Number.isNaN(n)) return '未定義'
+  if (n === Infinity) return '∞'
+  if (n === -Infinity) return '-∞'
+  if (!Number.isFinite(n)) return '未定義'
+  if (Number.isInteger(n)) return String(n)
+  return n.toFixed(5).replace(/\.?0+$/, '')
+}
+
 /**
  * 將 AST 節點轉換回標準 LaTeX 算式字串
  */
@@ -19,6 +37,8 @@ export function astToLatex(node: ASTNode): string {
         ? node.value.toString()
         : node.value.toFixed(2).replace(/\.?0+$/, '')
     case 'variable':
+      if (isEulerName(node.name)) return 'e'
+      if (isPiName(node.name)) return '\\pi'
       return node.name
     case 'unary':
       return `-${astToLatex(node.expr)}`
@@ -60,6 +80,8 @@ export function compileASTToFunction(node: ASTNode): (x: number) => number {
       return () => val
     }
     case 'variable':
+      if (isEulerName(node.name)) return () => Math.E
+      if (isPiName(node.name)) return () => Math.PI
       return (x: number) => x
     case 'unary': {
       const sub = compileASTToFunction(node.expr)
@@ -71,7 +93,8 @@ export function compileASTToFunction(node: ASTNode): (x: number) => number {
       if (node.op === '+') return (x: number) => fnL(x) + fnR(x)
       if (node.op === '-') return (x: number) => fnL(x) - fnR(x)
       if (node.op === '*') return (x: number) => fnL(x) * fnR(x)
-      if (node.op === '/') return (x: number) => fnL(x) / (fnR(x) || 1e-12)
+      // 真實除法：0 分母必須是 Infinity / NaN，不得改寫成 1e12
+      if (node.op === '/') return (x: number) => fnL(x) / fnR(x)
       if (node.op === '^') return (x: number) => Math.pow(fnL(x), fnR(x))
       break
     }
@@ -81,8 +104,19 @@ export function compileASTToFunction(node: ASTNode): (x: number) => number {
       if (node.name === 'cos') return (x: number) => Math.cos(fnArg(x))
       if (node.name === 'tan') return (x: number) => Math.tan(fnArg(x))
       if (node.name === 'exp') return (x: number) => Math.exp(fnArg(x))
-      if (node.name === 'ln') return (x: number) => Math.log(Math.max(1e-12, fnArg(x)))
-      if (node.name === 'sqrt') return (x: number) => Math.sqrt(Math.max(0, fnArg(x)))
+      // 定義域錯誤傳回 NaN，不得夾成 0 或極小正數
+      if (node.name === 'ln') {
+        return (x: number) => {
+          const arg = fnArg(x)
+          return arg > 0 ? Math.log(arg) : Number.NaN
+        }
+      }
+      if (node.name === 'sqrt') {
+        return (x: number) => {
+          const arg = fnArg(x)
+          return arg >= 0 ? Math.sqrt(arg) : Number.NaN
+        }
+      }
       break
     }
   }

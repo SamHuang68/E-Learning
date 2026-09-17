@@ -1,6 +1,11 @@
 import React, { useMemo } from 'react'
 import { CoordinateViewport } from './CoordinateViewport'
-import { parseMathExpression, compileASTToFunction, differentiateAST } from '../../engine'
+import {
+  tryParseMathExpression,
+  compileASTToFunction,
+  differentiateAST,
+  formatCalcNumber,
+} from '../../engine'
 import {
   highPrecisionDerivative,
   runNewtonRaphson,
@@ -24,11 +29,18 @@ export const CalculusCanvas: React.FC<CalculusCanvasProps> = ({
   const width = 600
   const height = 360
 
-  // 1. 解析函數與求值器
-  const ast = useMemo(() => parseMathExpression(expression), [expression])
-  const f = useMemo(() => compileASTToFunction(ast), [ast])
-  const fPrimeAst = useMemo(() => differentiateAST(ast, 'x'), [ast])
-  const fPrime = useMemo(() => compileASTToFunction(fPrimeAst), [fPrimeAst])
+  // 1. 解析函數與求值器（無效輸入不得回落到 x^2+1）
+  const parsed = useMemo(() => tryParseMathExpression(expression), [expression])
+  const ast = parsed.ok ? parsed.ast : null
+  const f = useMemo(
+    () => (ast ? compileASTToFunction(ast) : () => Number.NaN),
+    [ast],
+  )
+  const fPrimeAst = useMemo(() => (ast ? differentiateAST(ast, 'x') : null), [ast])
+  const fPrime = useMemo(
+    () => (fPrimeAst ? compileASTToFunction(fPrimeAst) : () => Number.NaN),
+    [fPrimeAst],
+  )
 
   // 2. 視口座標計算 (自適應邊界)
   const transform = useMemo(() => {
@@ -63,10 +75,18 @@ export const CalculusCanvas: React.FC<CalculusCanvasProps> = ({
 
   // 4. 數值與圖層數據
   const y0 = f(x0)
-  const slope = fPrime(x0) || highPrecisionDerivative(f, x0)
+  const symbolicSlope = fPrime(x0)
+  const slope = Number.isFinite(symbolicSlope)
+    ? symbolicSlope
+    : parsed.ok
+      ? highPrecisionDerivative(f, x0)
+      : Number.NaN
   const x1 = x0 + deltaX
   const y1 = f(x1)
   const secantSlope = (y1 - y0) / (deltaX || 1e-6)
+  const probeText = parsed.ok
+    ? `x=${formatCalcNumber(x0)}，f=${formatCalcNumber(y0)}，f'=${formatCalcNumber(slope)}`
+    : `無法求值：${parsed.error}`
 
   // 黎曼和長條切片數據
   const riemannBars = useMemo(() => {
@@ -115,9 +135,12 @@ export const CalculusCanvas: React.FC<CalculusCanvasProps> = ({
   }, [mode, f, x0, taylorOrder, vp, transform])
 
   const graphSummary = useMemo(() => {
-    const base = `函數 f(x)=${expression}，顯示範圍 x 從 ${transform.minX.toFixed(1)} 到 ${transform.maxX.toFixed(1)}，y 從 ${transform.minY.toFixed(1)} 到 ${transform.maxY.toFixed(1)}。探索點 x=${x0.toFixed(2)}，f(x)=${y0.toFixed(2)}。`
+    if (!parsed.ok) {
+      return `函數 f(x)=${expression} 無法解析：${parsed.error}`
+    }
+    const base = `函數 f(x)=${expression}，顯示範圍 x 從 ${transform.minX.toFixed(1)} 到 ${transform.maxX.toFixed(1)}，y 從 ${transform.minY.toFixed(1)} 到 ${transform.maxY.toFixed(1)}。探索點 x=${formatCalcNumber(x0)}，f(x)=${formatCalcNumber(y0)}。`
     if (mode === 'tangent_secant' || mode === 'optimization_mvt') {
-      return `${base} 切線斜率 ${slope.toFixed(2)}；割線斜率 ${secantSlope.toFixed(2)}。`
+      return `${base} 切線斜率 ${formatCalcNumber(slope)}；割線斜率 ${formatCalcNumber(secantSlope)}。`
     }
     if (mode === 'riemann_sum' || mode === 'ftc_accumulation') {
       return `${base} 積分區間 ${intA.toFixed(1)} 到 ${(mode === 'ftc_accumulation' ? x0 : intB).toFixed(1)}，使用 ${slicesN} 個切片。`
@@ -128,7 +151,7 @@ export const CalculusCanvas: React.FC<CalculusCanvasProps> = ({
       return `${base} 牛頓法完成 ${newtonResult.iterations.length} 次迭代。`
     }
     return base
-  }, [deltaX, epsilon, expression, intA, intB, mode, newtonResult, secantSlope, slicesN, slope, taylorOrder, transform, x0, y0])
+  }, [deltaX, epsilon, expression, intA, intB, mode, newtonResult, parsed, secantSlope, slicesN, slope, taylorOrder, transform, x0, y0])
 
   return (
     <div className={`calculus-canvas-card ${className}`}>
@@ -138,6 +161,16 @@ export const CalculusCanvas: React.FC<CalculusCanvasProps> = ({
           X: [{transform.minX.toFixed(1)}, {transform.maxX.toFixed(1)}] · Y: [{transform.minY.toFixed(1)}, {transform.maxY.toFixed(1)}]
         </span>
       </div>
+      <p
+        className={`canvas-probe-readout ${parsed.ok ? '' : 'canvas-probe-error'}`}
+        data-testid="calculus-probe"
+        role={parsed.ok ? undefined : 'alert'}
+      >
+        {probeText}
+      </p>
+      {parsed.ok ? null : (
+        <p className="canvas-parse-error">請修正函數表達式後再求值（不完整輸入如 x+ 會被拒絕）。</p>
+      )}
 
       <div className="canvas-svg-container" style={{ width: '100%', overflow: 'hidden' }}>
         <svg
@@ -279,8 +312,12 @@ export const CalculusCanvas: React.FC<CalculusCanvasProps> = ({
           )}
 
           {/* 切點/探針焦點 P(x0, y0) */}
-          <line x1={vp.toScreenX(x0)} y1={vp.toScreenY(0)} x2={vp.toScreenX(x0)} y2={vp.toScreenY(y0)} stroke="#38bdf8" strokeWidth="1" strokeDasharray="3 3" />
-          <circle cx={vp.toScreenX(x0)} cy={vp.toScreenY(y0)} r="6" fill="#38bdf8" stroke="#ffffff" strokeWidth="2" />
+          {Number.isFinite(y0) && (
+            <>
+              <line x1={vp.toScreenX(x0)} y1={vp.toScreenY(0)} x2={vp.toScreenX(x0)} y2={vp.toScreenY(y0)} stroke="#38bdf8" strokeWidth="1" strokeDasharray="3 3" />
+              <circle cx={vp.toScreenX(x0)} cy={vp.toScreenY(y0)} r="6" fill="#38bdf8" stroke="#ffffff" strokeWidth="2" />
+            </>
+          )}
           </g>
 
           {/* 坐標軸標籤位於頂層 */}
@@ -295,8 +332,8 @@ export const CalculusCanvas: React.FC<CalculusCanvasProps> = ({
         <span className="legend-item"><span className="dot blue" /> 原函數 f(x)</span>
         {(mode === 'tangent_secant' || mode === 'optimization_mvt') && (
           <>
-            <span className="legend-item"><span className="line green-dash" /> 切線 f'(x0)={slope.toFixed(2)}</span>
-            <span className="legend-item"><span className="line red" /> 割線 Δy/Δx={secantSlope.toFixed(2)}</span>
+            <span className="legend-item"><span className="line green-dash" /> 切線 f'(x0)={formatCalcNumber(slope)}</span>
+            <span className="legend-item"><span className="line red" /> 割線 Δy/Δx={formatCalcNumber(secantSlope)}</span>
           </>
         )}
         {mode === 'riemann_sum' && (
