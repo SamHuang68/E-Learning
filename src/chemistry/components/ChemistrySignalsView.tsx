@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { CHEMISTRY_SOLVING_SIGNALS, type ChemistrySolvingSignal } from '../data/solvingSignals'
 import { MathFormula } from '../../math/components/MathFormula'
 import { PROGRESS_STORAGE_KEYS } from '../../utils/progressKeys'
+import { notifyProgressChanged } from '../../utils/storage'
 
 const STORAGE_KEY_CHEMISTRY_MASTERY = PROGRESS_STORAGE_KEYS.chemistrySignals
 
@@ -32,6 +33,10 @@ function loadMasteryFromStorage(): MasteryMap {
 function saveMasteryToStorage(map: MasteryMap): void {
   try {
     localStorage.setItem(STORAGE_KEY_CHEMISTRY_MASTERY, JSON.stringify(map))
+    notifyProgressChanged()
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('chemistry:signals-mastery-updated'))
+    }
   } catch (err) {
     console.error('Failed to save chemistry signals mastery:', err)
   }
@@ -500,6 +505,8 @@ export const ChemistrySignalsView: React.FC = () => {
             {/* 狀態篩選與搜尋框 */}
             <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap', alignItems: 'center', minWidth: 0 }}>
               <select
+                aria-label="掌握狀態篩選"
+                id="chemistry-signals-status-filter"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
                 style={{
@@ -519,7 +526,8 @@ export const ChemistrySignalsView: React.FC = () => {
               </select>
 
               <input
-                type="text"
+                type="search"
+                aria-label="搜尋化學破題訊號"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="搜尋題目特徵或口訣..."

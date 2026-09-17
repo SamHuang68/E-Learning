@@ -50,9 +50,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const gen = ++hydrateGen.current
       setCloudUserId(userId)
       if (userId) {
-        await hydrateFromCloud(userId)
+        const outcome = await hydrateFromCloud(userId)
         if (cancelled || gen !== hydrateGen.current) return
-        window.dispatchEvent(new CustomEvent('e-learning:progress-hydrated'))
+        if (outcome !== 'error' && outcome !== 'skipped') {
+          window.dispatchEvent(new CustomEvent('e-learning:progress-hydrated'))
+        }
       }
       if (!cancelled && gen === hydrateGen.current) setLoading(false)
     }

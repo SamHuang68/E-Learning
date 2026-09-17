@@ -74,8 +74,10 @@ Migration 只新增欄位，不會刪除／重建 policies、修改 grants 或�
 同步行為：
 
 - **Write-through：** 先寫 localStorage，再 upsert 雲端  
-- **登入時：** 雲端列不存在 → 上傳本機；已存在 → 以雲端覆蓋本機  
-- **欄位：** `aoba` / `kana` / `toeic` / `math` / `physics` / `chemistry` / `meta`（jsonb）、`lang`、`updated_at`
+- **登入時：** 雲端列不存在 → 上傳本機並**讀回驗證**後才顯示已同步；已存在 → **合併**本機與雲端（不靜默覆蓋），寫回後驗證。驗證失敗不開放 write-through。  
+- **欄位：** `aoba` / `kana` / `toeic` / `math` / `physics` / `chemistry` / `cs` / `chinese` / `math_signals` / `physics_signals` / `chemistry_signals` / `cs_signals`（jsonb）、`lang`、`meta`、`updated_at`
+
+引擎接線（哪一軌用 SM-2／FSRS／IRT／檢索）見 [`docs/learning-engine-matrix.md`](docs/learning-engine-matrix.md)。
 
 Pro demo 解鎖碼：`AOBA-PRO`（免費可用五十音／Phonics 與 n5n4／orange 前兩單元）。
 

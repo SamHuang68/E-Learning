@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { MATH_SOLVING_SIGNALS, type MathSolvingSignal, type MathStage } from '../data/solvingSignals'
 import { MathFormula } from './MathFormula'
 import { PROGRESS_STORAGE_KEYS } from '../../utils/progressKeys'
+import { notifyProgressChanged } from '../../utils/storage'
 
 const STORAGE_KEY_MATH_MASTERY = PROGRESS_STORAGE_KEYS.mathSignals
 
@@ -37,6 +38,10 @@ function loadMasteryFromStorage(): MasteryMap {
 function saveMasteryToStorage(map: MasteryMap): void {
   try {
     localStorage.setItem(STORAGE_KEY_MATH_MASTERY, JSON.stringify(map))
+    notifyProgressChanged()
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('math:signals-mastery-updated'))
+    }
   } catch (err) {
     console.error('Failed to save math signals mastery:', err)
   }
@@ -538,6 +543,8 @@ export const MathSignalsView: React.FC<Props> = ({ initialStage = 'all', onBack 
             {/* 狀態篩選與搜尋框 */}
             <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap', alignItems: 'center', minWidth: 0 }}>
               <select
+                aria-label="掌握狀態篩選"
+                id="math-signals-status-filter"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
                 style={{
@@ -557,7 +564,8 @@ export const MathSignalsView: React.FC<Props> = ({ initialStage = 'all', onBack 
               </select>
 
               <input
-                type="text"
+                type="search"
+                aria-label="搜尋數學破題訊號"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="搜尋題目特徵或口訣..."

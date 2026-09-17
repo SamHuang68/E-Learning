@@ -37,8 +37,8 @@ export function PrivacyPage({ onBack }: Props) {
           若已設定 Supabase，登入帳號後會在資料庫保存你的學習進度列（RLS：僅本人可讀寫）。
         </p>
         <ul>
-          <li>欄位：aoba / kana / toeic / math / physics / chemistry / cs / chinese（JSON）、lang、meta、updated_at</li>
-          <li>首次登入：若雲端尚無資料，會上傳目前本機進度；若已有資料，以雲端為準</li>
+          <li>欄位：aoba / kana / toeic / math / physics / chemistry / cs / chinese / math_signals / physics_signals / chemistry_signals / cs_signals（JSON）、lang、meta、updated_at</li>
+          <li>首次登入：若雲端尚無資料，會上傳目前本機進度並讀回驗證；若已有資料，與本機合併後寫回，不會靜默覆蓋。驗證成功才顯示「已同步」。</li>
         </ul>
       </section>
 
