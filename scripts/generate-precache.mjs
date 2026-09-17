@@ -24,7 +24,7 @@ const shellFiles = new Set([
 const allFiles = await walk(distDir)
 const files = allFiles
   .map((file) => path.relative(distDir, file).replaceAll('\\', '/'))
-  .filter((file) => shellFiles.has(file) || file.startsWith('assets/') || file.startsWith('audio/') || file.startsWith('content/'))
+  .filter((file) => shellFiles.has(file) || file.startsWith('assets/') || file.startsWith('audio/') || file.startsWith('content/') || file.startsWith('archify/'))
   .filter((file) => !file.includes('.visual-check.'))
   .sort()
 

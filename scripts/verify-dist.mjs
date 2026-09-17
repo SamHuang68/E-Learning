@@ -31,10 +31,14 @@ if (!files.some((file) => /assets\/index-.*\.js$/.test(file))) throw new Error('
 if (!files.some((file) => /assets\/vendor-supabase-.*\.js$/.test(file))) throw new Error('Supabase vendor chunk is not precached.')
 if (!files.some((file) => /assets\/index-.*\.css$/.test(file))) throw new Error('Entry CSS is not precached.')
 if (!files.some((file) => file.startsWith('./audio/'))) throw new Error('Bundled learning audio is not precached.')
+if (!files.some((file) => file.startsWith('./archify/'))) throw new Error('CS Archify assets are not precached.')
 
 const workerSource = await readFile(path.join(distDir, 'sw.js'), 'utf8')
 if (workerSource.includes('__PRECACHE_VERSION__')) throw new Error('Service worker cache version was not injected.')
 if (!workerSource.includes(`e-learning-${manifest.buildId}`)) throw new Error('Service worker cache version does not match the manifest build id.')
+if (!workerSource.includes("key.startsWith('e-learning-')")) {
+  throw new Error('Service worker must only delete e-learning-* caches so other Pages caches stay intact.')
+}
 
 console.log(JSON.stringify({
   verdict: 'PASS',
