@@ -7,3 +7,4 @@ R86: UX Keyboard shortcut help dialog (? key)
 R87: UX Print stylesheet for formula sheets
 R88: Content Remove dead TODO comments in track entry
 R89: Content Fix typo sweep in en practice stems (batch)
+R90: Content Fix typo sweep in zh-Hant stems (batch)
