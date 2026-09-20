@@ -6,3 +6,4 @@ R85: STEM Cross-track “why this next” rationale copy
 R86: UX Keyboard shortcut help dialog (? key)
 R87: UX Print stylesheet for formula sheets
 R88: Content Remove dead TODO comments in track entry
+R89: Content Fix typo sweep in en practice stems (batch)
