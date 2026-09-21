@@ -153,6 +153,25 @@ export const CALCULUS_CATALOG: CalculusConceptItem[] = [
       },
     },
   },
+  {
+    id: 'calc-implicit-diff',
+    name: '隱函數微分（教學） / Implicit differentiation (teaching)',
+    category: 'derivative',
+    difficulty: 0.8,
+    discrimination: 1.4,
+    prerequisites: ['calc-chain-rule', 'calc-product-rule'],
+    description: '對 F(x,y)=0 兩邊對 x 微分再解 y\'。連鎖律作用在 y(x)。教學練習，非正式考試通過保證。',
+    distractorPrescriptions: {
+      treat_y_constant: {
+        reason: '把 y 當常數，漏了 (d/dx) y^n = n y^{n-1} y\'。',
+        action: '每一個含 y 的項都乘 y\'，再把含 y\' 的項移到同一邊。',
+      },
+      forget_product: {
+        reason: 'xy 或 x sin y 漏用乘積法則。',
+        action: '先拆成 u v，再對每一因子微分，y 的因子記得乘 y\'。',
+      },
+    },
+  },
 ]
 
 export type CatalogPrereqRef = {

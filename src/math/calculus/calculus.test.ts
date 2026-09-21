@@ -137,6 +137,36 @@ describe('微積分專題 (Calculus Studio) 模組測試', () => {
       expect(seriesConcept?.description).toMatch(/非正式考試/)
     })
 
+    it('implicit differentiation pack has five teaching items, not an exam-pass claim', () => {
+      const pack = CALCULUS_PROBLEMS.filter((p) => p.conceptTag === 'calc-implicit-diff')
+      expect(pack.map((p) => p.id)).toEqual([
+        'calc-prob-implicit1',
+        'calc-prob-implicit2',
+        'calc-prob-implicit3',
+        'calc-prob-implicit4',
+        'calc-prob-implicit5',
+      ])
+      const blob = pack.map((p) => `${p.title}\n${p.questionText}\n${p.explanation}`).join('\n')
+      expect(blob).toMatch(/隱函數/)
+      expect(blob).toMatch(/circle|圓/i)
+      expect(blob).toMatch(/product|乘積/i)
+      expect(blob).toMatch(/sin y/i)
+      expect(blob).not.toMatch(/≈/)
+      pack.forEach((p) => {
+        expect(p.tierLabel).toBe('隱函數微分專項')
+        expect(p.explanation).toMatch(/教學/)
+        expect(p.explanation).toMatch(/不是|非正式/)
+        expect(p.options?.length).toBe(4)
+        expect(p.correctIndex).toBe(0)
+        expect(p.title).toMatch(/\//)
+        expect(p.derivationSteps.length).toBeGreaterThan(0)
+      })
+      const concept = CALCULUS_CATALOG.find((c) => c.id === 'calc-implicit-diff')
+      expect(concept?.category).toBe('derivative')
+      expect(concept?.description).toMatch(/非正式考試/)
+      expect(concept?.prerequisites).toContain('calc-chain-rule')
+    })
+
     it('微積分專屬勳章庫應具備清晰的解鎖條件與 XP 獎勵', () => {
       expect(CALCULUS_BADGES.length).toBe(4)
       CALCULUS_BADGES.forEach((b) => {
