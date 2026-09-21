@@ -145,6 +145,29 @@ describe('i18n dictionary', () => {
     expect(translate('en', 'chemistry.strand.reactions')).toMatch(/stoichiometry/i)
   })
 
+  it('keeps CS strand taxonomy labels bilingual and not raw snake_case keys', () => {
+    const strands = [
+      'cs.strand.hardware_software',
+      'cs.strand.five_units',
+      'cs.strand.digital_logic',
+      'cs.strand.operating_systems',
+      'cs.strand.networks',
+      'cs.strand.ai_hardware',
+      'cs.strand.frontier_ai',
+    ] as const
+    for (const key of strands) {
+      expect(translate('zh-Hant', key)).toBeTruthy()
+      expect(translate('en', key)).toBeTruthy()
+      expect(translate('zh-Hant', key)).not.toMatch(/_/)
+      expect(translate('en', key)).not.toMatch(/_/)
+      expect(translate('en', key)).not.toBe(translate('zh-Hant', key))
+    }
+    expect(translate('zh-Hant', 'cs.strand.hardware_software')).toBe('軟硬體本質')
+    expect(translate('zh-Hant', 'cs.strand.five_units')).toBe('五大單元架構')
+    expect(translate('en', 'cs.strand.five_units')).toMatch(/five-unit/i)
+    expect(translate('en', 'cs.strand.hardware_software')).toMatch(/hardware/i)
+  })
+
   it('leaves unknown placeholders intact', () => {
     expect(interpolate('Hello {name}', { other: 'x' })).toBe('Hello {name}')
     const key = 'hub.solved' satisfies MessageKey

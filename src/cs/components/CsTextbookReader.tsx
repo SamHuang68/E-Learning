@@ -1,12 +1,15 @@
 import { useState } from 'react'
 import { CS_TEXTBOOK_CHAPTERS, type TextbookChapter } from '../data/textbookData'
+import { csStrandMessageKey } from '../data/curriculum'
 import { MathFormula } from '../../math/components/MathFormula'
+import { useI18n } from '../../i18n/i18n'
 
 interface Props {
   onOpenArchMap?: () => void
 }
 
 export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
+  const { t } = useI18n()
   const [selectedChapterId, setSelectedChapterId] = useState<string>('cs-ch-1')
   const [activeTab, setActiveTab] = useState<'all' | 'history' | 'principles' | 'architecture' | 'philosophy'>('all')
   const [readChapters, setReadChapters] = useState<Set<string>>(new Set(['cs-ch-1']))
@@ -125,7 +128,7 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
                   border: '1px solid var(--line)',
                 }}
               >
-                {currentChapter.strand}
+                {t(csStrandMessageKey(currentChapter.strand))}
               </span>
               <span style={{ fontSize: '0.75rem', color: 'var(--muted)', marginLeft: 'auto' }}>
                 約 {currentChapter.readingTimeMinutes} 分鐘

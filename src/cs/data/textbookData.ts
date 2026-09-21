@@ -1,11 +1,12 @@
 import { describe, it, expect } from 'vitest'
+import type { CsStrand } from './curriculum'
 
 export interface TextbookChapter {
   id: string
   chapterNumber: number
   title: string
   englishTitle: string
-  strand: string
+  strand: CsStrand
   readingTimeMinutes: number
   prerequisites: string[]
   historicalContext: {
