@@ -228,8 +228,14 @@ export const BopomofoStrokeLab: React.FC<Props> = ({ onEarnXp }) => {
             </div>
 
             <div style={{ background: 'rgba(245, 158, 11, 0.08)', padding: '0.6rem', borderRadius: '8px', border: '1px solid rgba(245, 158, 11, 0.3)' }}>
-              <span style={{ fontSize: '0.72rem', color: '#f59e0b', fontWeight: 700, display: 'block' }}>✍️ 筆順・書き順のルール：</span>
+              <span style={{ fontSize: '0.72rem', color: '#f59e0b', fontWeight: 700, display: 'block' }}>✍️ Stroke Order Tip / 筆順教學提示 (zh-Hant / en)</span>
               <p style={{ margin: '0.2rem 0 0', fontSize: '0.78rem', lineHeight: 1.45 }}>{selectedChar.strokeRuleJa}</p>
+              <div style={{ marginTop: '0.4rem', fontSize: '0.72rem', color: 'var(--muted)' }}>
+                <strong>Stroke Sequence (筆順步驟):</strong> {selectedChar.strokeSequence.map((s, i) => `${i+1}.${s}`).join(' → ')}
+              </div>
+              <div style={{ marginTop: '0.3rem', fontSize: '0.7rem', color: '#94a3b8' }}>
+                Tip: Follow the numbered order for correct writing. / 按照編號順序書寫以確保正確筆順。
+              </div>
             </div>
 
             <div style={{ background: 'var(--surface-soft)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)' }}>

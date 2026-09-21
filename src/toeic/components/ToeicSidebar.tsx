@@ -209,6 +209,9 @@ export function ToeicSidebar({
           </strong>
           <span>{cert.nameEn}</span>
         </div>
+        <p className="score-disclaimer" style={{ fontSize: '0.75rem', opacity: 0.85, margin: '0.35rem 0' }}>
+          {isJa ? cert.disclaimer.replace('分數級距', 'スコアバンド') : `${cert.disclaimer} (${cert.disclaimerEn})`}
+        </p>
         <span style={{ display: 'block', marginTop: '0.55rem' }}>
           {isJa ? `本レベル進捗 ${progressPct}% · Unit ${unit.id}` : t('en.progress', { pct: progressPct, id: unit.id })}
         </span>

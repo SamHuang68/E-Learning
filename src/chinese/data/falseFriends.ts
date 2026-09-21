@@ -16,6 +16,7 @@ export interface FalseFriendItem {
   examplePinyin: string
   exampleTranslationJa: string
   tag: '日常生活' | '交通飲食' | '職場商務' | '感情社交'
+  hskLevel: number // HSK 等級 1-6，供 SRS 依 HSK 風格篩選與元數據清理
 }
 
 export const FALSE_FRIENDS_DATA: FalseFriendItem[] = [
@@ -32,6 +33,7 @@ export const FALSE_FRIENDS_DATA: FalseFriendItem[] = [
     examplePinyin: 'qǐng wèn xǐ shǒu jiān lǐ yǒu shǒu zhǐ ma?',
     exampleTranslationJa: 'すみません、お手洗いにトイレットペーパーはありますか？',
     tag: '日常生活',
+    hskLevel: 1,
   },
   {
     id: 'ff-kisha',
@@ -46,6 +48,7 @@ export const FALSE_FRIENDS_DATA: FalseFriendItem[] = [
     examplePinyin: 'tā zài tái běi mǎi le yí liàng xīn qì chē.',
     exampleTranslationJa: '彼は台北で新しい乗用車を1台買いました。',
     tag: '交通飲食',
+    hskLevel: 2,
   },
   {
     id: 'ff-benkyo',
@@ -60,6 +63,7 @@ export const FALSE_FRIENDS_DATA: FalseFriendItem[] = [
     examplePinyin: 'rú guǒ bù xiǎng qù jiù bié miǎn qiǎng le.',
     exampleTranslationJa: 'もし行きたくないなら、無理しないでね。',
     tag: '日常生活',
+    hskLevel: 3,
   },
   {
     id: 'ff-aijin',
@@ -74,6 +78,7 @@ export const FALSE_FRIENDS_DATA: FalseFriendItem[] = [
     examplePinyin: 'zhè shì wǒ ài ren, wǒ men jié hūn shí nián le.',
     exampleTranslationJa: 'こちらは私の配偶者（妻/夫）です。結婚して10年になります。',
     tag: '感情社交',
+    hskLevel: 4,
   },
   {
     id: 'ff-daijobu',
@@ -88,6 +93,7 @@ export const FALSE_FRIENDS_DATA: FalseFriendItem[] = [
     examplePinyin: 'nán zǐ hàn dà zhàng fū, gǎn zuò gǎn dāng.',
     exampleTranslationJa: '一人前の立派な男子たるもの、自分の行動に責任を持つべきだ。',
     tag: '感情社交',
+    hskLevel: 2,
   },
   {
     id: 'ff-hashiru',
@@ -200,6 +206,7 @@ export const FALSE_FRIENDS_DATA: FalseFriendItem[] = [
     examplePinyin: 'wǒ men zhè cì qù huā lián zhù zài hǎi jǐng fàn diàn.',
     exampleTranslationJa: '私たちは今回花蓮に行ってオーシャンビューのホテルに泊まりました。',
     tag: '交通飲食',
+    hskLevel: 3,
   },
   {
     id: 'ff-daikata',
@@ -214,6 +221,7 @@ export const FALSE_FRIENDS_DATA: FalseFriendItem[] = [
     examplePinyin: 'lǎo bǎn jīn tiān hěn dà fāng, qǐng dà jiā chī xià wǔ chá.',
     exampleTranslationJa: '社長は今日とても気前がよく、みんなにアフタヌーンティーをごちそうしてくれました。',
     tag: '感情社交',
+    hskLevel: 4,
   },
   {
     id: 'ff-bengri',
@@ -228,5 +236,6 @@ export const FALSE_FRIENDS_DATA: FalseFriendItem[] = [
     examplePinyin: 'qǐng wèn nín xiàn zài fāng biàn tōng diàn huà ma?',
     exampleTranslationJa: '恐れ入りますが、今お電話でお話ししてもご都合よろしいでしょうか？',
     tag: '職場商務',
+    hskLevel: 5,
   },
 ]

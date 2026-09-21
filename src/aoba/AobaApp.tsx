@@ -531,6 +531,9 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
             >
               <span>{audioLive ? t('chrome.audioDone') : t('chrome.audioIdle')}</span>
             </div>
+            <div className="audio-attribution" aria-label={t('chrome.audioAttribution')}>
+              <small>{t('chrome.audioAttribution')}</small>
+            </div>
             {nav !== 'kana' && nav !== 'kanji' && (
               <>
                 <label className="unit-select" htmlFor="aoba-level-select">

@@ -84,6 +84,9 @@ export const FalseFriendsLab: React.FC<Props> = ({ onEarnXp }) => {
                   <span style={{ fontSize: '0.74rem', color: 'var(--muted)', marginLeft: '0.4rem' }}>
                     {item.pinyin}
                   </span>
+                  <span style={{ fontSize: '0.65rem', color: '#10b981', marginLeft: '0.3rem' }}>
+                    HSK{item.hskLevel}
+                  </span>
                   <div style={{ fontSize: '0.7rem', color: '#ef4444', marginTop: '0.15rem' }}>
                     中：{item.meaningZhInJa.replace(/【|】/g, '')}
                   </div>
@@ -114,6 +117,9 @@ export const FalseFriendsLab: React.FC<Props> = ({ onEarnXp }) => {
                 <h2 style={{ margin: 0, fontSize: '1.4rem' }}>{selectedItem.wordZh}</h2>
                 <span style={{ fontSize: '0.85rem', color: '#f59e0b', fontFamily: 'monospace' }}>
                   {selectedItem.pinyin} ({selectedItem.bopomofo})
+                </span>
+                <span style={{ fontSize: '0.75rem', color: '#10b981', background: 'rgba(16,185,129,0.1)', padding: '0.1rem 0.4rem', borderRadius: '4px' }}>
+                  HSK {selectedItem.hskLevel} 等級 / Level
                 </span>
               </div>
             </div>
