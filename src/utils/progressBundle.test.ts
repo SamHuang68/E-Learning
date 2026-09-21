@@ -87,7 +87,7 @@ describe('progress bundle', () => {
     localStorage.setItem(LOCAL_PREFERENCE_KEYS.accessibility, JSON.stringify({ fontSize: 'large' }))
 
     const bundle = exportProgressBundle()
-    expect(bundle.version).toBe(4)
+    expect(bundle.version).toBe(5)
     expect(bundle.math).toEqual(math)
     expect(bundle.physics).toEqual(physics)
     expect(bundle.chemistry).toEqual(chemistry)

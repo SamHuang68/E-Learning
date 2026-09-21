@@ -3,6 +3,13 @@ import { LEARN_ORDER, type KanaScript, type LearnRowId } from '../data/kana'
 import { defaultItemState, type ItemState } from '../engine/srs'
 import type { ToeicBuilderConfig, ToeicCertificate } from '../toeic/data/certificates'
 import { PROGRESS_STORAGE_KEYS } from './progressKeys'
+import {
+  LEARNING_EVENT_SCHEMA_VERSION,
+  PROGRESS_BUNDLE_VERSION,
+  isAcceptedProgressBundleVersion,
+  migrateLearningEvent,
+  type LearningEventV1,
+} from './progressSchema'
 import { parseTopViewHash } from './topRoute'
 
 /** Late-bound write-through hook (wired by cloudProgress to avoid circular imports). */
@@ -97,7 +104,7 @@ export type LearningMeta = {
   } | null
   proUnlocked: boolean
   achievements: string[]
-  events: Array<{ t: string; type: string; payload?: Record<string, unknown> }>
+  events: LearningEventV1[]
   kanjiMastered: string[]
   speakingDone: number
 }
@@ -192,10 +199,6 @@ function normalizeStringArray(value: unknown): string[] {
     : []
 }
 
-function normalizePayload(value: unknown): Record<string, unknown> | undefined {
-  return isRecord(value) ? value : undefined
-}
-
 const SRS_GRADES = new Set(['again', 'hard', 'good', 'easy'])
 
 function normalizeItemState(id: string, value: unknown): ItemState {
@@ -234,12 +237,8 @@ function normalizeEvents(value: unknown): LearningMeta['events'] {
   if (!Array.isArray(value)) return []
   return value
     .flatMap((event) => {
-      if (!isRecord(event) || typeof event.type !== 'string') return []
-      const t = normalizeIso(event.t, new Date().toISOString())
-      const payload = normalizePayload(event.payload)
-      return payload
-        ? [{ t, type: event.type, payload }]
-        : [{ t, type: event.type }]
+      const migrated = migrateLearningEvent(event)
+      return migrated ? [migrated] : []
     })
     .slice(-LEARNING_EVENT_LIMIT)
 }
@@ -515,10 +514,10 @@ export function appendLearningEvent(
   payload?: Record<string, unknown>,
 ): void {
   const meta = loadLearningMeta()
-  const event =
+  const event: LearningEventV1 =
     payload === undefined
-      ? { t: new Date().toISOString(), type }
-      : { t: new Date().toISOString(), type, payload }
+      ? { v: LEARNING_EVENT_SCHEMA_VERSION, t: new Date().toISOString(), type }
+      : { v: LEARNING_EVENT_SCHEMA_VERSION, t: new Date().toISOString(), type, payload }
   saveLearningMeta({
     ...meta,
     events: [...meta.events, event].slice(-LEARNING_EVENT_LIMIT),
@@ -526,7 +525,7 @@ export function appendLearningEvent(
 }
 
 export type ProgressExportBundle = {
-  version: 2 | 3 | 4
+  version: 2 | 3 | 4 | 5
   exportedAt: string
   aoba: ProgressState
   kana: KanaProgress
@@ -561,7 +560,7 @@ function writeProgressJson(key: string, value: unknown) {
 /** Progress-only export. Never includes Groq API key or builder presets. */
 export function exportProgressBundle(): ProgressExportBundle {
   return {
-    version: 4,
+    version: PROGRESS_BUNDLE_VERSION,
     exportedAt: new Date().toISOString(),
     aoba: loadProgress(),
     kana: loadKanaProgress(),
@@ -584,7 +583,7 @@ export function importProgressBundle(raw: unknown): boolean {
   if (!raw || typeof raw !== 'object') return false
   const data = raw as Record<string, unknown>
   const version = data.version
-  if (version !== 1 && version !== 2 && version !== 3 && version !== 4) return false
+  if (!isAcceptedProgressBundleVersion(version)) return false
   if (!data.aoba || !data.kana || !data.toeic) return false
 
   applyCloudBundle({
