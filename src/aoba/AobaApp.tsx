@@ -219,18 +219,6 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
             score: result.score,
             weakTags: result.weakTags,
           })
-          const meta = loadLearningMeta()
-          saveLearningMeta({
-            ...meta,
-            events: [
-              {
-                t: new Date().toISOString(),
-                type: 'mock_submit',
-                payload: { score: result.score, weakTags: result.weakTags },
-              },
-              ...meta.events,
-            ].slice(0, 200),
-          })
           awardReviewXp(Math.max(1, Math.round(result.score / 2)))
           setSpecial(null)
           setNav('today')
