@@ -69,7 +69,7 @@ npm run preview
 4. 先在 staging 驗證登入、讀取與 upsert，再發布依賴新欄位的 hosted-cloud 前端。
 
 Migration 只新增欄位，不會刪除／重建 policies、修改 grants 或移除學習資料。正式套用後不提供自動 drop-column rollback；若要回退前端，保留 additive columns。
-`table_privileges`／`column_privileges` 是人類可讀報告；table-level 權限會在新增欄位後自然展開成新的 column rows，因此 ACL 無漂移的判定以 `relacl`／`attacl` catalog 結果為準。
+ACL 無漂移的判定以 `relacl`／`attacl` catalog 為準。`information_schema.column_privileges` 與 `pg_locks` 不列入檢查輸出（欄位權限會隨 table grant 展開、lock 列會隨連線變動，容易誤判）。`npm run verify:schema` 只做靜態合約檢查，不連線託管雲端；未設定 env 時 App 仍是本機 local-only。
 
 同步行為：
 

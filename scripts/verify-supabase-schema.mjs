@@ -1,3 +1,7 @@
+/**
+ * Static contract check for schema.sql + additive migrations.
+ * Does not connect to hosted Supabase. The app stays local-only without env vars.
+ */
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 
@@ -22,6 +26,11 @@ function assert(condition, message) {
   checkCount += 1
 }
 
+/** Word-token match so `math` does not false-pass on `math_signals`. */
+function hasIdent(source, ident) {
+  return new RegExp(`(?<![A-Za-z0-9_])${ident}(?![A-Za-z0-9_])`).test(source)
+}
+
 const migrationWithoutComments = migration.replace(/--.*$/gm, '')
 
 const stemTracks = ['math', 'physics', 'chemistry']
@@ -29,7 +38,7 @@ const eightTrackCloud = ['math', 'physics', 'chemistry', 'cs', 'chinese']
 for (const track of eightTrackCloud) {
   const schemaColumn = new RegExp(`\\b${track}\\s+jsonb\\s+not\\s+null\\s+default\\s+'\\{\\}'::jsonb`, 'i')
   assert(schemaColumn.test(schema), `Fresh-install schema is missing the ${track} JSONB contract.`)
-  assert(cloudProgress.includes(track), `Cloud progress contract does not mention ${track}.`)
+  assert(hasIdent(cloudProgress, track), `Cloud progress contract does not mention ${track} as its own column.`)
 }
 
 for (const track of stemTracks) {
@@ -49,7 +58,7 @@ for (const track of signalColumns) {
   assert(schemaColumn.test(schema), `Fresh-install schema is missing the ${track} JSONB contract.`)
   const migrationColumn = new RegExp(`add\\s+column\\s+if\\s+not\\s+exists\\s+${track}\\s+jsonb\\s+not\\s+null\\s+default\\s+'\\{\\}'::jsonb`, 'i')
   assert(migrationColumn.test(signalsMigration), `Signals migration is missing the ${track} additive contract.`)
-  assert(cloudProgress.includes(track), `Cloud progress contract does not mention ${track}.`)
+  assert(hasIdent(cloudProgress, track), `Cloud progress contract does not mention ${track} as its own column.`)
 }
 
 assert(/^\s*begin;/im.test(signalsMigration) && /^\s*commit;/im.test(signalsMigration), 'Signals migration must be a single explicit transaction.')
@@ -86,12 +95,18 @@ assert(/pg_policies/i.test(postflight) && /table_privileges/i.test(postflight), 
 assert(/pg_attribute/i.test(preflight) && /attacl/i.test(preflight), 'Preflight must expose exact column ACL catalog evidence.')
 assert(/pg_attribute/i.test(postflight) && /attacl/i.test(postflight), 'Postflight must expose exact column ACL catalog evidence.')
 assert(/attname\s+in\s*\(\s*'math'\s*,\s*'physics'\s*,\s*'chemistry'\s*\)[\s\S]*?attacl\s+is\s+not\s+null/i.test(postflight), 'Postflight must reject explicit ACLs on new STEM columns.')
+assert(
+  !/from\s+information_schema\.column_privileges/i.test(preflight)
+    && !/from\s+information_schema\.column_privileges/i.test(postflight),
+  'Read-only checks must not dump information_schema.column_privileges (table grants expand per column and look like ACL drift).',
+)
+assert(
+  !/from\s+pg_catalog\.pg_locks/i.test(preflight) && !/from\s+pg_catalog\.pg_locks/i.test(postflight),
+  'Read-only checks must not dump session lock rows (ephemeral false diffs).',
+)
 
 console.log(JSON.stringify({
   verdict: 'PASS',
-  tracks: eightTrackCloud,
-  migration: path.relative(root, migrationPath).replaceAll('\\', '/'),
-  csChineseMigration: path.relative(root, csChineseMigrationPath).replaceAll('\\', '/'),
-  signalsMigration: path.relative(root, signalsMigrationPath).replaceAll('\\', '/'),
   checks: checkCount,
+  hostedCloudRequired: false,
 }))

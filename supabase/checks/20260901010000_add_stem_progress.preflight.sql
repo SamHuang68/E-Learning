@@ -124,20 +124,9 @@ from information_schema.table_privileges
 where table_schema = 'public' and table_name = 'user_progress'
 order by grantor, grantee, privilege_type;
 
-select column_name, grantor, grantee, privilege_type, is_grantable
-from information_schema.column_privileges
-where table_schema = 'public' and table_name = 'user_progress'
-order by column_name, grantor, grantee, privilege_type;
-
 select tgname, pg_get_triggerdef(oid) as definition
 from pg_catalog.pg_trigger
 where tgrelid = 'public.user_progress'::regclass and not tgisinternal
 order by tgname;
-
-select locktype, mode, granted, count(*) as lock_count
-from pg_catalog.pg_locks
-where relation = 'public.user_progress'::regclass
-group by locktype, mode, granted
-order by locktype, mode, granted;
 
 commit;

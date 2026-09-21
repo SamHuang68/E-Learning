@@ -100,18 +100,13 @@ where attrelid = 'public.user_progress'::regclass
   and not attisdropped
 order by attnum;
 
--- Human-readable privilege reports include PUBLIC, grantor, and grantability.
--- Table grants legitimately expand to the new columns in column_privileges;
--- use the catalog ACL rows above for the no-drift decision.
+-- Human-readable table grants include PUBLIC, grantor, and grantability.
+-- Do not dump information_schema.column_privileges: table grants expand into a
+-- synthetic row per column and look like ACL drift. Use attacl above.
 select grantor, grantee, privilege_type, is_grantable
 from information_schema.table_privileges
 where table_schema = 'public' and table_name = 'user_progress'
 order by grantor, grantee, privilege_type;
-
-select column_name, grantor, grantee, privilege_type, is_grantable
-from information_schema.column_privileges
-where table_schema = 'public' and table_name = 'user_progress'
-order by column_name, grantor, grantee, privilege_type;
 
 select tgname, pg_get_triggerdef(oid) as definition
 from pg_catalog.pg_trigger
