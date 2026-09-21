@@ -997,6 +997,14 @@ strong {
   border: 1px solid var(--line);
 }
 
+.audio-attribution {
+  font-size: 0.65rem;
+  color: var(--muted);
+  opacity: 0.85;
+  margin-left: 0.25rem;
+  white-space: nowrap;
+}
+
 .unit-select {
   display: flex;
   flex-direction: column;
