@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Git commit / branch / merge mental model</title>
+  <style>
+    :root {
+      --bg: #020617;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --line: #1e293b;
+      --accent: #34d399;
+      --card: #0f172a;
+    }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 1rem 1.1rem 1.4rem;
+    }
+    h1 { margin: 0 0 0.35rem; font-size: 1.05rem; font-weight: 700; }
+    .honesty { margin: 0 0 1rem; color: var(--muted); font-size: 0.8rem; line-height: 1.45; }
+    .seg { color: var(--accent); font-size: 0.72rem; font-weight: 700; margin: 0.85rem 0 0.35rem; letter-spacing: 0.04em; }
+    ol { margin: 0; padding-left: 1.15rem; }
+    li { margin: 0.28rem 0; font-size: 0.84rem; line-height: 1.4; }
+    .lane { color: var(--muted); font-size: 0.72rem; }
+    .cards { display: grid; gap: 0.65rem; margin-top: 1rem; }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--card);
+      padding: 0.7rem 0.8rem;
+    }
+    .card h2 { margin: 0 0 0.3rem; font-size: 0.82rem; font-weight: 700; }
+    .card p { margin: 0.2rem 0 0; color: var(--muted); font-size: 0.76rem; line-height: 1.4; }
+    .err { color: #fb7185; font-size: 0.82rem; }
+  </style>
+</head>
+<body>
+  <h1 id="title">Git commit / branch / merge mental model</h1>
+  <p class="honesty" id="honesty"></p>
+  <div id="seq"></div>
+  <div class="cards" id="cards"></div>
+  <script>
+    (function () {
+      var locale = 'zh-Hant'
+      try {
+        var stored = localStorage.getItem('e-learning-ui-locale')
+        if (stored === 'en' || stored === 'zh-Hant') locale = stored
+      } catch (_) {}
+      document.documentElement.lang = locale === 'en' ? 'en' : 'zh-Hant'
+
+      fetch('./git-mental-model.sequence.json')
+        .then(function (res) { return res.ok ? res.json() : Promise.reject(new Error('missing sequence json')) })
+        .then(function (data) {
+          var captions = (data.meta && data.meta.captions && data.meta.captions[locale]) || {}
+          document.title = captions.title || data.meta.title
+          document.getElementById('title').textContent = captions.title || data.meta.title
+          document.getElementById('honesty').textContent = captions.honesty || ''
+
+          var seq = document.getElementById('seq')
+          var messages = data.messages || []
+          var segments = data.segments || []
+          segments.forEach(function (seg) {
+            var h = document.createElement('div')
+            h.className = 'seg'
+            h.textContent = seg.label
+            seq.appendChild(h)
+            var list = document.createElement('ol')
+            messages.filter(function (msg) {
+              return msg.y >= seg.from && msg.y <= seg.to
+            }).forEach(function (msg) {
+              var item = document.createElement('li')
+              var lane = document.createElement('span')
+              lane.className = 'lane'
+              lane.textContent = msg.from + ' ➜ ' + msg.to + ' · '
+              item.appendChild(lane)
+              item.appendChild(document.createTextNode(msg.label))
+              list.appendChild(item)
+            })
+            seq.appendChild(list)
+          })
+
+          var cardsRoot = document.getElementById('cards')
+          ;(data.cards || []).forEach(function (card) {
+            var el = document.createElement('div')
+            el.className = 'card'
+            var h2 = document.createElement('h2')
+            h2.textContent = card.title
+            el.appendChild(h2)
+            ;(card.items || []).forEach(function (line) {
+              var p = document.createElement('p')
+              p.textContent = line
+              el.appendChild(p)
+            })
+            cardsRoot.appendChild(el)
+          })
+        })
+        .catch(function () {
+          document.getElementById('honesty').className = 'err'
+          document.getElementById('honesty').textContent = 'Missing git-mental-model.sequence.json'
+        })
+    })()
+  </script>
+</body>
+</html>

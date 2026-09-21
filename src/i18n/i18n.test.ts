@@ -180,6 +180,16 @@ describe('i18n dictionary', () => {
     expect(translate('en', 'cs.bigo.rca')).toMatch(/ripple-carry/i)
   })
 
+  it('keeps Git Archify captions as teaching mental model, not git.git internals', () => {
+    expect(translate('zh-Hant', 'cs.archify.git.subtitle')).toMatch(/教學/)
+    expect(translate('zh-Hant', 'cs.archify.git.subtitle')).toMatch(/不是/)
+    expect(translate('zh-Hant', 'cs.archify.git.subtitle')).toMatch(/git\.git/)
+    expect(translate('en', 'cs.archify.git.subtitle')).toMatch(/teaching/i)
+    expect(translate('en', 'cs.archify.git.subtitle')).toMatch(/not git\.git/i)
+    expect(translate('zh-Hant', 'cs.archify.git.stat.merge.desc')).toMatch(/快轉/)
+    expect(translate('en', 'cs.archify.git.stat.merge.desc')).toMatch(/fast-forward/i)
+  })
+
   it('leaves unknown placeholders intact', () => {
     expect(interpolate('Hello {name}', { other: 'x' })).toBe('Hello {name}')
     const key = 'hub.solved' satisfies MessageKey

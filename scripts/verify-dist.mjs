@@ -32,6 +32,9 @@ if (!files.some((file) => /assets\/vendor-supabase-.*\.js$/.test(file))) throw n
 if (!files.some((file) => /assets\/index-.*\.css$/.test(file))) throw new Error('Entry CSS is not precached.')
 if (!files.some((file) => file.startsWith('./audio/'))) throw new Error('Bundled learning audio is not precached.')
 if (!files.some((file) => file.startsWith('./archify/'))) throw new Error('CS Archify assets are not precached.')
+if (!files.some((file) => file.includes('git-mental-model.sequence.json'))) {
+  throw new Error('Git mental-model Archify sequence JSON is not precached.')
+}
 if (!files.some((file) => /assets\/KaTeX_Main-Regular[^/]*\.woff2$/.test(file))) {
   throw new Error('KaTeX_Main-Regular woff2 is not precached (physics formula sheet offline).')
 }

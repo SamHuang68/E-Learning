@@ -15,6 +15,7 @@ type DiagramKind =
   | 'tcp-handshake'
   | 'transformer-attention'
   | 'percolator-txn'
+  | 'git-mental-model'
 
 export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
   const [selectedDiagram, setSelectedDiagram] = useState<DiagramKind>('ai-server')
@@ -104,6 +105,17 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
         { label: 'TSO TIMESTAMP', title: 'StartTS / CommitTS', desc: '全域單調遞增時間戳，保證跨分區線性一致性', color: '#06b6d4' },
         { label: 'PRIMARY LOCK', title: 'Single Truth Anchor', desc: 'Primary 行原子提交為唯一成功標誌，故障自癒', color: '#10b981' },
         { label: 'SNAPSHOT READ', title: 'Lock-Free Reads', desc: '讀取 write[commit_ts <= read_ts] 無鎖不阻塞寫入', color: '#f43f5e' },
+      ],
+    },
+    'git-mental-model': {
+      title: t('cs.archify.git.title'),
+      subtitle: t('cs.archify.git.subtitle'),
+      file: './archify/git-mental-model-sequence.html',
+      badge: 'Archify Sequence JSON',
+      stats: [
+        { label: t('cs.archify.git.stat.commit'), title: t('cs.archify.git.stat.commit.title'), desc: t('cs.archify.git.stat.commit.desc'), color: '#06b6d4' },
+        { label: t('cs.archify.git.stat.branch'), title: t('cs.archify.git.stat.branch.title'), desc: t('cs.archify.git.stat.branch.desc'), color: '#10b981' },
+        { label: t('cs.archify.git.stat.merge'), title: t('cs.archify.git.stat.merge.title'), desc: t('cs.archify.git.stat.merge.desc'), color: '#f43f5e' },
       ],
     },
   }[selectedDiagram]
@@ -247,6 +259,23 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
             >
               Percolator 事務
             </button>
+            <button
+              type="button"
+              aria-pressed={selectedDiagram === 'git-mental-model'}
+              onClick={() => setSelectedDiagram('git-mental-model')}
+              style={{
+                padding: '0.35rem 0.65rem',
+                fontSize: '0.78rem',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                background: selectedDiagram === 'git-mental-model' ? 'var(--card-bg, #1e293b)' : 'transparent',
+                color: selectedDiagram === 'git-mental-model' ? 'var(--accent, #6366f1)' : 'var(--muted)',
+                fontWeight: selectedDiagram === 'git-mental-model' ? 700 : 500,
+              }}
+            >
+              {t('cs.archify.git.pill')}
+            </button>
           </div>
 
           <a
@@ -321,7 +350,9 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
           ? 'VERIFY：DGX/HGX 規格依公開產品資料整理（雙路 CPU、SXM GPU、NVSwitch、InfiniBand），非正式認證或實機量測。'
           : selectedDiagram === 'transformer-attention'
             ? 'VERIFY：FlashAttention / PagedAttention 描述依公開論文與實作文件整理，數值為教學示意。'
-            : 'VERIFY：架構圖為教學示意，請以原始論文／RFC／廠商文件核對實作細節。'}
+            : selectedDiagram === 'git-mental-model'
+              ? t('cs.archify.git.subtitle')
+              : 'VERIFY：架構圖為教學示意，請以原始論文／RFC／廠商文件核對實作細節。'}
       </ContentProvenance>
     </div>
   )

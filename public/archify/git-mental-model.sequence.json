@@ -1,0 +1,172 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Git commit / branch / merge mental model",
+    "output": "git-mental-model-sequence.html",
+    "viewBox": [880, 820],
+    "animation": "trace",
+    "quality_profile": "standard",
+    "captions": {
+      "zh-Hant": {
+        "title": "Git 提交／分支／合併心智模型",
+        "honesty": "教學示意：工作區、暫存區、提交物件與分支指標。不是 git.git 內部實作，也不是證照保證。"
+      },
+      "en": {
+        "title": "Git commit / branch / merge mental model",
+        "honesty": "Teaching sketch of working tree, index, commits, and branch pointers. Not git.git internals and not a certification."
+      }
+    },
+    "views": [
+      {
+        "id": "commit-view",
+        "label": "Commit",
+        "focus": ["working", "index", "objects", "refs"],
+        "note": "git add copies a snapshot into the index; git commit writes a commit object and moves the current branch."
+      },
+      {
+        "id": "branch-view",
+        "label": "Branch",
+        "focus": ["objects", "refs"],
+        "note": "A branch name is a movable pointer to a commit, not a full copy of the tree."
+      },
+      {
+        "id": "merge-view",
+        "label": "Merge",
+        "focus": ["objects", "refs"],
+        "note": "merge joins two histories. Fast-forward may only move a pointer; a merge commit appears when histories diverged."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "working",
+      "type": "frontend",
+      "label": "Working Tree",
+      "sublabel": "Uncommitted files"
+    },
+    {
+      "id": "index",
+      "type": "backend",
+      "label": "Index",
+      "sublabel": "Staging area"
+    },
+    {
+      "id": "objects",
+      "type": "database",
+      "label": "Object DB",
+      "sublabel": "Commits / trees"
+    },
+    {
+      "id": "refs",
+      "type": "cloud",
+      "label": "Refs",
+      "sublabel": "Branches and HEAD"
+    }
+  ],
+  "segments": [
+    { "from": 150, "to": 330, "label": "1. Commit" },
+    { "from": 345, "to": 505, "label": "2. Branch" },
+    { "from": 520, "to": 720, "label": "3. Merge" }
+  ],
+  "messages": [
+    {
+      "id": "m1",
+      "from": "working",
+      "to": "index",
+      "y": 180,
+      "label": "1. git add path",
+      "variant": "default"
+    },
+    {
+      "id": "m2",
+      "from": "index",
+      "to": "objects",
+      "y": 230,
+      "label": "2. git commit ➜ create C1",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m3",
+      "from": "objects",
+      "to": "refs",
+      "y": 280,
+      "label": "3. main / HEAD ➜ C1",
+      "variant": "default"
+    },
+    {
+      "id": "m4",
+      "from": "objects",
+      "to": "refs",
+      "y": 370,
+      "label": "4. git branch feature (feature ➜ C1)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m5",
+      "from": "refs",
+      "to": "working",
+      "y": 420,
+      "label": "5. git switch feature",
+      "variant": "default"
+    },
+    {
+      "id": "m6",
+      "from": "index",
+      "to": "objects",
+      "y": 470,
+      "label": "6. git commit ➜ create C2",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m7",
+      "from": "objects",
+      "to": "refs",
+      "y": 555,
+      "label": "7. git switch main",
+      "variant": "default"
+    },
+    {
+      "id": "m8",
+      "from": "refs",
+      "to": "objects",
+      "y": 610,
+      "label": "8. git merge feature ➜ merge commit M",
+      "variant": "security"
+    },
+    {
+      "id": "m9",
+      "from": "objects",
+      "to": "refs",
+      "y": 665,
+      "label": "9. main / HEAD ➜ M",
+      "variant": "emphasis"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Commit is a snapshot",
+      "items": [
+        "A commit points at a tree (the staged snapshot) and its parent commit(s).",
+        "git commit moves the current branch pointer; it does not store a patch as the primary object."
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Branch is a pointer",
+      "items": [
+        "feature and main are names that point at commits.",
+        "Creating a branch does not copy the working tree; it adds another pointer."
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Merge joins histories",
+      "items": [
+        "When histories diverged, merge creates a commit with two parents.",
+        "If main can fast-forward to feature, Git may only move the pointer — no extra merge commit."
+      ]
+    }
+  ]
+}
