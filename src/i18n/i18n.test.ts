@@ -107,6 +107,15 @@ describe('i18n dictionary', () => {
     expect(translate('en', 'hub.resumeEmpty')).not.toMatch(/start with/i)
   })
 
+  it('keeps calculus prerequisite copy as catalog teaching edges, not locks', () => {
+    expect(translate('zh-Hant', 'calculus.prereq.honesty')).toMatch(/目錄/)
+    expect(translate('zh-Hant', 'calculus.prereq.honesty')).toMatch(/不是鎖定/)
+    expect(translate('en', 'calculus.prereq.honesty')).toMatch(/catalog/i)
+    expect(translate('en', 'calculus.prereq.honesty')).toMatch(/not a lock/i)
+    expect(translate('zh-Hant', 'hub.calculus.catalog')).toMatch(/非鎖定/)
+    expect(translate('en', 'hub.calculus.catalog')).toMatch(/not locks/i)
+  })
+
   it('leaves unknown placeholders intact', () => {
     expect(interpolate('Hello {name}', { other: 'x' })).toBe('Hello {name}')
     const key = 'hub.solved' satisfies MessageKey

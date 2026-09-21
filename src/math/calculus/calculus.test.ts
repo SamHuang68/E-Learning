@@ -14,7 +14,7 @@ import {
 } from './engine'
 import { CALCULUS_PROBLEMS } from './data/calculusProblems'
 import { CALCULUS_BADGES } from './data/calculusBadges'
-import { CALCULUS_CATALOG } from './data/calculusCatalog'
+import { CALCULUS_CATALOG, catalogPrerequisiteRows } from './data/calculusCatalog'
 
 describe('微積分專題 (Calculus Studio) 模組測試', () => {
   describe('符號運算子系統 (Symbolic Engine)', () => {
@@ -122,6 +122,20 @@ describe('微積分專題 (Calculus Studio) 模組測試', () => {
         expect(typeof item.discrimination).toBe('number')
         expect(Object.keys(item.distractorPrescriptions).length).toBeGreaterThan(0)
       })
+    })
+
+    it('catalog prerequisite ids resolve to named items (no dangling graph edges)', () => {
+      const rows = catalogPrerequisiteRows()
+      expect(rows.some((row) => row.prereqs.length > 0)).toBe(true)
+      for (const row of rows) {
+        for (const prereq of row.prereqs) {
+          expect(prereq.known, `${row.id} -> ${prereq.id}`).toBe(true)
+          expect(prereq.name).not.toBe(prereq.id)
+        }
+      }
+      const uSub = rows.find((row) => row.id === 'calc-u-substitution')
+      expect(uSub?.prereqs.map((p) => p.id)).toContain('calc-ftc-accumulation')
+      expect(uSub?.prereqs.map((p) => p.id)).not.toContain('calc-ftc')
     })
   })
 })

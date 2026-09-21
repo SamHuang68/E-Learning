@@ -5,6 +5,7 @@ import { StepByStepSolver } from './components/CalculusSolver/StepByStepSolver'
 import { CalculusAssessmentWidget } from './components/CalculusAssessment/CalculusAssessmentWidget'
 import { generateDerivationSteps } from './engine'
 import { useCalculusLearningCoordinator } from './hooks/useCalculusLearningCoordinator'
+import { CalculusPrerequisiteGraph } from './components/CalculusPrerequisiteGraph'
 import type { CalculusLabMode, RiemannMethod, CalculusProblem } from './types'
 
 export const CalculusStudio: React.FC = () => {
@@ -78,6 +79,8 @@ export const CalculusStudio: React.FC = () => {
           </button>
         </div>
       </header>
+
+      <CalculusPrerequisiteGraph />
 
       {/* 主雙欄工作台 */}
       <main className="calculus-studio-workspace">

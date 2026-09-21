@@ -4,6 +4,7 @@ import { CalculusSidebar, type CalculusNavId } from './components/CalculusSideba
 import { generateDerivationSteps } from '../math/calculus/engine'
 import { useCalculusLearningCoordinator } from '../math/calculus/hooks/useCalculusLearningCoordinator'
 import { CALCULUS_BADGES } from '../math/calculus/data/calculusBadges'
+import { CalculusPrerequisiteGraph } from '../math/calculus/components/CalculusPrerequisiteGraph'
 import type { CalculusLabMode, RiemannMethod, CalculusProblem } from '../math/calculus/types'
 import type { LangId } from '../utils/storage'
 import { useI18n } from '../i18n/i18n'
@@ -167,6 +168,8 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
             </div>
           </div>
         </header>
+
+        <CalculusPrerequisiteGraph />
 
         {/* 成就館獨立展示 */}
         {activeNav === 'badges' && (
