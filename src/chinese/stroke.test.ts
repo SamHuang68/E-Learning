@@ -3,7 +3,7 @@ import { STROKE_CHARACTERS } from './data/strokeOrders'
 
 describe('Chinese Traditional Stroke Order & Bopomofo Tests', () => {
   it('contains stroke order data for high-frequency characters', () => {
-    expect(STROKE_CHARACTERS.length).toBeGreaterThanOrEqual(5)
+    expect(STROKE_CHARACTERS.length).toBeGreaterThanOrEqual(10)
     STROKE_CHARACTERS.forEach((item) => {
       expect(item.id).toBeTruthy()
       expect(item.char).toBeTruthy()
