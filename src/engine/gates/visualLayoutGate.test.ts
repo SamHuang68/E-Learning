@@ -67,4 +67,13 @@ describe('Strict Review Gate: Visual Layout, 100vh Focus & Zero-Overflow Invaria
     expect(cssContent).toMatch(/\.chinese-lang-toolbar\s*\{[^}]*var\(--track-header-min-height\)/s)
     expect(cssContent).not.toMatch(/\.topbar h1\s*\{[^}]*1\.9rem/s)
   })
+
+  it('[GATE-VISUAL-REDUCED-MOTION] decorative anim/transitions are none under prefers-reduced-motion', () => {
+    expect(cssContent).toMatch(
+      /@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{[\s\S]*?animation:\s*none\s*!important/,
+    )
+    expect(cssContent).toMatch(
+      /@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{[\s\S]*?transition:\s*none\s*!important/,
+    )
+  })
 })

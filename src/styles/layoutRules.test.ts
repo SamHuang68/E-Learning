@@ -153,4 +153,16 @@ describe('CSS Layout & Sidebar Overflow Regression Guard', () => {
     expect(cssContent).toMatch(/\.chinese-lang-toolbar\s*\{[^}]*gap:\s*var\(--track-topbar-gap\)/s)
     expect(cssContent).not.toMatch(/\.topbar h1\s*\{[^}]*1\.9rem/s)
   })
+
+  it('honors prefers-reduced-motion by disabling decorative animation and transitions', () => {
+    expect(cssContent).toMatch(
+      /@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{[\s\S]*?animation:\s*none\s*!important/,
+    )
+    expect(cssContent).toMatch(
+      /@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{[\s\S]*?transition:\s*none\s*!important/,
+    )
+    expect(cssContent).not.toMatch(
+      /@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{[\s\S]*?animation-duration:\s*0\.01ms/,
+    )
+  })
 })
