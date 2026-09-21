@@ -7024,6 +7024,30 @@ html.high-contrast { filter: contrast(125%); }
   gap: 0.85rem;
 }
 
+.wave-interference-figure {
+  margin: 0;
+  max-width: 36rem;
+  color: var(--ink);
+}
+
+.wave-interference-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.wave-interference-figure figcaption {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-top: 0.4rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
 .physics-formula-unit {
   background: var(--surface);
   border: 1px solid var(--line);

@@ -355,6 +355,18 @@ describe('i18n dictionary', () => {
     expect(translate('en', 'auth.genericError')).toMatch(/unable to sign/i)
   })
 
+  it('keeps wave-interference diagram alt copy bilingual and teaching-only', () => {
+    expect(translate('zh-Hant', 'physics.interference.altTitle')).toMatch(/雙狹縫/)
+    expect(translate('zh-Hant', 'physics.interference.altDesc')).toMatch(/相長|相消/)
+    expect(translate('zh-Hant', 'physics.interference.honesty')).toMatch(/不是實驗室/)
+    expect(translate('en', 'physics.interference.altTitle')).toMatch(/double-slit/i)
+    expect(translate('en', 'physics.interference.altDesc')).toMatch(/constructive|destructive/i)
+    expect(translate('en', 'physics.interference.honesty')).toMatch(/not a lab measurement/i)
+    expect(translate('en', 'physics.interference.altTitle')).not.toBe(
+      translate('zh-Hant', 'physics.interference.altTitle'),
+    )
+  })
+
   it('keeps error-boundary and boot fallback copy bilingual', () => {
     const keys = [
       'error.eyebrow',
