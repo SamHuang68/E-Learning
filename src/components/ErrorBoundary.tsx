@@ -1,5 +1,6 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react'
-import { loadUiLocale } from '../i18n/locale'
+import { loadUiLocale, UI_LOCALE_EVENT, type UiLocale } from '../i18n/locale'
+import { LocaleToggle } from '../i18n/i18n'
 import { translate } from '../i18n/messages'
 import { sanitizeClientError } from '../utils/sanitizeClientError'
 
@@ -10,12 +11,13 @@ type Props = {
 
 type State = {
   error: Error | null
+  locale: UiLocale
 }
 
 export class ErrorBoundary extends Component<Props, State> {
-  state: State = { error: null }
+  state: State = { error: null, locale: loadUiLocale() }
 
-  static getDerivedStateFromError(error: Error): State {
+  static getDerivedStateFromError(error: Error): Partial<State> {
     return { error }
   }
 
@@ -23,10 +25,22 @@ export class ErrorBoundary extends Component<Props, State> {
     console.error(this.props.label ?? 'ErrorBoundary', error, info.componentStack)
   }
 
+  componentDidMount() {
+    window.addEventListener(UI_LOCALE_EVENT, this.onLocale)
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener(UI_LOCALE_EVENT, this.onLocale)
+  }
+
+  onLocale = () => {
+    this.setState({ locale: loadUiLocale() })
+  }
+
   render() {
     if (this.state.error) {
       const t = (key: Parameters<typeof translate>[1], vars?: Record<string, string | number>) =>
-        translate(loadUiLocale(), key, vars)
+        translate(this.state.locale, key, vars)
       const isChunkError =
         this.state.error.message.includes('dynamically imported module') ||
         this.state.error.message.includes('Failed to fetch') ||
@@ -34,7 +48,10 @@ export class ErrorBoundary extends Component<Props, State> {
 
       return (
         <div className="error-boundary" role="alert">
-          <p className="eyebrow">{t('error.eyebrow')}</p>
+          <div className="error-boundary-toolbar">
+            <p className="eyebrow">{t('error.eyebrow')}</p>
+            <LocaleToggle compact />
+          </div>
           <h1>{isChunkError ? t('error.chunkTitle') : t('error.failTitle')}</h1>
           <p className="lede">
             {isChunkError

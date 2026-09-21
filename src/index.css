@@ -3161,6 +3161,14 @@ footer {
   margin: 0 auto;
 }
 
+.error-boundary-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.35rem;
+}
+
 .error-boundary h1 {
   margin: 0.2rem 0 0.6rem;
   font-size: 1.6rem;
