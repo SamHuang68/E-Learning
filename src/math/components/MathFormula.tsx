@@ -10,6 +10,8 @@ export type MathFormulaProps = {
   inline?: boolean
   /** 自訂 CSS 類別名稱 */
   className?: string
+  /** 可及性標籤 (a11y label)：供螢幕閱讀器朗讀數學公式意義，雙語字串 */
+  a11yLabel?: string
 }
 
 /**
@@ -82,16 +84,22 @@ export const MathFormula: React.FC<MathFormulaProps> = ({
   math,
   block = false,
   className = '',
+  a11yLabel,
 }) => {
   const hasBlockMath = Boolean(math && math.includes('$$'))
   const isEffectiveBlock = block || hasBlockMath
   const html = useMemo(() => renderMathContent(math, isEffectiveBlock), [math, isEffectiveBlock])
+
+  const commonProps = a11yLabel
+    ? { role: 'math', 'aria-label': a11yLabel }
+    : {}
 
   if (isEffectiveBlock) {
     return (
       <div
         className={`math-formula block-mode ${className}`}
         dangerouslySetInnerHTML={{ __html: html }}
+        {...commonProps}
       />
     )
   }
@@ -100,6 +108,7 @@ export const MathFormula: React.FC<MathFormulaProps> = ({
     <span
       className={`math-formula inline-mode ${className}`}
       dangerouslySetInnerHTML={{ __html: html }}
+      {...commonProps}
     />
   )
 }

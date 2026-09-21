@@ -335,6 +335,7 @@ export const ZH_HANT = {
   'calculus.u6.sub': '圓盤法與薄殼法 3D 展開',
   'calculus.u7.title': '泰勒級數多項式逼近',
   'calculus.u7.sub': '高階導數與局部多項式擬合',
+  'calculus.substitutionPack': '替換法練習包 (+5 題) / Substitution Practice Pack (+5)',
 
   'cs.brand': '計算機概論',
   'cs.brandSub': '軟硬體 · 五大單元 · 前沿AI',
@@ -955,6 +956,7 @@ export const EN: Record<MessageKey, string> = {
   'calculus.u6.sub': 'Disk and shell methods in 3D',
   'calculus.u7.title': 'Taylor polynomials',
   'calculus.u7.sub': 'Higher derivatives and local fit',
+  'calculus.substitutionPack': 'Substitution Practice Pack (+5) / 替換法練習包 (+5 題)',
 
   'cs.brand': 'Intro to Computer Science',
   'cs.brandSub': 'Hardware · five units · modern AI',
