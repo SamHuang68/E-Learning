@@ -190,6 +190,17 @@ describe('i18n dictionary', () => {
     expect(translate('en', 'cs.archify.git.stat.merge.desc')).toMatch(/fast-forward/i)
   })
 
+  it('keeps gradient intuition card as teaching, not an exam-pass claim', () => {
+    expect(translate('zh-Hant', 'calculus.grad.honesty')).toMatch(/教學/)
+    expect(translate('zh-Hant', 'calculus.grad.honesty')).toMatch(/非正式考試/)
+    expect(translate('zh-Hant', 'calculus.grad.honesty')).toMatch(/不是本機 108 多變數/)
+    expect(translate('en', 'calculus.grad.honesty')).toMatch(/teaching/i)
+    expect(translate('en', 'calculus.grad.honesty')).toMatch(/not an exam-pass/i)
+    expect(translate('en', 'calculus.grad.honesty')).toMatch(/not a local 108 multivariable/i)
+    expect(translate('zh-Hant', 'calculus.grad.directional')).toMatch(/方向導數/)
+    expect(translate('en', 'calculus.grad.directional')).toMatch(/directional/i)
+  })
+
   it('leaves unknown placeholders intact', () => {
     expect(interpolate('Hello {name}', { other: 'x' })).toBe('Hello {name}')
     const key = 'hub.solved' satisfies MessageKey

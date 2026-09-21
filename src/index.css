@@ -6871,6 +6871,79 @@ html.high-contrast { filter: contrast(125%); }
   text-decoration: underline dotted;
 }
 
+.calc-grad-card {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  padding: 1rem 1.1rem;
+  margin: 0.85rem 0 0;
+}
+
+.calc-grad-card h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.calc-grad-body {
+  display: grid;
+  grid-template-columns: minmax(7rem, 9.5rem) 1fr;
+  gap: 0.9rem;
+  align-items: center;
+  margin-top: 0.55rem;
+}
+
+.calc-grad-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.calc-grad-svg ellipse {
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 1.4;
+}
+
+.calc-grad-svg line,
+.calc-grad-svg polygon {
+  fill: var(--navy);
+  stroke: var(--navy);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.calc-grad-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+  padding: 0.32rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.calc-grad-rows .calc-grad-row:last-child {
+  border-bottom: none;
+}
+
+.calc-grad-row strong {
+  font-weight: 700;
+  color: var(--navy);
+}
+
+@media (max-width: 640px) {
+  .calc-grad-body {
+    grid-template-columns: 1fr;
+  }
+  .calc-grad-svg {
+    max-width: 11rem;
+    margin: 0 auto;
+  }
+}
+
 .physics-formula-sheet {
   display: flex;
   flex-direction: column;
