@@ -365,6 +365,14 @@ describe('i18n dictionary', () => {
     )
   })
 
+  it('keeps math practice answer labels bilingual', () => {
+    expect(translate('zh-Hant', 'math.practice.answerLabel')).toMatch(/計算答案/)
+    expect(translate('en', 'math.practice.answerLabel')).toMatch(/calculated answer/i)
+    expect(translate('en', 'math.practice.answerLabel')).not.toBe(
+      translate('zh-Hant', 'math.practice.answerLabel'),
+    )
+  })
+
   it('leaves unknown placeholders intact', () => {
     expect(interpolate('Hello {name}', { other: 'x' })).toBe('Hello {name}')
     const key = 'hub.solved' satisfies MessageKey

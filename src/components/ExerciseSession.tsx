@@ -230,8 +230,8 @@ function renderPrompt(
   if (exercise.kind === 'fillBlank') {
     return (
       <>
-        <strong>{copy.fillPrompt}</strong>
-        <p>{exercise.prompt}</p>
+        <strong id="exercise-fill-prompt">{copy.fillPrompt}</strong>
+        <p id="exercise-fill-stem">{exercise.prompt}</p>
       </>
     )
   }
@@ -318,11 +318,13 @@ function renderAnswerArea({
     return (
       <div className="flash-actions">
         <input
+          id="exercise-fill-answer"
           type="text"
           value={textAnswer}
           onChange={(event) => setTextAnswer(event.target.value)}
           disabled={feedback !== null}
           placeholder={copy.typeAnswer}
+          aria-labelledby="exercise-fill-prompt exercise-fill-stem"
         />
         <button
           type="button"

@@ -4209,6 +4209,19 @@ footer {
   word-break: break-word;
 }
 
+.fill-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  align-items: stretch;
+}
+
+.practice-answer-label {
+  font-size: 0.82rem;
+  font-weight: 650;
+  color: var(--ink);
+}
+
 .fill-text-input {
   width: 100%;
   padding: 0.4rem 0.75rem;
