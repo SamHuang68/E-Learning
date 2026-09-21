@@ -4,6 +4,51 @@ import { astToLatex } from './ast'
 import type { ASTNode } from './ast'
 import type { DerivationStep } from '../../types'
 
+/** Engine boundary typed error for undefined symbols (Calculus context: only x allowed as free var; e/pi constants; known funcs) */
+export class UndefinedSymbolError extends Error {
+  readonly symbol: string
+  readonly allowed: readonly string[]
+  constructor(symbol: string, allowed: readonly string[] = ['x', 'e', 'pi', 'sin', 'cos', 'tan', 'exp', 'ln', 'sqrt']) {
+    const zh = `未定義符號「${symbol}」`
+    const en = `Undefined symbol "${symbol}"`
+    super(`${en} / ${zh}. Allowed: ${allowed.join(', ')}`)
+    this.name = 'UndefinedSymbolError'
+    this.symbol = symbol
+    this.allowed = allowed
+  }
+}
+
+function collectSymbols(node: ASTNode, symbols = new Set<string>()): Set<string> {
+  switch (node.type) {
+    case 'variable':
+      symbols.add(node.name)
+      break
+    case 'func':
+      symbols.add(node.name)
+      collectSymbols(node.arg, symbols)
+      break
+    case 'binary':
+      collectSymbols(node.left, symbols)
+      collectSymbols(node.right, symbols)
+      break
+    case 'unary':
+      collectSymbols(node.expr, symbols)
+      break
+  }
+  return symbols
+}
+
+export function validateSymbols(ast: ASTNode, allowedVars: readonly string[] = ['x']): void {
+  const symbols = collectSymbols(ast)
+  const knownFuncs = ['sin', 'cos', 'tan', 'exp', 'ln', 'sqrt']
+  const knownConsts = ['e', 'pi', 'PI', 'Pi', 'E']
+  for (const s of symbols) {
+    const lower = s.toLowerCase()
+    if (allowedVars.includes(s) || knownConsts.includes(s) || knownFuncs.includes(lower)) continue
+    throw new UndefinedSymbolError(s)
+  }
+}
+
 const RULE_OPTIONS = [
   '和差與冪法則 (Power Rule)',
   '乘積法則 (Product Rule)',
@@ -61,6 +106,25 @@ export function generateDerivationSteps(exprStr: string): DerivationStep[] {
         keyInsight: '請檢查括號是否成對、運算子是否缺運算元（例如 x+ 為不完整輸入）。',
       },
     ]
+  }
+
+  // Engine boundary: reject undefined symbols with typed error (deepen calculus symbol safety)
+  try {
+    validateSymbols(ast)
+  } catch (err) {
+    if (err instanceof UndefinedSymbolError) {
+      return [{
+        id: 'step-symbol-error',
+        stepNumber: 1,
+        ruleName: '未定義符號 / Undefined Symbol',
+        ruleLatex: '\\text{error}',
+        beforeLatex: exprStr,
+        afterLatex: '',
+        explanation: err.message,
+        keyInsight: '僅允許 x 作為自由變數；e、pi 為常數；sin 等為已知函數。',
+      }]
+    }
+    throw err
   }
 
   const originalLatex = astToLatex(ast)
