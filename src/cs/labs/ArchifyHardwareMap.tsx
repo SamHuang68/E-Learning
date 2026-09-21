@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { ContentProvenance } from '../../components/ContentProvenance'
 import { useI18n } from '../../i18n/i18n'
+import { LsmGlossaryTooltip } from '../../components/LsmGlossaryTooltip'
 
 interface Props {
   onEarnXp?: (amount: number) => void
@@ -277,7 +278,14 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
         {diagramMeta.stats.map((stat, idx) => (
           <div key={idx} style={{ background: 'var(--card-bg, rgba(255,255,255,0.05))', border: '1px solid var(--line)', padding: '0.75rem', borderRadius: '8px' }}>
             <div style={{ fontSize: '0.75rem', color: stat.color, fontWeight: 700 }}>{stat.label}</div>
-            <div style={{ fontSize: '0.92rem', fontWeight: 700, marginTop: '0.2rem' }}>{stat.title}</div>
+            <div style={{ fontSize: '0.92rem', fontWeight: 700, marginTop: '0.2rem' }}>
+              {selectedDiagram === 'lsm-tree' ? (
+                stat.label.includes('IN-MEMORY') ? <LsmGlossaryTooltip termKey="memtable">{stat.title}</LsmGlossaryTooltip> :
+                stat.label.includes('DURABILITY') ? <LsmGlossaryTooltip termKey="wal">{stat.title}</LsmGlossaryTooltip> :
+                stat.label.includes('STORAGE') ? <LsmGlossaryTooltip termKey="compaction">{stat.title}</LsmGlossaryTooltip> :
+                stat.title
+              ) : stat.title}
+            </div>
             <div style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.2rem' }}>{stat.desc}</div>
           </div>
         ))}
