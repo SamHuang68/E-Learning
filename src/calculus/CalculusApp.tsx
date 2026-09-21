@@ -155,10 +155,11 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
               </select>
             </label>
 
-            <div className="theta-indicator" title={t('calculus.thetaTitle')}>
+            <div className="theta-indicator" title={t('calculus.thetaTitle')} aria-label={t('calculus.thetaTitle')}>
               <small>{t('calculus.theta')}</small>
               <strong>{currentTheta >= 0 ? `+${currentTheta.toFixed(2)}` : currentTheta.toFixed(2)}</strong>
             </div>
+            <small className="matrix-sync-note" aria-live="polite">{t('calculus.matrixNote')}</small>
 
             <div className="xp">
               <span>★</span>
