@@ -60,7 +60,7 @@ const TRACK_LABEL_KEYS: Record<LangId, MessageKey> = {
   zh: 'track.zh',
 }
 
-function weekStudyFlags(meta: LearningMeta): boolean[] {
+export function weekStudyFlags(meta: LearningMeta): boolean[] {
   const today = new Date()
   const mondayOffset = (today.getDay() + 6) % 7
   const monday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - mondayOffset)
@@ -537,9 +537,9 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
             <div className="stat-info">
               <span className="stat-label">{t('hub.audio')}</span>
               <strong>{isMuted ? t('hub.muted') : t('hub.soundOn')}</strong>
-              <button type="button" className="pill-btn audio-toggle" onClick={handleToggleAudio}>
-                {isMuted ? t('hub.unmute') : t('hub.mute')}
-              </button>
+              <button type="button" className="pill-btn audio-toggle" onClick={handleToggleAudio} aria-label={t(isMuted ? 'hub.unmute' : 'hub.mute')}>
+                              {isMuted ? t('hub.unmute') : t('hub.mute')}
+                            </button>
             </div>
           </div>
         </section>
