@@ -730,6 +730,7 @@ export const EN: Record<MessageKey, string> = {
   'hub.tracksCount': '8 tracks',
   'hub.solved': 'You have solved {count} items',
   'hub.masteredKana': 'You have mastered {count} kana',
+  'hub.kanaSrsHonesty': 'Kana SRS intervals are honest review estimates, not fluency claims. | 假名 SRS 間隔為誠實複習估計，非流利度宣稱。',
   'hub.practicedChunks': 'You have practiced {count} chunks',
   'hub.falseFriends': 'You have cleared {count} false-friend pairs',
   'hub.stats': 'Study stats',

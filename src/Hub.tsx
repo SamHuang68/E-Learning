@@ -341,7 +341,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
       title: t('hub.ja.title'),
       desc: t('hub.ja.desc'),
       progress: t('hub.masteredKana', { count: kanaCount }),
-      catalog: t('hub.ja.catalog'),
+      catalog: t('hub.kanaSrsHonesty') + ' · ' + t('hub.ja.catalog'),
       cta: t('hub.ja.cta'),
       onClick: () => onChoose('ja'),
     },
