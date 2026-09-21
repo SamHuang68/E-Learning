@@ -76,4 +76,14 @@ describe('Strict Review Gate: Visual Layout, 100vh Focus & Zero-Overflow Invaria
       /@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{[\s\S]*?transition:\s*none\s*!important/,
     )
   })
+
+  it('[GATE-VISUAL-PRIMARY-CONTRAST] Hub + track primary CTAs share AAA-minded fill/hover tokens', () => {
+    expect(cssContent).toMatch(/--btn-primary-bg:\s*#2f5c4e/)
+    expect(cssContent).toMatch(/--btn-primary-fg:\s*#ffffff/)
+    expect(cssContent).toMatch(/\.hub-primary-cta\s*\{[^}]*var\(--btn-primary-bg\)/s)
+    expect(cssContent).toMatch(/\.primary-btn:hover\s*\{[^}]*var\(--btn-primary-hover-bg\)/s)
+    expect(cssContent).not.toMatch(/\.primary-btn:hover\s*\{[^}]*var\(--navy-soft\)/s)
+    expect(cssContent).toMatch(/\.btn-primary\s*\{[^}]*var\(--btn-primary-bg\)/s)
+    expect((cssContent.match(/font-weight:\s*800/g) ?? []).length).toBe(3)
+  })
 })

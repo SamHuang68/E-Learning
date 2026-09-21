@@ -40,6 +40,10 @@
   --focus-ring: var(--focus-ring-width) solid var(--focus-ring-color);
   /* Apple HIG / WCAG 2.5.5 AAA: minimum pointer target */
   --touch-min: 44px;
+  /* Primary CTA fill — #2f5c4e already in palette (~7.6:1 AAA vs white). Hover darkens; never --navy-soft (~3.9:1 fail). */
+  --btn-primary-bg: #2f5c4e;
+  --btn-primary-fg: #ffffff;
+  --btn-primary-hover-bg: color-mix(in srgb, var(--btn-primary-bg) 82%, black);
   color-scheme: light;
   color: var(--ink);
   background: var(--bg);
@@ -193,11 +197,15 @@ strong {
   margin-top: 0.75rem;
   padding: 0.65rem 1rem;
   border-radius: 999px;
-  background: var(--navy);
-  color: #fff;
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-fg);
   font-weight: 800;
   text-decoration: none;
   box-shadow: 0 8px 20px rgba(31, 77, 99, 0.18);
+}
+
+.hub-primary-cta:hover {
+  background: var(--btn-primary-hover-bg);
 }
 
 /* 全域學習戰力統計條 */
@@ -1145,16 +1153,28 @@ strong {
 .primary-btn {
   padding: 0.7rem 1.1rem;
   border-radius: 999px;
-  background: var(--navy);
-  color: #f7fcf9;
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-fg);
   font-weight: 700;
   transition: transform 0.2s ease, background 0.2s ease;
 }
 
 .banner-actions button:hover,
 .primary-btn:hover {
-  background: var(--navy-soft);
+  background: var(--btn-primary-hover-bg);
   transform: translateY(-1px);
+}
+
+.btn-primary {
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-fg);
+  font-weight: 700;
+}
+
+.btn-primary:hover {
+  background: var(--btn-primary-hover-bg);
 }
 
 .banner-actions span {
@@ -2478,14 +2498,14 @@ footer {
 .speak-big {
   padding: 0.9rem 1.4rem;
   border-radius: 999px;
-  background: var(--navy);
-  color: #f7fcf9;
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-fg);
   font-weight: 700;
   font-size: 1.05rem;
 }
 
 .speak-big:hover {
-  background: var(--navy-soft);
+  background: var(--btn-primary-hover-bg);
 }
 
 .listen-options {
@@ -3641,7 +3661,7 @@ footer {
 
 .btn-hero-primary {
   background: #fff;
-  color: #2f5c4e;
+  color: var(--btn-primary-bg);
   border: none;
   padding: 0.45rem 0.85rem;
   border-radius: 8px;
@@ -6309,21 +6329,22 @@ footer {
 
 .radar-weakness-plan .btn-plan-action {
   padding: 0.65rem 1.2rem;
-  background: linear-gradient(135deg, #3f6f64, #2f5c4e);
-  color: #ffffff;
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-fg);
   border: none;
   border-radius: 10px;
   font-weight: 700;
   font-size: 0.88rem;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--btn-primary-bg) 28%, transparent);
   flex-shrink: 0;
 }
 
 .radar-weakness-plan .btn-plan-action:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+  background: var(--btn-primary-hover-bg);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--btn-primary-bg) 38%, transparent);
 }
 
 button:active:not(:disabled),
@@ -6551,13 +6572,16 @@ button:active:not(:disabled),
   gap: 0.5rem;
 }
 .btn-play-primary {
-  background: #3f6f64;
-  color: #ffffff;
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-fg);
   border: none;
   padding: 0.55rem 1rem;
   border-radius: 6px;
   font-weight: 700;
   cursor: pointer;
+}
+.btn-play-primary:hover {
+  background: var(--btn-primary-hover-bg);
 }
 .btn-stop {
   background: #ef4444;

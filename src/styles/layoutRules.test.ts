@@ -165,4 +165,20 @@ describe('CSS Layout & Sidebar Overflow Regression Guard', () => {
       /@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{[\s\S]*?animation-duration:\s*0\.01ms/,
     )
   })
+
+  it('unifies Hub + track primary CTAs on shared WCAG-minded contrast tokens', () => {
+    expect(cssContent).toMatch(/--btn-primary-bg:\s*#2f5c4e/)
+    expect(cssContent).toMatch(/--btn-primary-fg:\s*#ffffff/)
+    expect(cssContent).toMatch(/--btn-primary-hover-bg:\s*color-mix/)
+    expect(cssContent).toMatch(/\.hub-primary-cta\s*\{[^}]*background:\s*var\(--btn-primary-bg\)/s)
+    expect(cssContent).toMatch(/\.hub-primary-cta\s*\{[^}]*color:\s*var\(--btn-primary-fg\)/s)
+    expect(cssContent).toMatch(/\.primary-btn\s*\{[^}]*background:\s*var\(--btn-primary-bg\)/s)
+    expect(cssContent).toMatch(/\.primary-btn:hover\s*\{[^}]*background:\s*var\(--btn-primary-hover-bg\)/s)
+    expect(cssContent).not.toMatch(/\.primary-btn:hover\s*\{[^}]*var\(--navy-soft\)/s)
+    expect(cssContent).toMatch(/\.btn-primary\s*\{[^}]*background:\s*var\(--btn-primary-bg\)/s)
+    expect(cssContent).toMatch(/\.btn-plan-action\s*\{[^}]*background:\s*var\(--btn-primary-bg\)/s)
+    expect(cssContent).toMatch(/\.btn-play-primary\s*\{[^}]*background:\s*var\(--btn-primary-bg\)/s)
+    expect(cssContent).toMatch(/\.speak-big\s*\{[^}]*background:\s*var\(--btn-primary-bg\)/s)
+    expect(cssContent).not.toMatch(/\.speak-big:hover\s*\{[^}]*var\(--navy-soft\)/s)
+  })
 })
