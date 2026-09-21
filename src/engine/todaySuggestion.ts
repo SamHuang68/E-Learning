@@ -66,7 +66,15 @@ export function dueCountBySrsItems(
         ? 'en'
         : id.startsWith('zh:')
           ? 'zh'
-          : null
+          : id.startsWith('math_signals:')
+            ? 'math'
+            : id.startsWith('physics_signals:')
+              ? 'physics'
+              : id.startsWith('chemistry_signals:')
+                ? 'chemistry'
+                : id.startsWith('cs_signals:')
+                  ? 'cs'
+                  : null
     if (!track) continue
     counts[track] = (counts[track] ?? 0) + 1
   }

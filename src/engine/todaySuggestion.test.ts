@@ -51,4 +51,20 @@ describe('dueCountBySrsItems', () => {
     expect(counts.ja).toBe(1)
     expect(counts.en).toBeUndefined()
   })
+
+  it('counts overdue signal mastery items for STEM tracks (Signal → today contract)', () => {
+    const now = new Date('2026-09-17T12:00:00.000Z')
+    const counts = dueCountBySrsItems(
+      {
+        'math_signals:signal-1': { id: 'math_signals:signal-1', dueAt: '2026-09-16T00:00:00.000Z' },
+        'physics_signals:signal-2': { id: 'physics_signals:signal-2', dueAt: '2026-09-16T00:00:00.000Z' },
+        'cs_signals:signal-3': { id: 'cs_signals:signal-3', dueAt: '2026-09-18T00:00:00.000Z' },
+      },
+      now,
+    )
+    expect(counts.math).toBe(1)
+    expect(counts.physics).toBe(1)
+    expect(counts.cs).toBeUndefined()
+    expect(counts.chemistry).toBeUndefined()
+  })
 })
