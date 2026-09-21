@@ -234,8 +234,8 @@ export const CalculusCanvas: React.FC<CalculusCanvasProps> = ({
                 )
               })}
               {/* 雙語教學卡片標籤與驗證狀態 (非證書聲明) */}
-              <text x={vp.toScreenX(transform.minX) + 10} y={30} fontSize="11" fill="#334155">ε-δ Def: ∀ε>0 ∃δ>0 s.t. |x-x₀|<δ ⇒ |f(x)-L|<ε</text>
-              <text x={vp.toScreenX(transform.minX) + 10} y={45} fontSize="10" fill="#64748b">Limit ε-δ: for every ε>0 there is δ>0 so |x-x0|<δ implies |f(x)-L|<ε</text>
+              <text x={vp.toScreenX(transform.minX) + 10} y={30} fontSize="11" fill="#334155">{'ε-δ Def: ∀ε>0 ∃δ>0 s.t. |x-x₀|<δ ⇒ |f(x)-L|<ε'}</text>
+              <text x={vp.toScreenX(transform.minX) + 10} y={45} fontSize="10" fill="#64748b">{'Limit ε-δ: for every ε>0 there is δ>0 so |x-x0|<δ implies |f(x)-L|<ε'}</text>
               <text x={vp.toScreenX(x0) + 15} y={vp.toScreenY(y0) - 15} fontSize="10" fill="#854d0e">L=f(x₀)={formatCalcNumber(y0)}</text>
             </>
           )}

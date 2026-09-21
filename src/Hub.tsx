@@ -22,7 +22,7 @@ import {
   dueCountBySrsItems,
   dueCountFromFsrsMap,
 } from './engine/todaySuggestion'
-import { isLeech, LEECH_LAPSES_THRESHOLD } from './engine/fsrs'
+import { isLeech } from './engine/fsrs'
 import {
   loadLearningMeta,
   loadProgress,

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { MathFormula } from '../../../components/MathFormula'
 import type { DerivationStep } from '../../types'
-import { useI18n } from '../../../i18n/i18n'
+import { useI18n } from '../../../../i18n/i18n'
 
 interface Props {
   step: DerivationStep
@@ -18,7 +18,7 @@ export const FormulaStepCard: React.FC<Props> = ({
   onSelect,
   onCheckpointComplete,
 }) => {
-  const { t, lang } = useI18n()
+  const { t } = useI18n()
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
   const [hasAnswered, setHasAnswered] = useState(false)
 
