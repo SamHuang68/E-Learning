@@ -86,4 +86,14 @@ describe('Strict Review Gate: Visual Layout, 100vh Focus & Zero-Overflow Invaria
     expect(cssContent).toMatch(/\.btn-primary\s*\{[^}]*var\(--btn-primary-bg\)/s)
     expect((cssContent.match(/font-weight:\s*800/g) ?? []).length).toBe(3)
   })
+
+  it('[GATE-VISUAL-STEM-CS-PADDING] STEM content/shell gutters lock to CS chrome tokens', () => {
+    expect(cssContent).toMatch(/--track-chrome-gutter-x:\s*1rem/)
+    expect(cssContent).toMatch(/\.cs-top-nav\s*\{[^}]*var\(--track-chrome-gutter-x\)/s)
+    expect(cssContent).toMatch(/\.math-content,\s*\n\.calculus-content,\s*\n\.physics-content,\s*\n\.chemistry-content\s*\{[^}]*var\(--track-content-padding\)/s)
+    expect(cssContent).toMatch(
+      /@media\s*\(max-width:\s*860px\)\s*\{[\s\S]*?\.cs-main-viewport\s*\{[\s\S]*?var\(--track-content-padding-mobile\)/,
+    )
+    expect((cssContent.match(/font-weight:\s*800/g) ?? []).length).toBe(3)
+  })
 })
