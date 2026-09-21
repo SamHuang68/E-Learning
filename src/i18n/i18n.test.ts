@@ -168,6 +168,18 @@ describe('i18n dictionary', () => {
     expect(translate('en', 'cs.strand.hardware_software')).toMatch(/hardware/i)
   })
 
+  it('keeps CS Big-O teaching card copy as catalog teaching, not an interview pass', () => {
+    expect(translate('zh-Hant', 'cs.bigo.honesty')).toMatch(/課綱/)
+    expect(translate('zh-Hant', 'cs.bigo.honesty')).toMatch(/教學/)
+    expect(translate('zh-Hant', 'cs.bigo.honesty')).toMatch(/不是面試/)
+    expect(translate('en', 'cs.bigo.honesty')).toMatch(/teaching/i)
+    expect(translate('en', 'cs.bigo.honesty')).toMatch(/not an interview/i)
+    expect(translate('zh-Hant', 'cs.bigo.title')).toMatch(/課綱/)
+    expect(translate('en', 'cs.bigo.title')).toMatch(/catalog/i)
+    expect(translate('zh-Hant', 'cs.bigo.rca')).toMatch(/漣波/)
+    expect(translate('en', 'cs.bigo.rca')).toMatch(/ripple-carry/i)
+  })
+
   it('leaves unknown placeholders intact', () => {
     expect(interpolate('Hello {name}', { other: 'x' })).toBe('Hello {name}')
     const key = 'hub.solved' satisfies MessageKey

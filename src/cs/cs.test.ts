@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { CS_CURRICULUM, getAllCsUnits, getCsUnitById, CS_STRAND_IDS, CS_STRAND_SLUGS, csStrandMessageKey } from './data/curriculum'
+import { CS_CURRICULUM, getAllCsUnits, getCsUnitById, CS_STRAND_IDS, CS_STRAND_SLUGS, csStrandMessageKey, CS_BIG_O_SHEET } from './data/curriculum'
 import { CS_SOLVING_SIGNALS } from './data/solvingSignals'
 import { CS_MOCK_EXAMS } from './data/mockExams'
 import { CS_TEXTBOOK_CHAPTERS } from './data/textbookData'
@@ -49,6 +49,37 @@ describe('Computer Science Track (計算機概論: 軟硬體、五大單元與�
         expect(CS_STRAND_IDS).toContain(ch.strand)
       })
       expect(CS_STRAND_IDS).toContain('軟硬體本質')
+    })
+
+    it('Big-O teaching card lists catalog complexity notes only, not interview-pass claims', () => {
+      expect(CS_BIG_O_SHEET.map((row) => row.id)).toEqual([
+        'rca',
+        'cla',
+        'wallace',
+        'cfs',
+        'select',
+        'epoll',
+        'attention',
+        'kv',
+        'mamba',
+      ])
+      CS_BIG_O_SHEET.forEach((row) => {
+        const unit = getCsUnitById(row.unitId)
+        expect(unit).toBeDefined()
+        const blob = [
+          unit?.title,
+          unit?.subtitle,
+          ...(unit?.concepts ?? []),
+          ...(unit?.questions.flatMap((q) => [
+            q.title,
+            q.question,
+            q.explanation,
+            ...q.solution,
+            ...(q.options ?? []),
+          ]) ?? []),
+        ].join('\n')
+        expect(blob).toContain(row.catalogNeedle)
+      })
     })
 
     it('unit 1 defines hardware, software, abstraction layers and ISA interface', () => {
