@@ -41,6 +41,7 @@ export function PrivacyPage({ onBack }: Props) {
         <ul>
           <li>{t('privacy.cloud.1')}</li>
           <li>{t('privacy.cloud.2')}</li>
+          <li>{t('privacy.cloud.3')}</li>
         </ul>
       </section>
 

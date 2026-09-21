@@ -5,6 +5,7 @@ import {
   flushCloudPush,
   getSyncStatus,
   hydrateFromCloud,
+  handleBrowserOnline,
   pushProgressNow,
   setCloudUserId,
   subscribeSyncStatus,
@@ -341,5 +342,53 @@ describe('cloud progress honesty (concurrent push revision)', () => {
     const stored = await inner.from('user_progress').select('*').eq('user_id', userId).maybeSingle()
     expect((stored.data as { toeic?: { xp?: number } } | null)?.toeic?.xp).toBe(40)
     expect(loadToeicProgress().xp).toBe(40)
+  })
+})
+
+describe('offline progress flush on browser online', () => {
+  it('keeps signed-out progress local-only when the browser comes online', async () => {
+    const inner = getSupabase()!
+    let upserts = 0
+    __setCloudProgressBackendForTests(
+      wrapProgressBackend(inner, {
+        async beforeUpsert() {
+          upserts += 1
+        },
+      }),
+    )
+    setCloudUserId(null)
+    saveToeicProgress({ ...defaultToeicProgress(), xp: 12 })
+    await handleBrowserOnline()
+    expect(getSyncStatus()).toBe('local-only')
+    expect(upserts).toBe(0)
+    expect(loadToeicProgress().xp).toBe(12)
+  })
+
+  it('retries a dirty drain when back online after a failed push', async () => {
+    const userId = 'offline-flush-user'
+    saveToeicProgress({ ...defaultToeicProgress(), xp: 4 })
+    const inner = getSupabase()!
+    setCloudUserId(userId)
+    expect(await hydrateFromCloud(userId)).toBe('migrated')
+    expect(getSyncStatus()).toBe('synced')
+
+    __setCloudProgressBackendForTests(
+      wrapProgressBackend(inner, {
+        async beforeUpsert() {
+          throw new Error('offline')
+        },
+      }),
+    )
+    saveToeicProgress({ ...defaultToeicProgress(), xp: 88 })
+    expect(await pushProgressNow()).toBe(false)
+    expect(getSyncStatus()).toBe('error')
+    expect(loadToeicProgress().xp).toBe(88)
+
+    __setCloudProgressBackendForTests(null)
+    await handleBrowserOnline()
+    await flushCloudPush()
+    expect(getSyncStatus()).toBe('synced')
+    const stored = await inner.from('user_progress').select('*').eq('user_id', userId).maybeSingle()
+    expect((stored.data as { toeic?: { xp?: number } } | null)?.toeic?.xp).toBe(88)
   })
 })
