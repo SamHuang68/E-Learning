@@ -73,14 +73,14 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
       ],
     },
     'tcp-handshake': {
-      title: 'TCP 三向交握與四向揮手時序圖',
-      subtitle: '連線建立 (SYN / SYN+ACK / ACK)、雙工數據傳輸與 TIME_WAIT 2MSL 狀態機',
+      title: t('cs.archify.tcp.title'),
+      subtitle: t('cs.archify.tcp.subtitle'),
       file: './archify/tcp-handshake-sequence.html',
       badge: 'Archify Sequence 2.16',
       stats: [
-        { label: 'SYN NEGOTIATION', title: '3-Way Handshake', desc: 'ISN 初始序號同步與 MSS 窗口協商', color: '#06b6d4' },
-        { label: 'HALF-CLOSE', title: '4-Way Teardown', desc: 'FIN / ACK 雙向非對稱釋放與 CLOSE_WAIT', color: '#10b981' },
-        { label: '2MSL DRAIN', title: 'TIME_WAIT & 2MSL', desc: '等待 2MSL 確保最終 ACK 到達並排空網路殘留封包', color: '#f43f5e' },
+        { label: t('cs.archify.tcp.stat.syn'), title: '3-Way Handshake', desc: 'ISN 初始序號同步與 MSS 窗口協商', color: '#06b6d4' },
+        { label: t('cs.archify.tcp.stat.halfclose'), title: '4-Way Teardown', desc: 'FIN / ACK 雙向非對稱釋放與 CLOSE_WAIT', color: '#10b981' },
+        { label: t('cs.archify.tcp.stat.msl'), title: 'TIME_WAIT & 2MSL', desc: '等待 2MSL 確保最終 ACK 到達並排空網路殘留封包', color: '#f43f5e' },
       ],
     },
     'transformer-attention': {

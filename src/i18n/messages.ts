@@ -66,6 +66,11 @@ export const ZH_HANT = {
   'cs.archify.process.stat.scheduler': 'CFS SCHEDULER',
   'cs.archify.process.stat.io': 'I/O ASYNCHRONY',
   'cs.archify.process.stat.reap': 'PROCESS REAPING',
+  'cs.archify.tcp.title': 'TCP 三向交握與四向揮手時序圖',
+  'cs.archify.tcp.subtitle': '連線建立 (SYN / SYN+ACK / ACK)、雙工數據傳輸與 TIME_WAIT 2MSL 狀態機',
+  'cs.archify.tcp.stat.syn': 'SYN NEGOTIATION',
+  'cs.archify.tcp.stat.halfclose': 'HALF-CLOSE',
+  'cs.archify.tcp.stat.msl': '2MSL DRAIN',
 
   'hub.eyebrow': '八軌學習平台',
   'hub.title': '今天要學哪一軌？',
@@ -692,6 +697,11 @@ export const EN: Record<MessageKey, string> = {
   'cs.archify.process.stat.scheduler': 'CFS SCHEDULER',
   'cs.archify.process.stat.io': 'I/O ASYNCHRONY',
   'cs.archify.process.stat.reap': 'PROCESS REAPING',
+  'cs.archify.tcp.title': 'TCP 3-Way Handshake and 4-Way Teardown Sequence Diagram',
+  'cs.archify.tcp.subtitle': 'Connection establishment (SYN / SYN+ACK / ACK), full-duplex data transfer and TIME_WAIT 2MSL state machine',
+  'cs.archify.tcp.stat.syn': 'SYN NEGOTIATION',
+  'cs.archify.tcp.stat.halfclose': 'HALF-CLOSE',
+  'cs.archify.tcp.stat.msl': '2MSL DRAIN',
 
   'hub.eyebrow': 'Eight-track learning',
   'hub.title': 'Which track today?',
