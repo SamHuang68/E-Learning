@@ -194,8 +194,15 @@ export function ExerciseSession({
         })}
 
         {feedback !== null && (
-          <p className="status-line">
-            {feedback ? copy.correct : `${copy.wrong} ${exercise.answer}`}
+          <p
+            className="status-line"
+            role="status"
+            aria-live={feedback ? 'polite' : 'assertive'}
+            aria-atomic="true"
+          >
+            {feedback
+              ? `${copy.correct} ${copy.srsGood}`
+              : `${copy.wrong} ${exercise.answer} ${copy.srsAgain}`}
           </p>
         )}
 
@@ -454,6 +461,8 @@ function uiCopy(lang: 'ja' | 'en') {
       reset: '重排',
       showScore: '查看成績',
       speakPrompt: '播放題目',
+      srsAgain: 'SRS Again（再排）',
+      srsGood: 'SRS Good（記住）',
       tapWords: '點選下方詞塊組句',
       typeAnswer: '輸入答案',
       wrong: '再確認一次。正解：',
@@ -480,6 +489,8 @@ function uiCopy(lang: 'ja' | 'en') {
     reset: 'Reset',
     showScore: 'Show score',
     speakPrompt: 'Speak prompt',
+    srsAgain: 'SRS Again',
+    srsGood: 'SRS Good',
     tapWords: 'Tap words below to build your answer',
     typeAnswer: 'Type your answer',
     wrong: 'Not quite. Answer:',
