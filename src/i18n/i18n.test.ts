@@ -215,6 +215,15 @@ describe('i18n dictionary', () => {
     expect(translate('en', 'ja.pitch.example')).toMatch(/箸/)
   })
 
+  it('keeps Chinese measure-word drills as teaching, not TOCFL pass', () => {
+    expect(translate('zh-Hant', 'zh.measure.honesty')).toMatch(/教學/)
+    expect(translate('zh-Hant', 'zh.measure.honesty')).toMatch(/不是/)
+    expect(translate('zh-Hant', 'zh.measure.honesty')).toMatch(/TOCFL/)
+    expect(translate('en', 'zh.measure.honesty')).toMatch(/teaching/i)
+    expect(translate('en', 'zh.measure.honesty')).toMatch(/not a fluency/i)
+    expect(translate('en', 'zh.measure.honesty')).toMatch(/TOCFL/i)
+  })
+
   it('leaves unknown placeholders intact', () => {
     expect(interpolate('Hello {name}', { other: 'x' })).toBe('Hello {name}')
     const key = 'hub.solved' satisfies MessageKey
