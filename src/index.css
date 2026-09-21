@@ -36,6 +36,8 @@
   --focus-ring-width: 3px;
   --focus-ring-offset: 2px;
   --focus-ring: var(--focus-ring-width) solid var(--focus-ring-color);
+  /* Apple HIG / WCAG 2.5.5 AAA: minimum pointer target */
+  --touch-min: 44px;
   color-scheme: light;
   color: var(--ink);
   background: var(--bg);
@@ -67,7 +69,7 @@ textarea,
 input:not([type='checkbox']):not([type='radio']) {
   font: inherit;
   color: inherit;
-  min-height: 44px;
+  min-height: var(--touch-min);
 }
 
 button {
@@ -3205,6 +3207,8 @@ footer {
     flex: 0 0 auto;
     width: auto;
     white-space: nowrap;
+    min-height: var(--touch-min);
+    min-width: var(--touch-min);
   }
 
   .sidebar nav button .nav-label,
@@ -6674,9 +6678,10 @@ button:active:not(:disabled),
   }
 
   .btn-a11y-trigger {
-    width: 44px;
-    height: 44px;
-    min-height: 44px;
+    width: var(--touch-min);
+    height: var(--touch-min);
+    min-height: var(--touch-min);
+    min-width: var(--touch-min);
     padding: 0;
     justify-content: center;
     border-radius: 12px;
@@ -8662,7 +8667,7 @@ html.high-contrast { filter: contrast(125%); }
 }
 .track-lang-toggle button {
   flex: 1;
-  min-height: 40px;
+  min-height: var(--touch-min);
   border-radius: 999px;
   border: 1px solid var(--line);
   background: var(--surface-soft);
@@ -8850,7 +8855,7 @@ html.high-contrast { filter: contrast(125%); }
   overflow-x: auto;
 }
 .cs-nav-item {
-  min-height: 40px;
+  min-height: var(--touch-min);
   padding: 0.35rem 0.7rem;
   border-radius: 8px;
   border: 1px solid transparent;
@@ -9042,8 +9047,8 @@ html.high-contrast { filter: contrast(125%); }
   flex-shrink: 0;
 }
 .locale-toggle button {
-  min-height: 36px;
-  min-width: 44px;
+  min-height: var(--touch-min);
+  min-width: var(--touch-min);
   padding: 0.2rem 0.7rem;
   border-radius: 999px;
   font-size: 0.78rem;
@@ -9055,8 +9060,8 @@ html.high-contrast { filter: contrast(125%); }
   color: #fffcf7;
 }
 .locale-toggle.is-compact button {
-  min-height: 32px;
-  min-width: 40px;
+  min-height: var(--touch-min);
+  min-width: var(--touch-min);
   padding: 0.15rem 0.5rem;
   font-size: 0.72rem;
 }
@@ -9159,17 +9164,62 @@ html.high-contrast { filter: contrast(125%); }
   min-width: var(--track-sidebar-width);
   flex-shrink: 0;
 }
+.hub-bottom-nav {
+  display: none;
+}
+
+@media (max-width: 860px) {
+  .hub-bottom-nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 45;
+    min-height: var(--touch-min);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    border-top: 1px solid var(--line);
+    background: rgba(255, 252, 247, 0.96);
+    backdrop-filter: blur(12px);
+  }
+  .hub-bottom-nav-item {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.08rem;
+    min-height: var(--touch-min);
+    min-width: var(--touch-min);
+    padding: 0.3rem 0.35rem;
+    color: var(--muted);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-decoration: none;
+    touch-action: manipulation;
+  }
+  .hub-bottom-nav-item.is-current,
+  .hub-bottom-nav-item[aria-current='page'] {
+    color: var(--navy);
+  }
+  .hub-bottom-nav-mark {
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    line-height: 1;
+  }
+  .hub {
+    padding-bottom: calc(1.25rem + var(--touch-min) + env(safe-area-inset-bottom, 0px));
+  }
+}
+
 .sidebar-brand-box {
   padding: 0.85rem 1rem;
   border-bottom: 1px solid var(--line);
 }
-.hub {
-  padding-bottom: 4.75rem;
-}
 
 @media (max-width: 390px) {
   .hub {
-    padding: 1rem 0.85rem 4.75rem;
+    padding: 1rem 0.85rem calc(1.25rem + var(--touch-min) + env(safe-area-inset-bottom, 0px));
   }
   .hub-hero h1 {
     font-size: 1.7rem;

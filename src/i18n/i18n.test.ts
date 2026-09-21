@@ -75,6 +75,10 @@ describe('i18n dictionary', () => {
     expect(translate('en', 'hub.goTrack')).toMatch(/go/i)
     expect(translate('en', 'hub.privacy')).toMatch(/privacy/i)
     expect(translate('en', 'hub.footerNote')).not.toBe(translate('zh-Hant', 'hub.footerNote'))
+    expect(translate('zh-Hant', 'hub.bottomNav.home')).toBe('大廳')
+    expect(translate('en', 'hub.bottomNav.home')).toBe('Home')
+    expect(translate('en', 'hub.bottomNav')).toMatch(/bottom/i)
+    expect(translate('zh-Hant', 'hub.bottomNav.tracks')).toBe('軌道')
   })
 
   it('leaves unknown placeholders intact', () => {
