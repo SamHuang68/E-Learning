@@ -23,9 +23,11 @@ export const MathPractice: React.FC<Props> = ({ unit, onBack, onComplete }) => {
   const [isCorrect, setIsCorrect] = useState(false)
   const [showHint, setShowHint] = useState(false)
   const [showScratchpad, setShowScratchpad] = useState(false)
+  const [honestyLabel, setHonestyLabel] = useState<boolean | null>(null)
 
   const questions = unit.questions
   const currentQ: MathQuestion | undefined = questions[currentIndex]
+  const isDiscriminantDrill = unit.concepts?.some((c) => c.includes('判別式') || c.toLowerCase().includes('discriminant')) ?? false
 
   function handleCheckAnswer() {
     if (!currentQ || submitted) return
@@ -59,6 +61,7 @@ export const MathPractice: React.FC<Props> = ({ unit, onBack, onComplete }) => {
       setSubmitted(false)
       setIsCorrect(false)
       setShowHint(false)
+      setHonestyLabel(null)
     } else {
       onComplete?.()
     }
@@ -243,6 +246,34 @@ export const MathPractice: React.FC<Props> = ({ unit, onBack, onComplete }) => {
             {currentQ.competency && (
               <div className="competency-note">
                 <span>108 課綱核心素養：{currentQ.competency}</span>
+              </div>
+            )}
+            {submitted && isDiscriminantDrill && (
+              <div className="honesty-labels">
+                <strong>誠實練習標籤 / Honesty Labels（判別式專用）</strong>
+                <div className="honesty-options">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={honestyLabel === true}
+                      onChange={() => setHonestyLabel(true)}
+                    />{' '}
+                    我獨立完成，未偷看答案或提示 / I solved independently without peeking answers or hints
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={honestyLabel === false}
+                      onChange={() => setHonestyLabel(false)}
+                    />{' '}
+                    我使用了提示或參考 / I used hints or references
+                  </label>
+                </div>
+                {honestyLabel !== null && (
+                  <div className="honesty-note">
+                    感謝誠實回報！這有助於真實追蹤學習進度。/ Thank you for honest reporting! This helps track real learning progress.
+                  </div>
+                )}
               </div>
             )}
           </div>
