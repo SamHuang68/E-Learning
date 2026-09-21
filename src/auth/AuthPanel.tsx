@@ -22,7 +22,7 @@ export function AuthPanel({ variant = 'full' }: Props) {
     if (compact) return null
     return (
       <section className="auth-panel" aria-label={t('auth.account')}>
-        <p className="auth-sync local">{t('auth.localOnlyUnset')}</p>
+        <p className="auth-sync local" role="status" aria-live="polite" title={t('auth.localOnlyUnset')}>{t('auth.localOnlyUnset')}</p>
       </section>
     )
   }
@@ -144,7 +144,7 @@ export function AuthPanel({ variant = 'full' }: Props) {
           <div>
             {!compact ? <p className="eyebrow">{t('auth.account')}</p> : null}
             <p className="auth-email">{user.email}</p>
-            <p className={`auth-sync ${syncStatus}`}>{syncLabel}</p>
+            <p className={`auth-sync ${syncStatus}`} role="status" aria-live="polite">{syncLabel}</p>
           </div>
           <button type="button" className="auth-btn ghost" onClick={() => void signOut()}>
             {t('auth.signOut')}
@@ -171,7 +171,9 @@ export function AuthPanel({ variant = 'full' }: Props) {
   return (
     <section className="auth-panel" aria-label={t('auth.signinOrUp')}>
       {form}
-      <p className={`auth-sync ${syncStatus}`}>{t('auth.localOnly')}</p>
+      <p className={`auth-sync ${syncStatus}`} role="status" aria-live="polite" title={t('auth.localOnly')}>
+        {t('auth.localOnly')}
+      </p>
     </section>
   )
 }
