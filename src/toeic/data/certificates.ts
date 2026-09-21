@@ -20,6 +20,8 @@ export type ToeicCertificate = {
   mapTitle: string
   mapDesc: string
   units: ToeicUnit[]
+  disclaimer: string
+  disclaimerEn: string
 }
 
 export const toeicCertificates: ToeicCertificate[] = [
@@ -35,6 +37,8 @@ export const toeicCertificates: ToeicCertificate[] = [
       '具備基礎單字量，但長篇溝通與複雜商業語境尚有不足。適合從字母發音與高頻字起步的學員。',
     mapTitle: '基礎起步課程地圖',
     mapDesc: '字母與發音 → 高頻字 → 短句聽辨，打好多益入門底子。',
+    disclaimer: '分數級距僅為本平台學習路徑參考，非 ETS 官方多益成績或證書。',
+    disclaimerEn: 'Score bands are approximate learning tracks only; not official ETS TOEIC scores or certificates.',
     units: [
       {
         id: 1,
@@ -104,6 +108,8 @@ export const toeicCertificates: ToeicCertificate[] = [
       '多數台灣大學畢業標準與多數本土企業新進人員門檻。能應付一般工作文件與例行溝通。',
     mapTitle: '綠色證書課程地圖',
     mapDesc: '辦公室日常、郵件與 Part 5/6 文法，對齊畢業與初入職場門檻。',
+    disclaimer: '分數級距僅為本平台學習路徑參考，非 ETS 官方多益成績或證書。',
+    disclaimerEn: 'Score bands are approximate learning tracks only; not official ETS TOEIC scores or certificates.',
     units: [
       {
         id: 1,
@@ -173,6 +179,8 @@ export const toeicCertificates: ToeicCertificate[] = [
       '可應付社交與例行業務需求，為多數外商與外派職缺的基礎門檻。',
     mapTitle: '藍色證書課程地圖',
     mapDesc: '會議、客戶溝通與聽力 Part 3/4，對齊外商／外派門檻。',
+    disclaimer: '分數級距僅為本平台學習路徑參考，非 ETS 官方多益成績或證書。',
+    disclaimerEn: 'Score bands are approximate learning tracks only; not official ETS TOEIC scores or certificates.',
     units: [
       {
         id: 1,
@@ -242,6 +250,8 @@ export const toeicCertificates: ToeicCertificate[] = [
       '英語能力等同母語人士，能流利主持會議與協商。目標外商高階、跨國談判與複雜商務文本。',
     mapTitle: '金色證書課程地圖',
     mapDesc: '主持會議、談判話術與高階閱讀／聽力，對齊近母語商務表現。',
+    disclaimer: '分數級距僅為本平台學習路徑參考，非 ETS 官方多益成績或證書。',
+    disclaimerEn: 'Score bands are approximate learning tracks only; not official ETS TOEIC scores or certificates.',
     units: [
       {
         id: 1,

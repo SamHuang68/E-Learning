@@ -75,6 +75,9 @@ export function PlacementTest({ lang, onComplete, onExit }: Props) {
                 ? '系統已依本次作答建議起始級距。'
                 : 'Your suggested TOEIC certificate track is ready.'}
             </p>
+            <p style={{ fontSize: '0.8rem', opacity: 0.8, marginTop: '0.5rem' }}>
+              {lang === 'ja' ? 'スコアバンドは学習参考用です。公式ETS TOEIC成績ではありません。' : 'Score bands are for learning reference only. Not official ETS TOEIC scores.'}
+            </p>
           </div>
           <div className="flash-actions">
             <button type="button" className="primary-btn inline" onClick={onExit}>
