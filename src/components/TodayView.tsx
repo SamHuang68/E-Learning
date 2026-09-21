@@ -112,9 +112,14 @@ export function TodayView({
           <h2>
             {t('todayView.streak', { streak, done: dailyDone, goal: dailyGoal })}
           </h2>
-          <span>
-            {t('todayView.due', { count: dueCount })}
-          </span>
+          {dueCount > 0 ? (
+            <span>{t('todayView.due', { count: dueCount })}</span>
+          ) : (
+            <div className="due-empty-state" role="status" aria-live="polite">
+              <strong>{t('todayView.dueEmptyTitle')}</strong>
+              <p>{t('todayView.dueEmptyBody')}</p>
+            </div>
+          )}
         </div>
         <div className="daily-review-actions">
           <button
