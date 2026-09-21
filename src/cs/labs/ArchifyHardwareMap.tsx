@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { ContentProvenance } from '../../components/ContentProvenance'
+import { useI18n } from '../../i18n/i18n'
 
 interface Props {
   onEarnXp?: (amount: number) => void
@@ -17,6 +18,7 @@ type DiagramKind =
 export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
   const [selectedDiagram, setSelectedDiagram] = useState<DiagramKind>('ai-server')
   const [explored, setExplored] = useState(false)
+  const { t } = useI18n()
 
   const handleInteract = () => {
     if (!explored && onEarnXp) {
@@ -60,14 +62,14 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
       ],
     },
     'process-lifecycle': {
-      title: '作業系統五狀態行程生命週期轉移圖',
-      subtitle: 'CFS 調度佇列 (Ready ➜ Running)、I/O 睡眠等待 (Blocked) 與殭屍回收 (Terminated)',
+      title: t('cs.archify.process.title'),
+      subtitle: t('cs.archify.process.subtitle'),
       file: './archify/process-lifecycle.html',
       badge: 'Archify Lifecycle 2.16',
       stats: [
-        { label: 'CFS SCHEDULER', title: 'Ready ➜ Running', desc: '紅黑樹尋找最小 vruntime 進行排程分發', color: '#06b6d4' },
-        { label: 'I/O ASYNCHRONY', title: 'Running ➜ Blocked', desc: '阻塞等待磁碟或網路中斷，完全釋放 CPU 核心', color: '#10b981' },
-        { label: 'PROCESS REAPING', title: 'Zombie ➜ Reaped', desc: 'waitpid() 釋放 PCB 結構，PID 1 領養孤兒行程', color: '#f43f5e' },
+        { label: t('cs.archify.process.stat.scheduler'), title: 'Ready ➜ Running', desc: '紅黑樹尋找最小 vruntime 進行排程分發', color: '#06b6d4' },
+        { label: t('cs.archify.process.stat.io'), title: 'Running ➜ Blocked', desc: '阻塞等待磁碟或網路中斷，完全釋放 CPU 核心', color: '#10b981' },
+        { label: t('cs.archify.process.stat.reap'), title: 'Zombie ➜ Reaped', desc: 'waitpid() 釋放 PCB 結構，PID 1 領養孤兒行程', color: '#f43f5e' },
       ],
     },
     'tcp-handshake': {
