@@ -352,6 +352,15 @@ strong {
   line-height: 1.5;
   min-height: 0;
 }
+
+/* R32: TOEIC listening stem readability — deeper line-height for long audio question stems (zh-Hant/en) */
+.toeic-listening-stem,
+.toeic-listening-question,
+.toeic-part3-stem,
+.toeic-part4-stem {
+  line-height: 1.72;
+  max-width: 72ch;
+}
 .track-highlight-badges {
   display: flex;
   flex-wrap: wrap;
