@@ -1,12 +1,14 @@
 ﻿import React, { useState } from 'react'
 import { MEASURE_WORDS, type MeasureWordItem } from '../data/measureWords'
 import { playCorrectSound, playWrongSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
 
 interface Props {
   onEarnXp: (amount: number) => void
 }
 
 export const MeasureWordsLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { t } = useI18n()
   const [selectedMwIdx, setSelectedMwIdx] = useState(0)
   const [selectedQuizAnswers, setSelectedQuizAnswers] = useState<Record<string, number>>({})
   const [submittedQuiz, setSubmittedQuiz] = useState<Record<string, boolean>>({})
@@ -45,6 +47,9 @@ export const MeasureWordsLab: React.FC<Props> = ({ onEarnXp }) => {
           </h3>
           <p className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
             「一張桌子」？「一把椅子」？「一條褲子」？名詞形狀與量詞的自然搭配法則一網打盡！
+          </p>
+          <p className="section-subtext" style={{ margin: '0.35rem 0 0', fontSize: '0.74rem' }}>
+            {t('zh.measure.honesty')}
           </p>
         </div>
       </div>
@@ -177,7 +182,12 @@ export const MeasureWordsLab: React.FC<Props> = ({ onEarnXp }) => {
 
           {submittedQuiz[activeItem.id] && (
             <div style={{ background: 'var(--surface-soft)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)', fontSize: '0.76rem', color: 'var(--muted)', lineHeight: 1.45 }}>
-              💡 <strong>解説：</strong>{activeItem.quiz.explanationJa}
+              <p style={{ margin: 0 }}>
+                💡 <strong>解説：</strong>{activeItem.quiz.explanationJa}
+              </p>
+              {activeItem.quiz.explanationZh ? (
+                <p style={{ margin: '0.35rem 0 0' }}>{activeItem.quiz.explanationZh}</p>
+              ) : null}
             </div>
           )}
         </div>
