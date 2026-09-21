@@ -373,6 +373,28 @@ describe('i18n dictionary', () => {
     )
   })
 
+  it('keeps Hub catalog track titles on the same glossary as chrome', () => {
+    const tracks = ['math', 'calculus', 'physics', 'chemistry', 'cs', 'ja', 'en', 'zh'] as const
+    for (const track of tracks) {
+      const key = `track.${track}` as MessageKey
+      expect(ZH_HANT[key].length).toBeGreaterThan(0)
+      expect(EN[key]).not.toBe(ZH_HANT[key])
+    }
+    expect(ZH_HANT['hub.ja.title']).toBe(ZH_HANT['track.ja'])
+    expect(EN['hub.ja.title']).toBe(EN['track.ja'])
+    expect(ZH_HANT['hub.en.title']).toBe(ZH_HANT['track.en'])
+    expect(EN['hub.en.title']).toBe(EN['track.en'])
+    expect(ZH_HANT['hub.zh.title']).toBe(ZH_HANT['track.zh'])
+    expect(EN['hub.zh.title']).toBe(EN['track.zh'])
+    expect(EN['track.cs']).toBe('Intro to CS')
+    expect(EN['title.cs']).toMatch(/Intro to CS/)
+    const hub = readFileSync(join(process.cwd(), 'src/Hub.tsx'), 'utf8')
+    expect(hub).toContain("title: t('track.ja')")
+    expect(hub).toContain("title: t('track.en')")
+    expect(hub).toContain("title: t('track.zh')")
+    expect(hub).not.toContain("title: t('hub.ja.title')")
+  })
+
   it('leaves unknown placeholders intact', () => {
     expect(interpolate('Hello {name}', { other: 'x' })).toBe('Hello {name}')
     const key = 'hub.solved' satisfies MessageKey
