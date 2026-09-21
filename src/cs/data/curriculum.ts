@@ -2653,3 +2653,55 @@ export const CS_BIG_O_SHEET: CsBigORow[] = [
     catalogNeedle: 'Mamba 實現 $O(N)$ 線性複雜度',
   },
 ]
+
+export type CsHttpTcpTopicKey =
+  | 'cs.httptcp.http'
+  | 'cs.httptcp.tcp'
+  | 'cs.httptcp.stack'
+  | 'cs.httptcp.handshake'
+
+export type CsHttpTcpLayerKey =
+  | 'cs.httptcp.app'
+  | 'cs.httptcp.transport'
+  | 'cs.httptcp.rides'
+  | 'cs.httptcp.synack'
+
+export type CsHttpTcpRow = {
+  id: string
+  unitId: string
+  topicKey: CsHttpTcpTopicKey
+  layerKey: CsHttpTcpLayerKey
+  catalogNeedle: string
+}
+
+/** HTTP vs TCP layer split from unit 5. Teaching card, not a cert sheet. */
+export const CS_HTTP_TCP_SHEET: CsHttpTcpRow[] = [
+  {
+    id: 'http',
+    unitId: 'cs-unit-5-networking',
+    topicKey: 'cs.httptcp.http',
+    layerKey: 'cs.httptcp.app',
+    catalogNeedle: '應用層 (HTTP, DNS, SSH)',
+  },
+  {
+    id: 'tcp',
+    unitId: 'cs-unit-5-networking',
+    topicKey: 'cs.httptcp.tcp',
+    layerKey: 'cs.httptcp.transport',
+    catalogNeedle: '傳輸層 (TCP/UDP, 通訊埠 Port)',
+  },
+  {
+    id: 'stack',
+    unitId: 'cs-unit-5-networking',
+    topicKey: 'cs.httptcp.stack',
+    layerKey: 'cs.httptcp.rides',
+    catalogNeedle: '傳輸層 (TCP/UDP, 通訊埠 Port)、應用層 (HTTP, DNS, SSH)',
+  },
+  {
+    id: 'handshake',
+    unitId: 'cs-unit-5-networking',
+    topicKey: 'cs.httptcp.handshake',
+    layerKey: 'cs.httptcp.synack',
+    catalogNeedle: 'TCP 連線建立——三向交握',
+  },
+]

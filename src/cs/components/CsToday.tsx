@@ -5,6 +5,7 @@ import { computeCsRadar } from '../../engine/radar'
 import { useI18n } from '../../i18n/i18n'
 import type { CsNavSection } from './CsTopNav'
 import { CsBigOCard } from './CsBigOCard'
+import { CsHttpTcpCard } from './CsHttpTcpCard'
 
 interface Props {
   progress: CsProgress
@@ -74,6 +75,7 @@ export const CsToday: React.FC<Props> = ({ progress, onNavigate }) => {
       </header>
 
       <CsBigOCard />
+      <CsHttpTcpCard />
 
       {showProgress && hasProgress ? (
         <section className="cs-today-radar" aria-label={t('cs.today.coverage')}>
