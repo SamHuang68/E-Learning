@@ -8,6 +8,8 @@ import {
   generateDerivationSteps,
   outerDifferentiationRuleIndex,
   formatCalcNumber,
+  validateSymbols,
+  UndefinedSymbolError,
 } from './engine'
 
 function evalAt(expr: string, x: number): number {
@@ -78,5 +80,53 @@ describe('P0-1 calculus symbolic acceptance probes', () => {
     const ast = parseMathExpression('x^2 - 2*x + 2')
     const fp = compileASTToFunction(differentiateAST(ast, 'x'))
     expect(fp(1.5)).toBeCloseTo(1, 10)
+  })
+})
+
+describe('calculus engine typed reject / undefined-symbol boundaries', () => {
+  it('throws UndefinedSymbolError for free variables other than x', () => {
+    const ast = parseMathExpression('y^2 + 1')
+    expect(() => validateSymbols(ast)).toThrow(UndefinedSymbolError)
+    try {
+      validateSymbols(ast)
+      throw new Error('expected UndefinedSymbolError')
+    } catch (err) {
+      expect(err).toBeInstanceOf(UndefinedSymbolError)
+      const typed = err as UndefinedSymbolError
+      expect(typed.name).toBe('UndefinedSymbolError')
+      expect(typed.symbol).toBe('y')
+      expect(typed.allowed).toContain('x')
+      expect(typed.message).toMatch(/Undefined symbol/)
+      expect(typed.message).toMatch(/未定義符號/)
+    }
+  })
+
+  it('maps unknown identifiers to a symbol-error step, not a fake derivative', () => {
+    const steps = generateDerivationSteps('sec(x)')
+    expect(steps).toHaveLength(1)
+    expect(steps[0]?.id).toBe('step-symbol-error')
+    expect(steps[0]?.explanation).toMatch(/Undefined symbol/)
+    expect(steps[0]?.explanation).toMatch(/sec/)
+    expect(steps[0]?.checkpoint).toBeUndefined()
+    expect(steps[0]?.afterLatex).toBe('')
+  })
+
+  it('allows e, pi, and known funcs, and still rejects t', () => {
+    expect(() => validateSymbols(parseMathExpression('e^x'))).not.toThrow()
+    expect(() => validateSymbols(parseMathExpression('sin(pi*x)'))).not.toThrow()
+    expect(() => validateSymbols(parseMathExpression('ln(x)+sqrt(x)'))).not.toThrow()
+    expect(() => validateSymbols(parseMathExpression('t+1'))).toThrow(UndefinedSymbolError)
+    const tSteps = generateDerivationSteps('t+1')
+    expect(tSteps[0]?.id).toBe('step-symbol-error')
+    expect(tSteps[0]?.id).not.toBe('step-1-structure')
+  })
+
+  it('keeps empty, unclosed, and argument-less calls as parse rejects', () => {
+    expect(() => parseMathExpression('')).toThrow(MathParseError)
+    expect(() => parseMathExpression('(x+1')).toThrow(MathParseError)
+    expect(() => parseMathExpression('sin')).toThrow(MathParseError)
+    expect(tryParseMathExpression('').ok).toBe(false)
+    expect(generateDerivationSteps('')[0]?.id).toBe('step-parse-error')
+    expect(generateDerivationSteps('(x+1')[0]?.id).toBe('step-parse-error')
   })
 })
