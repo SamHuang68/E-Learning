@@ -432,6 +432,9 @@ export const ZH_HANT = {
   'ja.nav.speaking': '口說跟讀',
   'ja.kanaProgress': '五十音進度',
   'ja.kanaMeta': '已掌握 {done}/{total} · 平／片假名（非學校必修補強）',
+  'ja.pitch.title': '音高重音提示（教學）',
+  'ja.pitch.body': '日語是莫拉高低（平板／頭高／中高／尾高），不是華語四聲。本機五十音 MP3 只辨識假名，不評分音高。教學提示，不是 JLPT 證照或流利度。',
+  'ja.pitch.example': '東京式教學例：箸 はし（頭高）、橋 はし（尾高）。方言會不同。',
   'ja.unitMeta': '本課 {words} Words · Unit {id}',
 
   'en.brandSub': '多益證書級距',
@@ -1135,6 +1138,9 @@ export const EN: Record<MessageKey, string> = {
   'ja.nav.speaking': 'Shadowing',
   'ja.kanaProgress': 'Kana progress',
   'ja.kanaMeta': 'Mastered {done}/{total} · hira / kata (support, not a school requirement)',
+  'ja.pitch.title': 'Pitch-accent tip (teaching)',
+  'ja.pitch.body': 'Japanese pitch is high/low per mora (heiban / atamadaka / nakadaka / odaka), not Mandarin tones. Bundled kana MP3s identify kana; they do not score pitch. Teaching tip — not a JLPT credential or fluency claim.',
+  'ja.pitch.example': 'Tokyo-style teaching example: 箸 はし (head-high), 橋 はし (tail-high). Dialects differ.',
   'ja.unitMeta': 'This lesson {words} words · Unit {id}',
 
   'en.brandSub': 'TOEIC certificate bands',

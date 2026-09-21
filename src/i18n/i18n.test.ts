@@ -201,6 +201,20 @@ describe('i18n dictionary', () => {
     expect(translate('en', 'calculus.grad.directional')).toMatch(/directional/i)
   })
 
+  it('keeps Aoba pitch-accent tip as teaching, not a JLPT credential or fluency claim', () => {
+    expect(translate('zh-Hant', 'ja.pitch.title')).toMatch(/教學/)
+    expect(translate('zh-Hant', 'ja.pitch.body')).toMatch(/不評分/)
+    expect(translate('zh-Hant', 'ja.pitch.body')).toMatch(/不是 JLPT/)
+    expect(translate('zh-Hant', 'ja.pitch.body')).toMatch(/流利度/)
+    expect(translate('en', 'ja.pitch.body')).toMatch(/do not score pitch/i)
+    expect(translate('en', 'ja.pitch.body')).toMatch(/not a JLPT credential/i)
+    expect(translate('en', 'ja.pitch.body')).toMatch(/fluency/i)
+    expect(translate('zh-Hant', 'ja.pitch.example')).toMatch(/東京式/)
+    expect(translate('en', 'ja.pitch.example')).toMatch(/Tokyo-style/i)
+    expect(translate('zh-Hant', 'ja.pitch.example')).toMatch(/箸/)
+    expect(translate('en', 'ja.pitch.example')).toMatch(/箸/)
+  })
+
   it('leaves unknown placeholders intact', () => {
     expect(interpolate('Hello {name}', { other: 'x' })).toBe('Hello {name}')
     const key = 'hub.solved' satisfies MessageKey

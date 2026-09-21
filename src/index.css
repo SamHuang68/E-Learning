@@ -2244,6 +2244,31 @@ footer {
   color: #1f6b49;
 }
 
+.kana-pitch-tip {
+  margin-top: 0.75rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.45;
+  max-width: 42rem;
+}
+
+.kana-pitch-tip strong {
+  display: block;
+  color: var(--navy);
+  font-weight: 700;
+  font-size: 0.82rem;
+  margin-bottom: 0.2rem;
+}
+
+.kana-pitch-tip p {
+  margin: 0.2rem 0 0;
+}
+}
+
 .kana-script-toggle {
   display: grid;
   grid-template-columns: 1fr 1fr;
