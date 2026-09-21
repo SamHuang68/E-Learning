@@ -1,10 +1,12 @@
-﻿import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useI18n } from '../i18n/i18n'
 
 /**
  * PWA 離線快取更新與版本狀態指示器 (UpdateNotification)
  * 當 Service Worker 發現新版本快取完成時，跳出溫和通知條，提示使用者點擊刷新以獲取最新題庫與實驗室功能。
  */
 export const UpdateNotification: React.FC = () => {
+  const { t } = useI18n()
   const [hasUpdate, setHasUpdate] = useState(false)
 
   useEffect(() => {
@@ -26,6 +28,7 @@ export const UpdateNotification: React.FC = () => {
   return (
     <div
       className="pwa-update-bar"
+      role="status"
       style={{
         position: 'fixed',
         top: '0.8rem',
@@ -43,7 +46,7 @@ export const UpdateNotification: React.FC = () => {
         fontWeight: 600,
       }}
     >
-      <span>✨ 平台已更新最新題庫與教具！</span>
+      <span>{t('sw.update.message')}</span>
       <button
         type="button"
         onClick={() => window.location.reload()}
@@ -58,10 +61,11 @@ export const UpdateNotification: React.FC = () => {
           cursor: 'pointer',
         }}
       >
-        立即套用
+        {t('sw.update.apply')}
       </button>
       <button
         type="button"
+        aria-label={t('sw.update.dismiss')}
         onClick={() => setHasUpdate(false)}
         style={{
           background: 'transparent',

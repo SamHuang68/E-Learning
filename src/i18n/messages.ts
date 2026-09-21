@@ -24,6 +24,9 @@ export const ZH_HANT = {
   'error.reload': '🔄 立即載入最新版',
   'error.backHub': '回 Hub',
   'error.appLabel': '應用程式',
+  'sw.update.message': '平台已更新最新題庫與教具。',
+  'sw.update.apply': '立即套用',
+  'sw.update.dismiss': '關閉更新提示',
 
   'app.module.ja': '日語模組',
   'app.module.en': '多益模組',
@@ -731,6 +734,9 @@ export const EN: Record<MessageKey, string> = {
   'error.reload': '🔄 Load the latest version',
   'error.backHub': 'Back to Hub',
   'error.appLabel': 'Application',
+  'sw.update.message': 'New lessons and labs are ready.',
+  'sw.update.apply': 'Apply now',
+  'sw.update.dismiss': 'Dismiss update notice',
 
   'app.module.ja': 'Japanese module',
   'app.module.en': 'TOEIC module',
