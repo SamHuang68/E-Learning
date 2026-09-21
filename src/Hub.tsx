@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import { AuthPanel } from './auth/AuthPanel'
 import { DataControls } from './components/DataControls'
 import { WhyThisNext } from './components/WhyThisNext'
+import { HubShortcutHelp } from './components/HubShortcutHelp'
 import { KnowledgeRadar } from './components/KnowledgeRadar'
 import {
   computeMathRadar,
@@ -497,7 +498,10 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
             <p className="eyebrow">{t('hub.eyebrow')}</p>
             <h1>{t('hub.title')}</h1>
           </div>
-          <LocaleToggle />
+          <div className="hub-topbar-tools">
+            <LocaleToggle />
+            <HubShortcutHelp />
+          </div>
         </div>
         <p className="lede">
           {t('hub.lede')}

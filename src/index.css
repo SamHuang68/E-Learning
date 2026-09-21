@@ -8889,6 +8889,12 @@ html.high-contrast { filter: contrast(125%); }
   gap: 1rem;
   margin-bottom: 0.35rem;
 }
+.hub-topbar-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
 .hub-hero-actions {
   display: flex;
   flex-wrap: wrap;
@@ -9660,5 +9666,62 @@ html.high-contrast { filter: contrast(125%); }
   font-size: 0.78rem;
   color: var(--muted);
   line-height: 1.4;
+}
+
+.hub-shortcut-trigger {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 0.28rem 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.hub-shortcut-dialog {
+  width: min(28rem, calc(100vw - 2rem));
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 1rem 1.1rem;
+  color: var(--ink);
+  background: var(--surface);
+}
+
+.hub-shortcut-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.hub-shortcut-header h2 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.hub-shortcut-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.65rem;
+  font-size: 0.85rem;
+}
+
+.hub-shortcut-table caption {
+  text-align: left;
+  font-weight: 650;
+  margin-bottom: 0.35rem;
+}
+
+.hub-shortcut-table th,
+.hub-shortcut-table td {
+  border-bottom: 1px solid var(--line);
+  padding: 0.35rem 0.2rem;
+  text-align: left;
+}
+
+.hub-shortcut-table kbd {
+  font-family: inherit;
+  font-weight: 700;
 }
 

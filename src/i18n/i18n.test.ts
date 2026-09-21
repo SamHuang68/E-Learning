@@ -385,6 +385,14 @@ describe('i18n dictionary', () => {
     expect(translate('en', 'today.whyHonesty')).not.toBe(translate('zh-Hant', 'today.whyHonesty'))
   })
 
+  it('keeps Hub shortcut help copy bilingual and local-only', () => {
+    expect(translate('zh-Hant', 'hub.shortcuts.title')).toMatch(/快捷鍵/)
+    expect(translate('zh-Hant', 'hub.shortcuts.honesty')).toMatch(/不是系統捷徑/)
+    expect(translate('en', 'hub.shortcuts.title')).toMatch(/keyboard shortcuts/i)
+    expect(translate('en', 'hub.shortcuts.honesty')).toMatch(/not os shortcuts/i)
+    expect(translate('en', 'hub.shortcuts.help')).not.toBe(translate('zh-Hant', 'hub.shortcuts.help'))
+  })
+
   it('keeps error-boundary and boot fallback copy bilingual', () => {
     const keys = [
       'error.eyebrow',
