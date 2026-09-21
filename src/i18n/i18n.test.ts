@@ -59,6 +59,10 @@ describe('i18n dictionary', () => {
     expect(translate('zh-Hant', 'cs.top.today')).toBe('今日')
     expect(translate('en', 'cs.top.today')).not.toBe(translate('zh-Hant', 'cs.top.today'))
     expect(translate('en', 'ja.levelSelect')).not.toBe(translate('zh-Hant', 'ja.levelSelect'))
+    // Hub chrome a11y keys added in R03
+    expect(translate('en', 'hub.radar.aria')).toMatch(/radar/i)
+    expect(translate('zh-Hant', 'hub.radar.aria')).toMatch(/雷達/)
+    expect(translate('en', 'hub.stats.aria')).not.toBe(translate('zh-Hant', 'hub.stats.aria'))
   })
 
   it('leaves unknown placeholders intact', () => {

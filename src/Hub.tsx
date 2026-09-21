@@ -580,7 +580,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
         <details className="hub-more">
           <summary>{t('hub.moreProgress')}</summary>
 
-          <section className="hub-section-block" aria-labelledby="radar-title">
+          <section className="hub-section-block" aria-labelledby="radar-title" aria-label={t('hub.radar.aria', { track: t(TRACK_LABEL_KEYS[activeRadarTab]) })}>
             <div className="section-header-row">
               <h2 id="radar-title">{t('hub.radarTitle')}</h2>
               <div className="radar-tab-switcher">
