@@ -32,6 +32,19 @@ if (!files.some((file) => /assets\/vendor-supabase-.*\.js$/.test(file))) throw n
 if (!files.some((file) => /assets\/index-.*\.css$/.test(file))) throw new Error('Entry CSS is not precached.')
 if (!files.some((file) => file.startsWith('./audio/'))) throw new Error('Bundled learning audio is not precached.')
 if (!files.some((file) => file.startsWith('./archify/'))) throw new Error('CS Archify assets are not precached.')
+if (!files.some((file) => /assets\/KaTeX_Main-Regular[^/]*\.woff2$/.test(file))) {
+  throw new Error('KaTeX_Main-Regular woff2 is not precached (physics formula sheet offline).')
+}
+if (!files.some((file) => /assets\/KaTeX_Math-Italic[^/]*\.woff2$/.test(file))) {
+  throw new Error('KaTeX_Math-Italic woff2 is not precached (physics formula sheet offline).')
+}
+const katexWoff2 = files.filter((file) => /assets\/KaTeX_.*\.woff2$/.test(file))
+if (katexWoff2.length < 10) {
+  throw new Error(`KaTeX formula fonts are not precached for offline physics formulas (${katexWoff2.length} woff2).`)
+}
+if (!files.some((file) => /assets\/PhysicsApp-.*\.js$/.test(file))) {
+  throw new Error('PhysicsApp chunk is not precached (formula sheet lives in the physics route).')
+}
 // Tightened: critical Hub assets (all 8 tracks + main entry + shared) now strictly verified for offline precache
 
 const workerSource = await readFile(path.join(distDir, 'sw.js'), 'utf8')

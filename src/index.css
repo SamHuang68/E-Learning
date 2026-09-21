@@ -6871,6 +6871,26 @@ html.high-contrast { filter: contrast(125%); }
   text-decoration: underline dotted;
 }
 
+.physics-formula-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.physics-formula-unit {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  padding: 0.75rem 0.9rem;
+  margin: 0.45rem 0;
+}
+
+.physics-formula-unit h4 {
+  margin: 0 0 0.45rem;
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+
 .calculus-studio-header {
   background: var(--surface);
   border: 1px solid var(--line);

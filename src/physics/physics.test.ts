@@ -7,6 +7,7 @@ import {
   getPhysicsUnit,
   getAllPhysicsUnits,
   getUnitsByPhysicsStrand,
+  physicsFormulaSheetSections,
 } from './data/curriculum'
 import {
   PHYSICS_SOLVING_SIGNALS,
@@ -90,6 +91,18 @@ describe('臺灣 108 課綱物理 (Physics Track) 課程架構與資料完整性
       // 檢查觀念中是否含有 LaTeX/KaTeX 標記
       const hasFormula = unit.concepts.some((c) => c.includes('$') || c.includes('\\'))
       expect(hasFormula).toBe(true)
+    })
+  })
+
+  it('formula sheet lists existing catalog concepts only, with no extra identities', () => {
+    const sections = physicsFormulaSheetSections()
+    const catalogUnits = getAllPhysicsUnits()
+    expect(sections.map((section) => section.gradeId)).toEqual(getAllPhysicsGradeIds())
+    const sheetUnits = sections.flatMap((section) => section.units)
+    expect(sheetUnits).toHaveLength(catalogUnits.length)
+    sheetUnits.forEach((unit, index) => {
+      expect(unit.title).toBe(catalogUnits[index].title)
+      expect(unit.concepts).toEqual(catalogUnits[index].concepts)
     })
   })
 

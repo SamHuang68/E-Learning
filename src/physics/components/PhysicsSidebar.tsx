@@ -6,7 +6,7 @@ import type { LangId } from '../../utils/storage'
 import { TrackSwitcher } from '../../components/TrackSwitcher'
 import { useI18n } from '../../i18n/i18n'
 
-export type PhysicsNavId = 'today' | 'practice' | 'mock' | 'vault' | 'labs' | 'signals'
+export type PhysicsNavId = 'today' | 'practice' | 'mock' | 'vault' | 'labs' | 'signals' | 'formulas'
 
 type Props = {
   activeNav: PhysicsNavId
@@ -99,6 +99,15 @@ export const PhysicsSidebar: React.FC<Props> = ({
         >
           <span className="nav-icon">⚡</span>
           <span className="nav-label">{t('nav.signals3s')}</span>
+        </button>
+        <button
+          type="button"
+          className={activeNav === 'formulas' ? 'active' : ''}
+          onClick={() => onNav('formulas')}
+          aria-current={activeNav === 'formulas' ? 'page' : undefined}
+        >
+          <span className="nav-icon">∑</span>
+          <span className="nav-label">{t('physics.formulas')}</span>
         </button>
         <button
           type="button"
