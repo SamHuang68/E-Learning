@@ -112,14 +112,9 @@ describe('CSS Layout & Sidebar Overflow Regression Guard', () => {
     expect(cssContent).toMatch(/--track-topbar-margin:\s*0\.75rem/)
     expect(cssContent).toMatch(/\.topbar\s*\{[^}]*gap:\s*var\(--track-topbar-gap\)/s)
     expect(cssContent).toMatch(/\.topbar\s*\{[^}]*margin-bottom:\s*var\(--track-topbar-margin\)/s)
-    const leftover = cssContent.match(/\.calculus-topbar\s*\{[^}]*\}/g) ?? []
-    for (const block of leftover) {
-      expect(block).not.toMatch(/1\.25rem/)
-      expect(block).not.toMatch(/gap:\s*1rem/)
-      expect(block).not.toMatch(/margin-bottom:\s*1/)
-    }
+    expect(cssContent).not.toMatch(/calculus-topbar/)
     expect(cssContent).toMatch(
-      /@media\s*\(max-width:\s*860px\)\s*\{[\s\S]*?\.topbar,\s*\n\s*\.calculus-topbar\s*\{/,
+      /@media\s*\(max-width:\s*860px\)\s*\{[\s\S]*?\.topbar\s*\{/,
     )
   })
 
@@ -201,5 +196,15 @@ describe('CSS Layout & Sidebar Overflow Regression Guard', () => {
       block.includes('background:'),
     )
     expect(laterViewport ?? '').not.toMatch(/padding:/)
+  })
+
+  it('purges leftover calculus-topbar chrome; track header is shared .topbar', () => {
+    const appPath = fileURLToPath(new URL('../calculus/CalculusApp.tsx', import.meta.url))
+    const app = readFileSync(appPath, 'utf-8')
+    expect(cssContent).not.toMatch(/calculus-topbar/)
+    expect(app).not.toMatch(/calculus-topbar/)
+    expect(app).toMatch(/<header className="topbar">/)
+    expect(cssContent).toMatch(/\.topbar\s*\{[^}]*min-height:\s*var\(--track-header-min-height\)/s)
+    expect(cssContent).toMatch(/\.topbar\s*\{[^}]*padding-block:\s*var\(--track-header-padding-y\)/s)
   })
 })

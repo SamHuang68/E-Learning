@@ -130,7 +130,7 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         />
 
         {/* 專題頂部標題與快速函數選單 */}
-        <header className="topbar calculus-topbar">
+        <header className="topbar">
           <div>
             <p className="eyebrow">
               {t('calculus.eyebrow')}

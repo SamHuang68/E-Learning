@@ -3273,8 +3273,7 @@ footer {
     font-size: 1.15rem;
   }
 
-  .topbar,
-  .calculus-topbar {
+  .topbar {
     position: relative;
     flex-direction: column;
     gap: var(--track-topbar-gap);
