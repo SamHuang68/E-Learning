@@ -99,8 +99,23 @@ export const CALCULUS_CATALOG: CalculusConceptItem[] = [
     description: '利用局部切線與 x 軸交點進行快速迭代求根：x_{k+1} = x_k - f(x_k)/f’(x_k)。',
     distractorPrescriptions: {
       tangent_zero_div: {
-        reason: '在水平切線處 (f\'(x) ≈ 0) 迭代導致數值除以零發散。',
+        reason: '在水平切線處 (f\\'(x) ≈ 0) 迭代導致數值除以零發散。',
         action: '觀察畫布上的水平切線軌跡，並重新挑選適當的初始猜測點 x0。',
+      },
+    },
+  },
+  {
+    id: 'calc-product-rule',
+    name: '乘積法則 (Product Rule)',
+    category: 'derivative',
+    difficulty: 0.3,
+    discrimination: 1.4,
+    prerequisites: ['calc-power-rule'],
+    description: '兩函數乘積之導數：(uv)\' = u\'v + uv\'。支援中英雙語步驟說明。',
+    distractorPrescriptions: {
+      forgot_product: {
+        reason: '僅對一項求導而忽略另一項，或誤用商法則。',
+        action: '在步驟推導器中明確標註 u\'v + uv\' 兩項。',
       },
     },
   },
