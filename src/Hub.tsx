@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { AuthPanel } from './auth/AuthPanel'
 import { DataControls } from './components/DataControls'
 import { KnowledgeRadar } from './components/KnowledgeRadar'
@@ -50,6 +50,35 @@ type Props = {
 
 type RadarTab = LangId
 
+type HubSnapshot = {
+  mathProgress: ReturnType<typeof loadMathProgress>
+  physicsProgress: ReturnType<typeof loadPhysicsProgress>
+  chemistryProgress: ReturnType<typeof loadChemistryProgress>
+  csProgress: ReturnType<typeof loadCsProgress>
+  jaProgress: ReturnType<typeof loadProgress>
+  kanaProgress: ReturnType<typeof loadKanaProgress>
+  toeicProgress: ReturnType<typeof loadToeicProgress>
+  chineseProgress: ReturnType<typeof loadChineseProgress>
+  learningMeta: LearningMeta
+  preferred: ReturnType<typeof loadPreferredTrack>
+}
+
+type HubTrackCard = {
+  id: LangId
+  mark: string
+  markClass: string
+  extraClass: string
+  pill: string
+  pillClass: string
+  title: string
+  desc: string
+  progress: string
+  catalog: string
+  cta: string
+  onClick: () => void
+}
+
+
 const TRACK_LABEL_KEYS: Record<LangId, MessageKey> = {
   math: 'track.math',
   calculus: 'track.calculus',
@@ -78,51 +107,34 @@ export function weekStudyFlags(meta: LearningMeta): boolean[] {
   })
 }
 
-/**
- * 統一學習主頁
- * 八軌入口：數學、微積分、物理、化學、計算機概論、日語、多益、華語。
- */
-export function Hub({ onChoose, onOpenPrivacy }: Props) {
-  const { t } = useI18n()
-  const [activeRadarTab, setActiveRadarTab] = useState<RadarTab>('math')
-  const [tick, setTick] = useState(0)
-  const [isMuted, setIsMuted] = useState(() => isAudioMuted())
-  const [toeicLang, setToeicLang] = useState<'zh' | 'ja'>(() => loadToeicInstructionLang())
-
-  const handleToggleAudio = () => {
-    const next = toggleAudioMute()
-    setIsMuted(next)
-    if (!next) playClickSound()
+export function loadHubSnapshot(): HubSnapshot {
+  return {
+    mathProgress: loadMathProgress(),
+    physicsProgress: loadPhysicsProgress(),
+    chemistryProgress: loadChemistryProgress(),
+    csProgress: loadCsProgress(),
+    jaProgress: loadProgress(),
+    kanaProgress: loadKanaProgress(),
+    toeicProgress: loadToeicProgress(),
+    chineseProgress: loadChineseProgress(),
+    learningMeta: loadLearningMeta(),
+    preferred: loadPreferredTrack(),
   }
+}
 
-  useEffect(() => {
-    const handleUpdate = () => setTick((t) => t + 1)
-    window.addEventListener('physics:progress-updated', handleUpdate)
-    window.addEventListener('chemistry:progress-updated', handleUpdate)
-    window.addEventListener('cs:progress-updated', handleUpdate)
-    window.addEventListener('math:progress-updated', handleUpdate)
-    window.addEventListener('e-learning:progress-hydrated', handleUpdate)
-    window.addEventListener('storage', handleUpdate)
-    return () => {
-      window.removeEventListener('physics:progress-updated', handleUpdate)
-      window.removeEventListener('chemistry:progress-updated', handleUpdate)
-      window.removeEventListener('cs:progress-updated', handleUpdate)
-      window.removeEventListener('math:progress-updated', handleUpdate)
-      window.removeEventListener('e-learning:progress-hydrated', handleUpdate)
-      window.removeEventListener('storage', handleUpdate)
-    }
-  }, [])
-
-  void tick
-  const mathProgress = loadMathProgress()
-  const physicsProgress = loadPhysicsProgress()
-  const chemistryProgress = loadChemistryProgress()
-  const csProgress = loadCsProgress()
-  const jaProgress = loadProgress()
-  const kanaProgress = loadKanaProgress()
-  const toeicProgress = loadToeicProgress()
-  const chineseProgress = loadChineseProgress()
-  const learningMeta = loadLearningMeta()
+export function selectHubDerived(snapshot: HubSnapshot) {
+  const {
+    mathProgress,
+    physicsProgress,
+    chemistryProgress,
+    csProgress,
+    jaProgress,
+    kanaProgress,
+    toeicProgress,
+    chineseProgress,
+    learningMeta,
+    preferred,
+  } = snapshot
 
   const totalXp =
     (mathProgress.xp || 0) +
@@ -193,7 +205,6 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
     en: toeicRadar,
     zh: chineseRadar,
   }
-  const activeRadar = radarMap[activeRadarTab]
 
   const mathDoneCount = mathProgress.completedQuestions.length
   const physicsDoneCount = physicsProgress.completedQuestions.length
@@ -212,22 +223,8 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
     (chineseProgress.xp || 0) > 0 ||
     Object.keys(learningMeta.items).length > 0
 
-  // Catalog-first: for zero-progress, never surface ELEMENTARY leftover; prioritize full catalog view
   const catalogFirst = !hasProgress
-  const catalogFirstTitle = catalogFirst ? t('hub.catalogFirst.title') : ''
-  const catalogFirstDesc = catalogFirst ? t('hub.catalogFirst.desc') : ''
-
-  const preferred = loadPreferredTrack()
   const weekFlags = weekStudyFlags(learningMeta)
-  const weekLabels: Array<{ key: MessageKey; day: string }> = [
-    { key: 'hub.weekday.1', day: t('hub.weekday.1') },
-    { key: 'hub.weekday.2', day: t('hub.weekday.2') },
-    { key: 'hub.weekday.3', day: t('hub.weekday.3') },
-    { key: 'hub.weekday.4', day: t('hub.weekday.4') },
-    { key: 'hub.weekday.5', day: t('hub.weekday.5') },
-    { key: 'hub.weekday.6', day: t('hub.weekday.6') },
-    { key: 'hub.weekday.7', day: t('hub.weekday.7') },
-  ]
   const longIntervalCount = Object.values(learningMeta.items).filter(
     (it) => (it.intervalDays || 0) >= 21 || (it.correctStreak || 0) >= 3,
   ).length
@@ -244,26 +241,116 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
     hasProgress,
   })
 
-  function openToeic(lang: 'zh' | 'ja') {
+  return {
+    totalXp,
+    levelInfo,
+    daily,
+    radarMap,
+    calculusDoneCount,
+    kanaCount,
+    mathDoneCount,
+    physicsDoneCount,
+    chemistryDoneCount,
+    csDoneCount,
+    toeicDoneCount,
+    hasProgress,
+    catalogFirst,
+    weekFlags,
+    longIntervalCount,
+    scheduledCount,
+    leechCount,
+    todaySuggestion,
+  }
+}
+
+/**
+ * 統一學習主頁
+ * 八軌入口：數學、微積分、物理、化學、計算機概論、日語、多益、華語。
+ */
+export function Hub({ onChoose, onOpenPrivacy }: Props) {
+  const { t } = useI18n()
+  const [activeRadarTab, setActiveRadarTab] = useState<RadarTab>('math')
+  const [tick, setTick] = useState(0)
+  const [isMuted, setIsMuted] = useState(() => isAudioMuted())
+  const [toeicLang, setToeicLang] = useState<'zh' | 'ja'>(() => loadToeicInstructionLang())
+
+  const handleToggleAudio = useCallback(() => {
+    const next = toggleAudioMute()
+    setIsMuted(next)
+    if (!next) playClickSound()
+  }, [])
+
+  useEffect(() => {
+    const handleUpdate = () => setTick((n) => n + 1)
+    window.addEventListener('physics:progress-updated', handleUpdate)
+    window.addEventListener('chemistry:progress-updated', handleUpdate)
+    window.addEventListener('cs:progress-updated', handleUpdate)
+    window.addEventListener('math:progress-updated', handleUpdate)
+    window.addEventListener('e-learning:progress-hydrated', handleUpdate)
+    window.addEventListener('storage', handleUpdate)
+    return () => {
+      window.removeEventListener('physics:progress-updated', handleUpdate)
+      window.removeEventListener('chemistry:progress-updated', handleUpdate)
+      window.removeEventListener('cs:progress-updated', handleUpdate)
+      window.removeEventListener('math:progress-updated', handleUpdate)
+      window.removeEventListener('e-learning:progress-hydrated', handleUpdate)
+      window.removeEventListener('storage', handleUpdate)
+    }
+  }, [])
+
+  const snapshot = useMemo(() => {
+    void tick
+    return loadHubSnapshot()
+  }, [tick])
+  const derived = useMemo(() => selectHubDerived(snapshot), [snapshot])
+  const { learningMeta, preferred, chineseProgress, mathProgress, physicsProgress, chemistryProgress, jaProgress, toeicProgress } = snapshot
+  const {
+    totalXp,
+    levelInfo,
+    daily,
+    radarMap,
+    calculusDoneCount,
+    kanaCount,
+    mathDoneCount,
+    physicsDoneCount,
+    chemistryDoneCount,
+    csDoneCount,
+    toeicDoneCount,
+    hasProgress,
+    catalogFirst,
+    weekFlags,
+    longIntervalCount,
+    scheduledCount,
+    leechCount,
+    todaySuggestion,
+  } = derived
+  const activeRadar = radarMap[activeRadarTab]
+  const calculusRadar = radarMap.calculus
+
+  const catalogFirstTitle = catalogFirst ? t('hub.catalogFirst.title') : ''
+  const catalogFirstDesc = catalogFirst ? t('hub.catalogFirst.desc') : ''
+
+  const weekLabels = useMemo(
+    (): Array<{ key: MessageKey; day: string }> => [
+      { key: 'hub.weekday.1', day: t('hub.weekday.1') },
+      { key: 'hub.weekday.2', day: t('hub.weekday.2') },
+      { key: 'hub.weekday.3', day: t('hub.weekday.3') },
+      { key: 'hub.weekday.4', day: t('hub.weekday.4') },
+      { key: 'hub.weekday.5', day: t('hub.weekday.5') },
+      { key: 'hub.weekday.6', day: t('hub.weekday.6') },
+      { key: 'hub.weekday.7', day: t('hub.weekday.7') },
+    ],
+    [t],
+  )
+
+  const openToeic = useCallback((lang: 'zh' | 'ja') => {
     saveToeicInstructionLang(lang)
     setToeicLang(lang)
     onChoose('en')
-  }
+  }, [onChoose])
 
-  const tracks: Array<{
-    id: LangId
-    mark: string
-    markClass: string
-    extraClass: string
-    pill: string
-    pillClass: string
-    title: string
-    desc: string
-    progress: string
-    catalog: string
-    cta: string
-    onClick: () => void
-  }> = [
+  const tracks = useMemo(() => {
+    const list: HubTrackCard[] = [
     {
       id: 'math',
       mark: '∑',
@@ -376,7 +463,22 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
       cta: t('hub.zh.cta'),
       onClick: () => onChoose('zh'),
     },
-  ]
+    ]
+    return list
+  }, [
+    t,
+    mathDoneCount,
+    calculusDoneCount,
+    physicsDoneCount,
+    chemistryDoneCount,
+    csDoneCount,
+    kanaCount,
+    toeicDoneCount,
+    toeicLang,
+    chineseProgress.masteredFalseFriends,
+    onChoose,
+    openToeic,
+  ])
 
   const todayId: LangId = todaySuggestion.id
   const todayTrack = tracks.find((track) => track.id === todayId) ?? tracks[0]
