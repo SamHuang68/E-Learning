@@ -50,14 +50,11 @@ describe('Strict Review Gate: Visual Layout, 100vh Focus & Zero-Overflow Invaria
   })
 
   it('[GATE-VISUAL-CALCULUS-CHROME] calculus topbar/content do not reintroduce leftover spacing overrides', () => {
-    const leftover = cssContent.match(/\.calculus-topbar\s*\{[^}]*\}/g) ?? []
-    for (const block of leftover) {
-      expect(block).not.toMatch(/1\.25rem/)
-      expect(block).not.toMatch(/gap:\s*1rem/)
-    }
+    expect(cssContent).not.toMatch(/calculus-topbar/)
     expect(cssContent.match(/\.calculus-content\s*\{[^}]*\}/)?.[0] ?? '').not.toMatch(/padding:/)
     expect(cssContent).toMatch(/\.calculus-sidebar\s*\{[^}]*var\(--track-sidebar-padding\)/s)
     expect(cssContent).toMatch(/\.topbar\s*\{[^}]*var\(--track-topbar-gap\)/s)
+    expect(cssContent).toMatch(/\.topbar\s*\{[^}]*var\(--track-header-min-height\)/s)
   })
 
   it('[GATE-VISUAL-HEADER-DENSITY] track headers share CS-canonical height/padding/type tokens', () => {
