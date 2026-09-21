@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { ContentProvenance } from '../../components/ContentProvenance'
 import { useI18n } from '../../i18n/i18n'
 import { LsmGlossaryTooltip } from '../../components/LsmGlossaryTooltip'
+import { DeferredArchifyIframe } from './DeferredArchifyIframe'
 
 interface Props {
   onEarnXp?: (amount: number) => void
@@ -333,17 +334,7 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
         }}
         onClick={handleInteract}
       >
-        <iframe
-          key={selectedDiagram}
-          src={diagramMeta.file}
-          title={diagramMeta.title}
-          style={{
-            width: '100%',
-            height: '100%',
-            border: 'none',
-            display: 'block',
-          }}
-        />
+        <DeferredArchifyIframe key={selectedDiagram} src={diagramMeta.file} title={diagramMeta.title} />
       </div>
       <ContentProvenance>
         {selectedDiagram === 'ai-server'
