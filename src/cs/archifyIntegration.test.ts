@@ -107,4 +107,36 @@ describe('Archify SKILL 網頁架構可視化與應用整合測試', () => {
     expect(percJson.participants.length).toBe(4)
     expect(percJson.messages.length).toBe(12)
   })
+
+  it('Git mental-model sequence JSON is commit/branch/merge teaching, not git.git internals', () => {
+    const gitPath = path.resolve(process.cwd(), 'public/archify/git-mental-model.sequence.json')
+    expect(fs.existsSync(gitPath)).toBe(true)
+    const gitJson = JSON.parse(fs.readFileSync(gitPath, 'utf8'))
+    expect(gitJson.schema_version).toBe(1)
+    expect(gitJson.diagram_type).toBe('sequence')
+    expect(gitJson.participants.map((p: { id: string }) => p.id)).toEqual([
+      'working',
+      'index',
+      'objects',
+      'refs',
+    ])
+    const labels = gitJson.messages.map((m: { label: string }) => m.label).join('\n')
+    expect(labels).toMatch(/git add/i)
+    expect(labels).toMatch(/git commit/i)
+    expect(labels).toMatch(/git branch/i)
+    expect(labels).toMatch(/git merge/i)
+    expect(gitJson.meta.captions['zh-Hant'].honesty).toMatch(/不是/)
+    expect(gitJson.meta.captions['zh-Hant'].honesty).toMatch(/git\.git/)
+    expect(gitJson.meta.captions.en.honesty).toMatch(/not git\.git/i)
+    expect(gitJson.meta.captions.en.honesty).toMatch(/not a certification/i)
+    const cardText = JSON.stringify(gitJson.cards)
+    expect(cardText).toMatch(/fast-forward/i)
+    expect(cardText).toMatch(/pointer/i)
+
+    const htmlPath = path.resolve(process.cwd(), 'public/archify/git-mental-model-sequence.html')
+    expect(fs.existsSync(htmlPath)).toBe(true)
+    const html = fs.readFileSync(htmlPath, 'utf8')
+    expect(html).toContain('git-mental-model.sequence.json')
+    expect(html).not.toContain('archify 2.16.0')
+  })
 })
