@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { MathFormula } from '../../../components/MathFormula'
 import type { DerivationStep } from '../../types'
+import { useI18n } from '../../../i18n/i18n'
 
 interface Props {
   step: DerivationStep
@@ -17,6 +18,7 @@ export const FormulaStepCard: React.FC<Props> = ({
   onSelect,
   onCheckpointComplete,
 }) => {
+  const { t, lang } = useI18n()
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
   const [hasAnswered, setHasAnswered] = useState(false)
 
@@ -42,13 +44,13 @@ export const FormulaStepCard: React.FC<Props> = ({
       <div className="step-card-body">
         <div className="step-formula-box">
           <div className="formula-row before">
-            <span className="label">推導前：</span>
-            <MathFormula math={step.beforeLatex} />
+            <span className="label">{t('calculus.derivBefore') || '推導前 / Before:'}</span>
+            <MathFormula math={step.beforeLatex} a11yLabel={`微積分推導步驟前公式: ${step.beforeLatex} / Calculus derivation before: ${step.beforeLatex}`} />
           </div>
-          <div className="formula-arrow">↓ <MathFormula math={step.ruleLatex} /></div>
+          <div className="formula-arrow">↓ <MathFormula math={step.ruleLatex} a11yLabel={`規則: ${step.ruleLatex} / Rule: ${step.ruleLatex}`} /></div>
           <div className="formula-row after">
-            <span className="label">推導後：</span>
-            <MathFormula math={step.afterLatex} />
+            <span className="label">{t('calculus.derivAfter') || '推導後 / After:'}</span>
+            <MathFormula math={step.afterLatex} a11yLabel={`微積分推導步驟後公式: ${step.afterLatex} / Calculus derivation after: ${step.afterLatex}`} />
           </div>
         </div>
 
