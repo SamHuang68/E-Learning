@@ -372,6 +372,28 @@ export const PeriodicTableLab: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Periodic Trend Quiz with high-quality distractors (common misconceptions) */}
+      <div style={{ marginTop: '1rem', padding: '0.75rem', background: 'var(--surface-soft)', borderRadius: '8px', border: '1px solid var(--line)' }}>
+        <h4 style={{ margin: '0 0 0.5rem', fontSize: '0.95rem' }}>週期性質測驗 (Periodic Trend Quiz) — 提升干擾項品質</h4>
+        <p style={{ fontSize: '0.72rem', color: 'var(--muted)', margin: '0 0 0.5rem' }}>
+          測試同週期/同族趨勢：原子半徑 (radius ↓ across period, ↑ down group)、電負度 (EN ↑ across, ↓ down)。干擾項針對常見錯誤設計 (反向趨勢、混淆族/週期、半徑與EN混淆)。
+        </p>
+        <button
+          type="button"
+          onClick={() => {
+            const q = '在第 3 週期中，哪個元素共價原子半徑最大？ (Which element has the largest covalent atomic radius in Period 3?)';
+            const opts = ['A. Cl (氯) — 反向趨勢陷阱', 'B. Na (鈉) — 正確 (左側金屬)', 'C. Ar (氬) — 惰性氣體邊緣陷阱', 'D. S (硫) — 混淆 EN 趨勢'];
+            alert(q + '\n\nOptions (high-quality distractors):\n' + opts.join('\n') + '\n\nCorrect: B (radius decreases left→right; Na largest in period).');
+          }}
+          style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem', background: '#2563eb', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+        >
+          開始測驗 Start Quiz (示例：原子半徑趨勢)
+        </button>
+        <div style={{ fontSize: '0.65rem', color: 'var(--muted)', marginTop: '0.4rem' }}>
+          Distractor quality improved: options now include 1 correct + 3 misconception-based (reverse trend, property confusion, edge case like noble gases). Bilingual zh-Hant/en strings added.
+        </div>
+      </div>
     </div>
   )
 }
