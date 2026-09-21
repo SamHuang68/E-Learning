@@ -125,7 +125,7 @@ export const CALCULUS_CATALOG: CalculusConceptItem[] = [
     category: 'integral',
     difficulty: 0.9,
     discrimination: 1.5,
-    prerequisites: ['calc-ftc', 'calc-chain-rule'],
+    prerequisites: ['calc-ftc-accumulation', 'calc-chain-rule'],
     description: '透過 u = g(x) 簡化 ∫ f(g(x)) g\'(x) dx 為 ∫ f(u) du。',
     distractorPrescriptions: {
       wrong_du: {
@@ -135,3 +135,30 @@ export const CALCULUS_CATALOG: CalculusConceptItem[] = [
     },
   },
 ]
+
+export type CatalogPrereqRef = {
+  id: string
+  name: string
+  known: boolean
+}
+
+export type CatalogPrereqRow = {
+  id: string
+  name: string
+  prereqs: CatalogPrereqRef[]
+}
+
+/** Resolve catalog prerequisite ids to names. Unknown ids stay visible, not invented. */
+export function catalogPrerequisiteRows(
+  catalog: CalculusConceptItem[] = CALCULUS_CATALOG,
+): CatalogPrereqRow[] {
+  const byId = new Map(catalog.map((item) => [item.id, item]))
+  return catalog.map((item) => ({
+    id: item.id,
+    name: item.name,
+    prereqs: item.prerequisites.map((id) => {
+      const found = byId.get(id)
+      return found ? { id, name: found.name, known: true } : { id, name: id, known: false }
+    }),
+  }))
+}

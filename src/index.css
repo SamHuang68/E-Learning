@@ -6831,6 +6831,46 @@ html.high-contrast { filter: contrast(125%); }
   width: 100%;
 }
 
+.calc-prereq-graph {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  padding: 0.85rem 1rem;
+}
+
+.calc-prereq-graph h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
+.calc-prereq-graph ol {
+  list-style: none;
+  margin: 0.45rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.calc-prereq-graph li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.7rem;
+  align-items: baseline;
+  font-size: 0.85rem;
+  color: var(--ink);
+}
+
+.calc-prereq-edge,
+.calc-prereq-unknown {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.calc-prereq-unknown {
+  text-decoration: underline dotted;
+}
+
 .calculus-studio-header {
   background: var(--surface);
   border: 1px solid var(--line);
