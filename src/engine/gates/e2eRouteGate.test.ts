@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
-import { loadLang, saveLang, type AppView } from '../../utils/storage'
+import { loadLang, loadPreferredTrack, saveLang, type AppView } from '../../utils/storage'
 
 describe('Strict Review Gate: E2E Route & View State Machine Invariants', () => {
   const originalWindow = globalThis.window
@@ -86,7 +86,11 @@ describe('Strict Review Gate: E2E Route & View State Machine Invariants', () => 
     it(`[GATE-ROUTE] clicking/selecting ${label} (${view}) maps strictly to #${expectedHash} and resolves to ${view}`, () => {
       saveLang(view)
       expect(currentHash, `Hash for ${label} must be ${expectedHash}`).toBe(expectedHash)
-      expect(storedLang, `Stored lang for ${label} must be ${view}`).toBe(view)
+      if (view === 'hub') {
+        expect(storedLang, 'Hub hash must not overwrite last-track storage').toBeNull()
+      } else {
+        expect(storedLang, `Stored lang for ${label} must be ${view}`).toBe(view)
+      }
 
       const resolved = loadLang()
       expect(resolved, `loadLang() when hash is #${expectedHash} must resolve to ${view}`).toBe(view)
@@ -120,5 +124,14 @@ describe('Strict Review Gate: E2E Route & View State Machine Invariants', () => 
 
     saveLang('physics')
     expect(loadLang()).toBe('physics')
+  })
+
+  it('[GATE-RESUME] returning to hub keeps last track so Hub resume can deep-link', () => {
+    saveLang('cs')
+    saveLang('hub')
+    expect(loadLang()).toBe('hub')
+    expect(currentHash).toBe('hub')
+    expect(loadPreferredTrack()).toBe('cs')
+    expect(storedLang).toBe('cs')
   })
 })

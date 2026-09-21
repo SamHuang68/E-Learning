@@ -125,7 +125,10 @@ export function loadPreferredTrack(): LangId | null {
 }
 
 export function saveLang(view: AppView) {
-  localStorage.setItem(LANG_KEY, view)
+  // Returning to Hub must not wipe last track — Hub resume reads LANG_KEY.
+  if (view !== 'hub') {
+    localStorage.setItem(LANG_KEY, view)
+  }
   try {
     localStorage.removeItem(LEGACY_SITE_KEY)
   } catch {
@@ -146,6 +149,7 @@ export function saveLang(view: AppView) {
 
 /** Write lang preference without changing the hash (used when hydrating from cloud). */
 export function writeLangPreference(view: AppView) {
+  if (view === 'hub') return
   localStorage.setItem(LANG_KEY, view)
   try {
     localStorage.removeItem(LEGACY_SITE_KEY)

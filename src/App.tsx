@@ -4,7 +4,7 @@ import { ErrorBoundary } from './components/ErrorBoundary'
 import { PrivacyPage } from './components/PrivacyPage'
 import { AccessibilityControls } from './components/AccessibilityControls'
 import { Hub } from './Hub'
-import { saveLang, type LangId } from './utils/storage'
+import { saveLang, writeLangPreference, type LangId } from './utils/storage'
 import { lazyWithRetry } from './utils/lazyWithRetry'
 import { parseTopViewHash, type TopView } from './utils/topRoute'
 import { LocaleProvider, useI18n } from './i18n/i18n'
@@ -87,6 +87,10 @@ function AppShell() {
     window.addEventListener('hashchange', onHash)
     return () => window.removeEventListener('hashchange', onHash)
   }, [])
+
+  useEffect(() => {
+    if (view !== 'hub' && view !== 'privacy') writeLangPreference(view)
+  }, [view])
 
   useEffect(() => {
     const titles: Record<TopView, string> = {

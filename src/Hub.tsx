@@ -218,7 +218,6 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
   const catalogFirstDesc = catalogFirst ? t('hub.catalogFirst.desc') : ''
 
   const preferred = loadPreferredTrack()
-  const resumeId: LangId = preferred ?? 'math'
   const weekFlags = weekStudyFlags(learningMeta)
   const weekLabels: Array<{ key: MessageKey; day: string }> = [
     { key: 'hub.weekday.1', day: t('hub.weekday.1') },
@@ -391,7 +390,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
               ? 'today.preferred'
               : 'today.catalog',
         )
-  const resumeLabel = t(TRACK_LABEL_KEYS[resumeId])
+  const resumeLabel = preferred ? t(TRACK_LABEL_KEYS[preferred]) : ''
 
   return (
     <>
@@ -417,16 +416,22 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
           </div>
         )}
         <div className="hub-hero-actions">
-          <button
-            type="button"
-            className="hub-primary-cta"
-            onClick={() => {
-              if (resumeId === 'en') openToeic(toeicLang)
-              else onChoose(resumeId)
-            }}
-          >
-            {hasProgress && preferred ? t('hub.continue', { track: resumeLabel }) : t('hub.start', { track: resumeLabel })}
-          </button>
+          {preferred ? (
+            <button
+              type="button"
+              className="hub-primary-cta"
+              onClick={() => {
+                if (preferred === 'en') openToeic(toeicLang)
+                else onChoose(preferred)
+              }}
+            >
+              {hasProgress ? t('hub.continue', { track: resumeLabel }) : t('hub.start', { track: resumeLabel })}
+            </button>
+          ) : (
+            <a className="hub-primary-cta" href="#tracks-title">
+              {t('hub.resumeEmpty')}
+            </a>
+          )}
           <a className="hub-secondary-cta" href="#tracks-title">
             {t('hub.seeAll')}
           </a>
