@@ -18,3 +18,17 @@ describe('practice answer field labels', () => {
     expect(src).toContain("t('math.practice.answerLabel')")
   })
 })
+
+describe('SRS grade live region', () => {
+  it('announces Good/Again outcomes with polite or assertive aria-live', () => {
+    const src = readFileSync(join(process.cwd(), 'src/components/ExerciseSession.tsx'), 'utf8')
+    expect(src).toContain("aria-live={feedback ? 'polite' : 'assertive'}")
+    expect(src).toContain('aria-atomic="true"')
+    expect(src).toContain('copy.srsGood')
+    expect(src).toContain('copy.srsAgain')
+    expect(src).toContain("srsGood: 'SRS Good'")
+    expect(src).toContain("srsAgain: 'SRS Again'")
+    expect(src).toContain('SRS Good（記住）')
+    expect(src).toContain('SRS Again（再排）')
+  })
+})
