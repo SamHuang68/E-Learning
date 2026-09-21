@@ -134,6 +134,25 @@ export const CALCULUS_CATALOG: CalculusConceptItem[] = [
       },
     },
   },
+  {
+    id: 'calc-series-convergence',
+    name: '級數收斂判別（教學） / Series convergence tests (teaching)',
+    category: 'series',
+    difficulty: 0.7,
+    discrimination: 1.3,
+    prerequisites: [],
+    description: '通項、等比、p-級數、比值、積分與交錯級數等教學判別。非正式考試通過保證。',
+    distractorPrescriptions: {
+      terms_to_zero: {
+        reason: '誤以為通項趨近 0 就保證級數收斂。',
+        action: '對照調和級數：1/n 趨近 0，但 p = 1 時仍發散。',
+      },
+      ratio_l_one: {
+        reason: '比值極限 L = 1 時誤判收斂或發散。',
+        action: 'L = 1 時比值檢定無結論，改用 p-級數或積分檢定。',
+      },
+    },
+  },
 ]
 
 export type CatalogPrereqRef = {
