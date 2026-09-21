@@ -20,6 +20,7 @@ import {
   saveKanaProgress,
   type KanaProgress,
 } from '../utils/storage'
+import { PitchAccentTip } from './PitchAccentTip'
 
 type Mode = 'chart' | 'flash' | 'listen' | 'guide'
 type Props = {
@@ -238,6 +239,7 @@ export function KanaLab({ onXp, onProgressChange }: Props) {
               {speaking ? '🔊 導讀中' : voiceOk ? '音訊就緒 · MP3' : '瀏覽器不支援音訊'}
             </span>
           </div>
+          <PitchAccentTip />
         </div>
         <div className="kana-script-toggle" role="group" aria-label="假名種類">
           <button
