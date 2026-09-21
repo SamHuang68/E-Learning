@@ -439,3 +439,12 @@ export const LEARN_ORDER = [
 ] as const
 
 export type LearnRowId = (typeof LEARN_ORDER)[number]
+
+/** Dakuten practice set completeness check — verifies all standard dakuten rows are present for the script. */
+export function checkDakutenCompleteness(script: KanaScript): { complete: boolean; missing: string[] } {
+  const rows = getKanaRows(script, true)
+  const dakutenIds = ['ga', 'za', 'da', 'ba', 'pa'] as const
+  const present = new Set(rows.map((r) => r.id))
+  const missing = dakutenIds.filter((id) => !present.has(id))
+  return { complete: missing.length === 0, missing }
+}
