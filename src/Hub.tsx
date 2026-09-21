@@ -390,8 +390,8 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
   const resumeLabel = t(TRACK_LABEL_KEYS[resumeId])
 
   return (
-    <main className="hub unified-hub">
-      <header className="hub-hero">
+    <main role="main" aria-label={t('hub.landmark.main')} className="hub unified-hub">
+      <header role="banner" className="hub-hero">
         <div className="hub-topbar">
           <div>
             <p className="eyebrow">{t('hub.eyebrow')}</p>
@@ -443,7 +443,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
         </div>
       </section>
 
-      <section className="hub-section-block" aria-labelledby="tracks-title">
+      <nav role="navigation" aria-label={t('hub.landmark.nav')} className="hub-section-block" aria-labelledby="tracks-title">
         <div className="section-header-row">
           <h2 id="tracks-title">{t('hub.tracksTitle')}</h2>
           <span className="section-subtext">{t('hub.tracksCount')}</span>
@@ -494,7 +494,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
             </article>
           ))}
         </div>
-      </section>
+      </nav>
 
       {hasProgress ? (
         <section className="hub-stat-banner" aria-label={t('hub.stats')}>
@@ -580,7 +580,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
         <details className="hub-more">
           <summary>{t('hub.moreProgress')}</summary>
 
-          <section className="hub-section-block" aria-labelledby="radar-title" aria-label={t('hub.radar.aria', { track: t(TRACK_LABEL_KEYS[activeRadarTab]) })}>
+          <aside role="complementary" aria-labelledby="radar-title" aria-label={t('hub.landmark.radar')}>
             <div className="section-header-row">
               <h2 id="radar-title">{t('hub.radarTitle')}</h2>
               <div className="radar-tab-switcher">
@@ -616,7 +616,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
                 </button>
               </div>
             </div>
-          </section>
+          </aside>
 
           <section className="hub-section-block" aria-labelledby="badges-title">
             <div className="section-header-row">
@@ -675,7 +675,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
         </details>
       )}
 
-      <footer className="hub-footer">
+      <footer role="contentinfo" className="hub-footer">
         <a
           href="https://github.com/SamHuang68/E-Learning"
           className="hub-link"

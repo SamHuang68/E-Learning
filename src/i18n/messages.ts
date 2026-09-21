@@ -6,6 +6,9 @@ export const ZH_HANT = {
   'locale.en': 'EN',
 
   'common.skipToContent': '跳到主要內容',
+  'hub.landmark.main': '學習主頁',
+  'hub.landmark.nav': '學習軌道導覽',
+  'hub.landmark.radar': '知識雷達',
   'common.loadingModule': '載入學習模組…',
   'common.backHub': '← 學習主頁',
   'common.switchTrack': '切換學習軌道',
@@ -623,6 +626,9 @@ export const EN: Record<MessageKey, string> = {
   'locale.en': 'EN',
 
   'common.skipToContent': 'Skip to main content',
+  'hub.landmark.main': 'Learning Hub',
+  'hub.landmark.nav': 'Learning Tracks Navigation',
+  'hub.landmark.radar': 'Knowledge Radar',
   'common.loadingModule': 'Loading learning module…',
   'common.backHub': '← Learning hub',
   'common.switchTrack': 'Switch learning track',
