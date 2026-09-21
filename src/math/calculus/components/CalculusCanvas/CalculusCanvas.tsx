@@ -219,6 +219,24 @@ export const CalculusCanvas: React.FC<CalculusCanvasProps> = ({
                 stroke="#0284c7"
                 strokeDasharray="4 2"
               />
+              {/* 極限點 L 標記 */}
+              <circle cx={vp.toScreenX(x0)} cy={vp.toScreenY(y0)} r="6" fill="#eab308" stroke="#854d0e" strokeWidth="2" />
+              {/* 樣本點驗證：δ 區間內檢查 |f(x)-L| < ε */}
+              {[-0.5, 0.5].map((k, i) => {
+                const sx = x0 + k * deltaX
+                const sy = f(sx)
+                const ok = Number.isFinite(sy) && Math.abs(sy - y0) < epsilon + 1e-9
+                return (
+                  <g key={i}>
+                    <circle cx={vp.toScreenX(sx)} cy={vp.toScreenY(sy)} r="4" fill={ok ? '#22c55e' : '#ef4444'} />
+                    <line x1={vp.toScreenX(sx)} y1={vp.toScreenY(y0)} x2={vp.toScreenX(sx)} y2={vp.toScreenY(sy)} stroke={ok ? '#22c55e' : '#ef4444'} strokeWidth="1" strokeDasharray="2 1" />
+                  </g>
+                )
+              })}
+              {/* 雙語教學卡片標籤與驗證狀態 (非證書聲明) */}
+              <text x={vp.toScreenX(transform.minX) + 10} y={30} fontSize="11" fill="#334155">ε-δ Def: ∀ε>0 ∃δ>0 s.t. |x-x₀|<δ ⇒ |f(x)-L|<ε</text>
+              <text x={vp.toScreenX(transform.minX) + 10} y={45} fontSize="10" fill="#64748b">Limit ε-δ: for every ε>0 there is δ>0 so |x-x0|<δ implies |f(x)-L|<ε</text>
+              <text x={vp.toScreenX(x0) + 15} y={vp.toScreenY(y0) - 15} fontSize="10" fill="#854d0e">L=f(x₀)={formatCalcNumber(y0)}</text>
             </>
           )}
 
