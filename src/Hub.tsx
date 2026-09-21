@@ -211,6 +211,11 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
     (chineseProgress.xp || 0) > 0 ||
     Object.keys(learningMeta.items).length > 0
 
+  // Catalog-first: for zero-progress, never surface ELEMENTARY leftover; prioritize full catalog view
+  const catalogFirst = !hasProgress
+  const catalogFirstTitle = catalogFirst ? t('hub.catalogFirst.title') : ''
+  const catalogFirstDesc = catalogFirst ? t('hub.catalogFirst.desc') : ''
+
   const preferred = loadPreferredTrack()
   const resumeId: LangId = preferred ?? 'math'
   const weekFlags = weekStudyFlags(learningMeta)
@@ -400,6 +405,12 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
         <p className="section-subtext">
           {t('hub.subtext')}
         </p>
+        {catalogFirst && (
+          <div className="catalog-first-banner" role="status" aria-live="polite">
+            <strong>{catalogFirstTitle}</strong>
+            <span>{catalogFirstDesc}</span>
+          </div>
+        )}
         <div className="hub-hero-actions">
           <button
             type="button"

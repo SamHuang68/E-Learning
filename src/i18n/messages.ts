@@ -289,6 +289,8 @@ export const ZH_HANT = {
   'math.stage.elementary': '國小階段 (G1 ~ G6)',
   'math.stage.junior': '國中階段 (G7 ~ G9)',
   'math.stage.senior': '高中階段 (G10 ~ G12)',
+  'hub.catalogFirst.title': '目錄優先 (Catalog First)',
+  'hub.catalogFirst.desc': '零進度用戶優先展示完整目錄，避免 ELEMENTARY 階段殘留。',
 
   'physics.brand': '高中/國中物理 108課綱',
   'physics.brandSub': '物理素養與探究實作',
@@ -901,6 +903,8 @@ export const EN: Record<MessageKey, string> = {
   'math.stage.elementary': 'Elementary (G1–G6)',
   'math.stage.junior': 'Junior high (G7–G9)',
   'math.stage.senior': 'Senior high (G10–G12)',
+  'hub.catalogFirst.title': 'Catalog First Mode',
+  'hub.catalogFirst.desc': 'Zero-progress users see full catalog first; no ELEMENTARY stage leftover.',
 
   'physics.brand': 'Junior / senior physics (108)',
   'physics.brandSub': 'Literacy and inquiry labs',
