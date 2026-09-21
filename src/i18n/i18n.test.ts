@@ -242,6 +242,15 @@ describe('i18n dictionary', () => {
     expect(translate('en', 'privacy.cloud.3')).not.toBe(translate('zh-Hant', 'privacy.cloud.3'))
   })
 
+  it('keeps client error-toast copy from echoing account identifiers', () => {
+    expect(translate('zh-Hant', 'error.safeDetail')).toMatch(/省略/)
+    expect(translate('zh-Hant', 'error.safeDetail')).toMatch(/帳號|本機/)
+    expect(translate('en', 'error.safeDetail')).toMatch(/omitted/i)
+    expect(translate('en', 'error.safeDetail')).not.toMatch(/@/)
+    expect(translate('zh-Hant', 'auth.genericError')).toMatch(/無法完成/)
+    expect(translate('en', 'auth.genericError')).toMatch(/unable to sign/i)
+  })
+
   it('leaves unknown placeholders intact', () => {
     expect(interpolate('Hello {name}', { other: 'x' })).toBe('Hello {name}')
     const key = 'hub.solved' satisfies MessageKey

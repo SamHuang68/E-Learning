@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { useAuth } from './AuthContext'
 import { useI18n } from '../i18n/i18n'
+import { sanitizeClientError } from '../utils/sanitizeClientError'
 
 type Props = {
   variant?: 'full' | 'compact'
@@ -46,7 +47,7 @@ export function AuthPanel({ variant = 'full' }: Props) {
         : await signUp(email.trim(), password)
     setBusy(false)
     if (err) {
-      setMessage(err)
+      setMessage(sanitizeClientError(err, t('auth.genericError')))
       return
     }
     if (mode === 'signup') {
@@ -135,7 +136,7 @@ export function AuthPanel({ variant = 'full' }: Props) {
     async function removeLocalAccount() {
       if (!confirm(t('auth.deleteConfirm'))) return
       const error = await deleteAccount()
-      if (error) setMessage(error)
+      if (error) setMessage(sanitizeClientError(error, t('auth.genericError')))
     }
 
     return (

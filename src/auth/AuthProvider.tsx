@@ -20,6 +20,7 @@ import {
   type SyncUiStatus,
 } from '../utils/cloudProgress'
 import { AuthContext, type AuthContextValue } from './AuthContext'
+import { sanitizeClientError } from '../utils/sanitizeClientError'
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const configured = isSupabaseConfigured()
@@ -86,13 +87,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const sb = getSupabase()
         if (!sb) return '尚未設定 Supabase（缺少環境變數）。'
         const { error } = await sb.auth.signInWithPassword({ email, password })
-        return error?.message ?? null
+        return error ? sanitizeClientError(error.message, '') || null : null
       },
       async signUp(email, password) {
         const sb = getSupabase()
         if (!sb) return '尚未設定 Supabase（缺少環境變數）。'
         const { error } = await sb.auth.signUp({ email, password })
-        return error?.message ?? null
+        return error ? sanitizeClientError(error.message, '') || null : null
       },
       async signOut() {
         await flushCloudPush()

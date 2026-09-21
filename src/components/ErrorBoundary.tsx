@@ -1,6 +1,7 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react'
 import { loadUiLocale } from '../i18n/locale'
 import { translate } from '../i18n/messages'
+import { sanitizeClientError } from '../utils/sanitizeClientError'
 
 type Props = {
   children: ReactNode
@@ -42,7 +43,9 @@ export class ErrorBoundary extends Component<Props, State> {
                 ? t('error.moduleBody', { label: this.props.label })
                 : t('error.genericBody')}
           </p>
-          <p className="error-boundary-detail">{this.state.error.message}</p>
+          <p className="error-boundary-detail">
+            {sanitizeClientError(this.state.error.message, t('error.safeDetail'))}
+          </p>
           <div className="error-boundary-actions">
             <button
               type="button"
