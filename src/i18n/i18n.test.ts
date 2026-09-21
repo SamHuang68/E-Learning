@@ -126,6 +126,25 @@ describe('i18n dictionary', () => {
     expect(translate('en', 'hub.physics.catalog')).toMatch(/offline/i)
   })
 
+  it('keeps chemistry strand taxonomy labels bilingual and not raw snake_case keys', () => {
+    const strands = [
+      'chemistry.strand.matter_structure',
+      'chemistry.strand.reactions',
+      'chemistry.strand.equilibrium_kinetics',
+      'chemistry.strand.electrochemistry',
+      'chemistry.strand.organic',
+    ] as const
+    for (const key of strands) {
+      expect(translate('zh-Hant', key)).toBeTruthy()
+      expect(translate('en', key)).toBeTruthy()
+      expect(translate('zh-Hant', key)).not.toMatch(/_/)
+      expect(translate('en', key)).not.toMatch(/_/)
+      expect(translate('en', key)).not.toBe(translate('zh-Hant', key))
+    }
+    expect(translate('zh-Hant', 'chemistry.strand.reactions')).toBe('化學反應與計量')
+    expect(translate('en', 'chemistry.strand.reactions')).toMatch(/stoichiometry/i)
+  })
+
   it('leaves unknown placeholders intact', () => {
     expect(interpolate('Hello {name}', { other: 'x' })).toBe('Hello {name}')
     const key = 'hub.solved' satisfies MessageKey

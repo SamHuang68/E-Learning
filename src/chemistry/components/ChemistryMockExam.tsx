@@ -3,46 +3,39 @@ import {
   CHEMISTRY_MOCK_EXAMS,
   type ChemistryMockExam as ChemistryMockExamType,
 } from '../data/mockExams'
-import { type ChemistryStrand, type ChemistryQuestion } from '../data/curriculum'
+import { type ChemistryStrand, type ChemistryQuestion, chemistryStrandMessageKey } from '../data/curriculum'
 import { MathFormula } from '../../math/components/MathFormula'
 import {
   loadChemistryProgress,
   saveChemistryProgress,
   type ChemistryProgressState,
 } from '../utils/chemistryStorage'
+import { useI18n } from '../../i18n/i18n'
 
 type Props = {
   onSaveScore: (examId: string, score: number) => void
   onNavigateVault?: () => void
 }
 
-/** 化學五大領域中文對照、圖標與診斷建議 */
-const STRAND_CONFIG: Record<
-  ChemistryStrand,
-  { name: string; icon: string; advice: string }
-> = {
+/** 化學五大領域圖標與診斷建議；顯示名稱走 i18n taxonomy keys */
+const STRAND_CONFIG: Record<ChemistryStrand, { icon: string; advice: string }> = {
   matter_structure: {
-    name: '物質構造與原子鍵結',
     icon: '🔬',
     advice: '加強同分異構物路易斯結構、孤對電子數、分子極性與分子間作用力（氫鍵/凡得瓦力）判讀。',
   },
   reactions: {
-    name: '化學反應與計量平衡',
     icon: '⚗️',
     advice: '熟練反應質量守恆定律、限量試劑判斷與標準狀況 (STP: 0°C, 1atm) 氣體莫耳體積 22.4 L/mol 換算。',
   },
   equilibrium_kinetics: {
-    name: '化學平衡與反應動力學',
     icon: '⏱️',
     advice: '熟練初速率法聯立推導反應級數、勒沙特列平衡移動原則與平衡常數 K 運算。',
   },
   electrochemistry: {
-    name: '水溶液與氧化還原電化學',
     icon: '🔋',
     advice: '複習酸鹼緩衝溶液 pH 計算 (Henderson-Hasselbalch)、指示劑變色區間與電池能斯特電位分析。',
   },
   organic: {
-    name: '有機化學與生活永續',
     icon: '🌿',
     advice: '掌握酯化與加成反應機構、官能基性質鑑別與綠色化學 12 原則原子經濟性評估。',
   },
@@ -143,6 +136,7 @@ export const ChemistryMockExam: React.FC<Props> = ({
   onSaveScore,
   onNavigateVault,
 }) => {
+  const { t } = useI18n()
   const exams = Object.values(CHEMISTRY_MOCK_EXAMS)
   const [selectedExamId, setSelectedExamId] = useState<string>(
     exams[0]?.id || 'exam_cap_chemistry',
@@ -385,13 +379,12 @@ export const ChemistryMockExam: React.FC<Props> = ({
     const strandList = Object.values(strandMap).map((item) => {
       const rate = Math.round((item.correct / item.total) * 100)
       const info = STRAND_CONFIG[item.strand] || {
-        name: item.strand,
         icon: '🧪',
         advice: '持續針對核心概念進行試題演練。',
       }
       return {
         strand: item.strand,
-        name: info.name,
+        name: t(chemistryStrandMessageKey(item.strand)),
         icon: info.icon,
         advice: info.advice,
         total: item.total,
@@ -407,7 +400,7 @@ export const ChemistryMockExam: React.FC<Props> = ({
       gradeRating,
       strands: strandList,
     }
-  }, [isSubmitted, exam, answers])
+  }, [isSubmitted, exam, answers, t])
 
   // 已作答題數統計
   const answeredCount = useMemo(() => {
@@ -1002,7 +995,7 @@ export const ChemistryMockExam: React.FC<Props> = ({
                   }}
                 >
                   {STRAND_CONFIG[q.strand]?.icon}{' '}
-                  {STRAND_CONFIG[q.strand]?.name || q.strand}
+                  {t(chemistryStrandMessageKey(q.strand))}
                 </span>
                 <span
                   style={{

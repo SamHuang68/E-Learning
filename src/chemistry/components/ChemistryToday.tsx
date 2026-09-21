@@ -1,7 +1,9 @@
 ﻿import React from 'react'
 import type { ChemistryGradeInfo, ChemistryUnit } from '../data/curriculum'
+import { chemistryStrandMessageKey } from '../data/curriculum'
 import type { ChemistryProgressState } from '../utils/chemistryStorage'
 import { MathFormula } from '../../math/components/MathFormula'
+import { useI18n } from '../../i18n/i18n'
 
 type Props = {
   gradeInfo: ChemistryGradeInfo
@@ -26,6 +28,7 @@ export const ChemistryToday: React.FC<Props> = ({
   onOpenVault,
   onOpenSignals,
 }) => {
+  const { t } = useI18n()
   return (
     <div className="math-today-view chemistry-today-view">
       {/* 頂部年級 Banner */}
@@ -89,7 +92,7 @@ export const ChemistryToday: React.FC<Props> = ({
               >
                 <div className="unit-card-header">
                   <span className="unit-seq" style={{ color: '#059669' }}>單元 {u.id}</span>
-                  <span className="unit-strand">{u.strand}</span>
+                  <span className="unit-strand">{t(chemistryStrandMessageKey(u.strand))}</span>
                 </div>
                 <h4>{u.title}</h4>
                 <p className="unit-sub">{u.subtitle}</p>

@@ -113,6 +113,20 @@ export const CHEMISTRY_STRAND_NAMES: Record<ChemistryStrand, string> = {
   organic: '有機化學與化學應用',
 }
 
+export const CHEMISTRY_STRAND_IDS: ChemistryStrand[] = [
+  'matter_structure',
+  'reactions',
+  'equilibrium_kinetics',
+  'electrochemistry',
+  'organic',
+]
+
+export function chemistryStrandMessageKey(
+  strand: ChemistryStrand,
+): `chemistry.strand.${ChemistryStrand}` {
+  return `chemistry.strand.${strand}`
+}
+
 import { G7_CHEMISTRY_UNITS, G7_CHEMISTRY_LABS } from './g7'
 import { G8_CHEMISTRY_UNITS, G8_CHEMISTRY_LABS } from './g8'
 import { G9_CHEMISTRY_UNITS, G9_CHEMISTRY_LABS } from './g9'

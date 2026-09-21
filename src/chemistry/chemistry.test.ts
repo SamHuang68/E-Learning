@@ -5,6 +5,9 @@ import {
   getChemistryGradeInfo,
   getChemistryGradeUnit,
   getAllChemistryUnits,
+  CHEMISTRY_STRAND_IDS,
+  CHEMISTRY_STRAND_NAMES,
+  chemistryStrandMessageKey,
 } from './data/curriculum'
 import { G10_CHEMISTRY_UNITS } from './data/g10'
 import { G11_CHEMISTRY_UNITS } from './data/g11'
@@ -105,6 +108,20 @@ describe('臺灣 108 課綱化學 (Chemistry Track) 課程架構完整性測試'
 
     const g12u15 = getChemistryGradeUnit('g12', 15)
     expect(g12u15.title).toContain('氧化還原與電化學電池')
+  })
+
+  it('exposes i18n keys for every catalog chemistry strand, matching zh-Hant names', () => {
+    expect(CHEMISTRY_STRAND_IDS).toEqual([
+      'matter_structure',
+      'reactions',
+      'equilibrium_kinetics',
+      'electrochemistry',
+      'organic',
+    ])
+    CHEMISTRY_STRAND_IDS.forEach((strand) => {
+      expect(chemistryStrandMessageKey(strand)).toBe(`chemistry.strand.${strand}`)
+      expect(CHEMISTRY_STRAND_NAMES[strand]).toBeTruthy()
+    })
   })
 })
 

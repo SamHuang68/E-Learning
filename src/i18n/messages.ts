@@ -339,6 +339,11 @@ export const ZH_HANT = {
   'chemistry.backToday': '返回化學今日學習',
   'chemistry.stage.junior': '國中自然化學 (G7 ~ G9)',
   'chemistry.stage.senior': '高中化學 (G10 ~ G12)',
+  'chemistry.strand.matter_structure': '物質的組成與構造',
+  'chemistry.strand.reactions': '化學反應與計量',
+  'chemistry.strand.equilibrium_kinetics': '物質狀態與化學平衡',
+  'chemistry.strand.electrochemistry': '酸鹼平衡與電化學',
+  'chemistry.strand.organic': '有機化學與化學應用',
   'chemistry.safetyDisclaimer': '⚠️ 化學實驗室安全聲明：本實驗室為模擬環境。請務必遵守實驗室安全規範，包括佩戴防護裝備、避免接觸危險化學品、確保通風良好，並在教師監督下進行。任何實際實驗請遵循學校/機構安全協議。',
 
   'calculus.brand': '微積分互動專題',
@@ -1002,6 +1007,11 @@ export const EN: Record<MessageKey, string> = {
   'chemistry.backToday': 'Back to chemistry Today',
   'chemistry.stage.junior': 'Junior-high chemistry (G7–G9)',
   'chemistry.stage.senior': 'Senior-high chemistry (G10–G12)',
+  'chemistry.strand.matter_structure': 'Matter and structure',
+  'chemistry.strand.reactions': 'Reactions and stoichiometry',
+  'chemistry.strand.equilibrium_kinetics': 'Equilibrium and kinetics',
+  'chemistry.strand.electrochemistry': 'Acids, bases, and electrochemistry',
+  'chemistry.strand.organic': 'Organic chemistry and applications',
 
   'calculus.brand': 'Calculus studio',
   'calculus.brandSub': 'Calculus Studio',
