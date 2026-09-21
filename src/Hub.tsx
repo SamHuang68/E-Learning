@@ -60,7 +60,7 @@ const TRACK_LABEL_KEYS: Record<LangId, MessageKey> = {
   zh: 'track.zh',
 }
 
-function weekStudyFlags(meta: LearningMeta): boolean[] {
+export function weekStudyFlags(meta: LearningMeta): boolean[] {
   const today = new Date()
   const mondayOffset = (today.getDay() + 6) % 7
   const monday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - mondayOffset)
@@ -210,6 +210,11 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
     toeicDoneCount > 0 ||
     (chineseProgress.xp || 0) > 0 ||
     Object.keys(learningMeta.items).length > 0
+
+  // Catalog-first: for zero-progress, never surface ELEMENTARY leftover; prioritize full catalog view
+  const catalogFirst = !hasProgress
+  const catalogFirstTitle = catalogFirst ? t('hub.catalogFirst.title') : ''
+  const catalogFirstDesc = catalogFirst ? t('hub.catalogFirst.desc') : ''
 
   const preferred = loadPreferredTrack()
   const resumeId: LangId = preferred ?? 'math'
@@ -385,8 +390,8 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
   const resumeLabel = t(TRACK_LABEL_KEYS[resumeId])
 
   return (
-    <main className="hub unified-hub">
-      <header className="hub-hero">
+    <main role="main" aria-label={t('hub.landmark.main')} className="hub unified-hub">
+      <header role="banner" className="hub-hero">
         <div className="hub-topbar">
           <div>
             <p className="eyebrow">{t('hub.eyebrow')}</p>
@@ -400,6 +405,12 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
         <p className="section-subtext">
           {t('hub.subtext')}
         </p>
+        {catalogFirst && (
+          <div className="catalog-first-banner" role="status" aria-live="polite">
+            <strong>{catalogFirstTitle}</strong>
+            <span>{catalogFirstDesc}</span>
+          </div>
+        )}
         <div className="hub-hero-actions">
           <button
             type="button"
@@ -432,7 +443,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
         </div>
       </section>
 
-      <section className="hub-section-block" aria-labelledby="tracks-title">
+      <nav role="navigation" aria-label={t('hub.landmark.nav')} className="hub-section-block" aria-labelledby="tracks-title">
         <div className="section-header-row">
           <h2 id="tracks-title">{t('hub.tracksTitle')}</h2>
           <span className="section-subtext">{t('hub.tracksCount')}</span>
@@ -483,7 +494,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
             </article>
           ))}
         </div>
-      </section>
+      </nav>
 
       {hasProgress ? (
         <section className="hub-stat-banner" aria-label={t('hub.stats')}>
@@ -526,9 +537,9 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
             <div className="stat-info">
               <span className="stat-label">{t('hub.audio')}</span>
               <strong>{isMuted ? t('hub.muted') : t('hub.soundOn')}</strong>
-              <button type="button" className="pill-btn audio-toggle" onClick={handleToggleAudio}>
-                {isMuted ? t('hub.unmute') : t('hub.mute')}
-              </button>
+              <button type="button" className="pill-btn audio-toggle" onClick={handleToggleAudio} aria-label={t(isMuted ? 'hub.unmute' : 'hub.mute')}>
+                              {isMuted ? t('hub.unmute') : t('hub.mute')}
+                            </button>
             </div>
           </div>
         </section>
@@ -569,7 +580,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
         <details className="hub-more">
           <summary>{t('hub.moreProgress')}</summary>
 
-          <section className="hub-section-block" aria-labelledby="radar-title">
+          <aside role="complementary" aria-labelledby="radar-title" aria-label={t('hub.landmark.radar')}>
             <div className="section-header-row">
               <h2 id="radar-title">{t('hub.radarTitle')}</h2>
               <div className="radar-tab-switcher">
@@ -605,7 +616,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
                 </button>
               </div>
             </div>
-          </section>
+          </aside>
 
           <section className="hub-section-block" aria-labelledby="badges-title">
             <div className="section-header-row">
@@ -664,7 +675,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
         </details>
       )}
 
-      <footer className="hub-footer">
+      <footer role="contentinfo" className="hub-footer">
         <a
           href="https://github.com/SamHuang68/E-Learning"
           className="hub-link"

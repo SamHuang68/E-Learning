@@ -1,16 +1,13 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, Suspense } from 'react'
 import { Breadcrumbs } from '../components/Breadcrumbs'
 import { CalculusSidebar, type CalculusNavId } from './components/CalculusSidebar'
-import { CalculusCanvas } from '../math/calculus/components/CalculusCanvas/CalculusCanvas'
-import { CalculusLabPanel } from '../math/calculus/components/CalculusLab/CalculusLabPanel'
-import { StepByStepSolver } from '../math/calculus/components/CalculusSolver/StepByStepSolver'
-import { CalculusAssessmentWidget } from '../math/calculus/components/CalculusAssessment/CalculusAssessmentWidget'
 import { generateDerivationSteps } from '../math/calculus/engine'
 import { useCalculusLearningCoordinator } from '../math/calculus/hooks/useCalculusLearningCoordinator'
 import { CALCULUS_BADGES } from '../math/calculus/data/calculusBadges'
 import type { CalculusLabMode, RiemannMethod, CalculusProblem } from '../math/calculus/types'
 import type { LangId } from '../utils/storage'
 import { useI18n } from '../i18n/i18n'
+import { lazyWithRetry } from '../utils/lazyWithRetry'
 
 type Props = {
   onBackHub: () => void
@@ -26,6 +23,23 @@ const PRESET_FORMULAS = [
   { label: '半拋物線定積分: f(x) = 4 - x^2', expr: '4 - x^2', x0: 1.0, deltaX: 0.5, intA: 0, intB: 2 },
   { label: '高次多項式: f(x) = x^4 - 4x^2', expr: 'x^4 - 4*x^2', x0: 1.414, deltaX: 0.3 },
 ]
+
+const LazyCalculusLabPanel = lazyWithRetry(
+  () => import('../math/calculus/components/CalculusLab/CalculusLabPanel').then((m) => ({ default: m.CalculusLabPanel })),
+  'calculus-lab',
+)
+const LazyStepByStepSolver = lazyWithRetry(
+  () => import('../math/calculus/components/CalculusSolver/StepByStepSolver').then((m) => ({ default: m.StepByStepSolver })),
+  'calculus-solver',
+)
+const LazyCalculusAssessmentWidget = lazyWithRetry(
+  () => import('../math/calculus/components/CalculusAssessment/CalculusAssessmentWidget').then((m) => ({ default: m.CalculusAssessmentWidget })),
+  'calculus-assessment',
+)
+const LazyCalculusCanvas = lazyWithRetry(
+  () => import('../math/calculus/components/CalculusCanvas/CalculusCanvas').then((m) => ({ default: m.CalculusCanvas })),
+  'calculus-canvas',
+)
 
 /**
  * 獨立微積分學習軌道主應用程式 (CalculusApp)
@@ -189,15 +203,62 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
           </div>
         )}
 
-        {/* 主雙欄工作台 (Canvas Lab / Step Solver / Adaptive Practice) */}
+        {/* 主雙欄工作台 (Canvas Lab / Step Solver / Adaptive Practice) - lazy route split for heavy calculus */}
         {activeNav !== 'badges' && (
           <div className="calculus-studio-workspace">
-            {/* 左側互動操作區 */}
-            <div className="studio-left-pane">
-              {activeNav === 'canvas_lab' && (
-                <CalculusLabPanel
-                  mode={mode}
+            <Suspense fallback={<div className="module-fallback" role="status">{t('common.loadingModule')}</div>}>
+              {/* 左側互動操作區 */}
+              <div className="studio-left-pane">
+                {activeNav === 'canvas_lab' && (
+                  <LazyCalculusLabPanel
+                    mode={mode}
+                    expression={expression}
+                    x0={x0}
+                    deltaX={deltaX}
+                    intA={intA}
+                    intB={intB}
+                    slicesN={slicesN}
+                    riemannMethod={riemannMethod}
+                    taylorOrder={taylorOrder}
+                    epsilon={epsilon}
+                    onModeSelect={setMode}
+                    onExpressionChange={setExpression}
+                    onParamChange={(p) => {
+                      if (p.x0 !== undefined) setX0(p.x0)
+                      if (p.deltaX !== undefined) setDeltaX(p.deltaX)
+                      if (p.intA !== undefined) setIntA(p.intA)
+                      if (p.intB !== undefined) setIntB(p.intB)
+                      if (p.slicesN !== undefined) setSlicesN(p.slicesN)
+                      if (p.riemannMethod !== undefined) setRiemannMethod(p.riemannMethod)
+                      if (p.taylorOrder !== undefined) setTaylorOrder(p.taylorOrder)
+                      if (p.epsilon !== undefined) setEpsilon(p.epsilon)
+                    }}
+                  />
+                )}
+
+                {activeNav === 'step_solver' && (
+                  <LazyStepByStepSolver
+                    problemTitle={`求函數 f(x) = ${expression} 的符號導函數與臨界點`}
+                    steps={dynamicSteps}
+                    currentStepIndex={currentStepIdx}
+                    onStepChange={setCurrentStepIdx}
+                  />
+                )}
+
+                {activeNav === 'adaptive_practice' && (
+                  <LazyCalculusAssessmentWidget
+                    currentTheta={currentTheta}
+                    onSelectProblem={handleSelectProblem}
+                    onSolveProblem={(problem, isCorrect) => handleSolveProblem(problem, isCorrect)}
+                  />
+                )}
+              </div>
+
+              {/* 右側 60 FPS 幾何反應式畫布 */}
+              <div className="studio-right-pane">
+                <LazyCalculusCanvas
                   expression={expression}
+                  mode={mode}
                   x0={x0}
                   deltaX={deltaX}
                   intA={intA}
@@ -206,61 +267,16 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
                   riemannMethod={riemannMethod}
                   taylorOrder={taylorOrder}
                   epsilon={epsilon}
-                  onModeSelect={setMode}
-                  onExpressionChange={setExpression}
                   onParamChange={(p) => {
                     if (p.x0 !== undefined) setX0(p.x0)
                     if (p.deltaX !== undefined) setDeltaX(p.deltaX)
                     if (p.intA !== undefined) setIntA(p.intA)
                     if (p.intB !== undefined) setIntB(p.intB)
                     if (p.slicesN !== undefined) setSlicesN(p.slicesN)
-                    if (p.riemannMethod !== undefined) setRiemannMethod(p.riemannMethod)
-                    if (p.taylorOrder !== undefined) setTaylorOrder(p.taylorOrder)
-                    if (p.epsilon !== undefined) setEpsilon(p.epsilon)
                   }}
                 />
-              )}
-
-              {activeNav === 'step_solver' && (
-                <StepByStepSolver
-                  problemTitle={`求函數 f(x) = ${expression} 的符號導函數與臨界點`}
-                  steps={dynamicSteps}
-                  currentStepIndex={currentStepIdx}
-                  onStepChange={setCurrentStepIdx}
-                />
-              )}
-
-              {activeNav === 'adaptive_practice' && (
-                <CalculusAssessmentWidget
-                  currentTheta={currentTheta}
-                  onSelectProblem={handleSelectProblem}
-                  onSolveProblem={(problem, isCorrect) => handleSolveProblem(problem, isCorrect)}
-                />
-              )}
-            </div>
-
-            {/* 右側 60 FPS 幾何反應式畫布 */}
-            <div className="studio-right-pane">
-              <CalculusCanvas
-                expression={expression}
-                mode={mode}
-                x0={x0}
-                deltaX={deltaX}
-                intA={intA}
-                intB={intB}
-                slicesN={slicesN}
-                riemannMethod={riemannMethod}
-                taylorOrder={taylorOrder}
-                epsilon={epsilon}
-                onParamChange={(p) => {
-                  if (p.x0 !== undefined) setX0(p.x0)
-                  if (p.deltaX !== undefined) setDeltaX(p.deltaX)
-                  if (p.intA !== undefined) setIntA(p.intA)
-                  if (p.intB !== undefined) setIntB(p.intB)
-                  if (p.slicesN !== undefined) setSlicesN(p.slicesN)
-                }}
-              />
-            </div>
+              </div>
+            </Suspense>
           </div>
         )}
 

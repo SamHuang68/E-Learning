@@ -31,6 +31,11 @@
   --hub-card-gap: 1.25rem;
   --font-sans: 'Zen Kaku Gothic New', 'Segoe UI', sans-serif;
   --font-display: 'Shippori Mincho', 'Times New Roman', serif;
+  /* Unified a11y focus ring tokens — shared across all tracks (TOEIC / 華語 / CS / calculus) */
+  --focus-ring-color: var(--navy);
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 2px;
+  --focus-ring: var(--focus-ring-width) solid var(--focus-ring-color);
   color-scheme: light;
   color: var(--ink);
   background: var(--bg);
@@ -148,6 +153,8 @@ strong {
 
 .skip-link:focus {
   transform: translateY(0);
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
 }
 
 /* Hub */
@@ -919,8 +926,8 @@ strong {
 }
 
 .unit-dots i.current {
-  outline: 2px solid var(--accent-border);
-  outline-offset: 1px;
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .content {
@@ -1021,7 +1028,9 @@ strong {
 .preset-row input:focus,
 .preset-row select:focus {
   border-color: var(--accent-border);
-  box-shadow: 0 0 0 2px rgba(47, 158, 107, 0.15);
+  box-shadow: 0 0 0 var(--focus-ring-width) color-mix(in srgb, var(--focus-ring-color) 15%, transparent);
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .xp {
@@ -1973,6 +1982,26 @@ strong {
   font-size: 1.15rem;
   color: var(--ink);
   margin-bottom: 0.35rem;
+}
+
+.empty-state-card {
+  padding: 2rem;
+  border-radius: 16px;
+  background: linear-gradient(160deg, #f8fafc, #f1f5f9);
+  border: 1px solid #e2e8f0;
+  text-align: center;
+  max-width: 480px;
+  margin: 2rem auto;
+}
+.empty-state-card h2 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: var(--ink);
+}
+.empty-state-card p {
+  color: var(--muted);
+  margin-bottom: 1.25rem;
+  line-height: 1.6;
 }
 
 .exercise-session .practice-card {
@@ -3400,8 +3429,8 @@ footer {
 }
 
 :where(button, a, input, select, textarea, [tabindex]):focus-visible {
-  outline: 3px solid var(--navy);
-  outline-offset: 3px;
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -4111,7 +4140,9 @@ footer {
 }
 
 .fill-text-input:focus {
-  border-color: #3f6f64;
+  border-color: var(--accent-border);
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .action-buttons-row {
@@ -7977,7 +8008,9 @@ html.high-contrast { filter: contrast(125%); }
 }
 
 .vault-search-input:focus {
-  border-color: #5a8a7e;
+  border-color: var(--accent-border);
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .vault-select-filter {
