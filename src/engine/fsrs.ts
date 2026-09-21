@@ -18,6 +18,13 @@ export type FsrsItemState = {
   state: 'new' | 'learning' | 'review' | 'relearning'
 }
 
+/** Leech-card soft flag threshold (UI indicator only, not suspension) */
+export const LEECH_LAPSES_THRESHOLD = 8
+
+export function isLeech(lapses: number): boolean {
+  return lapses >= LEECH_LAPSES_THRESHOLD
+}
+
 export type FsrsParameters = {
   requestRetention: number // 目標保留率，預設 0.9 (90%)
   maximumInterval: number // 最大複習間隔天數，預設 36500 (100 年)

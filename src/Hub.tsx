@@ -22,6 +22,7 @@ import {
   dueCountBySrsItems,
   dueCountFromFsrsMap,
 } from './engine/todaySuggestion'
+import { isLeech, LEECH_LAPSES_THRESHOLD } from './engine/fsrs'
 import {
   loadLearningMeta,
   loadProgress,
@@ -232,6 +233,9 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
     (it) => (it.intervalDays || 0) >= 21 || (it.correctStreak || 0) >= 3,
   ).length
   const scheduledCount = Object.keys(learningMeta.items).length
+  const leechCount = Object.values(learningMeta.items).filter((it) =>
+    isLeech(it.lapses ?? 0),
+  ).length
   const dueByTrack = dueCountBySrsItems(learningMeta.items)
   const calculusDue = dueCountFromFsrsMap(mathProgress.calculusFsrs)
   if (calculusDue > 0) dueByTrack.calculus = (dueByTrack.calculus ?? 0) + calculusDue
@@ -559,6 +563,11 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
                   long: longIntervalCount,
                   bonus: Math.min(50, learningMeta.streak * 5),
                 })}
+              </p>
+              <p className="leech-soft-flag" aria-label={t('hub.leechSoftFlag')}>
+                {leechCount > 0
+                  ? t('hub.leechCount', { count: leechCount })
+                  : t('hub.leechNone')}
               </p>
             </div>
           </div>
