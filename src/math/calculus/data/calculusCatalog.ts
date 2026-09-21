@@ -119,4 +119,19 @@ export const CALCULUS_CATALOG: CalculusConceptItem[] = [
       },
     },
   },
+  {
+    id: 'calc-u-substitution',
+    name: 'u-替換積分法 / u-Substitution',
+    category: 'integral',
+    difficulty: 0.9,
+    discrimination: 1.5,
+    prerequisites: ['calc-ftc', 'calc-chain-rule'],
+    description: '透過 u = g(x) 簡化 ∫ f(g(x)) g\'(x) dx 為 ∫ f(u) du。',
+    distractorPrescriptions: {
+      wrong_du: {
+        reason: '忘記計算 du = g\'(x) dx 或代換後未更新積分上下限。',
+        action: '在推導步驟中明確寫出 du 並檢查邊界。',
+      },
+    },
+  },
 ]

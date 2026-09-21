@@ -97,12 +97,14 @@ describe('微積分專題 (Calculus Studio) 模組測試', () => {
 
   describe('題庫與微認證勳章規範 (Curriculum & Badges)', () => {
     it('應完整提供 4 階認知階梯題庫', () => {
-      expect(CALCULUS_PROBLEMS.length).toBeGreaterThanOrEqual(4)
+      expect(CALCULUS_PROBLEMS.length).toBeGreaterThanOrEqual(9)
       const tiers = CALCULUS_PROBLEMS.map((p) => p.tier)
       expect(tiers).toContain('L1')
       expect(tiers).toContain('L2')
       expect(tiers).toContain('L3')
       expect(tiers).toContain('L4')
+      const subPack = CALCULUS_PROBLEMS.filter((p) => p.conceptTag === 'calc-u-substitution')
+      expect(subPack.length).toBe(5)
     })
 
     it('微積分專屬勳章庫應具備清晰的解鎖條件與 XP 獎勵', () => {
@@ -114,7 +116,7 @@ describe('微積分專題 (Calculus Studio) 模組測試', () => {
     })
 
     it('微積分概念目錄應包含 2PL IRT 參數與錯誤分類處方', () => {
-      expect(CALCULUS_CATALOG.length).toBeGreaterThanOrEqual(5)
+      expect(CALCULUS_CATALOG.length).toBeGreaterThanOrEqual(6)
       CALCULUS_CATALOG.forEach((item) => {
         expect(typeof item.difficulty).toBe('number')
         expect(typeof item.discrimination).toBe('number')
