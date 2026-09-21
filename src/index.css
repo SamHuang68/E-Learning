@@ -295,6 +295,34 @@ strong {
   color: var(--muted);
 }
 
+.hub-search {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin: 0 0 1rem;
+  max-width: 22rem;
+}
+
+.hub-search input[type='search'] {
+  width: 100%;
+  padding: 0.45rem 0.75rem;
+  border-radius: 8px;
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.hub-search-empty {
+  padding: 1rem 0 0.5rem;
+}
+
+.hub-search-empty-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.75rem;
+}
+
 /* 三大與四大軌道網格 */
 .three-track-grid {
   display: grid;

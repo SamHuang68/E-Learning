@@ -41,6 +41,7 @@ import { loadCsProgress } from './cs/utils/csStorage'
 import { loadChineseProgress } from './chinese/utils/chineseStorage'
 import { isAudioMuted, toggleAudioMute, playClickSound } from './engine/audioSynthesizer'
 import { LocaleToggle, useI18n } from './i18n/i18n'
+import { filterHubTracks } from './hubSearch'
 import type { MessageKey } from './i18n/messages'
 
 type Props = {
@@ -273,6 +274,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
   const [tick, setTick] = useState(0)
   const [isMuted, setIsMuted] = useState(() => isAudioMuted())
   const [toeicLang, setToeicLang] = useState<'zh' | 'ja'>(() => loadToeicInstructionLang())
+  const [hubQuery, setHubQuery] = useState('')
 
   const handleToggleAudio = useCallback(() => {
     const next = toggleAudioMute()
@@ -479,6 +481,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
     onChoose,
     openToeic,
   ])
+  const visibleTracks = useMemo(() => filterHubTracks(tracks, hubQuery), [tracks, hubQuery])
 
   const todayId: LangId = todaySuggestion.id
   const todayTrack = tracks.find((track) => track.id === todayId) ?? tracks[0]
@@ -560,9 +563,39 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
           <h2 id="tracks-title">{t('hub.tracksTitle')}</h2>
           <span className="section-subtext">{t('hub.tracksCount')}</span>
         </div>
+        <div className="hub-search">
+          <label className="practice-answer-label" htmlFor="hub-track-search">
+            {t('hub.search.label')}
+          </label>
+          <input
+            id="hub-track-search"
+            type="search"
+            value={hubQuery}
+            onChange={(event) => setHubQuery(event.target.value)}
+            placeholder={t('hub.search.placeholder')}
+          />
+        </div>
 
+        {visibleTracks.length === 0 ? (
+          <div className="hub-search-empty" role="status" aria-live="polite">
+            <p>
+              <strong>{t('hub.search.empty', { query: hubQuery.trim() })}</strong>
+            </p>
+            <p>{t('hub.search.emptyHint')}</p>
+            <div className="hub-search-empty-links">
+              <button type="button" className="hub-secondary-cta" onClick={() => setHubQuery('')}>
+                {t('hub.search.showAll')}
+              </button>
+              {tracks.map((track) => (
+                <button type="button" key={track.id} className="pill-btn" onClick={track.onClick}>
+                  {track.title}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : (
         <div className="hub-grid eight-track-grid">
-          {tracks.map((track) => (
+          {visibleTracks.map((track) => (
             <article key={track.id} className={`hub-card ${track.extraClass}`}>
               <button type="button" className="hub-card-hit" onClick={track.onClick}>
                 <div className="hub-card-header">
@@ -606,6 +639,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
             </article>
           ))}
         </div>
+        )}
       </nav>
 
       {hasProgress ? (
