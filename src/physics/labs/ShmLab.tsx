@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { MeasurementUncertaintyCallout } from '../components/MeasurementUncertaintyCallout'
 
 /**
  * 物理動態實驗室：簡諧運動與單擺 (ShmLab)
@@ -459,6 +460,7 @@ const Checklist: React.FC = () => {
         ))}
       </ul>
       {progress === 100 && <div style={{ marginTop: '0.4rem', color: '#22c55e', fontSize: '0.8rem', fontWeight: 600 }}>✓ Lab checklist complete — Energy conservation verified! / 檢查清單完成 — 能量守恆已驗證！</div>}
+      <MeasurementUncertaintyCallout labId="shm" />
     </div>
   )
 }
