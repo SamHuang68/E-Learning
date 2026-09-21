@@ -355,6 +355,37 @@ describe('i18n dictionary', () => {
     expect(translate('en', 'auth.genericError')).toMatch(/unable to sign/i)
   })
 
+  it('keeps error-boundary and boot fallback copy bilingual', () => {
+    const keys = [
+      'error.eyebrow',
+      'error.chunkTitle',
+      'error.failTitle',
+      'error.chunkBody',
+      'error.moduleBody',
+      'error.genericBody',
+      'error.reload',
+      'error.backHub',
+      'error.appLabel',
+      'error.safeDetail',
+      'error.bootTitle',
+      'error.bootBody',
+    ] as const satisfies readonly MessageKey[]
+    for (const key of keys) {
+      expect(ZH_HANT[key].length).toBeGreaterThan(0)
+      expect(EN[key]).not.toBe(ZH_HANT[key])
+    }
+    expect(translate('zh-Hant', 'error.bootTitle')).toMatch(/啟動失敗/)
+    expect(translate('en', 'error.bootTitle')).toMatch(/failed to start/i)
+    expect(translate('zh-Hant', 'error.bootBody')).toMatch(/本機/)
+    expect(translate('en', 'error.bootBody')).toMatch(/local start/i)
+    const boundary = readFileSync(join(process.cwd(), 'src/components/ErrorBoundary.tsx'), 'utf8')
+    expect(boundary).toContain('LocaleToggle')
+    expect(boundary).toContain('UI_LOCALE_EVENT')
+    const boot = readFileSync(join(process.cwd(), 'src/main.tsx'), 'utf8')
+    expect(boot).toContain("translate(locale, 'error.bootTitle')")
+    expect(boot).not.toContain('VITE_SUPABASE_URL')
+  })
+
   it('keeps Archify iframe defer copy bilingual and honest about first paint', () => {
     expect(translate('zh-Hant', 'cs.archify.iframe.pending')).toMatch(/捲入/)
     expect(translate('zh-Hant', 'cs.archify.iframe.pending')).toMatch(/首次繪製/)

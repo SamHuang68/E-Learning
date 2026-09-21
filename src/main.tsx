@@ -3,6 +3,9 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import 'katex/dist/katex.min.css'
 import App from './App.tsx'
+import { loadUiLocale } from './i18n/locale'
+import { translate } from './i18n/messages'
+import { sanitizeClientError } from './utils/sanitizeClientError'
 
 const rootEl = document.getElementById('root')
 
@@ -21,13 +24,26 @@ try {
     </StrictMode>,
   )
 } catch (err) {
-  const message = err instanceof Error ? err.message : String(err)
   if (rootEl) {
-    rootEl.innerHTML = `<div style="padding:2rem;font-family:sans-serif;max-width:40rem">
-      <h1>應用程式啟動失敗</h1>
-      <p>${message}</p>
-      <p>請確認 GitHub Secrets 的 VITE_SUPABASE_URL 為 https://xxxx.supabase.co（不要含本機路徑）。</p>
-    </div>`
+    const locale = loadUiLocale()
+    const title = translate(locale, 'error.bootTitle')
+    const body = translate(locale, 'error.bootBody')
+    const detail = sanitizeClientError(err, translate(locale, 'error.safeDetail'))
+    rootEl.replaceChildren()
+    const wrap = document.createElement('div')
+    wrap.className = 'error-boundary'
+    wrap.setAttribute('role', 'alert')
+    wrap.style.padding = '2rem'
+    wrap.style.maxWidth = '40rem'
+    const h1 = document.createElement('h1')
+    h1.textContent = title
+    const p = document.createElement('p')
+    p.textContent = body
+    const extra = document.createElement('p')
+    extra.className = 'error-boundary-detail'
+    extra.textContent = detail
+    wrap.append(h1, p, extra)
+    rootEl.append(wrap)
   }
   console.error(err)
 }
