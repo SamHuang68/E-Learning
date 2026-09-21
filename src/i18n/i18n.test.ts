@@ -1,13 +1,117 @@
 import { describe, expect, it } from 'vitest'
+import { readFileSync, readdirSync, statSync } from 'node:fs'
+import { join } from 'node:path'
 import { EN, translate, ZH_HANT, type MessageKey } from './messages'
 import { interpolate } from './interpolate'
 import { isUiLocale, loadUiLocale, saveUiLocale } from './locale'
+
+function placeholderTokens(template: string): string[] {
+  return [...template.matchAll(/\{(\w+)\}/g)].map((match) => match[1]).sort()
+}
+
+function quotedMessageKeys(source: string): string[] {
+  return [...source.matchAll(/^ {2}'([^']+)': /gm)].map((match) => match[1])
+}
+
+function duplicateKeys(keys: string[]): string[] {
+  const seen = new Map<string, number>()
+  const dupes: string[] = []
+  for (const key of keys) {
+    const next = (seen.get(key) ?? 0) + 1
+    seen.set(key, next)
+    if (next === 2) dupes.push(key)
+  }
+  return dupes
+}
+
+function walkTsFiles(dir: string, acc: string[] = []): string[] {
+  for (const name of readdirSync(dir)) {
+    if (name === 'node_modules' || name === 'dist') continue
+    const full = join(dir, name)
+    if (statSync(full).isDirectory()) {
+      walkTsFiles(full, acc)
+      continue
+    }
+    if (/\.test\.(ts|tsx)$/.test(name) || name === 'messages.ts') continue
+    if (/\.(ts|tsx)$/.test(name)) acc.push(full)
+  }
+  return acc
+}
 
 describe('i18n dictionary', () => {
   it('keeps zh-Hant and en key sets identical', () => {
     const zhKeys = Object.keys(ZH_HANT).sort()
     const enKeys = Object.keys(EN).sort()
+    const missingInEn = zhKeys.filter((key) => !(key in EN))
+    const missingInZh = enKeys.filter((key) => !(key in ZH_HANT))
+    expect(missingInEn, `missing EN keys: ${missingInEn.join(', ')}`).toEqual([])
+    expect(missingInZh, `missing ZH keys: ${missingInZh.join(', ')}`).toEqual([])
     expect(enKeys).toEqual(zhKeys)
+  })
+
+  it('fails when a locale value is empty or {placeholder} tokens diverge', () => {
+    const empty: string[] = []
+    const tokenMismatch: string[] = []
+    for (const key of Object.keys(ZH_HANT) as MessageKey[]) {
+      const zh = ZH_HANT[key]
+      const en = EN[key]
+      if (!zh.trim()) empty.push(`zh-Hant:${key}`)
+      if (!en.trim()) empty.push(`en:${key}`)
+      const zhTok = placeholderTokens(zh).join(',')
+      const enTok = placeholderTokens(en).join(',')
+      if (zhTok !== enTok) tokenMismatch.push(`${key} zh={${zhTok}} en={${enTok}}`)
+    }
+    expect(empty, `empty values: ${empty.join(', ')}`).toEqual([])
+    expect(tokenMismatch, `placeholder drift: ${tokenMismatch.join('; ')}`).toEqual([])
+  })
+
+  it('sample-expands one key per prefix so a dropped family fails CI', () => {
+    const keys = Object.keys(ZH_HANT) as MessageKey[]
+    const prefixes = [...new Set(keys.map((key) => key.split('.')[0]))].sort()
+    expect(prefixes.length).toBeGreaterThan(8)
+    const missing: string[] = []
+    for (const prefix of prefixes) {
+      const sample = keys.find((key) => key === prefix || key.startsWith(`${prefix}.`))
+      if (!sample) {
+        missing.push(`zh:${prefix}`)
+        continue
+      }
+      if (!ZH_HANT[sample]?.trim()) missing.push(`zh:${sample}`)
+      if (!EN[sample]?.trim()) missing.push(`en:${sample}`)
+    }
+    expect(missing, `prefix samples missing: ${missing.join(', ')}`).toEqual([])
+    for (const required of [
+      'error.safeDetail',
+      'sw.update.message',
+      'auth.genericError',
+      'privacy.cloud.3',
+      'hub.solved',
+    ] as const satisfies readonly MessageKey[]) {
+      expect(ZH_HANT[required].trim().length).toBeGreaterThan(0)
+      expect(EN[required].trim().length).toBeGreaterThan(0)
+    }
+  })
+
+  it('rejects duplicate keys inside each locale table in messages.ts', () => {
+    const source = readFileSync(join(process.cwd(), 'src/i18n/messages.ts'), 'utf8')
+    const [zhPart, enPart] = source.split('export const EN')
+    expect(zhPart).toBeTruthy()
+    expect(enPart).toBeTruthy()
+    expect(duplicateKeys(quotedMessageKeys(zhPart))).toEqual([])
+    expect(duplicateKeys(quotedMessageKeys(enPart))).toEqual([])
+  })
+
+  it('fails CI when t() literals are missing from the dictionary', () => {
+    const used = new Set<string>()
+    for (const file of walkTsFiles(join(process.cwd(), 'src'))) {
+      const text = readFileSync(file, 'utf8')
+      for (const match of text.matchAll(/\bt\(\s*'([^']+)'/g)) {
+        used.add(match[1])
+      }
+    }
+    expect(used.size).toBeGreaterThan(40)
+    const missing = [...used].filter((key) => !(key in ZH_HANT)).sort()
+    expect(missing, `t() keys missing from ZH_HANT: ${missing.join(', ')}`).toEqual([])
   })
 
   it('interpolates count tokens', () => {
