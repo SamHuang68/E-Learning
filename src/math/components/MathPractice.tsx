@@ -4,6 +4,7 @@ import { MathFormula } from './MathFormula'
 import { recordMathAnswer } from '../utils/mathStorage'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
 import { Scratchpad } from '../../components/Scratchpad'
+import { useI18n } from '../../i18n/i18n'
 
 type Props = {
   unit: MathUnit
@@ -16,6 +17,7 @@ type Props = {
  * 提供漸進式題庫作答、KaTeX 數學公式即時渲染、逐步詳解展開、提示系統與錯誤收集。
  */
 export const MathPractice: React.FC<Props> = ({ unit, onBack, onComplete }) => {
+  const { t } = useI18n()
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
   const [fillInput, setFillInput] = useState('')
@@ -174,11 +176,15 @@ export const MathPractice: React.FC<Props> = ({ unit, onBack, onComplete }) => {
 
           {currentQ.type === 'fill' && (
             <div className="fill-input-group">
+              <label className="practice-answer-label" htmlFor="math-practice-answer">
+                {t('math.practice.answerLabel')}
+              </label>
               <input
+                id="math-practice-answer"
                 type="text"
                 value={fillInput}
                 onChange={(e) => setFillInput(e.target.value)}
-                placeholder="輸入您的計算答案..."
+                placeholder={t('math.practice.answerPlaceholder')}
                 disabled={submitted}
                 className="fill-text-input"
                 onKeyDown={(e) => {
