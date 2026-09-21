@@ -16,7 +16,7 @@ export function PhysicsFormulaSheet({ onBack }: Props) {
   const sections = physicsFormulaSheetSections()
 
   return (
-    <div className="physics-formula-sheet">
+    <div className="formula-sheet physics-formula-sheet">
       <div className="section-title-row">
         <h2>{t('physics.formulas.title')}</h2>
         <button type="button" className="btn-back" onClick={onBack}>

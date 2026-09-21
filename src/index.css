@@ -7062,6 +7062,55 @@ html.high-contrast { filter: contrast(125%); }
   color: var(--ink);
 }
 
+@media print {
+  body:has(.formula-sheet) {
+    background: #fff;
+    color: #111;
+  }
+
+  body:has(.formula-sheet) .physics-sidebar,
+  body:has(.formula-sheet) .a11y-floating-dock,
+  body:has(.formula-sheet) .floating-scratchpad-btn,
+  body:has(.formula-sheet) .hub-shortcut-trigger,
+  body:has(.formula-sheet) .btn-back,
+  body:has(.formula-sheet) .sidebar-chrome {
+    display: none !important;
+  }
+
+  .formula-sheet,
+  .physics-formula-sheet {
+    background: #fff;
+    color: #111;
+    gap: 0.4rem;
+  }
+
+  .formula-sheet .section-subtext,
+  .formula-sheet .physics-formula-unit,
+  .formula-sheet .concept-item-card,
+  .formula-sheet .katex {
+    color: #111;
+  }
+
+  .formula-sheet .physics-formula-unit,
+  .formula-sheet .concept-item-card,
+  .formula-sheet .wave-interference-figure {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    box-shadow: none;
+    background: #fff;
+    border: 1px solid #ccc;
+  }
+
+  .formula-sheet .concept-cards-grid {
+    display: block;
+  }
+
+  .formula-sheet .wave-interference-svg {
+    max-width: 100%;
+    background: #fff;
+  }
+}
+
 .calculus-studio-header {
   background: var(--surface);
   border: 1px solid var(--line);
