@@ -4,6 +4,10 @@ import {
   type SpeakableCard,
   type UnitPractice,
 } from '../data/practiceTypes'
+import {
+  normalizePracticeDifficultyTag,
+  type PracticeDifficultyTag,
+} from './practiceDifficulty'
 
 export type ExerciseKind =
   | 'recognize'
@@ -25,6 +29,8 @@ export type Exercise = {
   lang: 'ja' | 'en'
   speakText?: string
   tags?: string[]
+  /** Teaching catalog band for adaptive routing. Not an exam score. */
+  difficultyTag: PracticeDifficultyTag
 }
 
 export type UnitPracticeKind = 'vocab' | 'reading' | 'listening' | 'grammar'
@@ -143,13 +149,15 @@ function buildExercise(
   cardIndex: number,
   slot: number,
 ): Exercise | null {
+  const difficultyTag = normalizePracticeDifficultyTag(card.register, kind)
   const base = {
     id: `${card.id}:${kind}:${cardIndex}:${slot}`,
     kind,
     card,
     lang,
     speakText: card.speakText ?? card.sentence,
-    tags: [kind, card.register, card.scenario].filter(Boolean),
+    difficultyTag,
+    tags: [kind, card.register, card.scenario, `diff:${difficultyTag}`].filter(Boolean),
   }
 
   if (kind === 'recognize') {
