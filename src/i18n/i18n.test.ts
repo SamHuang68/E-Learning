@@ -355,6 +355,16 @@ describe('i18n dictionary', () => {
     expect(translate('en', 'auth.genericError')).toMatch(/unable to sign/i)
   })
 
+  it('keeps Archify iframe defer copy bilingual and honest about first paint', () => {
+    expect(translate('zh-Hant', 'cs.archify.iframe.pending')).toMatch(/捲入/)
+    expect(translate('zh-Hant', 'cs.archify.iframe.pending')).toMatch(/首次繪製/)
+    expect(translate('en', 'cs.archify.iframe.pending')).toMatch(/scrolled into view/i)
+    expect(translate('en', 'cs.archify.iframe.pending')).toMatch(/first paint/i)
+    expect(translate('en', 'cs.archify.iframe.pending')).not.toBe(
+      translate('zh-Hant', 'cs.archify.iframe.pending'),
+    )
+  })
+
   it('leaves unknown placeholders intact', () => {
     expect(interpolate('Hello {name}', { other: 'x' })).toBe('Hello {name}')
     const key = 'hub.solved' satisfies MessageKey
