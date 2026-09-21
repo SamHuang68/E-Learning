@@ -11,7 +11,8 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "verify:local": "npm run lint && npm test && npm run verify:schema && npm run build && npm run verify:dist"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.110.7",

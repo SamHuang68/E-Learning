@@ -38,6 +38,33 @@ npm run build
 npm run preview
 ```
 
+## 100-round 本機驗證（對齊 CI）
+
+Pages 部署 workflow（[`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml)）在 build 後才上傳 artifact。本機用同一組閘門，**不需要** Supabase env：
+
+```bash
+npm ci                 # 或已安裝則可略過
+npm run verify:local   # lint → test → verify:schema → build → verify:dist
+```
+
+分步（與 CI job 相同順序）：
+
+```bash
+npm run lint           # oxlint：errors 必須為 0
+npm test               # vitest（含 i18n 鍵對位、precache 缺檔、微積分 reject）
+npm run verify:schema  # 靜態 SQL 合約；不連線託管雲端
+npm run build          # tsc + vite + generate-precache
+npm run verify:dist    # 缺 public audio／archify／content 或 Hub chunk 即失敗
+```
+
+Round log：repo 沒有獨立 round-log 檔。以 `main` 上 `Rnn:` squash 標題為準：
+
+```bash
+git log --oneline -12
+```
+
+`verify:schema` 輸出含 `hostedCloudRequired: false`（未設 env 時 App 仍是本機）。`verify:dist` 必須先 `build`。oxlint 目前允許 Hub／i18n 的 `only-export-components` 警告；**errors 必須為 0**。
+
 ## 本機（離線）帳號後端
 
 未設定 Supabase 時，App 會自動改用**純本機後端**（`src/lib/localBackend.ts`），以 `localStorage` 實作 Email／密碼登入與 `user_progress` 進度表：
