@@ -108,6 +108,7 @@ export const FALSE_FRIENDS_DATA: FalseFriendItem[] = [
     examplePinyin: 'chī bǎo hòu wǒ men qù sàn bù zǒu zou ba.',
     exampleTranslationJa: 'お腹がいっぱいになったら、お散歩して歩きましょう。',
     tag: '日常生活',
+    hskLevel: 1,
   },
   {
     id: 'ff-kokuso',
@@ -122,6 +123,7 @@ export const FALSE_FRIENDS_DATA: FalseFriendItem[] = [
     examplePinyin: 'qǐng gào sù wǒ jié yùn zhàn zěn me zǒu?',
     exampleTranslationJa: 'MRTの駅への行き方を教えていただけますか？',
     tag: '職場商務',
+    hskLevel: 2,
   },
   {
     id: 'ff-hoshin',
@@ -136,6 +138,7 @@ export const FALSE_FRIENDS_DATA: FalseFriendItem[] = [
     examplePinyin: 'zhè jiàn shì jiāo gěi wǒ chǔ lǐ, qǐng nín fàng xīn!',
     exampleTranslationJa: 'この件は私にお任せください、どうぞご安心ください！',
     tag: '職場商務',
+    hskLevel: 3,
   },
   {
     id: 'ff-musume',
@@ -150,6 +153,7 @@ export const FALSE_FRIENDS_DATA: FalseFriendItem[] = [
     examplePinyin: 'tā cóng xiǎo jiù hěn xiào shùn diē niáng.',
     exampleTranslationJa: '彼は幼い頃から父母（両親）によく孝行していました。',
     tag: '日常生活',
+    hskLevel: 4,
   },
   {
     id: 'ff-roba',
@@ -164,6 +168,7 @@ export const FALSE_FRIENDS_DATA: FalseFriendItem[] = [
     examplePinyin: 'wǒ lǎo pó zuò de lǔ ròu fàn fēi cháng hǎo chī.',
     exampleTranslationJa: '私の妻が作るルーローハンはとても美味しいです。',
     tag: '感情社交',
+    hskLevel: 4,
   },
   {
     id: 'ff-kotai',
@@ -178,6 +183,7 @@ export const FALSE_FRIENDS_DATA: FalseFriendItem[] = [
     examplePinyin: 'zhǔ guǎn jiāo dài wǒ míng tiān yào zhǔn shí jiāo bào gào.',
     exampleTranslationJa: '上司から明日時間通りにレポートを提出するよう申し送り指示がありました。',
     tag: '職場商務',
+    hskLevel: 5,
   },
   {
     id: 'ff-shinbun',
@@ -192,6 +198,7 @@ export const FALSE_FRIENDS_DATA: FalseFriendItem[] = [
     examplePinyin: 'wǒ měi tiān zǎo shàng dōu huì kàn diàn shì xīn wén.',
     exampleTranslationJa: '私は毎朝テレビのニュースを見ています。',
     tag: '日常生活',
+    hskLevel: 2,
   },
   {
     id: 'ff-hanten',

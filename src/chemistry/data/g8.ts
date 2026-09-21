@@ -77,8 +77,7 @@ export const G8_CHEMISTRY_UNITS: ChemistryUnit[] = [
         strand: 'reactions',
         type: 'choice',
         difficulty: 3,
-        question: '將鎂帶 ($\text{Mg}$，原子量 24) 在空氣中完全燃燒生成氧化鎂 ($\text{MgO}$，式量 40)：\n$$2\text{Mg} + \text{O}_2 
-ightarrow 2\text{MgO}$$\n若取 $4.8\text{ g}$ 的鎂帶完全燃燒，理論上可生成多少克的氧化鎂？',
+        question: '將鎂帶 ($\\text{Mg}$，原子量 24) 在空氣中完全燃燒生成氧化鎂 ($\\text{MgO}$，式量 40)：\n$$2\\text{Mg} + \\text{O}_2 \\rightarrow 2\\text{MgO}$$\n若取 $4.8\\text{ g}$ 的鎂帶完全燃燒，理論上可生成多少克的氧化鎂？',
         options: [
           'A. 4.8 g',
           'B. 6.4 g',
@@ -138,8 +137,7 @@ ightarrow 2\text{MgO}$$\n若取 $4.8\text{ g}$ 的鎂帶完全燃燒，理論上
         strand: 'reactions',
         type: 'choice',
         difficulty: 4,
-        question: '反應 $2\text{H}_2 + \text{O}_2 
-ightarrow 2\text{H}_2\text{O}$。若有 4 mol $\text{H}_2$ 與 3 mol $\text{O}_2$，哪種是限量試劑？',
+        question: '反應 $2\\text{H}_2 + \\text{O}_2 \\rightarrow 2\\text{H}_2\\text{O}$。若有 4 mol $\\text{H}_2$ 與 3 mol $\\text{O}_2$，哪種是限量試劑？',
         options: ['A. $\text{H}_2$', 'B. $\text{O}_2$', 'C. 兩者皆非', 'D. 資料不足'],
         answer: 'A',
         solution: '莫耳圖比對係數比：\n$\text{H}_2$ 需求 2:1，4 mol H2 需 2 mol O2，但有 3 mol O2，故 H2 為限量。',
@@ -153,8 +151,7 @@ ightarrow 2\text{H}_2\text{O}$。若有 4 mol $\text{H}_2$ 與 3 mol $\text{O}_2
         strand: 'reactions',
         type: 'fill',
         difficulty: 3,
-        question: '由 $2\text{Al} + 3\text{Cl}_2 
-ightarrow 2\text{AlCl}_3$，若 2.7 g Al (原子量 27) 完全反應，理論生成 $\text{AlCl}_3$ 多少 g？（式量 133.5）',
+        question: '由 $2\\text{Al} + 3\\text{Cl}_2 \\rightarrow 2\\text{AlCl}_3$，若 2.7 g Al (原子量 27) 完全反應，理論生成 $\\text{AlCl}_3$ 多少 g？（式量 133.5）',
         answer: 13.35,
         solution: 'n_Al = 2.7/27 = 0.1 mol\n按 2:2 比，生成 0.1 mol AlCl3\n質量 = 0.1 × 133.5 = 13.35 g。',
         hint: '先算莫耳再乘式量。',

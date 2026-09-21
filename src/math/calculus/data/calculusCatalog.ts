@@ -99,7 +99,7 @@ export const CALCULUS_CATALOG: CalculusConceptItem[] = [
     description: '利用局部切線與 x 軸交點進行快速迭代求根：x_{k+1} = x_k - f(x_k)/f’(x_k)。',
     distractorPrescriptions: {
       tangent_zero_div: {
-        reason: '在水平切線處 (f\\'(x) ≈ 0) 迭代導致數值除以零發散。',
+        reason: "在水平切線處 (f'(x) ~= 0) 迭代導致數值除以零發散。",
         action: '觀察畫布上的水平切線軌跡，並重新挑選適當的初始猜測點 x0。',
       },
     },

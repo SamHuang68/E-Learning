@@ -90,6 +90,7 @@ export const ZH_HANT = {
   'hub.tracksTitle': '選擇學習軌道',
   'hub.tracksCount': '8 軌',
   'hub.solved': '你已解 {count} 題',
+  'hub.kanaSrsHonesty': '假名 SRS 間隔為誠實複習估計，非流利度宣稱。',
   'hub.masteredKana': '你已掌握 {count} 字',
   'hub.practicedChunks': '你已練 {count} 語塊',
   'hub.falseFriends': '你已解 {count} 組偽友',
@@ -356,6 +357,8 @@ export const ZH_HANT = {
   'calculus.u7.title': '泰勒級數多項式逼近',
   'calculus.u7.sub': '高階導數與局部多項式擬合',
   'calculus.substitutionPack': '替換法練習包 (+5 題) / Substitution Practice Pack (+5)',
+  'calculus.derivBefore': '推導前',
+  'calculus.derivAfter': '推導後',
 
   'cs.brand': '計算機概論',
   'cs.brandSub': '軟硬體 · 五大單元 · 前沿AI',
@@ -1002,6 +1005,8 @@ export const EN: Record<MessageKey, string> = {
   'calculus.u7.title': 'Taylor polynomials',
   'calculus.u7.sub': 'Higher derivatives and local fit',
   'calculus.substitutionPack': 'Substitution Practice Pack (+5) / 替換法練習包 (+5 題)',
+  'calculus.derivBefore': 'Before',
+  'calculus.derivAfter': 'After',
 
   'cs.brand': 'Intro to Computer Science',
   'cs.brandSub': 'Hardware · five units · modern AI',
