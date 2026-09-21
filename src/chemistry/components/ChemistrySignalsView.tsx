@@ -3,6 +3,7 @@ import { CHEMISTRY_SOLVING_SIGNALS, type ChemistrySolvingSignal } from '../data/
 import { MathFormula } from '../../math/components/MathFormula'
 import { PROGRESS_STORAGE_KEYS } from '../../utils/progressKeys'
 import { notifyProgressChanged } from '../../utils/storage'
+import { LimitingReagentWorkedExample } from './LimitingReagentWorkedExample'
 
 const STORAGE_KEY_CHEMISTRY_MASTERY = PROGRESS_STORAGE_KEYS.chemistrySignals
 
@@ -795,6 +796,10 @@ export const ChemistrySignalsView: React.FC = () => {
                           minWidth: 0,
                         }}
                       >
+                        {sig.id === 'sig-mass-conservation-limiting' ? (
+                          <LimitingReagentWorkedExample />
+                        ) : (
+                          <>
                         <div style={{ color: 'var(--ink)', lineHeight: 1.4 }}>
                           <strong>題目：</strong>
                           <MathFormula math={sig.exampleProblem.question} />
@@ -811,6 +816,8 @@ export const ChemistrySignalsView: React.FC = () => {
                           <strong>⚡ 秒解：</strong>
                           <MathFormula math={sig.exampleProblem.quickSolve} />
                         </div>
+                          </>
+                        )}
                       </div>
                     </details>
 
@@ -1509,6 +1516,10 @@ export const ChemistrySignalsView: React.FC = () => {
                           minWidth: 0,
                         }}
                       >
+                        {currentDrillCard.id === 'sig-mass-conservation-limiting' ? (
+                          <LimitingReagentWorkedExample />
+                        ) : (
+                          <>
                         <div style={{ color: 'var(--ink)', marginBottom: '0.35rem', lineHeight: 1.4 }}>
                           <strong>範例題目：</strong>
                           <MathFormula math={currentDrillCard.exampleProblem.question} />
@@ -1525,6 +1536,8 @@ export const ChemistrySignalsView: React.FC = () => {
                           <strong>⚡ 秒殺步驟：</strong>
                           <MathFormula math={currentDrillCard.exampleProblem.quickSolve} />
                         </div>
+                          </>
+                        )}
                       </div>
 
                       {/* 自我評估按鈕組 */}
