@@ -139,4 +139,18 @@ describe('CSS Layout & Sidebar Overflow Regression Guard', () => {
     expect(cssContent).toMatch(/\.hub-bottom-nav-item[^}]*min-height:\s*var\(--touch-min\)/s)
     expect(cssContent).toMatch(/\.hub-bottom-nav-item[^}]*min-width:\s*var\(--touch-min\)/s)
   })
+
+  it('unifies track header density (height, padding, type scale) via PR#10 tokens', () => {
+    expect(cssContent).toMatch(/--track-header-min-height:\s*56px/)
+    expect(cssContent).toMatch(/--track-header-padding-y:\s*0\.35rem/)
+    expect(cssContent).toMatch(/--track-title-size:\s*clamp\(1\.35rem,\s*2\.4vw,\s*1\.75rem\)/)
+    expect(cssContent).toMatch(/\.topbar\s*\{[^}]*min-height:\s*var\(--track-header-min-height\)/s)
+    expect(cssContent).toMatch(/\.topbar\s*\{[^}]*padding-block:\s*var\(--track-header-padding-y\)/s)
+    expect(cssContent).toMatch(/\.topbar h1\s*\{[^}]*font-size:\s*var\(--track-title-size\)/s)
+    expect(cssContent).toMatch(/\.cs-top-nav\s*\{[^}]*min-height:\s*var\(--track-header-min-height\)/s)
+    expect(cssContent).toMatch(/\.cs-top-nav\s*\{[^}]*padding:\s*var\(--track-header-padding-y\)/s)
+    expect(cssContent).toMatch(/\.chinese-lang-toolbar\s*\{[^}]*min-height:\s*var\(--track-header-min-height\)/s)
+    expect(cssContent).toMatch(/\.chinese-lang-toolbar\s*\{[^}]*gap:\s*var\(--track-topbar-gap\)/s)
+    expect(cssContent).not.toMatch(/\.topbar h1\s*\{[^}]*1\.9rem/s)
+  })
 })

@@ -28,6 +28,8 @@
   --track-topbar-margin: 0.75rem;
   --track-title-size: clamp(1.35rem, 2.4vw, 1.75rem);
   --track-hero-title-size: clamp(1.22rem, 2.6vw, 1.5rem);
+  --track-header-min-height: 56px;
+  --track-header-padding-y: 0.35rem;
   --hub-card-gap: 1.25rem;
   --font-sans: 'Zen Kaku Gothic New', 'Segoe UI', sans-serif;
   --font-display: 'Shippori Mincho', 'Times New Roman', serif;
@@ -981,6 +983,8 @@ strong {
   justify-content: space-between;
   gap: var(--track-topbar-gap);
   align-items: center;
+  min-height: var(--track-header-min-height);
+  padding-block: var(--track-header-padding-y);
   margin-bottom: var(--track-topbar-margin);
   flex-wrap: wrap;
 }
@@ -3242,17 +3246,13 @@ footer {
   .calculus-topbar {
     position: relative;
     flex-direction: column;
-    gap: 0.7rem;
-    margin-bottom: 0.7rem;
+    gap: var(--track-topbar-gap);
+    margin-bottom: var(--track-topbar-margin);
   }
 
   .topbar > div:first-child {
     min-width: 0;
     padding-right: 6.5rem;
-  }
-
-  .topbar h1 {
-    font-size: clamp(1.55rem, 7vw, 1.9rem);
   }
 
   .header-actions {
@@ -8828,11 +8828,11 @@ html.high-contrast { filter: contrast(125%); }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.85rem;
+  gap: var(--track-topbar-gap);
   width: 100%;
-  min-height: 56px;
+  min-height: var(--track-header-min-height);
   flex-shrink: 0;
-  padding: 0.35rem 1rem;
+  padding: var(--track-header-padding-y) 1rem;
   background: #ffffff;
   color: var(--ink);
   border-bottom: 1px solid var(--line);
@@ -9000,8 +9000,8 @@ html.high-contrast { filter: contrast(125%); }
   .cs-top-nav {
     flex-wrap: wrap;
     align-items: flex-start;
-    min-height: 0;
-    padding: 0.5rem 0.75rem;
+    min-height: var(--track-header-min-height);
+    padding: var(--track-header-padding-y) var(--track-content-padding-mobile);
   }
   .cs-nav-list {
     order: 3;
@@ -9137,11 +9137,12 @@ html.high-contrast { filter: contrast(125%); }
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
-  padding-bottom: 0.6rem;
+  min-height: var(--track-header-min-height);
+  margin-bottom: var(--track-topbar-margin);
+  padding-block: var(--track-header-padding-y);
   border-bottom: 1px solid var(--line);
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: var(--track-topbar-gap);
 }
 .chinese-nav {
   padding: 0.6rem;

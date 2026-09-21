@@ -59,4 +59,12 @@ describe('Strict Review Gate: Visual Layout, 100vh Focus & Zero-Overflow Invaria
     expect(cssContent).toMatch(/\.calculus-sidebar\s*\{[^}]*var\(--track-sidebar-padding\)/s)
     expect(cssContent).toMatch(/\.topbar\s*\{[^}]*var\(--track-topbar-gap\)/s)
   })
+
+  it('[GATE-VISUAL-HEADER-DENSITY] track headers share CS-canonical height/padding/type tokens', () => {
+    expect(cssContent).toMatch(/--track-header-min-height:\s*56px/)
+    expect(cssContent).toMatch(/\.topbar\s*\{[^}]*var\(--track-header-min-height\)/s)
+    expect(cssContent).toMatch(/\.cs-top-nav\s*\{[^}]*var\(--track-header-min-height\)/s)
+    expect(cssContent).toMatch(/\.chinese-lang-toolbar\s*\{[^}]*var\(--track-header-min-height\)/s)
+    expect(cssContent).not.toMatch(/\.topbar h1\s*\{[^}]*1\.9rem/s)
+  })
 })
