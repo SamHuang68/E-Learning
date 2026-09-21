@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import { CS_CURRICULUM, type CsUnit, type CsQuestion } from '../data/curriculum'
+import { CS_CURRICULUM, csStrandMessageKey, type CsUnit, type CsQuestion } from '../data/curriculum'
 import { playCorrectSound, playWrongSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
 
 interface Props {
   completedQuestions: string[]
@@ -15,6 +16,7 @@ export const CsPractice: React.FC<Props> = ({
   onRecordError,
   initialUnitId,
 }) => {
+  const { t } = useI18n()
   const [activeUnitId, setActiveUnitId] = useState<string>(
     initialUnitId && CS_CURRICULUM.some((u) => u.id === initialUnitId)
       ? initialUnitId
@@ -74,7 +76,7 @@ export const CsPractice: React.FC<Props> = ({
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
           <div>
             <span style={{ fontSize: '0.7rem', padding: '0.1rem 0.4rem', borderRadius: '999px', background: 'rgba(37, 99, 235, 0.15)', color: '#2563eb', fontWeight: 700 }}>
-              {currentUnit.strand} · {currentUnit.band}
+              {t(csStrandMessageKey(currentUnit.strand))} · {currentUnit.band}
             </span>
             <h3 style={{ margin: '0.3rem 0 0.1rem', fontSize: '1.05rem' }}>{currentUnit.title}</h3>
             <span style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>{currentUnit.subtitle}</span>

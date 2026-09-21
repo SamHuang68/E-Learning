@@ -18,15 +18,57 @@ export interface CsQuestion {
   type?: 'single-choice' | 'calculation'
 }
 
+export type CsStrand =
+  | '軟硬體本質'
+  | '五大單元架構'
+  | '數位邏輯'
+  | '作業系統'
+  | '網路與通訊'
+  | '現代AI硬體'
+  | '前沿AI演算法'
+
 export interface CsUnit {
   id: string
   title: string
   subtitle: string
-  strand: '軟硬體本質' | '五大單元架構' | '數位邏輯' | '作業系統' | '網路與通訊' | '現代AI硬體' | '前沿AI演算法'
+  strand: CsStrand
   band: '基礎核心' | '系統架構' | '前沿AI'
   concepts: string[]
   suggestedLab?: string
   questions: CsQuestion[]
+}
+
+export const CS_STRAND_IDS: CsStrand[] = [
+  '軟硬體本質',
+  '五大單元架構',
+  '數位邏輯',
+  '作業系統',
+  '網路與通訊',
+  '現代AI硬體',
+  '前沿AI演算法',
+]
+
+export type CsStrandSlug =
+  | 'hardware_software'
+  | 'five_units'
+  | 'digital_logic'
+  | 'operating_systems'
+  | 'networks'
+  | 'ai_hardware'
+  | 'frontier_ai'
+
+export const CS_STRAND_SLUGS: Record<CsStrand, CsStrandSlug> = {
+  軟硬體本質: 'hardware_software',
+  五大單元架構: 'five_units',
+  數位邏輯: 'digital_logic',
+  作業系統: 'operating_systems',
+  網路與通訊: 'networks',
+  現代AI硬體: 'ai_hardware',
+  前沿AI演算法: 'frontier_ai',
+}
+
+export function csStrandMessageKey(strand: CsStrand): `cs.strand.${CsStrandSlug}` {
+  return `cs.strand.${CS_STRAND_SLUGS[strand]}`
 }
 
 export const CS_CURRICULUM: CsUnit[] = [

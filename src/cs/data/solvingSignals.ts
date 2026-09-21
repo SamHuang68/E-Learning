@@ -4,9 +4,11 @@
  * 題目特徵 ➜ 3 秒直覺決策 ➜ 第一步關鍵判斷與秒殺技巧。
  */
 
+import type { CsStrand } from './curriculum'
+
 export interface CsSolvingSignal {
   id: string
-  strand: '軟硬體本質' | '五大單元架構' | '數位邏輯' | '作業系統' | '網路與通訊' | '現代AI硬體' | '前沿AI演算法'
+  strand: CsStrand
   topic: string
   problemSignal: string
   threeSecondRule: string

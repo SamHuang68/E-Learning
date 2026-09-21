@@ -1,15 +1,18 @@
 import React, { useState } from 'react'
 import { CS_SOLVING_SIGNALS, type CsSolvingSignal } from '../data/solvingSignals'
+import { CS_STRAND_IDS, csStrandMessageKey, type CsStrand } from '../data/curriculum'
 import { MathFormula } from '../../math/components/MathFormula'
 import { loadCsSignalsMastery, saveCsSignalsMastery } from '../utils/csStorage'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
 
 export const CsSignalsView: React.FC = () => {
+  const { t } = useI18n()
   const [viewMode, setViewMode] = useState<'cards' | 'drill'>('cards')
   const [activeIdx, setActiveIdx] = useState(0)
   const [isRevealed, setIsRevealed] = useState(false)
   const [mastery, setMastery] = useState<Record<string, boolean>>(() => loadCsSignalsMastery())
-  const [selectedStrand, setSelectedStrand] = useState<string>('all')
+  const [selectedStrand, setSelectedStrand] = useState<'all' | CsStrand>('all')
 
   const filteredSignals = CS_SOLVING_SIGNALS.filter((sig) => {
     if (selectedStrand === 'all') return true
@@ -91,7 +94,7 @@ export const CsSignalsView: React.FC = () => {
         >
           全部領域 ({CS_SOLVING_SIGNALS.length})
         </button>
-        {['五大單元架構', '數位邏輯', '作業系統', '網路與通訊', '現代AI硬體', '前沿AI演算法'].map((strand) => (
+        {CS_STRAND_IDS.map((strand) => (
           <button
             key={strand}
             type="button"
@@ -101,7 +104,7 @@ export const CsSignalsView: React.FC = () => {
               setActiveIdx(0)
             }}
           >
-            {strand}
+            {t(csStrandMessageKey(strand))}
           </button>
         ))}
       </div>
@@ -126,7 +129,7 @@ export const CsSignalsView: React.FC = () => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(37, 99, 235, 0.15)', color: '#2563eb', fontWeight: 700 }}>
-                    {sig.strand}
+                    {t(csStrandMessageKey(sig.strand))}
                   </span>
                   <button
                     type="button"
@@ -184,7 +187,7 @@ export const CsSignalsView: React.FC = () => {
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1.4rem', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '1rem', maxWidth: '680px', margin: '0 auto', width: '100%' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
             <span style={{ fontSize: '0.74rem', padding: '0.15rem 0.5rem', borderRadius: '999px', background: 'rgba(37, 99, 235, 0.15)', color: '#2563eb', fontWeight: 700 }}>
-              {currentSignal.strand} · 第 {activeIdx + 1} / {filteredSignals.length} 卡
+              {t(csStrandMessageKey(currentSignal.strand))} · 第 {activeIdx + 1} / {filteredSignals.length} 卡
             </span>
             <span style={{ fontSize: '0.76rem', color: 'var(--muted)' }}>
               主題：{currentSignal.topic}

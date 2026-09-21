@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { CS_CURRICULUM, getAllCsUnits, getCsUnitById } from './data/curriculum'
+import { CS_CURRICULUM, getAllCsUnits, getCsUnitById, CS_STRAND_IDS, CS_STRAND_SLUGS, csStrandMessageKey } from './data/curriculum'
 import { CS_SOLVING_SIGNALS } from './data/solvingSignals'
 import { CS_MOCK_EXAMS } from './data/mockExams'
+import { CS_TEXTBOOK_CHAPTERS } from './data/textbookData'
 import { loadCsProgress, saveCsProgress, resetCsProgress, type CsProgress } from './utils/csStorage'
 import { computeCsRadar } from '../engine/radar'
 
@@ -23,6 +24,31 @@ describe('Computer Science Track (計算機概論: 軟硬體、五大單元與�
       expect(strands).toContain('網路與通訊')
       expect(strands).toContain('現代AI硬體')
       expect(strands).toContain('前沿AI演算法')
+    })
+
+    it('exposes i18n keys for every catalog CS strand, matching zh-Hant names', () => {
+      expect(CS_STRAND_IDS).toEqual([
+        '軟硬體本質',
+        '五大單元架構',
+        '數位邏輯',
+        '作業系統',
+        '網路與通訊',
+        '現代AI硬體',
+        '前沿AI演算法',
+      ])
+      CS_STRAND_IDS.forEach((strand) => {
+        expect(csStrandMessageKey(strand)).toBe(`cs.strand.${CS_STRAND_SLUGS[strand]}`)
+      })
+      getAllCsUnits().forEach((unit) => {
+        expect(CS_STRAND_IDS).toContain(unit.strand)
+      })
+      CS_SOLVING_SIGNALS.forEach((sig) => {
+        expect(CS_STRAND_IDS).toContain(sig.strand)
+      })
+      CS_TEXTBOOK_CHAPTERS.forEach((ch) => {
+        expect(CS_STRAND_IDS).toContain(ch.strand)
+      })
+      expect(CS_STRAND_IDS).toContain('軟硬體本質')
     })
 
     it('unit 1 defines hardware, software, abstraction layers and ISA interface', () => {
