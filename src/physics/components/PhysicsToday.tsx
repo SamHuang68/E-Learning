@@ -3,6 +3,7 @@ import type { PhysicsGradeInfo, PhysicsUnit } from '../data/curriculum'
 import type { PhysicsProgressState } from '../utils/physicsStorage'
 import { MathFormula } from '../../math/components/MathFormula'
 import { useI18n } from '../../i18n/i18n'
+import { WhyThisNext } from '../../components/WhyThisNext'
 
 type Props = {
   gradeInfo: PhysicsGradeInfo
@@ -44,6 +45,7 @@ export const PhysicsToday: React.FC<Props> = ({
           </div>
           <span className="hero-desc-inline">{gradeInfo.description}</span>
         </div>
+        <WhyThisNext kind="unit" />
 
         <div className="hero-quick-actions">
           <button type="button" className="btn-hero-primary" onClick={onStartPractice}>

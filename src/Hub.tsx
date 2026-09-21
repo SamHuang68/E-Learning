@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { AuthPanel } from './auth/AuthPanel'
 import { DataControls } from './components/DataControls'
+import { WhyThisNext } from './components/WhyThisNext'
 import { KnowledgeRadar } from './components/KnowledgeRadar'
 import {
   computeMathRadar,
@@ -485,16 +486,6 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
 
   const todayId: LangId = todaySuggestion.id
   const todayTrack = tracks.find((track) => track.id === todayId) ?? tracks[0]
-  const todayReason =
-    todaySuggestion.reasonKey === 'due'
-      ? t('today.due', { count: todaySuggestion.dueCount ?? 0 })
-      : t(
-          todaySuggestion.reasonKey === 'resume'
-            ? 'today.resume'
-            : todaySuggestion.reasonKey === 'preferred'
-              ? 'today.preferred'
-              : 'today.catalog',
-        )
   const resumeLabel = preferred ? t(TRACK_LABEL_KEYS[preferred]) : ''
 
   return (
@@ -544,7 +535,8 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
       </header>
 
       <section className="hub-section-block hub-today-block" aria-label={t('hub.todayLabel')}>
-        <p className="section-subtext">{t('hub.todayLabel')} · {todayReason}</p>
+        <p className="section-subtext">{t('hub.todayLabel')}</p>
+        <WhyThisNext kind={todaySuggestion.reasonKey} dueCount={todaySuggestion.dueCount} />
         <h2>{todayTrack.title}</h2>
         <p className="track-desc">{todayTrack.desc}</p>
         <div className="hub-hero-actions">
