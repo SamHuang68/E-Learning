@@ -99,6 +99,14 @@ describe('i18n dictionary', () => {
     expect(translate('en', 'hub.stats.aria')).not.toMatch(/streak panel/i)
   })
 
+  it('keeps Hub resume empty copy honest: no last track, no invented math start', () => {
+    expect(translate('zh-Hant', 'hub.resumeEmpty')).toMatch(/目錄/)
+    expect(translate('zh-Hant', 'hub.resumeEmpty')).not.toMatch(/數學/)
+    expect(translate('en', 'hub.resumeEmpty')).toMatch(/catalog/i)
+    expect(translate('en', 'hub.resumeEmpty')).not.toMatch(/math/i)
+    expect(translate('en', 'hub.resumeEmpty')).not.toMatch(/start with/i)
+  })
+
   it('leaves unknown placeholders intact', () => {
     expect(interpolate('Hello {name}', { other: 'x' })).toBe('Hello {name}')
     const key = 'hub.solved' satisfies MessageKey

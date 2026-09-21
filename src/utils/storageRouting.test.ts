@@ -1,5 +1,5 @@
 ﻿import { describe, it, expect, beforeEach, afterEach } from 'vitest'
-import { saveLang, loadLang } from './storage'
+import { saveLang, loadLang, loadPreferredTrack, writeLangPreference } from './storage'
 
 describe('Track Hash Routing and Storage Verification Gate', () => {
   const originalWindow = globalThis.window
@@ -91,5 +91,28 @@ describe('Track Hash Routing and Storage Verification Gate', () => {
     saveLang('hub')
     expect(window.location.hash).toBe('hub')
     expect(loadLang()).toBe('hub')
+  })
+
+  it('returning to hub keeps last track for Hub resume', () => {
+    saveLang('physics')
+    expect(loadPreferredTrack()).toBe('physics')
+    saveLang('hub')
+    expect(window.location.hash).toBe('hub')
+    expect(loadLang()).toBe('hub')
+    expect(loadPreferredTrack()).toBe('physics')
+  })
+
+  it('writeLangPreference(hub) does not clobber last track', () => {
+    saveLang('chemistry')
+    writeLangPreference('hub')
+    expect(loadPreferredTrack()).toBe('chemistry')
+  })
+
+  it('hash-equivalent writeLangPreference records last track without changing hash', () => {
+    saveLang('math')
+    expect(window.location.hash).toBe('math')
+    writeLangPreference('cs')
+    expect(window.location.hash).toBe('math')
+    expect(loadPreferredTrack()).toBe('cs')
   })
 })
