@@ -367,6 +367,16 @@ describe('i18n dictionary', () => {
     )
   })
 
+  it('keeps limiting-reagent worked-example chrome bilingual and teaching-only', () => {
+    expect(translate('zh-Hant', 'chemistry.limiting.title')).toMatch(/限量試劑/)
+    expect(translate('zh-Hant', 'chemistry.limiting.honesty')).toMatch(/不是實驗產率/)
+    expect(translate('en', 'chemistry.limiting.title')).toMatch(/limiting-reagent/i)
+    expect(translate('en', 'chemistry.limiting.honesty')).toMatch(/not a lab yield/i)
+    expect(translate('en', 'chemistry.limiting.caption')).not.toBe(
+      translate('zh-Hant', 'chemistry.limiting.caption'),
+    )
+  })
+
   it('keeps error-boundary and boot fallback copy bilingual', () => {
     const keys = [
       'error.eyebrow',
