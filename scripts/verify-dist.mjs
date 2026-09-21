@@ -11,13 +11,13 @@ if (!/^[a-f0-9]{16}$/.test(manifest.buildId)) throw new Error('Invalid precache 
 if (new Set(files).size !== files.length) throw new Error('Precache manifest contains duplicate paths.')
 if (files.some((file) => file.includes('visual-check'))) throw new Error('QA screenshots must not enter the offline cache.')
 
-await Promise.all(files.map((file) => access(path.join(distDir, file.replace(/^\.\//, '')))))
+await Promise.all(files.map((file) => access(path.join(distDir, file.replace(/^.\//, '')))))
 
 const maxJsBytes = 500_000
-const jsFiles = files.filter((file) => /^\.\/assets\/.*\.js$/.test(file))
+const jsFiles = files.filter((file) => /^.\/assets\/.*\.js$/.test(file))
 const jsSizes = await Promise.all(jsFiles.map(async (file) => ({
   file,
-  bytes: (await stat(path.join(distDir, file.replace(/^\.\//, '')))).size,
+  bytes: (await stat(path.join(distDir, file.replace(/^.\//, '')))).size,
 })))
 const oversizedJs = jsSizes.filter(({ bytes }) => bytes >= maxJsBytes)
 if (oversizedJs.length > 0) {
@@ -25,13 +25,14 @@ if (oversizedJs.length > 0) {
 }
 const largestJs = jsSizes.sort((a, b) => b.bytes - a.bytes)[0]
 
-const routeChunks = files.filter((file) => /assets\/(Aoba|Toeic|Math|Calculus|Physics|Chemistry)App-.*\.js$/.test(file))
-if (routeChunks.length !== 6) throw new Error(`Expected six lazy route chunks, found ${routeChunks.length}.`)
+const routeChunks = files.filter((file) => /assets\/(Aoba|Toeic|Math|Calculus|Physics|Chemistry|Cs|Chinese)App-.*\.js$/.test(file))
+if (routeChunks.length !== 8) throw new Error(`Expected eight lazy route chunks (all Hub tracks for full offline Hub), found ${routeChunks.length}.`)
 if (!files.some((file) => /assets\/index-.*\.js$/.test(file))) throw new Error('Entry JavaScript is not precached.')
 if (!files.some((file) => /assets\/vendor-supabase-.*\.js$/.test(file))) throw new Error('Supabase vendor chunk is not precached.')
 if (!files.some((file) => /assets\/index-.*\.css$/.test(file))) throw new Error('Entry CSS is not precached.')
 if (!files.some((file) => file.startsWith('./audio/'))) throw new Error('Bundled learning audio is not precached.')
 if (!files.some((file) => file.startsWith('./archify/'))) throw new Error('CS Archify assets are not precached.')
+// Tightened: critical Hub assets (all 8 tracks + main entry + shared) now strictly verified for offline precache
 
 const workerSource = await readFile(path.join(distDir, 'sw.js'), 'utf8')
 if (workerSource.includes('__PRECACHE_VERSION__')) throw new Error('Service worker cache version was not injected.')
