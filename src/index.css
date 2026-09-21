@@ -30,6 +30,8 @@
   --track-hero-title-size: clamp(1.22rem, 2.6vw, 1.5rem);
   --track-header-min-height: 56px;
   --track-header-padding-y: 0.35rem;
+  /* CS-canonical chrome horizontal gutter (cs-top-nav 1rem) */
+  --track-chrome-gutter-x: 1rem;
   --hub-card-gap: 1.25rem;
   --font-sans: 'Zen Kaku Gothic New', 'Segoe UI', sans-serif;
   --font-display: 'Shippori Mincho', 'Times New Roman', serif;
@@ -963,6 +965,15 @@ strong {
   max-width: 100%;
   scrollbar-width: thin;
   scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
+}
+
+.cs-main-viewport,
+.math-content,
+.calculus-content,
+.physics-content,
+.chemistry-content {
+  padding: var(--track-content-padding);
+  box-sizing: border-box;
 }
 
 .content::-webkit-scrollbar {
@@ -3177,7 +3188,7 @@ footer {
     border-bottom: 1px solid var(--line);
     width: 100%;
     max-width: 100vw;
-    padding: 0.5rem 0.75rem;
+    padding: var(--track-header-padding-y) var(--track-chrome-gutter-x);
     gap: 0.35rem;
     overflow-y: visible;
     overscroll-behavior: auto;
@@ -3426,7 +3437,8 @@ footer {
   .calculus-content,
   .math-content,
   .physics-content,
-  .chemistry-content {
+  .chemistry-content,
+  .cs-main-viewport {
     padding: var(--track-content-padding-mobile);
     max-width: 100vw;
     height: auto;
@@ -8859,7 +8871,7 @@ html.high-contrast { filter: contrast(125%); }
   width: 100%;
   min-height: var(--track-header-min-height);
   flex-shrink: 0;
-  padding: var(--track-header-padding-y) 1rem;
+  padding: var(--track-header-padding-y) var(--track-chrome-gutter-x);
   background: #ffffff;
   color: var(--ink);
   border-bottom: 1px solid var(--line);
@@ -9020,7 +9032,6 @@ html.high-contrast { filter: contrast(125%); }
 }
 .cs-main-viewport {
   background: var(--bg);
-  padding: var(--track-content-padding);
 }
 
 @media (max-width: 900px) {
@@ -9028,7 +9039,7 @@ html.high-contrast { filter: contrast(125%); }
     flex-wrap: wrap;
     align-items: flex-start;
     min-height: var(--track-header-min-height);
-    padding: var(--track-header-padding-y) var(--track-content-padding-mobile);
+    padding: var(--track-header-padding-y) var(--track-chrome-gutter-x);
   }
   .cs-nav-list {
     order: 3;

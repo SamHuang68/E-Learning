@@ -181,4 +181,25 @@ describe('CSS Layout & Sidebar Overflow Regression Guard', () => {
     expect(cssContent).toMatch(/\.speak-big\s*\{[^}]*background:\s*var\(--btn-primary-bg\)/s)
     expect(cssContent).not.toMatch(/\.speak-big:hover\s*\{[^}]*var\(--navy-soft\)/s)
   })
+
+  it('aligns STEM content padding and shell gutters to CS tokens', () => {
+    expect(cssContent).toMatch(/--track-chrome-gutter-x:\s*1rem/)
+    expect(cssContent).toMatch(
+      /\.cs-top-nav\s*\{[^}]*padding:\s*var\(--track-header-padding-y\)\s+var\(--track-chrome-gutter-x\)/s,
+    )
+    expect(cssContent).toMatch(
+      /\.cs-main-viewport,\s*\n\.math-content,\s*\n\.calculus-content,\s*\n\.physics-content,\s*\n\.chemistry-content\s*\{[^}]*padding:\s*var\(--track-content-padding\)/s,
+    )
+    expect(cssContent).toMatch(
+      /@media\s*\(max-width:\s*860px\)\s*\{[\s\S]*?\.chemistry-content,\s*\n\s*\.cs-main-viewport\s*\{[\s\S]*?padding:\s*var\(--track-content-padding-mobile\)/,
+    )
+    expect(cssContent).toMatch(
+      /@media\s*\(max-width:\s*860px\)\s*\{[\s\S]*?\.math-sidebar,[\s\S]*?padding:\s*var\(--track-header-padding-y\)\s+var\(--track-chrome-gutter-x\)/,
+    )
+    expect(cssContent).not.toMatch(/padding:\s*0\.5rem 0\.75rem;\s*\n\s*gap:\s*0\.35rem/)
+    const laterViewport = (cssContent.match(/\.cs-main-viewport\s*\{[^}]*\}/g) ?? []).find((block) =>
+      block.includes('background:'),
+    )
+    expect(laterViewport ?? '').not.toMatch(/padding:/)
+  })
 })
