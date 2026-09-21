@@ -6,6 +6,7 @@ import { CalculusAssessmentWidget } from './components/CalculusAssessment/Calcul
 import { generateDerivationSteps } from './engine'
 import { useCalculusLearningCoordinator } from './hooks/useCalculusLearningCoordinator'
 import { CalculusPrerequisiteGraph } from './components/CalculusPrerequisiteGraph'
+import { GradientIntuitionCard } from './components/GradientIntuitionCard'
 import type { CalculusLabMode, RiemannMethod, CalculusProblem } from './types'
 
 export const CalculusStudio: React.FC = () => {
@@ -81,6 +82,7 @@ export const CalculusStudio: React.FC = () => {
       </header>
 
       <CalculusPrerequisiteGraph />
+      <GradientIntuitionCard />
 
       {/* 主雙欄工作台 */}
       <main className="calculus-studio-workspace">
