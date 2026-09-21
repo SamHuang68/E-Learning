@@ -2,6 +2,7 @@
 import type { PhysicsGradeInfo, PhysicsUnit } from '../data/curriculum'
 import type { PhysicsProgressState } from '../utils/physicsStorage'
 import { MathFormula } from '../../math/components/MathFormula'
+import { useI18n } from '../../i18n/i18n'
 
 type Props = {
   gradeInfo: PhysicsGradeInfo
@@ -13,6 +14,7 @@ type Props = {
   onOpenMock: () => void
   onOpenVault: () => void
   onOpenSignals: () => void
+  onOpenFormulas: () => void
 }
 
 export const PhysicsToday: React.FC<Props> = ({
@@ -25,7 +27,9 @@ export const PhysicsToday: React.FC<Props> = ({
   onOpenMock,
   onOpenVault,
   onOpenSignals,
+  onOpenFormulas,
 }) => {
+  const { t } = useI18n()
   return (
     <div className="math-today-view physics-today-view">
       {/* 頂部年級 Banner */}
@@ -47,6 +51,9 @@ export const PhysicsToday: React.FC<Props> = ({
           </button>
           <button type="button" className="btn-hero-secondary" onClick={onOpenSignals}>
             ⚡ 3秒破題訊號
+          </button>
+          <button type="button" className="btn-hero-secondary" onClick={onOpenFormulas}>
+            {t('physics.formulas.open')}
           </button>
           {currentUnit.suggestedLab && (
             <button

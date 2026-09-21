@@ -18,6 +18,7 @@ import { PhysicsPractice } from './components/PhysicsPractice'
 import { PhysicsMockExam } from './components/PhysicsMockExam'
 import { PhysicsErrorVault } from './components/PhysicsErrorVault'
 import { PhysicsSignalsView } from './components/PhysicsSignalsView'
+import { PhysicsFormulaSheet } from './components/PhysicsFormulaSheet'
 import { ProjectileLab } from './labs/ProjectileLab'
 import { ShmLab } from './labs/ShmLab'
 import { OpticsLab } from './labs/OpticsLab'
@@ -127,6 +128,8 @@ export const PhysicsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
       ? [{ label: t('chrome.vault') }]
       : activeNav === 'signals'
       ? [{ label: t('nav.signals3s') }]
+      : activeNav === 'formulas'
+      ? [{ label: t('physics.formulas') }]
       : activeNav === 'labs'
       ? [{ label: t('chrome.physicsLabs') }]
       : []),
@@ -209,6 +212,7 @@ export const PhysicsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
             onOpenMock={() => setActiveNav('mock')}
             onOpenVault={() => setActiveNav('vault')}
             onOpenSignals={() => setActiveNav('signals')}
+            onOpenFormulas={() => setActiveNav('formulas')}
           />
         )}
 
@@ -245,6 +249,10 @@ export const PhysicsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         )}
 
         {activeNav === 'signals' && <PhysicsSignalsView />}
+
+        {activeNav === 'formulas' && (
+          <PhysicsFormulaSheet onBack={() => setActiveNav('today')} />
+        )}
 
         {activeNav === 'labs' && (
           <div className="physics-labs-showcase" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>

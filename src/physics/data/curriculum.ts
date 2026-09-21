@@ -1322,6 +1322,30 @@ export function getAllPhysicsUnits(): PhysicsUnit[] {
   return Object.values(PHYSICS_GRADES).flatMap((g) => g.units)
 }
 
+export type PhysicsFormulaSheetSection = {
+  gradeId: PhysicsGradeId
+  name: string
+  nameEn: string
+  units: Array<{ id: number; title: string; concepts: string[] }>
+}
+
+/** Catalog formula sheet: existing unit concepts only, no invented identities. */
+export function physicsFormulaSheetSections(): PhysicsFormulaSheetSection[] {
+  return getAllPhysicsGradeIds().map((gradeId) => {
+    const grade = PHYSICS_GRADES[gradeId]
+    return {
+      gradeId,
+      name: grade.name,
+      nameEn: grade.nameEn,
+      units: grade.units.map((unit) => ({
+        id: unit.id,
+        title: unit.title,
+        concepts: unit.concepts,
+      })),
+    }
+  })
+}
+
 /** 依主題領域 (Strand) 篩選物理單元 */
 export function getUnitsByPhysicsStrand(strand: PhysicsStrand): PhysicsUnit[] {
   return getAllPhysicsUnits().filter((u) => u.strand === strand)

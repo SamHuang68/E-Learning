@@ -116,6 +116,16 @@ describe('i18n dictionary', () => {
     expect(translate('en', 'hub.calculus.catalog')).toMatch(/not locks/i)
   })
 
+  it('keeps physics formula sheet copy as catalog plus offline, not an official exam sheet', () => {
+    expect(translate('zh-Hant', 'physics.formulas.honesty')).toMatch(/課綱/)
+    expect(translate('zh-Hant', 'physics.formulas.honesty')).toMatch(/離線/)
+    expect(translate('zh-Hant', 'physics.formulas.honesty')).toMatch(/不是/)
+    expect(translate('en', 'physics.formulas.honesty')).toMatch(/offline/i)
+    expect(translate('en', 'physics.formulas.honesty')).toMatch(/not an official/i)
+    expect(translate('zh-Hant', 'hub.physics.catalog')).toMatch(/離線/)
+    expect(translate('en', 'hub.physics.catalog')).toMatch(/offline/i)
+  })
+
   it('leaves unknown placeholders intact', () => {
     expect(interpolate('Hello {name}', { other: 'x' })).toBe('Hello {name}')
     const key = 'hub.solved' satisfies MessageKey
