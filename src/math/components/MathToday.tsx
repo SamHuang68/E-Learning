@@ -3,6 +3,7 @@ import type { MathGradeInfo, MathUnit } from '../data/curriculum'
 import type { MathProgressState } from '../utils/mathStorage'
 import { MathFormula } from './MathFormula'
 import { SolvingSignalCards } from './SolvingSignalCards'
+import { WhyThisNext } from '../../components/WhyThisNext'
 
 type Props = {
   gradeInfo: MathGradeInfo
@@ -45,6 +46,7 @@ export const MathToday: React.FC<Props> = ({
           </div>
           <span className="hero-desc-inline">{gradeInfo.description}</span>
         </div>
+        <WhyThisNext kind="unit" />
 
         <div className="hero-quick-actions">
           <button type="button" className="btn-hero-primary" onClick={onStartPractice}>

@@ -377,6 +377,14 @@ describe('i18n dictionary', () => {
     )
   })
 
+  it('keeps why-this-next rationale bilingual and not an ability claim', () => {
+    expect(translate('zh-Hant', 'today.whyHonesty')).toMatch(/不是能力診斷/)
+    expect(translate('en', 'today.whyHonesty')).toMatch(/not an ability diagnosis/i)
+    expect(translate('zh-Hant', 'today.whyUnit')).toMatch(/課綱/)
+    expect(translate('en', 'today.whyUnit')).toMatch(/syllabus/i)
+    expect(translate('en', 'today.whyHonesty')).not.toBe(translate('zh-Hant', 'today.whyHonesty'))
+  })
+
   it('keeps error-boundary and boot fallback copy bilingual', () => {
     const keys = [
       'error.eyebrow',

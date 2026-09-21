@@ -6,6 +6,7 @@ import { useI18n } from '../../i18n/i18n'
 import type { CsNavSection } from './CsTopNav'
 import { CsBigOCard } from './CsBigOCard'
 import { CsHttpTcpCard } from './CsHttpTcpCard'
+import { WhyThisNext } from '../../components/WhyThisNext'
 
 interface Props {
   progress: CsProgress
@@ -36,6 +37,7 @@ export const CsToday: React.FC<Props> = ({ progress, onNavigate }) => {
       <header className="cs-today-hero">
         <p className="eyebrow">{t('cs.today.unitOf', { n: unitIndex, total: CS_CURRICULUM.length })}</p>
         <h1>{t('cs.today.next', { title: nextUnit.title.replace(/^單元 \d+：/, '') })}</h1>
+        <WhyThisNext kind="unit" />
         <p className="lede">{nextUnit.subtitle}</p>
         <p className="cs-today-progress-line">
           {t('cs.today.unitItems', { done: doneInUnit, total: nextUnit.questions.length })}

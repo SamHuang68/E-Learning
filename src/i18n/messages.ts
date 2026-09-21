@@ -213,6 +213,9 @@ export const ZH_HANT = {
   'today.resume': '繼續上次軌道',
   'today.preferred': '你上次選擇的軌道',
   'today.catalog': '目錄起點（尚未選擇軌道）',
+  'today.whyLabel': '為何是這一步：',
+  'today.whyUnit': '課綱中第一個尚未完成的單元（本機進度）',
+  'today.whyHonesty': '依本機到期複習、上次軌道或課綱順序，不是能力診斷或證照建議。',
 
   'privacy.back': '← 回 Hub',
   'privacy.eyebrow': 'PRIVACY',
@@ -980,6 +983,9 @@ export const EN: Record<MessageKey, string> = {
   'today.resume': 'Continue last track',
   'today.preferred': 'Your last chosen track',
   'today.catalog': 'Catalog start (no track chosen yet)',
+  'today.whyLabel': 'Why this next:',
+  'today.whyUnit': 'First unfinished syllabus unit (local progress)',
+  'today.whyHonesty': 'From local due reviews, last track, or catalog order — not an ability diagnosis or cert advice.',
 
   'privacy.back': '← Back to Hub',
   'privacy.eyebrow': 'PRIVACY',
