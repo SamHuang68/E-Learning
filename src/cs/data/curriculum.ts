@@ -2568,3 +2568,88 @@ export function getNextCsUnit(completedIds: string[]): CsUnit {
   return core.find((unit) => unit.questions.some((q) => !completedIds.includes(q.id))) ?? core[0] ?? CS_CURRICULUM[0]
 }
 
+export type CsBigOTopicKey =
+  | 'cs.bigo.rca'
+  | 'cs.bigo.cla'
+  | 'cs.bigo.wallace'
+  | 'cs.bigo.cfs'
+  | 'cs.bigo.select'
+  | 'cs.bigo.epoll'
+  | 'cs.bigo.attention'
+  | 'cs.bigo.kv'
+  | 'cs.bigo.mamba'
+
+export type CsBigORow = {
+  id: string
+  unitId: string
+  topicKey: CsBigOTopicKey
+  notation: string
+  catalogNeedle: string
+}
+
+/** Catalog Big-O teaching rows. Existing unit text only; not an interview sheet. */
+export const CS_BIG_O_SHEET: CsBigORow[] = [
+  {
+    id: 'rca',
+    unitId: 'cs-unit-3-digital-logic',
+    topicKey: 'cs.bigo.rca',
+    notation: 'O(n)',
+    catalogNeedle: '進位延遲隨位元數 $n$ 呈線性成長 ($O(n)$)',
+  },
+  {
+    id: 'cla',
+    unitId: 'cs-unit-3-digital-logic',
+    topicKey: 'cs.bigo.cla',
+    notation: 'O(\\log n)',
+    catalogNeedle: '實現 $O(\\log n)$ 或 $O(1)$ 進位計算',
+  },
+  {
+    id: 'wallace',
+    unitId: 'cs-unit-3-digital-logic',
+    topicKey: 'cs.bigo.wallace',
+    notation: 'O(\\log n)',
+    catalogNeedle: '將邏輯閘延遲大幅驟降至 $O(\\log n)$',
+  },
+  {
+    id: 'cfs',
+    unitId: 'cs-unit-4-operating-systems',
+    topicKey: 'cs.bigo.cfs',
+    notation: 'O(1)',
+    catalogNeedle: '排程器直接以 O(1) 拾取最左側節點',
+  },
+  {
+    id: 'select',
+    unitId: 'cs-unit-4-operating-systems',
+    topicKey: 'cs.bigo.select',
+    notation: 'O(N)',
+    catalogNeedle: '每次調用都需 $O(N)$ 線性遍歷所有連線',
+  },
+  {
+    id: 'epoll',
+    unitId: 'cs-unit-4-operating-systems',
+    topicKey: 'cs.bigo.epoll',
+    notation: 'O(1)',
+    catalogNeedle: '`epoll_wait()` 僅需以 $O(1)$ 複雜度',
+  },
+  {
+    id: 'attention',
+    unitId: 'cs-unit-7-frontier-ai-models',
+    topicKey: 'cs.bigo.attention',
+    notation: 'O(N^2)',
+    catalogNeedle: '計算複雜度隨序列長度呈二次方增長 ($O(N^2)$)',
+  },
+  {
+    id: 'kv',
+    unitId: 'cs-unit-7-frontier-ai-models',
+    topicKey: 'cs.bigo.kv',
+    notation: 'O(1)',
+    catalogNeedle: '將時間複雜度降至 $O(1)$',
+  },
+  {
+    id: 'mamba',
+    unitId: 'cs-unit-7-frontier-ai-models',
+    topicKey: 'cs.bigo.mamba',
+    notation: 'O(N)',
+    catalogNeedle: 'Mamba 實現 $O(N)$ 線性複雜度',
+  },
+]

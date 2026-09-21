@@ -4,6 +4,7 @@ import { CS_CURRICULUM, getCsQuestionCount, getNextCsUnit, isCsAdvancedUnit } fr
 import { computeCsRadar } from '../../engine/radar'
 import { useI18n } from '../../i18n/i18n'
 import type { CsNavSection } from './CsTopNav'
+import { CsBigOCard } from './CsBigOCard'
 
 interface Props {
   progress: CsProgress
@@ -71,6 +72,8 @@ export const CsToday: React.FC<Props> = ({ progress, onNavigate }) => {
           ) : null}
         </div>
       </header>
+
+      <CsBigOCard />
 
       {showProgress && hasProgress ? (
         <section className="cs-today-radar" aria-label={t('cs.today.coverage')}>
