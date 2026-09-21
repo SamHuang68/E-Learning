@@ -224,6 +224,16 @@ describe('i18n dictionary', () => {
     expect(translate('en', 'zh.measure.honesty')).toMatch(/TOCFL/i)
   })
 
+  it('keeps service-worker update toast copy bilingual and not a new SW feature', () => {
+    expect(translate('zh-Hant', 'sw.update.message')).toMatch(/題庫/)
+    expect(translate('zh-Hant', 'sw.update.apply')).toBe('立即套用')
+    expect(translate('zh-Hant', 'sw.update.dismiss')).toMatch(/關閉/)
+    expect(translate('en', 'sw.update.message')).toMatch(/lessons/i)
+    expect(translate('en', 'sw.update.apply')).toBe('Apply now')
+    expect(translate('en', 'sw.update.dismiss')).toMatch(/dismiss/i)
+    expect(translate('en', 'sw.update.message')).not.toBe(translate('zh-Hant', 'sw.update.message'))
+  })
+
   it('leaves unknown placeholders intact', () => {
     expect(interpolate('Hello {name}', { other: 'x' })).toBe('Hello {name}')
     const key = 'hub.solved' satisfies MessageKey

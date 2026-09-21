@@ -3,6 +3,7 @@ import { AuthProvider } from './auth/AuthProvider'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { PrivacyPage } from './components/PrivacyPage'
 import { AccessibilityControls } from './components/AccessibilityControls'
+import { UpdateNotification } from './components/UpdateNotification'
 import { Hub } from './Hub'
 import { saveLang, writeLangPreference, type LangId } from './utils/storage'
 import { lazyWithRetry } from './utils/lazyWithRetry'
@@ -200,6 +201,7 @@ function AppChrome() {
         {t('common.skipToContent')}
       </a>
       <AccessibilityControls />
+      <UpdateNotification />
       <AppShell />
     </ErrorBoundary>
   )
