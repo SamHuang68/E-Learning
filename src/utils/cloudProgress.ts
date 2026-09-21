@@ -747,6 +747,29 @@ export async function flushCloudPush(): Promise<void> {
   if (pendingDirty) await enqueueDrain(false)
 }
 
+/**
+ * Retry the local-progress drain when the browser reports it is online again.
+ * Signed-out stays `local-only` (this-device storage, not a cloud backup).
+ */
+export async function handleBrowserOnline(): Promise<void> {
+  if (!cloudUserId) {
+    emit('local-only')
+    return
+  }
+  if (!allowPush || !isSupabaseConfigured()) return
+  if (pushTimer) {
+    clearTimeout(pushTimer)
+    pushTimer = null
+  }
+  await enqueueDrain(false)
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('online', () => {
+    void handleBrowserOnline()
+  })
+}
+
 /** Reset cloud progress to defaults and mirror locally. */
 export async function resetCloudProgress(): Promise<boolean> {
   const sb = getProgressBackend()

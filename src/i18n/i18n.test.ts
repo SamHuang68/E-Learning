@@ -234,6 +234,14 @@ describe('i18n dictionary', () => {
     expect(translate('en', 'sw.update.message')).not.toBe(translate('zh-Hant', 'sw.update.message'))
   })
 
+  it('keeps offline progress-flush copy honest about local-only storage', () => {
+    expect(translate('zh-Hant', 'privacy.cloud.3')).toMatch(/本機/)
+    expect(translate('zh-Hant', 'privacy.cloud.3')).toMatch(/不是雲端備份/)
+    expect(translate('en', 'privacy.cloud.3')).toMatch(/queued locally/i)
+    expect(translate('en', 'privacy.cloud.3')).toMatch(/not a cloud backup/i)
+    expect(translate('en', 'privacy.cloud.3')).not.toBe(translate('zh-Hant', 'privacy.cloud.3'))
+  })
+
   it('leaves unknown placeholders intact', () => {
     expect(interpolate('Hello {name}', { other: 'x' })).toBe('Hello {name}')
     const key = 'hub.solved' satisfies MessageKey

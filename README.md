@@ -74,6 +74,7 @@ Migration 只新增欄位，不會刪除／重建 policies、修改 grants 或�
 同步行為：
 
 - **Write-through：** 先寫 localStorage，再 upsert 雲端  
+- **離線佇列：** 寫入失敗會留下髒旗標；瀏覽器 `online` 且已登入才重試刷出。未登入或本機後端仍是此裝置 storage，不是雲端備份。詳見 [`docs/offline-progress-flush.md`](docs/offline-progress-flush.md)。  
 - **登入時：** 雲端列不存在 → 上傳本機並**讀回驗證**後才顯示已同步；已存在 → **合併**本機與雲端（不靜默覆蓋），寫回後驗證。驗證失敗不開放 write-through。  
 - **欄位：** `aoba` / `kana` / `toeic` / `math` / `physics` / `chemistry` / `cs` / `chinese` / `math_signals` / `physics_signals` / `chemistry_signals` / `cs_signals`（jsonb）、`lang`、`meta`、`updated_at`
 
