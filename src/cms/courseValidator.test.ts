@@ -20,6 +20,7 @@ describe('Course Pack Validator Engine', () => {
               choices: ['5', '6', '7', '8'],
               answer: '5',
               topic: '畢氏定理',
+              wrongAnswerRationale: '6 是 3+3 的常見加法誤區；7、8 則忽略勾股定理 a²+b²=c² 的平方關係。',
             },
           ],
         },

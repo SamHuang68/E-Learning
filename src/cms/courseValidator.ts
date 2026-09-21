@@ -9,6 +9,7 @@ export type CoursePackQuestion = {
   choices: string[]
   answer: string
   explanation?: string
+  wrongAnswerRationale: string // 錯誤答案解析（必填）：針對干擾選項提供具體誤區說明，提升練習反思深度
   topic?: string
   tags?: string[]
   difficulty?: number // -3.0 ~ +3.0
@@ -156,6 +157,17 @@ export function validateCoursePack(raw: unknown): ValidationResult {
         }
 
         if (q.topic) topicsSet.add(q.topic)
+
+        // Wrong-answer rationale required field check (Practice axis deep enforcement)
+        if (!q.wrongAnswerRationale || q.wrongAnswerRationale.trim().length === 0) {
+          errors.push(`${qPrefix} 缺少錯誤答案解析 (wrongAnswerRationale) | Missing required wrong-answer rationale`)
+        } else {
+          // 簡單 LaTeX 檢查（若適用）
+          const rationaleLatexIssues = checkLatexSyntax(q.wrongAnswerRationale)
+          rationaleLatexIssues.forEach((issue) => {
+            errors.push(`${qPrefix} 錯誤答案解析 LaTeX 錯誤: ${issue}`)
+          })
+        }
       })
     })
   }
