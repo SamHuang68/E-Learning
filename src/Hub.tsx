@@ -562,7 +562,6 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
               <p>
                 {t('hub.srsMeta', {
                   long: longIntervalCount,
-                  bonus: Math.min(50, learningMeta.streak * 5),
                 })}
               </p>
               <p className="leech-soft-flag" aria-label={t('hub.leechSoftFlag')}>

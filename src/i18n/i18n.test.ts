@@ -81,6 +81,24 @@ describe('i18n dictionary', () => {
     expect(translate('zh-Hant', 'hub.bottomNav.tracks')).toBe('軌道')
   })
 
+  it('keeps Hub weekly streak copy as local practice continuity, not awards', () => {
+    expect(translate('zh-Hant', 'hub.streak')).toMatch(/本機/)
+    expect(translate('en', 'hub.streak')).toMatch(/local/i)
+    expect(translate('zh-Hant', 'hub.streakShield')).toMatch(/本機/)
+    expect(translate('zh-Hant', 'hub.streakShield')).not.toMatch(/防護/)
+    expect(translate('en', 'hub.streakShield')).toMatch(/local/i)
+    expect(translate('en', 'hub.streakShield')).not.toMatch(/protection/i)
+    expect(translate('zh-Hant', 'hub.srsMeta')).not.toMatch(/加成/)
+    expect(translate('en', 'hub.srsMeta')).not.toMatch(/bonus/i)
+    expect(translate('zh-Hant', 'hub.srsMeta')).toMatch(/本機/)
+    expect(translate('en', 'hub.srsMeta')).toMatch(/fluency/i)
+    expect(translate('zh-Hant', 'hub.weekHeat')).toMatch(/本機/)
+    expect(translate('en', 'hub.weekHeat')).toMatch(/local/i)
+    expect(translate('en', 'hub.weekHeat')).toMatch(/week/i)
+    expect(translate('zh-Hant', 'hub.stats.aria')).not.toMatch(/連勝/)
+    expect(translate('en', 'hub.stats.aria')).not.toMatch(/streak panel/i)
+  })
+
   it('leaves unknown placeholders intact', () => {
     expect(interpolate('Hello {name}', { other: 'x' })).toBe('Hello {name}')
     const key = 'hub.solved' satisfies MessageKey
