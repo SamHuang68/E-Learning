@@ -11,13 +11,14 @@
 import React, { useState, useMemo } from 'react'
 import {
   getAllChemistryUnits,
+  chemistryStrandMessageKey,
   type ChemistryQuestion,
-  type ChemistryStrand,
 } from '../data/curriculum'
 import { CHEMISTRY_MOCK_EXAMS } from '../data/mockExams'
 import { CHEMISTRY_SOLVING_SIGNALS } from '../data/solvingSignals'
 import { MathFormula } from '../../math/components/MathFormula'
 import { exportErrorVaultToAnki } from '../../utils/ankiExporter'
+import { useI18n } from '../../i18n/i18n'
 
 export type ChemistryErrorVaultProps = {
   /** 答錯題目 ID 清單 (自 LocalStorage progress 載入) */
@@ -43,14 +44,7 @@ export interface EnrichedChemistryError {
   }
 }
 
-/** 108 課綱化學五大主軸中文名稱對照 */
-const CHEMISTRY_STRAND_NAMES: Record<ChemistryStrand, string> = {
-  matter_structure: '物質結構 (原子、週期表與化學鍵)',
-  reactions: '化學反應 (反應式、質量守恆與反應熱)',
-  equilibrium_kinetics: '平衡動力 (氣體、溶液與化學平衡)',
-  electrochemistry: '酸鹼電化 (酸鹼鹽、滴定與氧化還原)',
-  organic: '生活有機 (有機分子、聚合物與綠色化學)',
-}
+
 
 /**
  * 智慧匹配題目所屬之化學互動實驗室
@@ -266,6 +260,7 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
   onRemoveError,
   onOpenLab,
 }) => {
+  const { t } = useI18n()
   // 狀態：展開步驟診斷的卡片 ID 集合
   const [expandedSteps, setExpandedSteps] = useState<Record<string, boolean>>({})
   // 狀態：領域篩選
@@ -290,7 +285,7 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
           question: q,
           sourceType: 'unit',
           sourceLabel: `${unit.band} · 單元 ${unit.id}: ${unit.title}`,
-          strandName: CHEMISTRY_STRAND_NAMES[q.strand] || q.strand,
+          strandName: t(chemistryStrandMessageKey(q.strand)),
           matchedLab: labInfo,
         })
       })
@@ -304,14 +299,14 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
           question: q,
           sourceType: 'mock',
           sourceLabel: `${exam.title} (${exam.targetExam})`,
-          strandName: CHEMISTRY_STRAND_NAMES[q.strand] || q.strand,
+          strandName: t(chemistryStrandMessageKey(q.strand)),
           matchedLab: labInfo,
         })
       })
     })
 
     return map
-  }, [])
+  }, [t])
 
   // 2. 檢索出所有待複習錯題（具備未知 ID 容錯機制）
   const errorQuestions = useMemo(() => {
@@ -335,12 +330,12 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
           question: fallbackQ,
           sourceType: 'unit' as const,
           sourceLabel: '化學綜合強化題庫',
-          strandName: '化學反應 (綜合強化)',
+          strandName: t(chemistryStrandMessageKey('reactions')),
           matchedLab: resolveChemistryLab(fallbackQ),
         }
       })
       .filter(Boolean)
-  }, [errorQuestionIds, allEnrichedQuestionsMap])
+  }, [errorQuestionIds, allEnrichedQuestionsMap, t])
 
   // 3. 依據篩選條件過濾錯題列表
   const filteredQuestions = useMemo(() => {
@@ -512,35 +507,35 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
             className={`vault-chip-btn ${selectedStrand === 'matter_structure' ? 'chemistry-active' : ''}`}
             onClick={() => setSelectedStrand('matter_structure')}
           >
-            🔬 物質結構 ({errorQuestions.filter((q) => q.question.strand === 'matter_structure').length})
+            🔬 {t(chemistryStrandMessageKey('matter_structure'))} ({errorQuestions.filter((q) => q.question.strand === 'matter_structure').length})
           </button>
           <button
             type="button"
             className={`vault-chip-btn ${selectedStrand === 'reactions' ? 'chemistry-active' : ''}`}
             onClick={() => setSelectedStrand('reactions')}
           >
-            🔥 化學反應 ({errorQuestions.filter((q) => q.question.strand === 'reactions').length})
+            🔥 {t(chemistryStrandMessageKey('reactions'))} ({errorQuestions.filter((q) => q.question.strand === 'reactions').length})
           </button>
           <button
             type="button"
             className={`vault-chip-btn ${selectedStrand === 'equilibrium_kinetics' ? 'chemistry-active' : ''}`}
             onClick={() => setSelectedStrand('equilibrium_kinetics')}
           >
-            ⚖️ 平衡動力 ({errorQuestions.filter((q) => q.question.strand === 'equilibrium_kinetics').length})
+            ⚖️ {t(chemistryStrandMessageKey('equilibrium_kinetics'))} ({errorQuestions.filter((q) => q.question.strand === 'equilibrium_kinetics').length})
           </button>
           <button
             type="button"
             className={`vault-chip-btn ${selectedStrand === 'electrochemistry' ? 'chemistry-active' : ''}`}
             onClick={() => setSelectedStrand('electrochemistry')}
           >
-            ⚡ 酸鹼電化 ({errorQuestions.filter((q) => q.question.strand === 'electrochemistry').length})
+            ⚡ {t(chemistryStrandMessageKey('electrochemistry'))} ({errorQuestions.filter((q) => q.question.strand === 'electrochemistry').length})
           </button>
           <button
             type="button"
             className={`vault-chip-btn ${selectedStrand === 'organic' ? 'chemistry-active' : ''}`}
             onClick={() => setSelectedStrand('organic')}
           >
-            🌿 生活有機 ({errorQuestions.filter((q) => q.question.strand === 'organic').length})
+            🌿 {t(chemistryStrandMessageKey('organic'))} ({errorQuestions.filter((q) => q.question.strand === 'organic').length})
           </button>
         </div>
       </div>

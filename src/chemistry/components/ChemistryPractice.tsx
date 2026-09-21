@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
 import type { ChemistryUnit } from '../data/curriculum'
+import { chemistryStrandMessageKey } from '../data/curriculum'
 import { MathFormula } from '../../math/components/MathFormula'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
 import { Scratchpad } from '../../components/Scratchpad'
+import { useI18n } from '../../i18n/i18n'
 
 type Props = {
   unit: ChemistryUnit
@@ -35,6 +37,7 @@ export const ChemistryPractice: React.FC<Props> = ({
   onAnswerWrong,
   onNextUnit,
 }) => {
+  const { t } = useI18n()
   const [viewMode, setViewMode] = useState<'textbook' | 'practice'>('textbook')
   const [currentIdx, setCurrentIdx] = useState(0)
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
@@ -175,7 +178,7 @@ export const ChemistryPractice: React.FC<Props> = ({
         >
           <div>
             <span style={{ fontSize: '0.75rem', color: '#34d399', fontWeight: 700 }}>
-              CHEMISTRY TEXTBOOK MODULE · {unit.strand}
+              CHEMISTRY TEXTBOOK MODULE · {t(chemistryStrandMessageKey(unit.strand))}
             </span>
             <h2 style={{ margin: '0.2rem 0 0.2rem', fontSize: '1.25rem', fontWeight: 800 }}>
               {unit.title}
@@ -268,7 +271,7 @@ export const ChemistryPractice: React.FC<Props> = ({
           <div className="practice-card">
             <div className="question-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span className="q-badge" style={{ background: '#059669', color: '#fff' }}>
-                {q.strand.toUpperCase()} · 難度 {'★'.repeat(q.difficulty)}
+                {t(chemistryStrandMessageKey(q.strand))} · 難度 {'★'.repeat(q.difficulty)}
               </span>
               <span style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>
                 第 {currentIdx + 1} / {questions.length} 題
