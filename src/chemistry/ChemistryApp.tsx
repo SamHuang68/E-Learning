@@ -253,6 +253,26 @@ export const ChemistryApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
 
         {activeNav === 'labs' && (
           <div className="chemistry-labs-showcase" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div
+              className="chemistry-safety-banner"
+              role="alert"
+              aria-live="polite"
+              style={{
+                position: 'sticky',
+                top: '0',
+                background: 'linear-gradient(90deg, #fef3c7, #fde68a)',
+                border: '3px solid #d97706',
+                borderRadius: '12px',
+                padding: '1rem 1.25rem',
+                marginBottom: '0.5rem',
+                zIndex: 20,
+                fontSize: '0.95rem',
+                lineHeight: 1.5,
+                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+              }}
+            >
+              <strong style={{ color: '#92400e' }}>{t('chemistry.safetyDisclaimer')}</strong>
+            </div>
             <div className="mock-nav-tabs">
               <button
                 type="button"

@@ -325,6 +325,7 @@ export const ZH_HANT = {
   'chemistry.backToday': '返回化學今日學習',
   'chemistry.stage.junior': '國中自然化學 (G7 ~ G9)',
   'chemistry.stage.senior': '高中化學 (G10 ~ G12)',
+  'chemistry.safetyDisclaimer': '⚠️ 化學實驗室安全聲明：本實驗室為模擬環境。請務必遵守實驗室安全規範，包括佩戴防護裝備、避免接觸危險化學品、確保通風良好，並在教師監督下進行。任何實際實驗請遵循學校/機構安全協議。',
 
   'calculus.brand': '微積分互動專題',
   'calculus.brandSub': 'Calculus Studio',
@@ -686,6 +687,7 @@ export const EN: Record<MessageKey, string> = {
   'track.calculus': 'Calculus',
   'track.physics': 'Physics',
   'track.chemistry': 'Chemistry',
+  'chemistry.safetyDisclaimer': '⚠️ Chemistry Lab Safety Disclaimer: This lab is a simulation environment. Always follow lab safety protocols including wearing PPE, avoiding contact with hazardous chemicals, ensuring proper ventilation, and conducting under instructor supervision. For any real experiments, adhere to your school/institution safety guidelines.',
   'track.cs': 'Computer Science',
   'track.ja': 'Japanese',
   'track.en': 'TOEIC English',
