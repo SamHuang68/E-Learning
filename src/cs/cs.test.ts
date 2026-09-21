@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { CS_CURRICULUM, getAllCsUnits, getCsUnitById, CS_STRAND_IDS, CS_STRAND_SLUGS, csStrandMessageKey, CS_BIG_O_SHEET } from './data/curriculum'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
+import { CS_CURRICULUM, getAllCsUnits, getCsUnitById, CS_STRAND_IDS, CS_STRAND_SLUGS, csStrandMessageKey, CS_BIG_O_SHEET, CS_HTTP_TCP_SHEET } from './data/curriculum'
 import { CS_SOLVING_SIGNALS } from './data/solvingSignals'
 import { CS_MOCK_EXAMS } from './data/mockExams'
 import { CS_TEXTBOOK_CHAPTERS } from './data/textbookData'
@@ -80,6 +82,36 @@ describe('Computer Science Track (計算機概論: 軟硬體、五大單元與�
         ].join('\n')
         expect(blob).toContain(row.catalogNeedle)
       })
+    })
+
+    it('HTTP vs TCP teaching card cites unit-5 catalog needles, not a cert claim', () => {
+      expect(CS_HTTP_TCP_SHEET.map((row) => row.id)).toEqual([
+        'http',
+        'tcp',
+        'stack',
+        'handshake',
+      ])
+      CS_HTTP_TCP_SHEET.forEach((row) => {
+        expect(row.unitId).toBe('cs-unit-5-networking')
+        const unit = getCsUnitById(row.unitId)
+        expect(unit).toBeDefined()
+        const blob = [
+          unit?.title,
+          unit?.subtitle,
+          ...(unit?.concepts ?? []),
+          ...(unit?.questions.flatMap((q) => [
+            q.title,
+            q.question,
+            q.explanation,
+            ...q.solution,
+            ...(q.options ?? []),
+          ]) ?? []),
+        ].join('\n')
+        expect(blob).toContain(row.catalogNeedle)
+      })
+      const src = readFileSync(join(process.cwd(), 'src/i18n/messages.ts'), 'utf8')
+      expect(src).toMatch(/不是網路證照/)
+      expect(src).toMatch(/not a networking cert/)
     })
 
     it('unit 1 defines hardware, software, abstraction layers and ISA interface', () => {
