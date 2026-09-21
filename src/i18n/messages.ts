@@ -361,6 +361,11 @@ export const ZH_HANT = {
   'physics.formulas.honesty': '來自本機課綱單元觀念，安裝後可離線讀；不是會考或學測官方公式表。',
   'physics.formulas.open': '開啟公式表',
   'physics.formulas.item': '公式 {n}',
+  'physics.interference.altTitle': '楊氏雙狹縫干涉教學圖：兩狹縫到屏上明暗條紋',
+  'physics.interference.altDesc': '左方擋板有兩狹縫 S1 與 S2，弧線表示兩列相干波；右方屏上明暗相間的條紋。路徑差為波長整數倍時相長干涉（亮紋），半波長奇數倍時相消干涉（暗紋）。條紋間距為波長乘屏距除以縫距。教學示意，不是實驗室量測。',
+  'physics.interference.caption': '雙狹縫干涉：亮紋路徑差為波長的整數倍。',
+  'physics.interference.honesty': '教學示意，不是實驗室量測或考試通過保證。',
+  'physics.interference.svgNote': 'S1、S2 到屏：亮／暗條紋',
 
   'chemistry.brand': '高中/國中化學 108課綱',
   'chemistry.brandSub': '分子微觀與反應計量',
@@ -1085,6 +1090,11 @@ export const EN: Record<MessageKey, string> = {
   'physics.formulas.honesty': 'From local syllabus unit concepts; readable offline after install — not an official exam sheet.',
   'physics.formulas.open': 'Open formula sheet',
   'physics.formulas.item': 'Formula {n}',
+  'physics.interference.altTitle': 'Young double-slit teaching diagram: two slits and bright/dark fringes on a screen',
+  'physics.interference.altDesc': 'A barrier on the left has slits S1 and S2. Arcs show two coherent waves. The screen on the right shows alternating bright and dark fringes. Path difference of whole wavelengths is constructive (bright); odd half-wavelengths is destructive (dark). Fringe spacing is wavelength times screen distance over slit spacing. Teaching sketch, not a lab measurement.',
+  'physics.interference.caption': 'Double-slit interference: bright fringes when path difference is a whole number of wavelengths.',
+  'physics.interference.honesty': 'Teaching sketch, not a lab measurement or exam-pass claim.',
+  'physics.interference.svgNote': 'S1, S2 to screen: bright / dark fringes',
 
   'chemistry.brand': 'Junior / senior chemistry (108)',
   'chemistry.brandSub': 'Molecules and stoichiometry',

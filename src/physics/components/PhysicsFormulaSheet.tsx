@@ -1,6 +1,7 @@
 import { useI18n } from '../../i18n/i18n'
 import { physicsFormulaSheetSections } from '../data/curriculum'
 import { MathFormula } from '../../math/components/MathFormula'
+import { WaveInterferenceDiagram } from './WaveInterferenceDiagram'
 
 type Props = {
   onBack: () => void
@@ -23,6 +24,7 @@ export function PhysicsFormulaSheet({ onBack }: Props) {
         </button>
       </div>
       <p className="section-subtext">{t('physics.formulas.honesty')}</p>
+      <WaveInterferenceDiagram />
       {sections.map((section) => (
         <section key={section.gradeId} className="unit-map-section" aria-labelledby={`phys-sheet-${section.gradeId}`}>
           <h3 id={`phys-sheet-${section.gradeId}`}>
