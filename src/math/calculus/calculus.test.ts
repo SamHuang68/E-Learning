@@ -107,6 +107,35 @@ describe('微積分專題 (Calculus Studio) 模組測試', () => {
       expect(subPack.length).toBe(5)
     })
 
+    it('series convergence pack has six teaching items, not an exam-pass claim', () => {
+      const seriesPack = CALCULUS_PROBLEMS.filter((p) => p.conceptTag === 'calc-series-convergence')
+      expect(seriesPack.map((p) => p.id)).toEqual([
+        'calc-prob-series1',
+        'calc-prob-series2',
+        'calc-prob-series3',
+        'calc-prob-series4',
+        'calc-prob-series5',
+        'calc-prob-series6',
+      ])
+      const blob = seriesPack.map((p) => `${p.title}\n${p.questionText}\n${p.explanation}`).join('\n')
+      expect(blob).toMatch(/通項/)
+      expect(blob).toMatch(/geometric|等比/i)
+      expect(blob).toMatch(/p-series|p-級數/i)
+      expect(blob).toMatch(/ratio|比值/i)
+      expect(blob).toMatch(/integral|積分/i)
+      expect(blob).toMatch(/alternating|交錯/i)
+      seriesPack.forEach((p) => {
+        expect(p.explanation).toMatch(/教學/)
+        expect(p.explanation).toMatch(/不是|非正式/)
+        expect(p.options?.length).toBe(4)
+        expect(p.correctIndex).toBe(0)
+        expect(p.title).toMatch(/\//)
+      })
+      const seriesConcept = CALCULUS_CATALOG.find((c) => c.id === 'calc-series-convergence')
+      expect(seriesConcept?.category).toBe('series')
+      expect(seriesConcept?.description).toMatch(/非正式考試/)
+    })
+
     it('微積分專屬勳章庫應具備清晰的解鎖條件與 XP 獎勵', () => {
       expect(CALCULUS_BADGES.length).toBe(4)
       CALCULUS_BADGES.forEach((b) => {

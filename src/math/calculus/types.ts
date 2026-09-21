@@ -27,7 +27,7 @@ export interface CalculusProblem {
   id: string
   title: string
   tier: 'L1' | 'L2' | 'L3' | 'L4' | 'L5'
-  tierLabel: '觀念探究' | '雙向推導' | '情境建模' | '反例思辨' | '乘積法則專項'
+  tierLabel: '觀念探究' | '雙向推導' | '情境建模' | '反例思辨' | '乘積法則專項' | '級數收斂專項'
   conceptTag: string
   questionText: string
   defaultExpr: string
