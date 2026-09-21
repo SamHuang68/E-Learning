@@ -55,6 +55,24 @@ export function TodayView({
   const overall = Math.round((vocabPct + readingPct + grammarPct) / 3)
   const ringDeg = Math.round((overall / 100) * 360)
 
+  if (overall === 0) {
+    return (
+      <section className="study-section today-view">
+        <div className="empty-state-card" role="status" aria-live="polite">
+          <h2>{t('todayView.emptyTitle')}</h2>
+          <p>{t('todayView.emptyBody')}</p>
+          <button
+            type="button"
+            className="primary-btn"
+            onClick={onStartVocab}
+          >
+            {t('todayView.emptyCta')}
+          </button>
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section className="study-section today-view">
       <section

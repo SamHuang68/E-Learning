@@ -545,6 +545,9 @@ export const ZH_HANT = {
   'todayView.mockTitle': '單元總測驗 · 15 題',
   'todayView.mockMeta': '單字 8 題＋閱讀 3 題＋文法 4 題，80 分過關',
   'todayView.startTest': '開始測驗 →',
+  'todayView.emptyTitle': '尚未開始任何學習活動',
+  'todayView.emptyBody': '今天還沒有進度。誠實地說：從第一個核心單字任務開始，逐步建立連續與熟練度。',
+  'todayView.emptyCta': '開始第一個任務 →',
 
   'calculus.eyebrow': '臺灣 108 課綱數甲 · AP Calculus BC · 大一微積分先修',
   'calculus.demoFn': '示範函數',
@@ -1154,6 +1157,9 @@ export const EN: Record<MessageKey, string> = {
   'todayView.mockTitle': 'Unit mock · 15 items',
   'todayView.mockMeta': 'Vocab 8 + reading 3 + grammar 4 · pass at 80',
   'todayView.startTest': 'Start test →',
+  'todayView.emptyTitle': 'No learning activity yet',
+  'todayView.emptyBody': 'Zero progress today. Honestly: begin with the first core vocabulary task to build streak and mastery step by step.',
+  'todayView.emptyCta': 'Start first task →',
 
   'calculus.eyebrow': 'Taiwan 108 Math A · AP Calculus BC · first-year prep',
   'calculus.demoFn': 'Demo function',
