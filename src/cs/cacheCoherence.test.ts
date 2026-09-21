@@ -124,3 +124,94 @@ describe('快取階層架構與多核心 MESI 一致性單元測試', () => {
     expect(result.busMessage).toContain('Invalidate')
   })
 })
+
+/**
+ * 快取一致性序列教學筆記產生器 (Teaching-only)
+ * Cache Coherence Sequence Note Generator
+ * 產生 MESI 狀態轉換的逐步教學說明，雙語 (zh-Hant / en)
+ * 用於教學展示多核心讀寫序列下的匯流排監聽與一致性維護
+ */
+export interface MesiOperation {
+  coreId: number
+  op: 'read' | 'write'
+  address: number
+  value?: number
+}
+
+export interface SequenceStep {
+  step: number
+  descriptionZh: string
+  descriptionEn: string
+  statesAfter: CoreCacheLine[]
+  busMessage: string
+}
+
+export function generateMesiSequenceNote(
+  initialCores: CoreCacheLine[],
+  operations: MesiOperation[],
+): { steps: SequenceStep[]; summaryZh: string; summaryEn: string } {
+  let cores = JSON.parse(JSON.stringify(initialCores)) as CoreCacheLine[]
+  const steps: SequenceStep[] = []
+
+  operations.forEach((op, idx) => {
+    const stepNum = idx + 1
+    let busMsg = ''
+    let descZh = ''
+    let descEn = ''
+
+    if (op.op === 'read') {
+      const target = cores.find((c) => c.coreId === op.coreId)!
+      if (target.state === 'I') {
+        // 簡化：讀取 miss 時從記憶體載入，轉為 E 或 S (此處簡化為 E)
+        target.state = 'E'
+        target.data = 0 // 模擬載入
+        busMsg = `Core ${op.coreId} issues BusRd, loads from memory`
+        descZh = `步驟 ${stepNum}: Core ${op.coreId} 讀取 miss，從記憶體載入，狀態轉 E (Exclusive)`
+        descEn = `Step ${stepNum}: Core ${op.coreId} read miss, load from memory, state -> E`
+      } else {
+        busMsg = `Core ${op.coreId} read hit (local ${target.state})`
+        descZh = `步驟 ${stepNum}: Core ${op.coreId} 讀取 hit，狀態維持 ${target.state}`
+        descEn = `Step ${stepNum}: Core ${op.coreId} read hit, state remains ${target.state}`
+      }
+    } else {
+      // write
+      const result = simulateMesiWrite(cores, op.coreId, op.value ?? 0)
+      cores = result.updatedCores
+      busMsg = result.busMessage
+      descZh = `步驟 ${stepNum}: Core ${op.coreId} 寫入 ${op.value}，發出 Invalidate，其他核心轉 I，自身轉 M`
+      descEn = `Step ${stepNum}: Core ${op.coreId} write ${op.value}, issues Invalidate, others -> I, self -> M`
+    }
+
+    steps.push({
+      step: stepNum,
+      descriptionZh: descZh,
+      descriptionEn: descEn,
+      statesAfter: JSON.parse(JSON.stringify(cores)),
+      busMessage: busMsg,
+    })
+  })
+
+  const summaryZh = `序列完成：共 ${steps.length} 步，展示 MESI 一致性如何透過匯流排訊號維護多核心快取一致。`
+  const summaryEn = `Sequence complete: ${steps.length} steps demonstrating how MESI maintains coherence via bus snooping.`
+
+  return { steps, summaryZh, summaryEn }
+}
+
+describe('快取一致性序列教學筆記', () => {
+  it('產生雙語 MESI 讀寫序列教學說明', () => {
+    const initial: CoreCacheLine[] = [
+      { coreId: 0, state: 'S', data: 42 },
+      { coreId: 1, state: 'S', data: 42 },
+    ]
+    const ops: MesiOperation[] = [
+      { coreId: 0, op: 'read', address: 0x1000 },
+      { coreId: 0, op: 'write', address: 0x1000, value: 99 },
+    ]
+    const note = generateMesiSequenceNote(initial, ops)
+    expect(note.steps.length).toBe(2)
+    expect(note.summaryZh).toContain('序列完成')
+    expect(note.summaryEn).toContain('Sequence complete')
+    expect(note.steps[1].descriptionZh).toContain('寫入')
+    expect(note.steps[1].descriptionEn).toContain('write')
+  })
+})

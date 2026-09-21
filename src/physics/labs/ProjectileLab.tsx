@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react'
+import { MeasurementUncertaintyCallout } from '../components/MeasurementUncertaintyCallout'
 
 /**
  * 物理動態實驗室：斜向拋體與運動學實驗室 (ProjectileLab)
@@ -490,6 +491,7 @@ export const ProjectileLab: React.FC = () => {
           </div>
         </div>
       </div>
+      <MeasurementUncertaintyCallout labId="projectile" />
     </div>
   )
 }

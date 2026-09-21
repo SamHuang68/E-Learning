@@ -28,6 +28,19 @@
           "c_matmul"
         ],
         "note": "PagedAttention streaming historical K and V vectors into on-chip SRAM blocks."
+      },
+      {
+        "id": "memory-hierarchy",
+        "label": "Memory Hierarchy & Tiling (Archify Deep Dive)",
+        "focus": [
+          "c_sram",
+          "c_kvc",
+          "c_matmul"
+        ],
+        "note": {
+          "en": "FlashAttention-2 tiles Q/K/V into 256KB SRAM for online softmax (O(N) HBM traffic vs O(N²)); PagedAttention uses virtual memory blocks for dynamic batching without fragmentation. RoPE and RMSNorm fused in output projection.",
+          "zh-Hant": "FlashAttention-2 將 Q/K/V 分塊至 256KB SRAM 進行線上 softmax（HBM 流量 O(N) 而非 O(N²)）；PagedAttention 使用虛擬記憶體塊實現動態批次無碎片。RoPE 與 RMSNorm 融合於輸出投影。"
+        }
       }
     ]
   },

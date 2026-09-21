@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { ContentProvenance } from '../../components/ContentProvenance'
 import { useI18n } from '../../i18n/i18n'
+import { LsmGlossaryTooltip } from '../../components/LsmGlossaryTooltip'
 
 interface Props {
   onEarnXp?: (amount: number) => void
@@ -78,9 +79,9 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
       file: './archify/tcp-handshake-sequence.html',
       badge: 'Archify Sequence 2.16',
       stats: [
-        { label: t('cs.archify.tcp.stat.syn'), title: '3-Way Handshake', desc: 'ISN 初始序號同步與 MSS 窗口協商', color: '#06b6d4' },
-        { label: t('cs.archify.tcp.stat.halfclose'), title: '4-Way Teardown', desc: 'FIN / ACK 雙向非對稱釋放與 CLOSE_WAIT', color: '#10b981' },
-        { label: t('cs.archify.tcp.stat.msl'), title: 'TIME_WAIT & 2MSL', desc: '等待 2MSL 確保最終 ACK 到達並排空網路殘留封包', color: '#f43f5e' },
+        { label: t('cs.archify.tcp.stat.syn'), title: t('cs.archify.tcp.stat.syn.title'), desc: t('cs.archify.tcp.stat.syn.desc'), color: '#06b6d4' },
+        { label: t('cs.archify.tcp.stat.halfclose'), title: t('cs.archify.tcp.stat.halfclose.title'), desc: t('cs.archify.tcp.stat.halfclose.desc'), color: '#10b981' },
+        { label: t('cs.archify.tcp.stat.msl'), title: t('cs.archify.tcp.stat.msl.title'), desc: t('cs.archify.tcp.stat.msl.desc'), color: '#f43f5e' },
       ],
     },
     'transformer-attention': {
@@ -277,7 +278,14 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
         {diagramMeta.stats.map((stat, idx) => (
           <div key={idx} style={{ background: 'var(--card-bg, rgba(255,255,255,0.05))', border: '1px solid var(--line)', padding: '0.75rem', borderRadius: '8px' }}>
             <div style={{ fontSize: '0.75rem', color: stat.color, fontWeight: 700 }}>{stat.label}</div>
-            <div style={{ fontSize: '0.92rem', fontWeight: 700, marginTop: '0.2rem' }}>{stat.title}</div>
+            <div style={{ fontSize: '0.92rem', fontWeight: 700, marginTop: '0.2rem' }}>
+              {selectedDiagram === 'lsm-tree' ? (
+                stat.label.includes('IN-MEMORY') ? <LsmGlossaryTooltip termKey="memtable">{stat.title}</LsmGlossaryTooltip> :
+                stat.label.includes('DURABILITY') ? <LsmGlossaryTooltip termKey="wal">{stat.title}</LsmGlossaryTooltip> :
+                stat.label.includes('STORAGE') ? <LsmGlossaryTooltip termKey="compaction">{stat.title}</LsmGlossaryTooltip> :
+                stat.title
+              ) : stat.title}
+            </div>
             <div style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.2rem' }}>{stat.desc}</div>
           </div>
         ))}
