@@ -93,4 +93,12 @@ describe('Strict Review Gate: Visual Layout, 100vh Focus & Zero-Overflow Invaria
     )
     expect((cssContent.match(/font-weight:\s*800/g) ?? []).length).toBe(3)
   })
+
+  it('[GATE-VISUAL-CARD-RADIUS] Hub/track cards share --card-radius aliased to --radius', () => {
+    expect(cssContent).toMatch(/--card-radius:\s*var\(--radius\)/)
+    expect(cssContent).toMatch(/\.hub-card\s*\{[^}]*var\(--card-radius\)/s)
+    expect(cssContent).toMatch(/\.stat-card\s*\{[^}]*var\(--card-radius\)/s)
+    expect(cssContent).not.toMatch(/\.hub-card\s*\{[^}]*border-radius:\s*22px/s)
+    expect((cssContent.match(/font-weight:\s*800/g) ?? []).length).toBe(3)
+  })
 })

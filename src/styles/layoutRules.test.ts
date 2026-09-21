@@ -207,4 +207,18 @@ describe('CSS Layout & Sidebar Overflow Regression Guard', () => {
     expect(cssContent).toMatch(/\.topbar\s*\{[^}]*min-height:\s*var\(--track-header-min-height\)/s)
     expect(cssContent).toMatch(/\.topbar\s*\{[^}]*padding-block:\s*var\(--track-header-padding-y\)/s)
   })
+
+  it('uses a single --card-radius token for Hub/track cards and panels', () => {
+    expect(cssContent).toMatch(/--radius:\s*20px/)
+    expect(cssContent).toMatch(/--card-radius:\s*var\(--radius\)/)
+    expect(cssContent).toMatch(/\.hub-card\s*\{[^}]*border-radius:\s*var\(--card-radius\)/s)
+    expect(cssContent).toMatch(/\.stat-card\s*\{[^}]*border-radius:\s*var\(--card-radius\)/s)
+    expect(cssContent).toMatch(/\.practice-card\s*\{[^}]*border-radius:\s*var\(--card-radius\)/s)
+    expect(cssContent).toMatch(/\.auth-panel\s*\{[^}]*border-radius:\s*var\(--card-radius\)/s)
+    expect(cssContent).toMatch(/\.modal-content\s*\{[^}]*border-radius:\s*var\(--card-radius\)/s)
+    expect(cssContent).toMatch(/\.math-lab\s*\{[^}]*border-radius:\s*var\(--card-radius\)/s)
+    expect(cssContent).not.toMatch(/\.hub-card\s*\{[^}]*border-radius:\s*22px/s)
+    expect(cssContent).not.toMatch(/border-radius:\s*var\(--radius\)/)
+    expect((cssContent.match(/border-radius:\s*var\(--card-radius\)/g) ?? []).length).toBeGreaterThanOrEqual(20)
+  })
 })
