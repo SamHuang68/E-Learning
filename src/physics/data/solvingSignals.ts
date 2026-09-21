@@ -20,6 +20,7 @@ export type PhysicsSolvingSignal = {
     question: string
     quickSolve: string
   }
+  unitCheckTip?: { zh: string; en: string } // Kinematics unit-check helper tip (bilingual zh-Hant/en)
 }
 
 export const PHYSICS_SOLVING_SIGNALS: PhysicsSolvingSignal[] = [
@@ -94,6 +95,10 @@ export const PHYSICS_SOLVING_SIGNALS: PhysicsSolvingSignal[] = [
     exampleProblem: {
       question: '一汽車以初速 $20\\text{ m/s}$ 煞車，煞車距離為 $40\\text{ m}$，若煞車過程為等減速度，求減速度量值與煞車時間？',
       quickSolve: '缺 $t$ 直接用 $0^2 = 20^2 - 2a(40) \\implies a = 5\\text{ m/s}^2$；缺 $a$ 用 $40 = \\frac{20+0}{2}t \\implies t = 4\\text{ s}$。',
+    },
+    unitCheckTip: {
+      zh: '【單位檢查助手】v₀、v 單位 m/s；a 單位 m/s²；t 單位 s；Δx 單位 m。驗證： [Δx] = [v]·[t] 或 [v] = [a]·[t]，量綱必須一致！',
+      en: '【Unit-check helper】v₀, v in m/s; a in m/s²; t in s; Δx in m. Verify: [Δx] = [v]·[t] or [v] = [a]·[t] — dimensions must match!'
     },
   },
   {
