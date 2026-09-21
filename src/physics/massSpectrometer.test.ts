@@ -47,7 +47,7 @@ describe('Physics Mass Spectrometry Velocity Selector, Deflection & Cyclotron Re
 
     // Maximum kinetic energy Ek_max = (q * B * Rmax)^2 / (2 * mp)
     const EkJoules = Math.pow(q * B * Rmax, 2) / (2 * mp) // ~ 1.104e-11 J
-    const EkMeV = EkJoules / (1.602e-19 * 1.0e6) // ~ 68.94 MeV
+    const EkMeV = EkJoules / 1.602e-13 // eV-to-MeV factor 1.602e-19 * 1e6
     expect(EkMeV).toBeCloseTo(68.9, 1)
   })
 })
