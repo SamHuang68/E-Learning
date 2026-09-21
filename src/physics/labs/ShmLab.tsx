@@ -396,7 +396,69 @@ export const ShmLab: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Energy Conservation Lab Checklist (bilingual, interactive) */}
+        <div className="lab-checklist" style={{ gridColumn: '1 / -1', marginTop: '0.5rem', padding: '0.75rem', background: 'rgba(15,23,42,0.6)', borderRadius: '8px', border: '1px solid #1e293b' }}>
+          <h4 style={{ margin: '0 0 0.5rem', fontSize: '0.95rem' }}>🧪 Energy Conservation Lab Checklist / 力學能守恆實驗檢查清單</h4>
+          <p style={{ margin: '0 0 0.5rem', fontSize: '0.75rem', color: 'var(--muted)' }}>Complete all steps to verify mechanical energy conservation. / 完成所有步驟以驗證機械能守恆。</p>
+          <Checklist />
+        </div>
       </div>
+    </div>
+  )
+}
+
+interface ChecklistItem {
+  id: string
+  zh: string
+  en: string
+}
+
+const checklistItems: ChecklistItem[] = [
+  { id: 'c1', zh: '測量並記錄擺長 L (m)', en: 'Measure and record pendulum length L (m)' },
+  { id: 'c2', zh: '計算最大位能 PE = m g h_max', en: 'Calculate max potential energy PE = m g h_max' },
+  { id: 'c3', zh: '觀察擺動過程中 KE + PE 總和是否恆定', en: 'Observe if KE + PE sum remains constant during swing' },
+  { id: 'c4', zh: '記錄不同角度下速度與能量轉換', en: 'Record velocity and energy conversion at different angles' },
+  { id: 'c5', zh: '驗證小角度近似誤差 < 1%', en: 'Verify small-angle approximation error < 1%' },
+  { id: 'c6', zh: '討論空氣阻力對能量守恆的影響', en: 'Discuss air resistance impact on energy conservation' },
+]
+
+const Checklist: React.FC = () => {
+  const [checked, setChecked] = useState<Record<string, boolean>>({})
+  const completed = Object.values(checked).filter(Boolean).length
+  const progress = Math.round((completed / checklistItems.length) * 100)
+
+  const toggle = (id: string) => {
+    setChecked(prev => ({ ...prev, [id]: !prev[id] }))
+  }
+
+  return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+        <div style={{ flex: 1, height: '6px', background: '#334155', borderRadius: '3px', overflow: 'hidden' }}>
+          <div style={{ width: `${progress}%`, height: '100%', background: '#22c55e', transition: 'width 0.2s' }} />
+        </div>
+        <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>{progress}% ({completed}/{checklistItems.length})</span>
+      </div>
+      <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: '0.35rem' }}>
+        {checklistItems.map(item => (
+          <li key={item.id} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+            <input
+              type="checkbox"
+              id={item.id}
+              checked={!!checked[item.id]}
+              onChange={() => toggle(item.id)}
+              aria-label={`${item.zh} / ${item.en}`}
+              style={{ marginTop: '0.2rem' }}
+            />
+            <label htmlFor={item.id} style={{ fontSize: '0.82rem', lineHeight: 1.35, cursor: 'pointer' }}>
+              <span style={{ color: '#e0f2fe' }}>{item.zh}</span>
+              <span style={{ color: '#94a3b8', marginLeft: '0.4rem' }}>/ {item.en}</span>
+            </label>
+          </li>
+        ))}
+      </ul>
+      {progress === 100 && <div style={{ marginTop: '0.4rem', color: '#22c55e', fontSize: '0.8rem', fontWeight: 600 }}>✓ Lab checklist complete — Energy conservation verified! / 檢查清單完成 — 能量守恆已驗證！</div>}
     </div>
   )
 }
