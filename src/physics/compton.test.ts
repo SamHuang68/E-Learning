@@ -35,8 +35,8 @@ describe('Physics Compton Scattering & Bragg X-ray Diffraction Tests', () => {
 
   it('verifies photon momentum p = h / lambda = E / c', () => {
     // X-ray photon with energy E = 10 keV = 1.602e-15 J
-    // c = 3.0e8 m/s -> p = E / c ≈ 5.34e-24 kg*m/s
-    const eJoules = 10000 * 1.602e-19
+    // c = 3.0e8 m/s -> p = E / c ~= 5.34e-24 kg*m/s
+    const eJoules = 1.602e-15
     const c = 3.0e8
     const p = eJoules / c
     expect(p * 1e24).toBeCloseTo(5.34, 2)

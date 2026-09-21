@@ -16,6 +16,7 @@ export const ChineseMockExam: React.FC<Props> = ({ onEarnXp, onRecordError }) =>
   const [isTimerRunning, setIsTimerRunning] = useState(true)
 
   const timerRef = useRef<NodeJS.Timeout | null>(null)
+  const handleSubmitRef = useRef<() => void>(() => {})
 
   useEffect(() => {
     if (!isStarted || isFinished || !isTimerRunning) return
@@ -24,7 +25,7 @@ export const ChineseMockExam: React.FC<Props> = ({ onEarnXp, onRecordError }) =>
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timerRef.current!)
-          handleSubmit()
+          handleSubmitRef.current()
           return 0
         }
         return prev - 1
@@ -70,6 +71,7 @@ export const ChineseMockExam: React.FC<Props> = ({ onEarnXp, onRecordError }) =>
       playWrongSound()
     }
   }
+  handleSubmitRef.current = handleSubmit
 
   const currentQ: TocflQuestion = TOCFL_MOCK_QUESTIONS[currentIndex]
 

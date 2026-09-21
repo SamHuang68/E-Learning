@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef, useEffect } from 'react'
+﻿import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { STROKE_CHARACTERS, type ChineseStrokeItem } from '../data/strokeOrders'
 import { INITIALS_DATA, FINALS_DATA } from '../data/pinyinBopomofo'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
@@ -24,21 +24,7 @@ export const BopomofoStrokeLab: React.FC<Props> = ({ onEarnXp }) => {
   }
 
   // 繪製漢字九宮格與米字格背景
-  useEffect(() => {
-    if (activeSubTab !== 'stroke' || !canvasRef.current) return
-    const canvas = canvasRef.current
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-
-    const size = 260
-    canvas.width = size * (window.devicePixelRatio || 1)
-    canvas.height = size * (window.devicePixelRatio || 1)
-    ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1)
-
-    drawGrid(ctx, size)
-  }, [selectedChar, activeSubTab])
-
-  function drawGrid(ctx: CanvasRenderingContext2D, size: number) {
+  const drawGrid = useCallback((ctx: CanvasRenderingContext2D, size: number) => {
     ctx.clearRect(0, 0, size, size)
     // 外框
     ctx.strokeStyle = '#334155'
@@ -73,7 +59,21 @@ export const BopomofoStrokeLab: React.FC<Props> = ({ onEarnXp }) => {
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
     ctx.fillText(selectedChar.char, size / 2, size / 2 + 10)
-  }
+  }, [selectedChar])
+
+  useEffect(() => {
+    if (activeSubTab !== 'stroke' || !canvasRef.current) return
+    const canvas = canvasRef.current
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    const size = 260
+    canvas.width = size * (window.devicePixelRatio || 1)
+    canvas.height = size * (window.devicePixelRatio || 1)
+    ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1)
+
+    drawGrid(ctx, size)
+  }, [selectedChar, activeSubTab, drawGrid])
 
   function handleClear() {
     if (!canvasRef.current) return

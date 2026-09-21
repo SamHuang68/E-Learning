@@ -2089,7 +2089,7 @@ export const CS_CURRICULUM: CsUnit[] = [
         title: '大模型高效邊緣推論：AWQ (Activation-aware Weight Quantization)',
         question: '在大型語言模型 4-bit (INT4) 權重後量化 (PTQ) 領域，麻省理工團隊提出的「AWQ (Activation-aware Weight Quantization, Lin et al.)」相較於傳統 RTN (Round-to-Nearest) 暴力截斷，其保護模型推論精度不崩潰的最關鍵科學洞察為何？',
         options: [
-          '發現權重並非同等重要，僅有約 $1\%$ 的顯著權重 (Salient Weights) 承擔了大部分模型表達能力，且這些權重的顯著性取決於「輸入活化特徵 (Activation Magnitudes)」的大小而非權重本身大小；AWQ 透過保護這 $1\%$ 與大活化相乘的關鍵通道（對其進行縮放因數保護），使 70B 模型以 4-bit 量化後幾乎零困惑度 (Perplexity) 損失',
+          '發現權重並非同等重要，僅有約 $1%$ 的顯著權重 (Salient Weights) 承擔了大部分模型表達能力，且這些權重的顯著性取決於「輸入活化特徵 (Activation Magnitudes)」的大小而非權重本身大小；AWQ 透過保護這 $1%$ 與大活化相乘的關鍵通道（對其進行縮放因數保護），使 70B 模型以 4-bit 量化後幾乎零困惑度 (Perplexity) 損失',
           '將所有的權重全部轉換為文字保存以避免數值量化',
           '強制要求每次推論都必須連接 10 台超級電腦',
           '隨機挑選 50% 的神經元永久設為 0',
@@ -2513,8 +2513,8 @@ export const CS_CURRICULUM: CsUnit[] = [
         answer: 0,
         solution: [
           '第一步：傳統 PPO 在 RLHF 中需要 4 個模型常駐顯存：Actor（策略）、Critic（價值）、Ref（參考策略）、Reward（獎勵），顯存開銷巨大且 Critic 容易擬合漂移。',
-          '第二步：GRPO（Group Relative Policy Optimization）徹底移除 Critic：對同一個 Prompt，Actor 模型直接生成一組答案 $\{y_1, y_2, \\dots, y_G\}$。',
-          '第三步：規則引擎/獎勵模型為每個答案評分得 $\{r_1, \\dots, r_G\}$，優勢函數直接以組內統計量計算：$A_i = \\frac{r_i - \\mu}{\\sigma}$；結合 PPO-Clip 策略梯度與 KL 散度懲罰直接更新 Actor。這使大模型能以極低硬體門檻在純規則獎勵（如數學競賽、代碼編譯）下自主湧現出長鏈思考 (Chain-of-Thought) 與自我糾錯反思能力。選項 A 完全正確。',
+          '第二步：GRPO（Group Relative Policy Optimization）徹底移除 Critic：對同一個 Prompt，Actor 模型直接生成一組答案 ${y_1, y_2, \\dots, y_G}$。',
+          '第三步：規則引擎/獎勵模型為每個答案評分得 ${r_1, \\dots, r_G}$，優勢函數直接以組內統計量計算：$A_i = \\frac{r_i - \\mu}{\\sigma}$；結合 PPO-Clip 策略梯度與 KL 散度懲罰直接更新 Actor。這使大模型能以極低硬體門檻在純規則獎勵（如數學競賽、代碼編譯）下自主湧現出長鏈思考 (Chain-of-Thought) 與自我糾錯反思能力。選項 A 完全正確。',
         ],
         explanation: 'GRPO 透過組內採樣獎勵歸一化替代傳統 Critic 網路，在節省巨額顯存的同時賦予模型強大的邏輯推理進化能力。',
         difficulty: 4,

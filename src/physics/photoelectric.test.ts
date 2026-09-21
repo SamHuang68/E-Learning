@@ -39,7 +39,7 @@ describe('Physics Photoelectric Effect & Quantum Physics Tests', () => {
     // Electron accelerated through potential V = 100 V -> Ek = 100 eV = 1.602e-17 J
     const h = 6.626e-34
     const m = 9.109e-31
-    const ek = 100 * 1.602e-19 // 1.602e-17 J
+    const ek = 1.602e-17 // 100 eV
 
     const p = Math.sqrt(2 * m * ek) // momentum
     const lambda = h / p // ~ 1.23e-10 m = 0.123 nm (in X-ray / atomic spacing scale)
