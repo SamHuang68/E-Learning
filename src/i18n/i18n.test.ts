@@ -396,6 +396,15 @@ describe('i18n dictionary', () => {
     )
   })
 
+  it('keeps Hub search empty-state copy bilingual and not a dead end', () => {
+    expect(translate('zh-Hant', 'hub.search.empty')).toMatch(/沒有符合/)
+    expect(translate('zh-Hant', 'hub.search.emptyHint')).toMatch(/目錄/)
+    expect(translate('en', 'hub.search.empty')).toMatch(/no tracks match/i)
+    expect(translate('en', 'hub.search.emptyHint')).toMatch(/not a dead end/i)
+    expect(translate('en', 'hub.search.showAll')).toMatch(/show all tracks/i)
+    expect(translate('en', 'hub.search.empty')).not.toBe(translate('zh-Hant', 'hub.search.empty'))
+  })
+
   it('keeps math practice answer labels bilingual', () => {
     expect(translate('zh-Hant', 'math.practice.answerLabel')).toMatch(/計算答案/)
     expect(translate('en', 'math.practice.answerLabel')).toMatch(/calculated answer/i)
