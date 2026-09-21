@@ -63,6 +63,18 @@ describe('i18n dictionary', () => {
     expect(translate('en', 'hub.radar.aria')).toMatch(/radar/i)
     expect(translate('zh-Hant', 'hub.radar.aria')).toMatch(/雷達/)
     expect(translate('en', 'hub.stats.aria')).not.toBe(translate('zh-Hant', 'hub.stats.aria'))
+    // R04: sweep additional Hub chrome en keys for completeness & a11y
+    expect(translate('en', 'hub.srs.aria')).toMatch(/schedule/i)
+    expect(translate('zh-Hant', 'hub.srs.aria')).toMatch(/複習/)
+    expect(translate('en', 'hub.moreAuth')).toMatch(/sign/i)
+    expect(translate('en', 'hub.radarTitle')).toMatch(/radar/i)
+    expect(translate('en', 'hub.badgesTitle')).toMatch(/badge/i)
+    expect(translate('en', 'hub.toeicExplain')).toMatch(/explanation/i)
+    expect(translate('en', 'hub.catalogFirst.title')).toMatch(/catalog/i)
+    expect(translate('en', 'hub.weekHeat')).toMatch(/week/i)
+    expect(translate('en', 'hub.goTrack')).toMatch(/go/i)
+    expect(translate('en', 'hub.privacy')).toMatch(/privacy/i)
+    expect(translate('en', 'hub.footerNote')).not.toBe(translate('zh-Hant', 'hub.footerNote'))
   })
 
   it('leaves unknown placeholders intact', () => {
