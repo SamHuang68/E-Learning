@@ -394,6 +394,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
   const resumeLabel = t(TRACK_LABEL_KEYS[resumeId])
 
   return (
+    <>
     <main role="main" aria-label={t('hub.landmark.main')} className="hub unified-hub">
       <header role="banner" className="hub-hero">
         <div className="hub-topbar">
@@ -700,5 +701,20 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
         <span>{t('hub.footerNote')}</span>
       </footer>
     </main>
+    <nav className="hub-bottom-nav" aria-label={t('hub.bottomNav')}>
+      <a href="#hub" className="hub-bottom-nav-item is-current" aria-current="page">
+        <span className="hub-bottom-nav-mark" aria-hidden="true">主</span>
+        {t('hub.bottomNav.home')}
+      </a>
+      <a href="#tracks-title" className="hub-bottom-nav-item">
+        <span className="hub-bottom-nav-mark" aria-hidden="true">軌</span>
+        {t('hub.bottomNav.tracks')}
+      </a>
+      <a href="#privacy" className="hub-bottom-nav-item">
+        <span className="hub-bottom-nav-mark" aria-hidden="true">說</span>
+        {t('hub.bottomNav.about')}
+      </a>
+    </nav>
+    </>
   )
 }

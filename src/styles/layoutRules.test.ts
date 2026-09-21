@@ -132,4 +132,11 @@ describe('CSS Layout & Sidebar Overflow Regression Guard', () => {
       /@media\s*\(max-width:\s*860px\)\s*\{[\s\S]*?\.content,\s*\n\s*\.calculus-content,[\s\S]*?padding:\s*var\(--track-content-padding-mobile\)/,
     )
   })
+
+  it('ensures Hub mobile bottom nav uses the 44px touch token', () => {
+    expect(cssContent).toMatch(/--touch-min:\s*44px/)
+    expect(cssContent).toContain('.hub-bottom-nav')
+    expect(cssContent).toMatch(/\.hub-bottom-nav-item[^}]*min-height:\s*var\(--touch-min\)/s)
+    expect(cssContent).toMatch(/\.hub-bottom-nav-item[^}]*min-width:\s*var\(--touch-min\)/s)
+  })
 })
