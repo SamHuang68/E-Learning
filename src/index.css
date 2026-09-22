@@ -184,7 +184,6 @@ strong {
 
 .hub-hero {
   margin-bottom: 1.5rem;
-  animation: rise 0.5s ease both;
 }
 
 .hub-hero h1 {
@@ -360,13 +359,11 @@ strong {
   display: flex;
   flex-direction: column;
   gap: 0;
-  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
   height: 100%;
   overflow: hidden;
 }
 .hub-card:hover {
-  transform: translateY(-4px);
   border-color: var(--accent-border);
   box-shadow: 0 14px 28px rgba(63, 111, 100, 0.12);
 }
@@ -1236,7 +1233,6 @@ strong {
   width: min(100%, 240px);
   justify-self: end;
   filter: drop-shadow(0 10px 18px rgba(31, 77, 99, 0.12));
-  animation: floaty 5s ease-in-out infinite;
 }
 
 .progress-ring {
@@ -3567,6 +3563,30 @@ footer {
     scroll-behavior: auto !important;
     animation: none !important;
     transition: none !important;
+  }
+
+  .hub-hero,
+  .hub-card,
+  .hub-card:hover,
+  .hero-art,
+  .hub-primary-cta,
+  .btn-a11y-trigger {
+    transform: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hub-hero {
+    animation: rise 0.5s ease both;
+  }
+  .hero-art {
+    animation: floaty 5s ease-in-out infinite;
+  }
+  .hub-card {
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .hub-card:hover {
+    transform: translateY(-4px);
   }
 }
 /* ==========================================================================
