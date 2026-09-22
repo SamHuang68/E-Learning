@@ -12,7 +12,9 @@ export function playClip(
     /^https?:\/\//i.test(src) || src.startsWith('/')
       ? src
       : `${(import.meta.env.BASE_URL || '/').replace(/\/?$/, '/')}${src.replace(/^\//, '')}`
-  const audio = new Audio(resolved)
+  const audio = new Audio()
+  audio.preload = 'none'
+  audio.src = resolved
 
   const cleanup = () => {
     audio.onended = null
