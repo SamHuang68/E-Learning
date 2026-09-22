@@ -20,9 +20,9 @@ describe('practice answer field labels', () => {
 })
 
 describe('SRS grade live region', () => {
-  it('announces Good/Again outcomes with polite or assertive aria-live', () => {
+  it('announces Good/Again outcomes with polite aria-live', () => {
     const src = readFileSync(join(process.cwd(), 'src/components/ExerciseSession.tsx'), 'utf8')
-    expect(src).toContain("aria-live={feedback ? 'polite' : 'assertive'}")
+    expect(src).toContain('aria-live="polite"')
     expect(src).toContain('aria-atomic="true"')
     expect(src).toContain('copy.srsGood')
     expect(src).toContain('copy.srsAgain')

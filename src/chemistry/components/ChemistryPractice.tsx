@@ -361,7 +361,7 @@ export const ChemistryPractice: React.FC<Props> = ({
 
             {isSubmitted && (
               <div className={`solution-box ${isCorrect ? 'sol-correct' : 'sol-wrong'}`} style={{ marginTop: '0.75rem' }}>
-                <div className="sol-header">
+                <div className="sol-header" role="status" aria-live="polite" aria-atomic="true">
                   {isCorrect ? '🎉 答對了！' : '❌ 答錯了，請研讀解析：'}
                 </div>
                 <div className="sol-body">

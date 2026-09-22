@@ -166,7 +166,7 @@ export function ExerciseSession({
       <p className="eyebrow">{KIND_LABELS[exercise.kind]}</p>
       <h1>
         {title}
-        <span>
+        <span aria-live="polite" aria-atomic="true">
           {index + 1} / {total}
         </span>
       </h1>
@@ -200,7 +200,7 @@ export function ExerciseSession({
           <p
             className={feedback ? 'status-line' : 'status-line warn'}
             role="status"
-            aria-live={feedback ? 'polite' : 'assertive'}
+            aria-live="polite"
             aria-atomic="true"
           >
             {feedback

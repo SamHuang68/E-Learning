@@ -179,6 +179,9 @@ export const CsPractice: React.FC<Props> = ({
               {/* 詳解區域 */}
               {isSubmitted && (
                 <div style={{ marginTop: '0.65rem', padding: '0.75rem', borderRadius: '8px', background: 'var(--surface-soft)', border: '1px solid var(--line)' }}>
+                  <p role="status" aria-live="polite" aria-atomic="true" className="status-line" style={{ margin: '0 0 0.4rem' }}>
+                    {chosenOpt === q.answer ? '答對了' : '答錯了'}
+                  </p>
                   <strong style={{ fontSize: '0.78rem', color: '#2563eb', display: 'block', marginBottom: '0.3rem' }}>
                     💡 步驟式深度解析：
                   </strong>
