@@ -1,18 +1,28 @@
 ﻿import React, { useRef, useState, useEffect } from 'react'
+import { useI18n } from '../i18n/i18n'
+import type { MessageKey } from '../i18n/messages'
 
 interface Props {
   isOpen: boolean
   onClose: () => void
 }
 
+const PEN_COLORS: { hex: string; labelKey: MessageKey }[] = [
+  { hex: '#38bdf8', labelKey: 'scratch.color.cyan' },
+  { hex: '#facc15', labelKey: 'scratch.color.yellow' },
+  { hex: '#f43f5e', labelKey: 'scratch.color.red' },
+  { hex: '#ffffff', labelKey: 'scratch.color.white' },
+]
+
 /**
  * 手寫幾何與算式推導草稿紙 (Interactive Scratchpad)
  * 提供純前端 HTML5 Canvas 塗鴉推導板，支援高對比暗色網格、多色筆刷、橡皮擦與一鍵清空。
  */
 export const Scratchpad: React.FC<Props> = ({ isOpen, onClose }) => {
+  const { t } = useI18n()
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const [isDrawing, setIsDrawing] = useState(false)
-  const [color, setColor] = useState('#38bdf8') // 預設青藍色高對比筆刷
+  const [color, setColor] = useState('#38bdf8')
   const [lineWidth] = useState(2.5)
   const [isEraser, setIsEraser] = useState(false)
 
@@ -22,13 +32,11 @@ export const Scratchpad: React.FC<Props> = ({ isOpen, onClose }) => {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    // 確保高解析度適配
     const rect = canvas.getBoundingClientRect()
     canvas.width = (rect.width || 400) * (window.devicePixelRatio || 1)
     canvas.height = (rect.height || 240) * (window.devicePixelRatio || 1)
     ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1)
 
-    // 繪製微弱坐標輔助網格
     drawGrid(ctx, rect.width || 400, rect.height || 240)
   }, [isOpen])
 
@@ -127,7 +135,6 @@ export const Scratchpad: React.FC<Props> = ({ isOpen, onClose }) => {
         overflow: 'hidden',
       }}
     >
-      {/* 頂部工具列 */}
       <div
         style={{
           display: 'flex',
@@ -142,21 +149,22 @@ export const Scratchpad: React.FC<Props> = ({ isOpen, onClose }) => {
           ✏️ 幾何草稿紙
         </span>
         <div style={{ display: 'flex', gap: '0.3rem', alignItems: 'center' }}>
-          {['#38bdf8', '#facc15', '#f43f5e', '#ffffff'].map((c) => (
+          {PEN_COLORS.map((pen) => (
             <button
-              key={c}
+              key={pen.hex}
               type="button"
-              onClick={() => { setColor(c); setIsEraser(false); }}
+              onClick={() => { setColor(pen.hex); setIsEraser(false); }}
               style={{
                 width: '18px',
                 height: '18px',
                 borderRadius: '50%',
-                background: c,
-                border: !isEraser && color === c ? '2px solid #fff' : '1px solid rgba(255,255,255,0.3)',
+                background: pen.hex,
+                border: !isEraser && color === pen.hex ? '2px solid #fff' : '1px solid rgba(255,255,255,0.3)',
                 cursor: 'pointer',
                 padding: 0,
               }}
-              title="選擇顏色"
+              aria-label={t(pen.labelKey)}
+              title={t(pen.labelKey)}
             />
           ))}
           <button
@@ -179,14 +187,14 @@ export const Scratchpad: React.FC<Props> = ({ isOpen, onClose }) => {
             type="button"
             onClick={onClose}
             style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '1rem', cursor: 'pointer', marginLeft: '0.2rem' }}
-            title="關閉草稿紙"
+            aria-label={t('scratch.close')}
+            title={t('scratch.close')}
           >
             ✕
           </button>
         </div>
       </div>
 
-      {/* 畫布區域 */}
       <canvas
         ref={canvasRef}
         onMouseDown={startDraw}

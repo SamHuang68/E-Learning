@@ -14,6 +14,11 @@ export const ZH_HANT = {
   'common.switchTrack': '切換學習軌道',
   'common.retry': '重試',
   'common.close': '關閉設定',
+  'scratch.close': '關閉草稿紙',
+  'scratch.color.cyan': '青藍筆',
+  'scratch.color.yellow': '黃筆',
+  'scratch.color.red': '紅筆',
+  'scratch.color.white': '白筆',
 
   'pro.eyebrow': '本機 demo',
   'pro.title': '此單元超出免費練習切片',
@@ -804,6 +809,11 @@ export const EN: Record<MessageKey, string> = {
   'common.switchTrack': 'Switch learning track',
   'common.retry': 'Retry',
   'common.close': 'Close settings',
+  'scratch.close': 'Close scratchpad',
+  'scratch.color.cyan': 'Cyan pen',
+  'scratch.color.yellow': 'Yellow pen',
+  'scratch.color.red': 'Red pen',
+  'scratch.color.white': 'White pen',
 
   'pro.eyebrow': 'Local demo',
   'pro.title': 'This unit is outside the free practice slice',
