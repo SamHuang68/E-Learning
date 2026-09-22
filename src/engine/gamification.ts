@@ -242,7 +242,7 @@ export function defaultGamificationState(): GamificationState {
  * Level 1: 0~24 XP, Level 2: 25~99 XP, Level 3: 100~224 XP, Level 5: 400 XP...
  */
 export function calculateLevel(totalXp: number): number {
-  if (totalXp <= 0) return 1
+  if (!Number.isFinite(totalXp) || totalXp <= 0) return 1
   return Math.floor(Math.sqrt(totalXp / 25)) + 1
 }
 
@@ -255,18 +255,20 @@ export function calculateLevelProgress(totalXp: number): {
   nextLevelXP: number
   progressPct: number
 } {
-  const currentLevel = calculateLevel(totalXp)
+  const xp = Number.isFinite(totalXp) && totalXp > 0 ? totalXp : 0
+  const currentLevel = calculateLevel(xp)
   const levelStartXP = Math.pow(currentLevel - 1, 2) * 25
   const nextLevelXP = Math.pow(currentLevel, 2) * 25
   const span = nextLevelXP - levelStartXP
-  const earned = totalXp - levelStartXP
+  const earned = xp - levelStartXP
   const progressPct = span > 0 ? Math.min(100, Math.max(0, Math.round((earned / span) * 100))) : 0
+  const safePct = Number.isFinite(progressPct) ? progressPct : 0
 
   return {
     currentLevel,
     levelStartXP,
     nextLevelXP,
-    progressPct,
+    progressPct: safePct,
   }
 }
 
