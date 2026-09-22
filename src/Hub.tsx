@@ -852,7 +852,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
           target="_blank"
           rel="noopener noreferrer"
         >
-          GitHub
+          {t('hub.github')}
         </a>
         <button type="button" className="hub-link" onClick={onOpenPrivacy}>
           {t('hub.privacy')}
