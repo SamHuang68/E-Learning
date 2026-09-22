@@ -77,17 +77,17 @@ export const ToeicStoryReview: React.FC<Props> = ({ onBack, onOpenChunkLab }) =>
           <table className="decision-table">
             <thead>
               <tr>
-                <th>Chunk 核心語塊</th>
-                <th>看到什麼情境訊號</th>
-                <th>3 秒直覺破題法</th>
+                <th scope="col">Chunk 核心語塊</th>
+                <th scope="col">看到什麼情境訊號</th>
+                <th scope="col">3 秒直覺破題法</th>
               </tr>
             </thead>
             <tbody>
               {story.decisionTable.map((row, idx) => (
                 <tr key={idx}>
-                  <td className="chunk-name-cell">
+                  <th scope="row" className="chunk-name-cell">
                     <strong>{row.chunk}</strong>
-                  </td>
+                  </th>
                   <td className="signal-cell">{row.signal}</td>
                   <td className="rule-cell">
                     <span className="rule-pill">{row.threeSecondRule}</span>

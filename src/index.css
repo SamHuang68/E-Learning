@@ -5304,6 +5304,12 @@ footer {
   font-size: 0.85rem;
   font-weight: 700;
 }
+.decision-table tbody th {
+  background: transparent;
+  color: inherit;
+  font-size: inherit;
+  text-align: left;
+}
 .rule-pill {
   background: #fef3c7;
   color: #92400e;
