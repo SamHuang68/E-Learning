@@ -116,7 +116,7 @@ export const goldPractice: Record<string, UnitPractice> = {
       {
         id: 'gold-1-g3',
         head: 'Blunt vs soft',
-        meaning: ' blunt vs 柔和對比',
+        meaning: 'Blunt vs 柔和對比',
         sentence: "Stop interrupting. → I'd appreciate it if we could allow each speaker to finish.",
         sentenceZh: '別插話。→ 若能讓每位發言者說完，我將不勝感激。',
         scenario: 'meeting',
