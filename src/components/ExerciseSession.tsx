@@ -198,6 +198,7 @@ export function ExerciseSession({
 
         {feedback !== null && (
           <p
+            id="exercise-grade-status"
             className={feedback ? 'status-line' : 'status-line warn'}
             role="status"
             aria-live="polite"
@@ -335,6 +336,9 @@ function renderAnswerArea({
           disabled={feedback !== null}
           placeholder={copy.typeAnswer}
           aria-labelledby="exercise-fill-prompt exercise-fill-stem"
+          aria-invalid={feedback === false}
+          aria-errormessage={feedback === false ? 'exercise-grade-status' : undefined}
+          aria-describedby={feedback !== null ? 'exercise-grade-status' : undefined}
         />
         <button
           type="button"
@@ -357,7 +361,7 @@ function renderAnswerArea({
 
     return (
       <>
-        <div className="order-bank" aria-label={copy.currentOrder}>
+        <div className="order-bank" aria-label={copy.currentOrder} aria-invalid={feedback === false} aria-errormessage={feedback === false ? 'exercise-grade-status' : undefined}>
           {order.length > 0 ? (
             order.map((tokenIndex, selectedIndex) => (
               <button
@@ -421,6 +425,8 @@ function renderAnswerArea({
           className={choiceButtonClass(choice, exercise.answer, selectedChoice, feedback)}
           disabled={feedback !== null}
           key={choice}
+          aria-invalid={feedback === false && choice === selectedChoice}
+          aria-errormessage={feedback === false && choice === selectedChoice ? 'exercise-grade-status' : undefined}
           onClick={() => submitAnswer(choice)}
         >
           {choice}

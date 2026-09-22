@@ -9,6 +9,9 @@ describe('practice answer field labels', () => {
     expect(src).toContain('id="exercise-fill-stem"')
     expect(src).toContain('id="exercise-fill-answer"')
     expect(src).toContain('aria-labelledby="exercise-fill-prompt exercise-fill-stem"')
+    expect(src).toContain('aria-invalid={feedback === false}')
+    expect(src).toContain("aria-errormessage={feedback === false ? 'exercise-grade-status' : undefined}")
+    expect(src).toContain('id="exercise-grade-status"')
   })
 
   it('gives math fill practice a visible htmlFor label', () => {
@@ -16,6 +19,9 @@ describe('practice answer field labels', () => {
     expect(src).toContain('htmlFor="math-practice-answer"')
     expect(src).toContain('id="math-practice-answer"')
     expect(src).toContain("t('math.practice.answerLabel')")
+    expect(src).toContain('aria-invalid={submitted && !isCorrect}')
+    expect(src).toContain("aria-errormessage={submitted && !isCorrect ? 'math-practice-grade' : undefined}")
+    expect(src).toContain('id="math-practice-grade"')
   })
 })
 
