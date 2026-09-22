@@ -7,7 +7,7 @@
   --muted: #6d6256;
   --line: #e4d6c4;
   --navy: #3f6f64;
-  --navy-soft: #5a8a7e;
+  --navy-soft: #46766a;
   --accent: #3f6f64;
   --accent-soft: #e7f1ec;
   --accent-border: #7eb8a6;
@@ -48,6 +48,9 @@
   --btn-primary-bg: #2f5c4e;
   --btn-primary-fg: #ffffff;
   --btn-primary-hover-bg: color-mix(in srgb, var(--btn-primary-bg) 82%, black);
+  --on-navy: #fffcf7;
+  --hub-badge-status: #1d4ed8;
+  --week-heat-on: #022c22;
   color-scheme: light;
   color: var(--ink);
   background: var(--bg);
@@ -544,7 +547,7 @@ strong {
   color: var(--muted);
 }
 .hub-badge-item.unlocked .badge-status-text {
-  color: #1d4ed8;
+  color: var(--hub-badge-status);
 }
 .badge-item-icon {
   font-size: 1.6rem;
@@ -6387,6 +6390,8 @@ footer {
   --border: #374151;
   --shadow: rgba(0, 0, 0, 0.55);
   --focus-ring-color: #7dd3fc;
+  --on-navy: #0f172a;
+  --hub-badge-status: #93c5fd;
 }
 
 /* 4. 認知雷達弱點調度卡片樣式 */
@@ -9228,7 +9233,7 @@ html.layout-dense .hub-card:has(.hub-card-hit:focus-visible) {
   border-color: #059669;
 }
 .week-heat-cell.is-active .week-heat-mark {
-  color: #064e3b;
+  color: var(--week-heat-on);
 }
 .week-heat-day span {
   font-size: 0.62rem;
@@ -9602,7 +9607,7 @@ html.layout-dense .hub-card:has(.hub-card-hit:focus-visible) {
 }
 .locale-toggle button.is-active {
   background: var(--navy);
-  color: #fffcf7;
+  color: var(--on-navy);
 }
 .locale-toggle.is-compact button {
   min-height: var(--touch-min);
