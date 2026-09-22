@@ -1,3 +1,7 @@
+/**
+ * Local demo flag for extra JA/EN units. Not a paid product, subscription,
+ * or official score. Empty code or AOBA-PRO only flips this-browser meta.
+ */
 import {
   loadLearningMeta,
   saveLearningMeta,
