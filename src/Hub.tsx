@@ -573,7 +573,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
           <span className="section-subtext">{t('hub.tracksCount')}</span>
         </div>
         <div className="hub-search">
-          <label className="practice-answer-label" htmlFor="hub-track-search">
+          <label className="practice-answer-label" htmlFor="hub-track-search" id="hub-track-search-label">
             {t('hub.search.label')}
           </label>
           <input
@@ -582,6 +582,8 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
             value={hubQuery}
             onChange={(event) => setHubQuery(event.target.value)}
             placeholder={t('hub.search.placeholder')}
+            aria-labelledby="hub-track-search-label"
+            autoComplete="off"
           />
         </div>
 
@@ -626,6 +628,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
                   <button
                     type="button"
                     className={toeicLang === 'zh' ? 'is-active' : ''}
+                    aria-pressed={toeicLang === 'zh'}
                     onClick={() => {
                       saveToeicInstructionLang('zh')
                       setToeicLang('zh')
@@ -636,6 +639,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
                   <button
                     type="button"
                     className={toeicLang === 'ja' ? 'is-active' : ''}
+                    aria-pressed={toeicLang === 'ja'}
                     onClick={() => {
                       saveToeicInstructionLang('ja')
                       setToeicLang('ja')
@@ -746,7 +750,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
           <aside role="complementary" aria-labelledby="radar-title" aria-label={t('hub.landmark.radar')}>
             <div className="section-header-row">
               <h2 id="radar-title">{t('hub.radarTitle')}</h2>
-              <div className="radar-tab-switcher">
+              <div className="radar-tab-switcher" role="group" aria-labelledby="radar-title">
                 {(Object.keys(TRACK_LABEL_KEYS) as LangId[]).map((id) => (
                   <button
                     key={id}

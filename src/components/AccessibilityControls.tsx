@@ -124,10 +124,11 @@ export const AccessibilityControls: React.FC = () => {
           className="btn-a11y-trigger"
           onClick={() => setIsOpen((prev) => !prev)}
           title={t('a11y.open')}
+          aria-label={t('a11y.open')}
           aria-expanded={isOpen}
           aria-controls="a11y-settings-dialog"
         >
-          <span className="a11y-icon">♿</span>
+          <span className="a11y-icon" aria-hidden="true">♿</span>
           <span className="a11y-text">{t('a11y.trigger')}</span>
         </button>
       </aside>
