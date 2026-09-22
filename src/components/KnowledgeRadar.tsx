@@ -18,7 +18,7 @@ export const KnowledgeRadar = React.memo(function KnowledgeRadar({ radar, size =
   return (
     <div className="knowledge-radar-card">
       <div className="radar-header">
-        <h4>📊 {radar.trackName} · 練習紀錄雷達</h4>
+        <h3>📊 {radar.trackName} · 練習紀錄雷達</h3>
         <span className="radar-avg-badge">紀錄指標：{radar.averageScore} / 100</span>
       </div>
 
