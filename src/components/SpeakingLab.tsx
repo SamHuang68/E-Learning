@@ -171,7 +171,13 @@ export function SpeakingLab({ prompts, lang = 'ja', onComplete }: Props) {
           </div>
         )}
         {recordingUrl ? (
-          <audio controls src={recordingUrl} aria-label="你的錄音回放" style={{ width: '100%', marginTop: '0.4rem' }} />
+          <audio
+            controls
+            preload="none"
+            src={recordingUrl}
+            aria-label="你的錄音回放"
+            style={{ width: '100%', marginTop: '0.4rem' }}
+          />
         ) : null}
         {message ? <p className="status-line warn">{message}</p> : null}
         <div className="flash-actions">
