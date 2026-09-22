@@ -6366,6 +6366,7 @@ footer {
   --warm: #f87171;
   --border: #374151;
   --shadow: rgba(0, 0, 0, 0.55);
+  --focus-ring-color: #7dd3fc;
 }
 
 /* 4. 認知雷達弱點調度卡片樣式 */
@@ -6931,6 +6932,50 @@ html.layout-dense .skip-link,
 html.layout-dense .btn-a11y-trigger,
 html.layout-dense .hub-primary-cta {
   min-height: var(--touch-min);
+}
+html.layout-dense {
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 2px;
+}
+
+/* Hub primary controls: visible :focus-visible in light + dark. Dense must not strip. */
+.hub .hub-primary-cta:focus-visible,
+.hub .hub-secondary-cta:focus-visible,
+.hub .locale-toggle button:focus-visible,
+.hub .pill-btn:focus-visible,
+.hub .hub-link:focus-visible,
+.hub .audio-toggle:focus-visible,
+.hub .hub-shortcut-trigger:focus-visible,
+.hub .radar-tab-btn:focus-visible,
+.hub .track-lang-toggle button:focus-visible,
+.hub .hub-bottom-nav-item:focus-visible,
+.hub .hub-search input:focus-visible,
+.btn-a11y-trigger:focus-visible,
+.a11y-settings-dialog .seg-btn:focus-visible,
+.a11y-settings-dialog .a11y-toggle:focus-visible,
+.a11y-settings-dialog .btn-close:focus-visible,
+.a11y-settings-dialog .btn-show-shortcuts:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+.hub-card:has(.hub-card-hit:focus-visible) {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+  z-index: 1;
+}
+.hub .hub-card-hit:focus-visible {
+  outline: none;
+}
+.hub .hub-primary-cta:focus-visible {
+  outline-color: #fffcf7;
+  box-shadow: 0 0 0 2px var(--btn-primary-bg);
+}
+html.layout-dense .hub .locale-toggle button:focus-visible,
+html.layout-dense .btn-a11y-trigger:focus-visible,
+html.layout-dense .a11y-settings-dialog .a11y-toggle:focus-visible,
+html.layout-dense .hub-card:has(.hub-card-hit:focus-visible) {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
 }
 
 /* ==========================================================================
