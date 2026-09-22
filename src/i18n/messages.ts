@@ -38,7 +38,7 @@ export const ZH_HANT = {
   'error.safeDetail': '詳細內容已省略，避免顯示帳號或本機識別資訊。',
   'error.bootTitle': '應用程式啟動失敗',
   'error.bootBody': '請重新整理頁面。若仍失敗，請稍後再試；本機啟動不需雲端設定。',
-  'sw.update.message': '平台已更新最新題庫與教具。',
+  'sw.update.message': '已快取新版頁面與題庫。套用後載入；未造訪軌道與雲端同步仍可能需網路。',
   'sw.update.apply': '立即套用',
   'sw.update.dismiss': '關閉更新提示',
 
@@ -110,8 +110,8 @@ export const ZH_HANT = {
 
   'hub.eyebrow': '八軌學習平台',
   'hub.title': '今天要學哪一軌？',
-  'hub.lede': '數學、微積分、物理、化學、計算機概論、日語、多益與華語，同一個離線優先的練習系統。',
-  'hub.subtext': '八軌 · 題庫／實驗室／語音可練 · 本機練習紀錄，不是能力鑑定',
+  'hub.lede': '數學、微積分、物理、化學、計算機概論、日語、多益與華語，同一個本機練習系統。',
+  'hub.subtext': '安裝後快取的頁面與題庫可離線複習。首次載入、字型、雲端同步與未快取語音需網路。進度先寫本機，不是雲端備份或能力鑑定。',
   'hub.continue': '繼續：{track}',
   'hub.start': '從{track}開始',
   'hub.resumeEmpty': '尚未有上次軌道，從目錄選',
@@ -827,7 +827,7 @@ export const EN: Record<MessageKey, string> = {
   'error.safeDetail': 'Details omitted so account or local identifiers are not shown.',
   'error.bootTitle': 'The app failed to start',
   'error.bootBody': 'Refresh the page. If it still fails, try again later. Local start does not need cloud settings.',
-  'sw.update.message': 'New lessons and labs are ready.',
+  'sw.update.message': 'A newer cache of pages and lessons is ready. Apply to load it. Unvisited tracks and cloud sync may still need the network.',
   'sw.update.apply': 'Apply now',
   'sw.update.dismiss': 'Dismiss update notice',
 
@@ -914,8 +914,8 @@ export const EN: Record<MessageKey, string> = {
 
   'hub.eyebrow': 'Eight-track learning',
   'hub.title': 'Which track today?',
-  'hub.lede': 'Math, calculus, physics, chemistry, computer science, Japanese, TOEIC, and Mandarin — one offline-first practice system.',
-  'hub.subtext': 'Eight tracks · item banks / labs / audio · local practice records, not a credential',
+  'hub.lede': 'Math, calculus, physics, chemistry, computer science, Japanese, TOEIC, and Mandarin — one local practice system.',
+  'hub.subtext': 'Cached pages and banks work offline after install. First load, fonts, cloud sync, and uncached audio need the network. Progress is this-browser first — not a cloud backup or credential.',
   'hub.continue': 'Continue: {track}',
   'hub.start': 'Start with {track}',
   'hub.resumeEmpty': 'No last track yet — pick from the catalog',
