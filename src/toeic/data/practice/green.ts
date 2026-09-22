@@ -285,7 +285,7 @@ export const greenPractice: Record<string, UnitPractice> = {
         reading: '/əˌveɪləˈbɪləti/',
         meaning: '有空時間',
         sentence: 'Please let me know your availability for next week.',
-        sentenceZh: '請告知您下週有空的时间。',
+        sentenceZh: '請告知您下週有空的時間。',
         scenario: 'email',
         register: 'polite',
       },

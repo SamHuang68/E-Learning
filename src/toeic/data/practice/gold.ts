@@ -49,7 +49,7 @@ export const goldPractice: Record<string, UnitPractice> = {
         reading: '/dɪˈfɜːr/',
         meaning: '延後討論',
         sentence: "I'd suggest we defer the budget debate until next week.",
-        sentenceZh: '我建議將預算辯論延到下周。',
+        sentenceZh: '我建議將預算辯論延到下週。',
         scenario: 'meeting',
         register: 'business',
       },
