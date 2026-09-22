@@ -230,7 +230,7 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
   }
 
   return (
-    <main className="app-shell math-shell">
+    <main id="main-content" tabIndex={-1} className="app-shell math-shell">
       <MathSidebar
         activeNav={activeNav}
         onNav={setActiveNav}

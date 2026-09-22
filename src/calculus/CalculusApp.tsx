@@ -107,7 +107,7 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
   }
 
   return (
-    <main className="app-shell calculus-shell">
+    <main id="main-content" tabIndex={-1} className="app-shell calculus-shell">
       {/* 獨立微積分側邊欄 */}
       <CalculusSidebar
         activeNav={activeNav}

@@ -151,7 +151,7 @@ export const ChemistryApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         onSwitchLang={onSwitchLang}
       />
 
-      <main className="content math-content chemistry-content">
+      <main id="main-content" tabIndex={-1} className="content math-content chemistry-content">
         <Breadcrumbs items={breadcrumbItems} />
 
         <header className="topbar">

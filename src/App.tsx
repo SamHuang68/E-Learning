@@ -190,7 +190,9 @@ function AppChrome() {
         href="#main-content"
         onClick={(event) => {
           event.preventDefault()
-          const main = document.querySelector<HTMLElement>('main')
+          const main =
+            document.getElementById('main-content') ??
+            document.querySelector<HTMLElement>('main')
           if (main) {
             main.id = 'main-content'
             main.tabIndex = -1

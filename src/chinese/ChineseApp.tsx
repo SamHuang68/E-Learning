@@ -186,7 +186,7 @@ export const ChineseApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
       />
 
       {/* 右側主要內容區 */}
-      <main className="content chinese-main-content">
+      <main id="main-content" tabIndex={-1} className="content chinese-main-content">
         {/* 頂部語言學習方向切換膠囊 */}
         <div className="chinese-lang-toolbar">
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>

@@ -166,7 +166,8 @@ strong {
   transform: translateY(-160%);
 }
 
-.skip-link:focus {
+.skip-link:focus,
+.skip-link:focus-visible {
   transform: translateY(0);
   outline: var(--focus-ring);
   outline-offset: var(--focus-ring-offset);
