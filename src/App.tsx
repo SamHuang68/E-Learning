@@ -9,6 +9,7 @@ import { saveLang, writeLangPreference, type LangId } from './utils/storage'
 import { lazyWithRetry } from './utils/lazyWithRetry'
 import { parseTopViewHash, type TopView } from './utils/topRoute'
 import { LocaleProvider, useI18n } from './i18n/i18n'
+import { applyDocumentLang } from './i18n/locale'
 
 type ModuleAppProps = {
   onBackHub: () => void
@@ -76,7 +77,7 @@ function ModuleFallback() {
 }
 
 function AppShell() {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const [view, setView] = useState<TopView>(() => readTopView())
   const focusRoute = useRef(false)
 
@@ -108,6 +109,7 @@ function AppShell() {
     }
     document.title = titles[view]
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+    applyDocumentLang(view === 'ja' ? 'ja' : locale)
 
     let observer: MutationObserver | null = null
     let timeoutId = 0
@@ -138,7 +140,7 @@ function AppShell() {
       observer?.disconnect()
       if (timeoutId) window.clearTimeout(timeoutId)
     }
-  }, [view, t])
+  }, [view, t, locale])
 
   function choose(next: LangId | 'hub') {
     focusRoute.current = true

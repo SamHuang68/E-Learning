@@ -1,10 +1,17 @@
 export type UiLocale = 'zh-Hant' | 'en'
+export type DocumentLang = 'zh-Hant' | 'en' | 'ja'
 
 export const UI_LOCALE_KEY = 'e-learning-ui-locale'
 export const UI_LOCALE_EVENT = 'e-learning:ui-locale'
 
 export function isUiLocale(value: unknown): value is UiLocale {
   return value === 'zh-Hant' || value === 'en'
+}
+
+export function toDocumentLang(value: string): DocumentLang {
+  if (value === 'en' || value === 'en-US' || value === 'en-GB') return 'en'
+  if (value === 'ja' || value === 'ja-JP') return 'ja'
+  return 'zh-Hant'
 }
 
 export function loadUiLocale(): UiLocale {
@@ -27,15 +34,13 @@ export function saveUiLocale(locale: UiLocale) {
   } catch {
     // ignore
   }
-  if (typeof document !== 'undefined') {
-    document.documentElement.lang = locale === 'en' ? 'en' : 'zh-Hant'
-  }
+  applyDocumentLang(locale)
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new CustomEvent(UI_LOCALE_EVENT, { detail: locale }))
   }
 }
 
-export function applyDocumentLang(locale: UiLocale) {
+export function applyDocumentLang(locale: string) {
   if (typeof document === 'undefined') return
-  document.documentElement.lang = locale === 'en' ? 'en' : 'zh-Hant'
+  document.documentElement.lang = toDocumentLang(locale)
 }
