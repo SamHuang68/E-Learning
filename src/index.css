@@ -6950,8 +6950,44 @@ html.layout-dense .section-header-row {
 }
 html.layout-dense .skip-link,
 html.layout-dense .btn-a11y-trigger,
-html.layout-dense .hub-primary-cta {
+html.layout-dense .hub-primary-cta,
+html.layout-dense .hub-topbar-tools .locale-toggle button,
+html.layout-dense .hub-topbar-tools .hub-shortcut-trigger,
+html.layout-dense .hub .pill-btn.audio-toggle,
+html.layout-dense .hub .radar-tab-btn,
+html.layout-dense .a11y-settings-dialog .btn-close,
+html.layout-dense .a11y-settings-dialog .seg-btn,
+html.layout-dense .a11y-settings-dialog .a11y-toggle {
   min-height: var(--touch-min);
+  min-width: var(--touch-min);
+}
+
+/* Hub header / icon / dense controls: ≥44×44 CSS px. */
+.hub-topbar-tools .locale-toggle button,
+.hub-topbar-tools .hub-shortcut-trigger,
+.hub .pill-btn.audio-toggle,
+.hub .radar-tab-btn,
+.hub .hub-link,
+.hub-shortcut-dialog .btn-close,
+.a11y-floating-dock .btn-a11y-trigger,
+.a11y-settings-dialog .btn-close,
+.a11y-settings-dialog .seg-btn,
+.a11y-settings-dialog .a11y-toggle,
+.a11y-settings-dialog .btn-show-shortcuts {
+  min-height: var(--touch-min);
+  min-width: var(--touch-min);
+  box-sizing: border-box;
+}
+.hub-shortcut-dialog .btn-close,
+.a11y-settings-dialog .btn-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.a11y-settings-dialog .a11y-toggle {
+  width: var(--touch-min);
+  height: var(--touch-min);
 }
 html.layout-dense {
   --focus-ring-width: 3px;
