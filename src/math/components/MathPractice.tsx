@@ -242,7 +242,7 @@ export const MathPractice: React.FC<Props> = ({ unit, onBack, onComplete }) => {
         {/* 解析區 */}
         {submitted && (
           <div className={`solution-card ${isCorrect ? 'sol-correct' : 'sol-wrong'}`}>
-            <div className="solution-status">
+            <div className="solution-status" role="status" aria-live="polite" aria-atomic="true">
               {isCorrect ? '✅ 答對了！+5 XP' : '❌ 答錯了，已自動收入錯題本'}
             </div>
             <div className="solution-content">

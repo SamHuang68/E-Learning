@@ -131,7 +131,12 @@ export function ScenarioPlayer({ track, scenarios, onComplete, onExit }: Props) 
           })}
         </div>
         {picked ? (
-          <p className={picked.correct ? 'status-line' : 'status-line warn'}>
+          <p
+            className={picked.correct ? 'status-line' : 'status-line warn'}
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+          >
             {picked.correct
               ? `語體合適：${picked.register}`
               : `這個語體偏 ${picked.register}，請選更合適的商務／丁寧表現。`}
