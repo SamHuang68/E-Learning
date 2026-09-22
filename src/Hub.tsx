@@ -25,6 +25,7 @@ import {
   dueCountFromFsrsMap,
 } from './engine/todaySuggestion'
 import { isLeech } from './engine/fsrs'
+import { rollupEightTrackXp, safeIdList, safeXp } from './engine/trackProgressRollup'
 import {
   loadLearningMeta,
   loadProgress,
@@ -139,63 +140,69 @@ export function selectHubDerived(snapshot: HubSnapshot) {
     preferred,
   } = snapshot
 
-  const totalXp =
-    (mathProgress.xp || 0) +
-    (physicsProgress.xp || 0) +
-    (chemistryProgress.xp || 0) +
-    (csProgress.xp || 0) +
-    (jaProgress.xp || 0) +
-    (toeicProgress.xp || 0) +
-    (chineseProgress.xp || 0)
+  const mathDone = safeIdList(mathProgress?.completedQuestions)
+  const physicsDone = safeIdList(physicsProgress?.completedQuestions)
+  const chemistryDone = safeIdList(chemistryProgress?.completedQuestions)
+  const csDone = safeIdList(csProgress?.completedQuestions)
+  const mathLabs = safeIdList(mathProgress?.labCompleted)
+  const physicsLabs = safeIdList(physicsProgress?.labCompleted)
+  const chemistryLabs = safeIdList(chemistryProgress?.labCompleted)
+  const csLabs = safeIdList(csProgress?.labCompleted)
+  const mathExams =
+    mathProgress?.examScores && typeof mathProgress.examScores === 'object' ? mathProgress.examScores : {}
+  const physicsExams =
+    physicsProgress?.examScores && typeof physicsProgress.examScores === 'object' ? physicsProgress.examScores : {}
+  const chemistryExams =
+    chemistryProgress?.examScores && typeof chemistryProgress.examScores === 'object'
+      ? chemistryProgress.examScores
+      : {}
+  const csExams =
+    csProgress?.examScores && typeof csProgress.examScores === 'object' ? csProgress.examScores : {}
+
+  const totalXp = rollupEightTrackXp({
+    math: mathProgress?.xp,
+    physics: physicsProgress?.xp,
+    chemistry: chemistryProgress?.xp,
+    cs: csProgress?.xp,
+    ja: jaProgress?.xp,
+    toeic: toeicProgress?.xp,
+    chinese: chineseProgress?.xp,
+  })
   const levelInfo = calculateLevelProgress(totalXp)
   const daily = dailyProgress(learningMeta)
 
-  const mathRadar = computeMathRadar(
-    mathProgress.completedQuestions,
-    mathProgress.examScores,
-    mathProgress.labCompleted,
-  )
-  const calculusDoneCount = mathProgress.completedQuestions.filter((id) => id.startsWith('calc-prob-')).length
-  const calculusLabCount = mathProgress.labCompleted.includes('calculus') ? 1 : 0
+  const mathRadar = computeMathRadar(mathDone, mathExams, mathLabs)
+  const calculusDoneCount = mathDone.filter((id) => id.startsWith('calc-prob-')).length
+  const calculusLabCount = mathLabs.includes('calculus') ? 1 : 0
   const calculusRadar = computeCalculusRadar(
-    mathProgress.calculusTheta ?? 0,
+    safeXp(mathProgress?.calculusTheta),
     calculusDoneCount,
     calculusLabCount,
   )
-  const physicsRadar = computePhysicsRadar(
-    physicsProgress.completedQuestions,
-    physicsProgress.examScores,
-    physicsProgress.labCompleted,
-  )
-  const chemistryRadar = computeChemistryRadar(
-    chemistryProgress.completedQuestions,
-    chemistryProgress.examScores,
-    chemistryProgress.labCompleted,
-  )
-  const csRadar = computeCsRadar(
-    csProgress.completedQuestions,
-    csProgress.examScores,
-    csProgress.labCompleted,
-  )
-  const kanaCount = Object.keys(kanaProgress.mastered).length
+  const physicsRadar = computePhysicsRadar(physicsDone, physicsExams, physicsLabs)
+  const chemistryRadar = computeChemistryRadar(chemistryDone, chemistryExams, chemistryLabs)
+  const csRadar = computeCsRadar(csDone, csExams, csLabs)
+  const kanaMastered =
+    kanaProgress?.mastered && typeof kanaProgress.mastered === 'object' ? Object.keys(kanaProgress.mastered) : []
+  const kanaCount = kanaMastered.length
   const jaRadar = computeAobaRadar(
-    Math.max(daily.done, jaProgress.readingDone || 0),
-    learningMeta.kanjiMastered.length,
-    learningMeta.speakingDone,
-    learningMeta.streak,
+    Math.max(daily.done, safeXp(jaProgress?.readingDone)),
+    Array.isArray(learningMeta.kanjiMastered) ? learningMeta.kanjiMastered.length : 0,
+    safeXp(learningMeta.speakingDone),
+    safeXp(learningMeta.streak),
   )
-  const toeicDoneCount = (toeicProgress.vocabDone || 0) + (toeicProgress.listeningDone || 0)
+  const toeicDoneCount = safeXp(toeicProgress?.vocabDone) + safeXp(toeicProgress?.listeningDone)
   const toeicRadar = computeToeicRadar(
     Math.max(daily.done, toeicDoneCount),
     toeicDoneCount,
     0,
   )
   const chineseRadar = computeChineseRadar(
-    chineseProgress.xp || 0,
-    chineseProgress.masteredFalseFriends?.length || 0,
-    chineseProgress.masteredGrammarSignals?.length || 0,
-    chineseProgress.completedDialogues?.length || 0,
-    chineseProgress.errorQuestions?.length || 0,
+    safeXp(chineseProgress?.xp),
+    safeIdList(chineseProgress?.masteredFalseFriends).length,
+    safeIdList(chineseProgress?.masteredGrammarSignals).length,
+    safeIdList(chineseProgress?.completedDialogues).length,
+    safeIdList(chineseProgress?.errorQuestions).length,
   )
 
   const radarMap: Record<RadarTab, typeof mathRadar> = {
@@ -209,10 +216,10 @@ export function selectHubDerived(snapshot: HubSnapshot) {
     zh: chineseRadar,
   }
 
-  const mathDoneCount = mathProgress.completedQuestions.length
-  const physicsDoneCount = physicsProgress.completedQuestions.length
-  const chemistryDoneCount = chemistryProgress.completedQuestions.length
-  const csDoneCount = csProgress.completedQuestions.length
+  const mathDoneCount = mathDone.length
+  const physicsDoneCount = physicsDone.length
+  const chemistryDoneCount = chemistryDone.length
+  const csDoneCount = csDone.length
 
   const hasProgress =
     totalXp > 0 ||
