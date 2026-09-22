@@ -8,7 +8,6 @@ import {
   type ReactNode,
 } from 'react'
 import {
-  applyDocumentLang,
   loadUiLocale,
   saveUiLocale,
   UI_LOCALE_EVENT,
@@ -28,10 +27,6 @@ const LocaleContext = createContext<LocaleContextValue | null>(null)
 
 export function LocaleProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<UiLocale>(() => loadUiLocale())
-
-  useEffect(() => {
-    applyDocumentLang(locale)
-  }, [locale])
 
   useEffect(() => {
     const onChange = (event: Event) => {

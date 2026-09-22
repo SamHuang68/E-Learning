@@ -478,7 +478,7 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
     practice || special === 'review' ? 'today' : special === 'mock' ? 'mock' : special === 'placement' ? 'placement' : nav
 
   return (
-    <main id="main-content" tabIndex={-1} className="app-shell">
+    <main id="main-content" tabIndex={-1} className="app-shell" lang="ja">
       <Sidebar
         nav={sidebarNav}
         onNav={handleNav}

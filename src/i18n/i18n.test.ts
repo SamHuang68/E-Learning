@@ -3,7 +3,7 @@ import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { EN, translate, ZH_HANT, type MessageKey } from './messages'
 import { interpolate } from './interpolate'
-import { isUiLocale, loadUiLocale, saveUiLocale } from './locale'
+import { isUiLocale, loadUiLocale, saveUiLocale, toDocumentLang } from './locale'
 
 function placeholderTokens(template: string): string[] {
   return [...template.matchAll(/\{(\w+)\}/g)].map((match) => match[1]).sort()
@@ -147,6 +147,17 @@ describe('i18n dictionary', () => {
     expect(loadUiLocale()).toBe('en')
     saveUiLocale('zh-Hant')
     expect(loadUiLocale()).toBe('zh-Hant')
+  })
+
+  it('sets document lang to zh-Hant, en, or ja for assistive tech', () => {
+    expect(toDocumentLang('zh-Hant')).toBe('zh-Hant')
+    expect(toDocumentLang('en')).toBe('en')
+    expect(toDocumentLang('ja')).toBe('ja')
+    expect(toDocumentLang('ja-JP')).toBe('ja')
+    const app = readFileSync(join(process.cwd(), 'src/App.tsx'), 'utf8')
+    expect(app).toContain("applyDocumentLang(view === 'ja' ? 'ja' : locale)")
+    const aoba = readFileSync(join(process.cwd(), 'src/aoba/AobaApp.tsx'), 'utf8')
+    expect(aoba).toContain('lang="ja"')
   })
 
   it('translates primary chrome holes Codex flagged', () => {
