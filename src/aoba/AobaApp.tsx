@@ -579,7 +579,7 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
         <div className="alignment-note">
           <strong>
             {t('ja.alignBand', { band: level.band, tier: jlptTierLabel(level.tier, t) })}
-            {learningMeta.proUnlocked ? ' · Pro' : ' · Free'}
+            {learningMeta.proUnlocked ? ` · ${t('pro.badgeOn')}` : ` · ${t('pro.badgeOff')}`}
           </strong>
           <span>{level.audience}</span>
         </div>

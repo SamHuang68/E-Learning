@@ -869,7 +869,7 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
         <div className="alignment-note">
           <strong>
             {locale === 'en' ? cert.nameEn : cert.name} · {cert.scoreMin}–{cert.scoreMax}
-            {learningMeta.proUnlocked ? ' · Pro' : ' · Free'}
+            {learningMeta.proUnlocked ? ` · ${t('pro.badgeOn')}` : ` · ${t('pro.badgeOff')}`}
           </strong>
           <span>{cert.audience}</span>
         </div>
