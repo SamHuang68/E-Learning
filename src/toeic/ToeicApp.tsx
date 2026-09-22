@@ -777,7 +777,7 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
           : nav
 
   return (
-    <main className="app-shell toeic-shell">
+    <main id="main-content" tabIndex={-1} className="app-shell toeic-shell">
       <ToeicSidebar
         nav={sidebarNav}
         onNav={handleNav}
