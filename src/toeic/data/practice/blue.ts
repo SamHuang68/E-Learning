@@ -67,7 +67,7 @@ export const bluePractice: Record<string, UnitPractice> = {
     passage: [
       {
         id: 'blue-1-p1',
-        head: 'Report speech',
+        head: 'Reported speech',
         meaning: '間接引述',
         sentence: 'The CFO said that revenue had exceeded forecasts.',
         sentenceZh: '財務長表示營收已超出預測。',

@@ -50,7 +50,7 @@ export const enPlacementQuestions: PlacementQuestion[] = [
   },
   {
     id: 'en-p-07',
-    prompt: 'In an office notice, "mandatory" means ___ .',
+    prompt: 'In an office notice, "mandatory" means ___.',
     choices: ['required', 'optional', 'late', 'temporary'],
     answer: 'required',
     tag: 'reading',
@@ -111,7 +111,7 @@ export const enPlacementQuestions: PlacementQuestion[] = [
   },
   {
     id: 'en-p-15',
-    prompt: 'The word "contingency" in a project plan usually means ___ .',
+    prompt: 'The word "contingency" in a project plan usually means ___.',
     choices: ['backup plan', 'main office', 'final invoice', 'training session'],
     answer: 'backup plan',
     tag: 'reading',
