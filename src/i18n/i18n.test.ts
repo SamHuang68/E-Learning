@@ -330,12 +330,24 @@ describe('i18n dictionary', () => {
 
   it('keeps service-worker update toast copy bilingual and not a new SW feature', () => {
     expect(translate('zh-Hant', 'sw.update.message')).toMatch(/題庫/)
+    expect(translate('zh-Hant', 'sw.update.message')).toMatch(/網路/)
     expect(translate('zh-Hant', 'sw.update.apply')).toBe('立即套用')
     expect(translate('zh-Hant', 'sw.update.dismiss')).toMatch(/關閉/)
     expect(translate('en', 'sw.update.message')).toMatch(/lessons/i)
+    expect(translate('en', 'sw.update.message')).toMatch(/network/i)
     expect(translate('en', 'sw.update.apply')).toBe('Apply now')
     expect(translate('en', 'sw.update.dismiss')).toMatch(/dismiss/i)
     expect(translate('en', 'sw.update.message')).not.toBe(translate('zh-Hant', 'sw.update.message'))
+  })
+
+  it('keeps Hub PWA copy honest about cache vs network', () => {
+    expect(translate('zh-Hant', 'hub.lede')).not.toMatch(/離線優先/)
+    expect(translate('zh-Hant', 'hub.subtext')).toMatch(/快取/)
+    expect(translate('zh-Hant', 'hub.subtext')).toMatch(/需網路/)
+    expect(translate('en', 'hub.lede')).not.toMatch(/offline-first/i)
+    expect(translate('en', 'hub.subtext')).toMatch(/offline/i)
+    expect(translate('en', 'hub.subtext')).toMatch(/network/i)
+    expect(translate('en', 'hub.lede')).not.toBe(translate('zh-Hant', 'hub.lede'))
   })
 
   it('keeps offline progress-flush copy honest about local-only storage', () => {
