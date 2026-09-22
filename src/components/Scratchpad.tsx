@@ -107,7 +107,11 @@ export const Scratchpad: React.FC<Props> = ({ isOpen, onClose }) => {
 
   return (
     <div
+      id="hub-scratchpad"
       className="scratchpad-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label="幾何草稿紙"
       style={{
         position: 'fixed',
         bottom: '1rem',

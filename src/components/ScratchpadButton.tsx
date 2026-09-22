@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react'
+﻿import React, { useEffect, useRef, useState } from 'react'
 import { Scratchpad } from './Scratchpad'
 
 interface Props {
@@ -6,32 +6,63 @@ interface Props {
   style?: React.CSSProperties
 }
 
+function isTypingTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) return false
+  const tag = target.tagName
+  return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target.isContentEditable
+}
+
 /**
  * 全域浮動草稿紙啟動按鈕 (Floating Scratchpad Launcher)
  * 支援點擊浮動按鈕或按快捷鍵 [S] 快速啟動/收起幾何與算式草稿紙。
+ * Esc 關閉並把焦點交回開啟處。
  */
 export const ScratchpadButton: React.FC<Props> = ({ className, style }) => {
   const [isOpen, setIsOpen] = useState(false)
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const openerRef = useRef<HTMLElement | null>(null)
+
+  function openPad() {
+    openerRef.current =
+      document.activeElement instanceof HTMLElement ? document.activeElement : triggerRef.current
+    setIsOpen(true)
+  }
+
+  function closePad() {
+    setIsOpen(false)
+    const opener = openerRef.current ?? triggerRef.current
+    openerRef.current = null
+    queueMicrotask(() => opener?.focus())
+  }
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      if (
-        e.key.toLowerCase() === 's' &&
-        !['input', 'textarea', 'select'].includes((e.target as HTMLElement)?.tagName?.toLowerCase())
-      ) {
-        setIsOpen((prev) => !prev)
+      if (e.key === 'Escape' && isOpen) {
+        e.preventDefault()
+        closePad()
+        return
+      }
+      if (e.key.toLowerCase() === 's' && !isTypingTarget(e.target)) {
+        if (isOpen) closePad()
+        else openPad()
       }
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [])
+  }, [isOpen])
 
   return (
     <>
       <button
+        ref={triggerRef}
         type="button"
         className={`floating-scratchpad-btn ${className || ''}`}
-        onClick={() => setIsOpen((prev) => !prev)}
+        onClick={() => {
+          if (isOpen) closePad()
+          else openPad()
+        }}
+        aria-expanded={isOpen}
+        aria-controls="hub-scratchpad"
         style={{
           position: 'fixed',
           bottom: '1.2rem',
@@ -58,7 +89,7 @@ export const ScratchpadButton: React.FC<Props> = ({ className, style }) => {
         <span>草稿紙 [S]</span>
       </button>
 
-      <Scratchpad isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      <Scratchpad isOpen={isOpen} onClose={closePad} />
     </>
   )
 }
