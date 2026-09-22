@@ -103,19 +103,19 @@ export const SignalDecisionView: React.FC<Props> = ({ onBack }) => {
           <table className="decision-table">
             <thead>
               <tr>
-                <th>句型 Pattern</th>
-                <th>看到什麼情境訊號 (Trigger)</th>
-                <th>3 秒直覺判準</th>
-                <th>公式接續</th>
+                <th scope="col">句型 Pattern</th>
+                <th scope="col">看到什麼情境訊號 (Trigger)</th>
+                <th scope="col">3 秒直覺判準</th>
+                <th scope="col">公式接續</th>
               </tr>
             </thead>
             <tbody>
               {filteredSignals.map((sig) => (
                 <tr key={sig.id}>
-                  <td className="pattern-cell">
+                  <th scope="row" className="pattern-cell">
                     <strong>{sig.pattern}</strong>
                     <span className="cat-tag">{sig.category}</span>
-                  </td>
+                  </th>
                   <td className="signal-trigger-cell">{sig.signalTrigger}</td>
                   <td className="rule-cell">
                     <span className="rule-pill">{sig.threeSecondRule}</span>
