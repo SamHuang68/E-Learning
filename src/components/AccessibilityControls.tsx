@@ -7,6 +7,7 @@ export type AccessibilitySettings = {
   distractionFree: boolean
   highContrast: boolean
   darkMode: boolean
+  denseLayout: boolean
 }
 
 const STORAGE_KEY = LOCAL_PREFERENCE_KEYS.accessibility
@@ -17,6 +18,7 @@ const DEFAULT_SETTINGS: AccessibilitySettings = {
   distractionFree: false,
   highContrast: false,
   darkMode: false,
+  denseLayout: false,
 }
 
 function readA11ySettings(): AccessibilitySettings {
@@ -73,6 +75,9 @@ export const AccessibilityControls: React.FC = () => {
     // 3. 高對比模式
     if (settings.highContrast) root.classList.add('high-contrast')
     else root.classList.remove('high-contrast')
+
+    if (settings.denseLayout) root.classList.add('layout-dense')
+    else root.classList.remove('layout-dense')
 
     // 4. 深色模式（預設白底；僅在使用者主動開啟時套用）
     if (settings.darkMode) {
@@ -239,7 +244,22 @@ export const AccessibilityControls: React.FC = () => {
                 />
               </div>
 
-              {/* 5. 鍵盤快捷鍵指南 */}
+              {/* 5. 緊湊版面（選擇性，預設維持原本間距） */}
+              <div className="setting-row toggle-row">
+                <div>
+                  <span className="setting-label" id="a11y-dense-label">{t('a11y.dense')}</span>
+                  <p className="setting-desc">{t('a11y.denseDesc')}</p>
+                </div>
+                <input
+                  type="checkbox"
+                  aria-labelledby="a11y-dense-label"
+                  className="a11y-toggle"
+                  checked={settings.denseLayout}
+                  onChange={(e) => setSettings((s) => ({ ...s, denseLayout: e.target.checked }))}
+                />
+              </div>
+
+              {/* 6. 鍵盤快捷鍵指南 */}
               <div className="shortcuts-info-box">
                 <button
                   type="button"
