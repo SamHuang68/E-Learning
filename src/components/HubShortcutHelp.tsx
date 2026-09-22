@@ -23,16 +23,22 @@ export function HubShortcutHelp() {
   const triggerRef = useRef<HTMLButtonElement>(null)
 
   const close = useCallback(() => setOpen(false), [])
+  const openerRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
     const dialog = dialogRef.current
     if (!dialog) return
     if (open) {
+      openerRef.current =
+        document.activeElement instanceof HTMLElement ? document.activeElement : triggerRef.current
       if (!dialog.open) dialog.showModal()
       dialog.querySelector<HTMLElement>('button')?.focus()
       return
     }
     if (dialog.open) dialog.close()
+    const opener = openerRef.current
+    openerRef.current = null
+    opener?.focus()
   }, [open])
 
   useEffect(() => {
