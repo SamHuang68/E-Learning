@@ -32,3 +32,18 @@ describe('SRS grade live region', () => {
     expect(src).toContain('SRS Again（再排）')
   })
 })
+
+describe('practice error/empty not color-only', () => {
+  it('pairs graded choices and empty state with text marks', () => {
+    const src = readFileSync(join(process.cwd(), 'src/components/ExerciseSession.tsx'), 'utf8')
+    expect(src).toContain('choice-result-mark')
+    expect(src).toContain("className={feedback ? 'status-line' : 'status-line warn'}")
+    expect(src).toContain('copy.markCorrect')
+    expect(src).toContain('copy.markWrong')
+    expect(src).toContain('copy.emptyLead')
+    expect(src).toContain("markCorrect: '正解'")
+    expect(src).toContain("markCorrect: 'Correct choice'")
+    expect(src).toContain("markWrong: '不是這項'")
+    expect(src).toContain("markWrong: 'Not this one'")
+  })
+})

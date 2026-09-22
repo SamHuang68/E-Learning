@@ -2164,6 +2164,21 @@ strong {
   border-color: rgba(198, 74, 74, 0.55);
   background: #fff0ee;
 }
+.choice-result-mark {
+  display: inline-block;
+  margin-left: 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+.choice-btn.wrong .choice-result-mark {
+  color: #8f3030;
+}
+.practice-state-prefix {
+  display: inline-block;
+  margin-right: 0.35rem;
+  font-weight: 800;
+}
 
 .order-bank {
   display: flex;

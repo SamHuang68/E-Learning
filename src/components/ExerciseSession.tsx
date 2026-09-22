@@ -112,8 +112,11 @@ export function ExerciseSession({
         <p className="eyebrow">EXERCISES</p>
         <h1>{title}</h1>
         <div className="practice-card">
-          <div className="flash-face">
-            <strong>{copy.emptyTitle}</strong>
+          <div className="flash-face practice-empty">
+            <strong>
+              <span className="practice-state-prefix">{copy.emptyLead}</span>
+              {copy.emptyTitle}
+            </strong>
             <p>{copy.emptyBody}</p>
           </div>
           <div className="flash-actions">
@@ -195,14 +198,14 @@ export function ExerciseSession({
 
         {feedback !== null && (
           <p
-            className="status-line"
+            className={feedback ? 'status-line' : 'status-line warn'}
             role="status"
             aria-live={feedback ? 'polite' : 'assertive'}
             aria-atomic="true"
           >
             {feedback
-              ? `${copy.correct} ${copy.srsGood}`
-              : `${copy.wrong} ${exercise.answer} ${copy.srsAgain}`}
+              ? `${copy.markCorrect} · ${copy.correct} ${copy.srsGood}`
+              : `${copy.markWrong} · ${copy.wrong} ${exercise.answer} ${copy.srsAgain}`}
           </p>
         )}
 
@@ -421,6 +424,12 @@ function renderAnswerArea({
           onClick={() => submitAnswer(choice)}
         >
           {choice}
+          {feedback !== null && choice === exercise.answer ? (
+            <span className="choice-result-mark">{copy.markCorrect}</span>
+          ) : null}
+          {feedback !== null && choice === selectedChoice && choice !== exercise.answer ? (
+            <span className="choice-result-mark">{copy.markWrong}</span>
+          ) : null}
         </button>
       ))}
     </div>
@@ -448,11 +457,14 @@ function uiCopy(lang: 'ja' | 'en') {
       correct: '答對了！',
       currentOrder: '目前排序',
       emptyBody: '本單元尚未產生可練習的題目。',
+      emptyLead: '空：',
       emptyTitle: '沒有題目',
       exit: '← 返回',
       fillPrompt: '填入空格',
       finish: '完成',
       listenPrompt: '聽音選答案',
+      markCorrect: '正解',
+      markWrong: '不是這項',
       next: '下一題 →',
       orderPrompt: '排出正確句子',
       passagePrompt: '請選出這段內容的意思。',
@@ -476,11 +488,14 @@ function uiCopy(lang: 'ja' | 'en') {
     correct: 'Correct!',
     currentOrder: 'Current order',
     emptyBody: 'No exercises have been generated for this unit yet.',
+    emptyLead: 'Empty: ',
     emptyTitle: 'No exercises',
     exit: '← Exit',
     fillPrompt: 'Fill in the blank',
     finish: 'Finish',
     listenPrompt: 'Listen and answer',
+    markCorrect: 'Correct choice',
+    markWrong: 'Not this one',
     next: 'Next →',
     orderPrompt: 'Build the sentence',
     passagePrompt: 'Choose the meaning of this passage.',
