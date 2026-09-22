@@ -491,7 +491,13 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
 
   return (
     <>
-    <main role="main" aria-label={t('hub.landmark.main')} className="hub unified-hub">
+    <main
+      id="main-content"
+      tabIndex={-1}
+      role="main"
+      aria-label={t('hub.landmark.main')}
+      className="hub unified-hub"
+    >
       <header role="banner" className="hub-hero">
         <div className="hub-topbar">
           <div>

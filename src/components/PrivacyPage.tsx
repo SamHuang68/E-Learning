@@ -7,7 +7,7 @@ type Props = {
 export function PrivacyPage({ onBack }: Props) {
   const { t } = useI18n()
   return (
-    <main className="privacy-page">
+    <main id="main-content" tabIndex={-1} className="privacy-page">
       <div className="privacy-toolbar">
         <button type="button" className="hub-back privacy-back" onClick={onBack}>
           {t('privacy.back')}
