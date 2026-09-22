@@ -102,9 +102,9 @@ describe('CSS Layout & Sidebar Overflow Regression Guard', () => {
     expect(cssContent).not.toMatch(/\.math-shell\s*\{[^}]*220px/s)
   })
 
-  it('keeps font-weight: 800 count in src/index.css at 3', () => {
+  it('keeps font-weight: 800 count in src/index.css at 5', () => {
     const matches = cssContent.match(/font-weight:\s*800/g) ?? []
-    expect(matches).toHaveLength(3)
+    expect(matches).toHaveLength(5)
   })
 
   it('puts calculus topbar spacing on the shared topbar tokens', () => {

@@ -46,7 +46,7 @@ describe('Strict Review Gate: Visual Layout, 100vh Focus & Zero-Overflow Invaria
   it('[GATE-VISUAL-SHARED-CHROME] STEM shells share later-track sidebar width token (260px)', () => {
     expect(cssContent).toMatch(/--track-sidebar-width:\s*260px/)
     expect(cssContent).toMatch(/\.math-shell\s*\{[^}]*var\(--track-sidebar-width\)/s)
-    expect((cssContent.match(/font-weight:\s*800/g) ?? []).length).toBe(3)
+    expect((cssContent.match(/font-weight:\s*800/g) ?? []).length).toBe(5)
   })
 
   it('[GATE-VISUAL-CALCULUS-CHROME] calculus topbar/content do not reintroduce leftover spacing overrides', () => {
@@ -81,7 +81,7 @@ describe('Strict Review Gate: Visual Layout, 100vh Focus & Zero-Overflow Invaria
     expect(cssContent).toMatch(/\.primary-btn:hover\s*\{[^}]*var\(--btn-primary-hover-bg\)/s)
     expect(cssContent).not.toMatch(/\.primary-btn:hover\s*\{[^}]*var\(--navy-soft\)/s)
     expect(cssContent).toMatch(/\.btn-primary\s*\{[^}]*var\(--btn-primary-bg\)/s)
-    expect((cssContent.match(/font-weight:\s*800/g) ?? []).length).toBe(3)
+    expect((cssContent.match(/font-weight:\s*800/g) ?? []).length).toBe(5)
   })
 
   it('[GATE-VISUAL-STEM-CS-PADDING] STEM content/shell gutters lock to CS chrome tokens', () => {
@@ -91,7 +91,7 @@ describe('Strict Review Gate: Visual Layout, 100vh Focus & Zero-Overflow Invaria
     expect(cssContent).toMatch(
       /@media\s*\(max-width:\s*860px\)\s*\{[\s\S]*?\.cs-main-viewport\s*\{[\s\S]*?var\(--track-content-padding-mobile\)/,
     )
-    expect((cssContent.match(/font-weight:\s*800/g) ?? []).length).toBe(3)
+    expect((cssContent.match(/font-weight:\s*800/g) ?? []).length).toBe(5)
   })
 
   it('[GATE-VISUAL-CARD-RADIUS] Hub/track cards share --card-radius aliased to --radius', () => {
@@ -99,6 +99,6 @@ describe('Strict Review Gate: Visual Layout, 100vh Focus & Zero-Overflow Invaria
     expect(cssContent).toMatch(/\.hub-card\s*\{[^}]*var\(--card-radius\)/s)
     expect(cssContent).toMatch(/\.stat-card\s*\{[^}]*var\(--card-radius\)/s)
     expect(cssContent).not.toMatch(/\.hub-card\s*\{[^}]*border-radius:\s*22px/s)
-    expect((cssContent.match(/font-weight:\s*800/g) ?? []).length).toBe(3)
+    expect((cssContent.match(/font-weight:\s*800/g) ?? []).length).toBe(5)
   })
 })
