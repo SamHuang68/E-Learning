@@ -159,10 +159,10 @@ export function PracticeView({
         ← 返回今日學習
       </button>
       <p className="eyebrow">{meta.eyebrow}</p>
-      <h1>
+      <h2>
         {meta.title}
         <span>Unit {unit.id}</span>
-      </h1>
+      </h2>
       <p className="lede">
         {isReview
           ? '根據今日 SRS 佇列複習到期與新卡。'

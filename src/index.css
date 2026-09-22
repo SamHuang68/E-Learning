@@ -1928,14 +1928,14 @@ strong {
   margin-bottom: 0.8rem;
 }
 
-.practice-view h1 {
+.practice-view h2 {
   margin: 0.2rem 0 0.5rem;
   display: flex;
   gap: 0.6rem;
   align-items: baseline;
 }
 
-.practice-view h1 span {
+.practice-view h2 span {
   font-size: 0.95rem;
   color: var(--muted);
   font-family: var(--font-sans);
@@ -3494,7 +3494,7 @@ footer {
     margin-bottom: 0.55rem;
   }
 
-  .practice-view h1 {
+  .practice-view h2 {
     font-size: clamp(1.55rem, 7vw, 1.9rem);
     line-height: 1.2;
   }
@@ -6338,7 +6338,7 @@ footer {
   align-items: center;
   margin-bottom: 0.5rem;
 }
-.radar-header h4 {
+.radar-header h3 {
   margin: 0;
   font-size: 1.05rem;
   color: #0f172a;
