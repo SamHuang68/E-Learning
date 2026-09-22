@@ -187,6 +187,9 @@ export const MathPractice: React.FC<Props> = ({ unit, onBack, onComplete }) => {
                 placeholder={t('math.practice.answerPlaceholder')}
                 disabled={submitted}
                 className="fill-text-input"
+                aria-invalid={submitted && !isCorrect}
+                aria-errormessage={submitted && !isCorrect ? 'math-practice-grade' : undefined}
+                aria-describedby={submitted ? 'math-practice-grade' : undefined}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !submitted) handleCheckAnswer()
                 }}
@@ -242,7 +245,7 @@ export const MathPractice: React.FC<Props> = ({ unit, onBack, onComplete }) => {
         {/* 解析區 */}
         {submitted && (
           <div className={`solution-card ${isCorrect ? 'sol-correct' : 'sol-wrong'}`}>
-            <div className="solution-status" role="status" aria-live="polite" aria-atomic="true">
+            <div id="math-practice-grade" className="solution-status" role="status" aria-live="polite" aria-atomic="true">
               {isCorrect ? '✅ 答對了！+5 XP' : '❌ 答錯了，已自動收入錯題本'}
             </div>
             <div className="solution-content">
