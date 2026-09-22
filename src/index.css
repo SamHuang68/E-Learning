@@ -537,8 +537,17 @@ strong {
   background: linear-gradient(135deg, var(--surface) 0%, rgba(239, 246, 255, 0.6) 100%);
 }
 .hub-badge-item.locked {
-  opacity: 0.55;
-  filter: grayscale(80%);
+  opacity: 1;
+  filter: none;
+  background: var(--surface-soft);
+}
+.badge-status-text {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+.hub-badge-item.unlocked .badge-status-text {
+  color: #1d4ed8;
 }
 .badge-item-icon {
   font-size: 1.6rem;
@@ -2294,7 +2303,6 @@ footer {
 
 .kana-pitch-tip p {
   margin: 0.2rem 0 0;
-}
 }
 
 .kana-script-toggle {
@@ -9099,15 +9107,27 @@ html.layout-dense .hub-primary-cta {
   gap: 0.2rem;
 }
 .week-heat-cell {
-  width: 18px;
-  height: 18px;
+  width: 1.7rem;
+  height: 1.7rem;
   border-radius: 4px;
   background: var(--surface-soft);
   border: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.week-heat-mark {
+  font-size: 0.62rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--muted);
 }
 .week-heat-cell.is-active {
   background: #10b981;
   border-color: #059669;
+}
+.week-heat-cell.is-active .week-heat-mark {
+  color: #064e3b;
 }
 .week-heat-day span {
   font-size: 0.62rem;

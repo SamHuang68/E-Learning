@@ -726,8 +726,12 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
               <div key={item.key} className="week-heat-day">
                 <div
                   className={`week-heat-cell${weekFlags[dIdx] ? ' is-active' : ''}`}
-                  title={weekFlags[dIdx] ? t('hub.weekHas', { day: item.day }) : t('hub.weekNone', { day: item.day })}
-                />
+                  aria-label={weekFlags[dIdx] ? t('hub.weekHas', { day: item.day }) : t('hub.weekNone', { day: item.day })}
+                >
+                  <span className="week-heat-mark" aria-hidden="true">
+                    {weekFlags[dIdx] ? t('hub.weekMarkOn') : t('hub.weekMarkOff')}
+                  </span>
+                </div>
                 <span>{item.day}</span>
               </div>
             ))}
@@ -815,6 +819,9 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
                     <div className="badge-item-text">
                       <strong>{badge.title}</strong>
                       <small>{badge.description}</small>
+                      <span className="badge-status-text">
+                        {isUnlocked ? t('hub.badgeOn') : t('hub.badgeOff')}
+                      </span>
                     </div>
                     <span className="badge-xp-tag">+{badge.xpReward} XP</span>
                   </div>
