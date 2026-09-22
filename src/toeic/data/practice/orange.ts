@@ -86,7 +86,7 @@ export const orangePractice: Record<string, UnitPractice> = {
       {
         id: 'orange-1-p3',
         head: 'Identity',
-        meaning: '身份確認',
+        meaning: '身分確認',
         sentence: 'She is the manager of our branch office.',
         sentenceZh: '她是我們分公司的經理。',
         scenario: 'meeting',
