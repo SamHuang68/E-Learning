@@ -153,18 +153,56 @@ export const SERIES_CROSSWALK: SeriesPoint[] = [
   { zh: '語用與文體 → 系列 5 與 8', en: 'Pragmatics and style → series 5 and 8', ja: '語用・文体 → 5 と 8' },
 ]
 
-export const TENSE_ROWS: { time: SeriesPoint; cells: string[] }[] = [
-  { time: { zh: '現在', en: 'Present', ja: '現在' }, cells: ['do / does', 'am / is / are doing', 'have / has done', 'have / has been doing'] },
-  { time: { zh: '過去', en: 'Past', ja: '過去' }, cells: ['did', 'was / were doing', 'had done', 'had been doing'] },
-  { time: { zh: '未來', en: 'Future', ja: '未来' }, cells: ['will do', 'will be doing', 'will have done', 'will have been doing'] },
-  { time: { zh: '過去未來', en: 'Future in the past', ja: '過去から見た未来' }, cells: ['would do', 'would be doing', 'would have done', 'would have been doing'] },
+export type TenseCell = { form: string; sample: SeriesPoint }
+
+export const TENSE_ROWS: { time: SeriesPoint; cells: TenseCell[] }[] = [
+  {
+    time: { zh: '現在', en: 'Present', ja: '現在' },
+    cells: [
+      { form: 'do / does', sample: { zh: 'She writes reports. 常態或事實。', en: 'She writes reports. A habit or a fact.', ja: 'She writes reports. 習慣または事実。' } },
+      { form: 'am / is / are doing', sample: { zh: 'She is writing a report. 現在正在做。', en: 'She is writing a report. In progress now.', ja: 'She is writing a report. 今進行中。' } },
+      { form: 'have / has done', sample: { zh: 'She has written the report. 先前發生，和現在有關。', en: 'She has written the report. Earlier, and it still matters now.', ja: 'She has written the report. 以前のことが今に関わる。' } },
+      { form: 'have / has been doing', sample: { zh: 'She has been writing for two hours. 從較早持續到現在。', en: 'She has been writing for two hours. From earlier until now.', ja: 'She has been writing for two hours. 前から今まで。' } },
+    ],
+  },
+  {
+    time: { zh: '過去', en: 'Past', ja: '過去' },
+    cells: [
+      { form: 'did', sample: { zh: 'She wrote a report. 過去某個時間的事實。', en: 'She wrote a report. A fact at a past time.', ja: 'She wrote a report. 過去の時点の事実。' } },
+      { form: 'was / were doing', sample: { zh: 'She was writing when I called. 那個時刻正在做。', en: 'She was writing when I called. In progress at that moment.', ja: 'She was writing when I called. その時点で進行中。' } },
+      { form: 'had done', sample: { zh: 'She had written it before noon. 在另一個過去之前已完成。', en: 'She had written it before noon. Finished before another past time.', ja: 'She had written it before noon. もう一つの過去より前に完了。' } },
+      { form: 'had been doing', sample: { zh: 'She had been writing before lunch. 在過去某一刻之前持續。', en: 'She had been writing before lunch. In progress before a past moment.', ja: 'She had been writing before lunch. 過去の時点より前から継続。' } },
+    ],
+  },
+  {
+    time: { zh: '未來', en: 'Future', ja: '未来' },
+    cells: [
+      { form: 'will do', sample: { zh: 'She will write a report. 預期或承諾，不是唯一的未來寫法。', en: 'She will write a report. An expectation or a promise. Not the only future form.', ja: 'She will write a report. 予想または約束。未来の唯一の形ではない。' } },
+      { form: 'will be doing', sample: { zh: 'She will be writing at ten. 未來某刻正在做。', en: 'She will be writing at ten. In progress at a future time.', ja: 'She will be writing at ten. 未来の時点で進行中。' } },
+      { form: 'will have done', sample: { zh: 'She will have written it by Friday. 在未來某時之前做完。', en: 'She will have written it by Friday. Finished before a future time.', ja: 'She will have written it by Friday. 未来の時点より前に完了。' } },
+      { form: 'will have been doing', sample: { zh: 'She will have been writing for a year. 到未來某時為止持續多久。', en: 'She will have been writing for a year. Duration up to a future time.', ja: 'She will have been writing for a year. 未来の時点までの継続。' } },
+    ],
+  },
+  {
+    time: { zh: '過去未來', en: 'Future in the past', ja: '過去から見た未来' },
+    cells: [
+      { form: 'would do', sample: { zh: 'She said she would write it. 從過去看之後。不是與事實相反。', en: 'She said she would write it. Later, seen from the past. Not contrary to fact.', ja: 'She said she would write it. 過去から見た後。事実と反対ではない。' } },
+      { form: 'would be doing', sample: { zh: 'She said she would be writing at ten.', en: 'She said she would be writing at ten.', ja: 'She said she would be writing at ten.' } },
+      { form: 'would have done', sample: { zh: 'She said she would have written it by Friday. 這格不是第三條件。', en: 'She said she would have written it by Friday. This cell is not the third conditional.', ja: 'She said she would have written it by Friday. これは第三条件ではない。' } },
+      { form: 'would have been doing', sample: { zh: 'She said she would have been writing for a year.', en: 'She said she would have been writing for a year.', ja: 'She said she would have been writing for a year.' } },
+    ],
+  },
 ]
 
 export const SUBJUNCTIVE_ROWS: SeriesPoint[] = [
-  { zh: '與現在事實相反：If + 過去式，would + 原形。', en: 'Contrary to present: If + past, would + base verb.', ja: '現在の事実と反対：If + 過去、would + 原形。' },
-  { zh: '與過去事實相反：If + had + p.p.，would have + p.p.。', en: 'Contrary to past: If + had + past participle, would have + past participle.', ja: '過去の事実と反対：If + had + p.p.、would have + p.p.。' },
-  { zh: '與未來事實相反：If + were to / should，would + 原形。', en: 'Contrary to future: If + were to / should, would + base verb.', ja: '未来の事実と反対：If + were to / should、would + 原形。' },
-  { zh: '建議、要求、命令：that + 主詞 + 原形。', en: 'Suggest, demand, insist: that + subject + base verb.', ja: '提案・要求・命令：that + 主語 + 原形。' },
+  { zh: '零條件：If + 現在簡單，現在簡單。If you heat ice, it melts. 規律，不是假設分數。', en: 'Zero: If + present simple, present simple. If you heat ice, it melts. A pattern, not a score.', ja: 'ゼロ：If + 現在、現在。If you heat ice, it melts. 規則であり点数ではない。' },
+  { zh: '第一條件：If + 現在簡單，will / can / may + 原形。If it rains, we will cancel. 可能發生。', en: 'First: If + present simple, will / can / may + base. If it rains, we will cancel. Possible.', ja: '第一：If + 現在、will / can / may + 原形。If it rains, we will cancel. 起こりうる。' },
+  { zh: '第二條件：If + 過去式，would + 原形。be 在這格常用 were。If I knew, I would tell you.', en: 'Second: If + past, would + base. be is often were here. If I knew, I would tell you.', ja: '第二：If + 過去、would + 原形。be は were が多い。If I knew, I would tell you.' },
+  { zh: '第三條件：If + had + 過去分詞，would have + 過去分詞。If they had tested earlier, they would have caught the bug.', en: 'Third: If + had + past participle, would have + past participle. If they had tested earlier, they would have caught the bug.', ja: '第三：If + had + 過去分詞、would have + 過去分詞。' },
+  { zh: '混合：過去的條件，現在的結果。If I had taken the train, I would be there now.', en: 'Mixed: a past condition, a present result. If I had taken the train, I would be there now.', ja: '混合：過去の条件、今の結果。If I had taken the train, I would be there now.' },
+  { zh: '建議、要求、命令：that + 主詞 + 原形。The manager insisted that he be present.', en: 'Suggest, demand, insist: that + subject + base verb. The manager insisted that he be present.', ja: '提案・要求・命令：that + 主語 + 原形。The manager insisted that he be present.' },
+  { zh: '可能性低的未來仍可用 If + were to / should。這不是上面六格的替代品。', en: 'An unlikely future can still use If + were to / should. It does not replace the six rows above.', ja: '可能性の低い未来は If + were to / should も使える。上の六行の代わりではない。' },
+  { zh: '倒退一格是記憶法，不是每句都成立。這張表不是假設語氣完整度，也不是 CEFR 分級。', en: 'Backshift is a memory aid, not a rule for every sentence. This table is not conditional mastery and not a CEFR level.', ja: '一段階戻すのは覚え方であり、すべての文の規則ではない。条件の熟達でも CEFR でもない。' },
 ]
 
 export const PUNCTUATION_PITFALLS: SeriesPoint[] = [

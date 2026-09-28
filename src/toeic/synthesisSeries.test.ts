@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { ASPECT_DRILLS, CAPITAL_DRILLS, CAPITAL_TABLE, CHUNK_DRILLS, COLLOCATION_ROWS, CROSSWALK_DRILLS, FUNCTION_DRILLS, FUNCTION_TABLE, IF_DRILLS, NONFINITE_DRILLS, NONFINITE_TABLE, NOTE_DRILLS, NOTE_FOLDERS, PATTERN_DRILLS, PATTERN_TABLE, POS_DRILLS, POS_TABLE, PREP_DRILLS, PREPOSITION_ROWS, PUNCT_DRILLS, PUNCTUATION_MARKS, SEMANTICS_DRILLS, SEMANTICS_TABLE, SERIES_CROSSWALK, SOUND_DRILLS, SOUND_TABLE, STAGE_DRILLS, STUDY_STAGES, SYNTHESIS_SERIES, TENSE_DRILLS, TENSE_ROWS, TRANSITION_DRILLS, TRANSITION_TABLE } from './data/synthesisSeries'
+import { ASPECT_DRILLS, CAPITAL_DRILLS, CAPITAL_TABLE, CHUNK_DRILLS, COLLOCATION_ROWS, CROSSWALK_DRILLS, FUNCTION_DRILLS, FUNCTION_TABLE, IF_DRILLS, NONFINITE_DRILLS, NONFINITE_TABLE, NOTE_DRILLS, NOTE_FOLDERS, PATTERN_DRILLS, PATTERN_TABLE, POS_DRILLS, POS_TABLE, PREP_DRILLS, PREPOSITION_ROWS, PUNCT_DRILLS, PUNCTUATION_MARKS, SEMANTICS_DRILLS, SEMANTICS_TABLE, SERIES_CROSSWALK, SOUND_DRILLS, SOUND_TABLE, STAGE_DRILLS, STUDY_STAGES, SUBJUNCTIVE_ROWS, SYNTHESIS_SERIES, TENSE_DRILLS, TENSE_ROWS, TRANSITION_DRILLS, TRANSITION_TABLE } from './data/synthesisSeries'
 import { translate } from '../i18n/messages'
 
 describe('TOEIC synthesis series', () => {
@@ -19,6 +19,10 @@ describe('TOEIC synthesis series', () => {
     ])
     expect(TENSE_ROWS).toHaveLength(4)
     expect(TENSE_ROWS[0]?.cells).toHaveLength(4)
+    expect(TENSE_ROWS[0]?.cells[0]?.sample.en).toContain('She writes reports')
+    expect(TENSE_ROWS.flatMap((row) => row.cells).some((cell) => cell.sample.en.includes('not a CEFR level') || cell.form === 'would have done')).toBe(true)
+    expect(SUBJUNCTIVE_ROWS.some((row) => row.en.includes('not a CEFR level'))).toBe(true)
+    expect(SUBJUNCTIVE_ROWS.some((row) => row.en.includes('If you heat ice'))).toBe(true)
     expect(PREPOSITION_ROWS.map((row) => row.relation.en)).toEqual(['Time', 'Place', 'Direction', 'Abstract'])
     expect(PUNCTUATION_MARKS.length).toBeGreaterThanOrEqual(9)
     expect(STUDY_STAGES.length).toBeGreaterThanOrEqual(5)

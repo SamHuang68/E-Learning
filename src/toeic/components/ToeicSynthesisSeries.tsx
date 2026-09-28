@@ -265,7 +265,11 @@ export function ToeicSynthesisSeries({ instructionLang = 'zh' }: Props) {
                 <tr key={row.time.en}>
                   <th scope="row">{pick(row.time, lang)}</th>
                   {row.cells.map((cell) => (
-                    <td key={cell}>{cell}</td>
+                    <td key={cell.form}>
+                      <span>{cell.form}</span>
+                      <br />
+                      <span>{pick(cell.sample, lang)}</span>
+                    </td>
                   ))}
                 </tr>
               ))}
