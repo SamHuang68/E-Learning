@@ -791,6 +791,66 @@ export const PATTERN_DRILLS: PrepDrill[] = [
   },
 ]
 
+export const NONFINITE_DRILLS: PrepDrill[] = [
+  {
+    id: 'want',
+    stem: { zh: 'I want ___ the file.', en: 'I want ___ the file.', ja: 'I want ___ the file.' },
+    choices: ['to send', 'sending', 'send'],
+    answer: 'to send',
+    why: { zh: 'want 後面常用 to V。', en: 'want often takes to V.', ja: 'want の後は to V が多い。' },
+  },
+  {
+    id: 'decide',
+    stem: { zh: 'She decided ___ early.', en: 'She decided ___ early.', ja: 'She decided ___ early.' },
+    choices: ['to leave', 'leaving', 'leave'],
+    answer: 'to leave',
+    why: { zh: 'decide 後面常用 to V。', en: 'decide often takes to V.', ja: 'decide の後は to V が多い。' },
+  },
+  {
+    id: 'enjoy',
+    stem: { zh: 'She enjoys ___ reports.', en: 'She enjoys ___ reports.', ja: 'She enjoys ___ reports.' },
+    choices: ['writing', 'to write', 'write'],
+    answer: 'writing',
+    why: { zh: 'enjoy 後面是 V-ing。', en: 'enjoy takes V-ing.', ja: 'enjoy の後は V-ing。' },
+  },
+  {
+    id: 'finish',
+    stem: { zh: 'We finished ___ the draft.', en: 'We finished ___ the draft.', ja: 'We finished ___ the draft.' },
+    choices: ['reading', 'to read', 'read'],
+    answer: 'reading',
+    why: { zh: 'finish 後面是 V-ing。', en: 'finish takes V-ing.', ja: 'finish の後は V-ing。' },
+  },
+  {
+    id: 'subject',
+    stem: { zh: '___ late is a problem.', en: '___ late is a problem.', ja: '___ late is a problem.' },
+    choices: ['Arriving', 'Arrive', 'Arrived'],
+    answer: 'Arriving',
+    why: { zh: '這裡用 V-ing 當主詞。', en: 'V-ing is the subject here.', ja: 'ここは V-ing が主語。' },
+  },
+  {
+    id: 'forward',
+    stem: { zh: 'I look forward to ___ you.', en: 'I look forward to ___ you.', ja: 'I look forward to ___ you.' },
+    choices: ['seeing', 'see', 'saw'],
+    answer: 'seeing',
+    why: { zh: 'look forward to 後面是 V-ing，不是原形。', en: 'look forward to takes V-ing, not a base verb.', ja: 'look forward to の後は V-ing。原形ではない。' },
+  },
+  {
+    id: 'participle',
+    stem: { zh: 'The ___ file is on the desk.（檔案是被收到的）', en: 'The ___ file is on the desk. (the file was received)', ja: 'The ___ file is on the desk.（受け取られたファイル）' },
+    choices: ['received', 'receiving', 'receive'],
+    answer: 'received',
+    why: { zh: '過去分詞修飾名詞：檔案是被收到的。', en: 'A past participle modifies the noun: the file was received.', ja: '過去分詞が名詞を修飾する。ファイルは受け取られた。' },
+  },
+  {
+    id: 'dangling',
+    stem: { zh: 'Leaving the office, the file was missing. 哪一句比較清楚？', en: 'Leaving the office, the file was missing. Which rewrite is clearer?', ja: 'Leaving the office, the file was missing. どれがはっきりする？' },
+    choices: ['After I left, the file was missing.', 'Leaving the office, the file was missing.', 'Left the office, the file was missing.'],
+    answer: 'After I left, the file was missing.',
+    why: { zh: '分詞的主詞不能變成 the file。主詞對不上就寫完整句。', en: 'The participle subject cannot become the file. If it does not match, write a full clause.', ja: '分詞の主語を the file にしてはいけない。揃わないなら完全文。' },
+  },
+]
+
+
 
 
 

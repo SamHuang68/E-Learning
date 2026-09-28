@@ -6,6 +6,7 @@ import {
   CHUNK_DRILLS,
   COLLOCATION_ROWS,
   FUNCTION_TABLE,
+  NONFINITE_DRILLS,
   NONFINITE_TABLE,
   NOTE_FOLDERS,
   PATTERN_DRILLS,
@@ -259,6 +260,15 @@ export function ToeicSynthesisSeries({ instructionLang = 'zh' }: Props) {
         </div>
       ) : null}
       {active.id === 'verbal' ? <TeachGrid table={NONFINITE_TABLE} lang={lang} /> : null}
+      {active.id === 'verbal' ? (
+        <ChoiceCheck
+          lang={lang}
+          items={NONFINITE_DRILLS}
+          titleKey="en.synthesis.nonfiniteDrill"
+          noteKey="en.synthesis.nonfiniteDrillNote"
+          stemId="nonfinite-drill-stem"
+        />
+      ) : null}
 
       {active.id === 'lexicon' ? (
         <div className="table-responsive">
