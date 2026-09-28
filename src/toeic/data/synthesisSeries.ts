@@ -1086,6 +1086,66 @@ export const SEMANTICS_DRILLS: PrepDrill[] = [
   },
 ]
 
+export const TENSE_DRILLS: PrepDrill[] = [
+  {
+    id: 'habit',
+    stem: { zh: 'She ___ to the office every day.（習慣）', en: 'She ___ to the office every day. (habit)', ja: 'She ___ to the office every day.（習慣）' },
+    choices: ['goes', 'is going', 'has gone'],
+    answer: 'goes',
+    why: { zh: '重複的習慣用現在簡單式。', en: 'A repeated habit uses the simple present.', ja: '繰り返す習慣は現在形。' },
+  },
+  {
+    id: 'now',
+    stem: { zh: 'She ___ the file right now.', en: 'She ___ the file right now.', ja: 'She ___ the file right now.' },
+    choices: ['is sending', 'sends', 'has sent'],
+    answer: 'is sending',
+    why: { zh: '此刻正在做，用現在進行。', en: 'Happening at this moment: present progressive.', ja: '今していることは現在進行。' },
+  },
+  {
+    id: 'perfect',
+    stem: { zh: 'She ___ the file already.（結果還在）', en: 'She ___ the file already. (the result still matters)', ja: 'She ___ the file already.（結果が残る）' },
+    choices: ['has sent', 'sent', 'is sending'],
+    answer: 'has sent',
+    why: { zh: 'have / has + 過去分詞。不要把每個過去都寫成完成式。', en: 'have / has + past participle. Do not write every past event as a perfect.', ja: 'have / has + 過去分詞。過去を全部完了にしない。' },
+  },
+  {
+    id: 'yesterday',
+    stem: { zh: 'She ___ the file yesterday.', en: 'She ___ the file yesterday.', ja: 'She ___ the file yesterday.' },
+    choices: ['sent', 'has sent', 'had sent'],
+    answer: 'sent',
+    why: { zh: 'yesterday 是結束的時間，用過去簡單式。', en: 'yesterday is a finished time. Use the simple past.', ja: 'yesterday は終わった時。過去形。' },
+  },
+  {
+    id: 'earlier',
+    stem: { zh: 'She ___ the file before the meeting started.', en: 'She ___ the file before the meeting started.', ja: 'She ___ the file before the meeting started.' },
+    choices: ['had sent', 'has sent', 'sends'],
+    answer: 'had sent',
+    why: { zh: '兩個過去裡較早的那個用 had + 過去分詞。', en: 'The earlier of two past times uses had + past participle.', ja: '二つの過去のうち早い方は had + 過去分詞。' },
+  },
+  {
+    id: 'will',
+    stem: { zh: 'She ___ the file tomorrow.', en: 'She ___ the file tomorrow.', ja: 'She ___ the file tomorrow.' },
+    choices: ['will send', 'sent', 'has sent'],
+    answer: 'will send',
+    why: { zh: '明天用 will + 原形。這不是唯一的未來寫法。', en: 'Tomorrow can use will + base verb. It is not the only future form.', ja: '明日は will + 原形で書ける。未来の唯一の形ではない。' },
+  },
+  {
+    id: 'present-if',
+    stem: { zh: 'If she ___ here, she would help.（與現在事實相反）', en: 'If she ___ here, she would help. (contrary to now)', ja: 'If she ___ here, she would help.（今の事実と反対）' },
+    choices: ['were', 'is', 'will be'],
+    answer: 'were',
+    why: { zh: '與現在相反：If + 過去式，would + 原形。', en: 'Contrary to the present: If + past, would + base verb.', ja: '現在と反対：If + 過去、would + 原形。' },
+  },
+  {
+    id: 'insist',
+    stem: { zh: 'I suggest that she ___ the file.', en: 'I suggest that she ___ the file.', ja: 'I suggest that she ___ the file.' },
+    choices: ['send', 'sends', 'sent'],
+    answer: 'send',
+    why: { zh: '建議：that + 主詞 + 原形。', en: 'A suggestion: that + subject + base verb.', ja: '提案：that + 主語 + 原形。' },
+  },
+]
+
+
 
 
 
