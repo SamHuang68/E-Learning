@@ -732,6 +732,66 @@ export const CHUNK_DRILLS: PrepDrill[] = [
   },
 ]
 
+export const PATTERN_DRILLS: PrepDrill[] = [
+  {
+    id: 'sv-fly',
+    stem: en('Birds fly.'),
+    choices: ['S+V', 'S+V+O', 'S+V+C'],
+    answer: 'S+V',
+    why: { zh: '不及物。不要硬加受詞。', en: 'Intransitive. Do not force an object.', ja: '自動詞。目的語を無理に足さない。' },
+  },
+  {
+    id: 'svo-file',
+    stem: en('She sent the file.'),
+    choices: ['S+V+O', 'S+V', 'S+V+C'],
+    answer: 'S+V+O',
+    why: { zh: 'file 是受詞。', en: 'file is the object.', ja: 'file が目的語。' },
+  },
+  {
+    id: 'svc-late',
+    stem: en('The report is late.'),
+    choices: ['S+V+C', 'S+V+O', 'S+V+O+C'],
+    answer: 'S+V+C',
+    why: { zh: 'late 說明主詞。be 這裡不是動作。', en: 'late describes the subject. be is not an action here.', ja: 'late は主語を説明する。ここでの be は動作ではない。' },
+  },
+  {
+    id: 'svoo-me',
+    stem: en('She sent me the file.'),
+    choices: ['S+V+O+O', 'S+V+O', 'S+V+O+C'],
+    answer: 'S+V+O+O',
+    why: { zh: 'me 和 the file 都是受詞。', en: 'me and the file are both objects.', ja: 'me と the file はどちらも目的語。' },
+  },
+  {
+    id: 'svoc-public',
+    stem: en('They made the plan public.'),
+    choices: ['S+V+O+C', 'S+V+O+O', 'S+V+C'],
+    answer: 'S+V+O+C',
+    why: { zh: 'public 說明 the plan，不是第二個受詞。', en: 'public describes the plan. It is not a second object.', ja: 'public は the plan を説明する。第二目的語ではない。' },
+  },
+  {
+    id: 'sv-arrive',
+    stem: en('The file arrived.'),
+    choices: ['S+V', 'S+V+O', 'S+V+O+O'],
+    answer: 'S+V',
+    why: { zh: 'arrived 不及物。', en: 'arrived is intransitive.', ja: 'arrived は自動詞。' },
+  },
+  {
+    id: 'svc-manager',
+    stem: en('She is the manager.'),
+    choices: ['S+V+C', 'S+V+O', 'S+V'],
+    answer: 'S+V+C',
+    why: { zh: 'manager 說明她是誰，不是動作的受詞。', en: 'manager says who she is. It is not an action object.', ja: 'manager は彼女が誰かを述べる。動作の目的語ではない。' },
+  },
+  {
+    id: 'svoc-urgent',
+    stem: en('They called the meeting urgent.'),
+    choices: ['S+V+O+C', 'S+V+O+O', 'S+V+O'],
+    answer: 'S+V+O+C',
+    why: { zh: 'urgent 說明 meeting。', en: 'urgent describes the meeting.', ja: 'urgent は meeting を説明する。' },
+  },
+]
+
+
 
 
 
