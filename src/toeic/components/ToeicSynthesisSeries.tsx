@@ -15,6 +15,7 @@ import {
   NOTE_FOLDERS,
   PATTERN_DRILLS,
   PATTERN_TABLE,
+  POS_DRILLS,
   POS_TABLE,
   PREP_PAIRS,
   PREPOSITION_ROWS,
@@ -184,6 +185,13 @@ export function ToeicSynthesisSeries({ instructionLang = 'zh' }: Props) {
       {active.id === 'pos' ? (
         <>
           <TeachGrid table={POS_TABLE} lang={lang} />
+          <ChoiceCheck
+            lang={lang}
+            items={POS_DRILLS}
+            titleKey="en.synthesis.posDrill"
+            noteKey="en.synthesis.posDrillNote"
+            stemId="pos-drill-stem"
+          />
           <div className="table-responsive">
           <table className="decision-table">
             <caption>{t('en.synthesis.prepCaption')}</caption>
