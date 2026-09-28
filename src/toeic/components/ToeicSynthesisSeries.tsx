@@ -2,16 +2,23 @@ import { useState } from 'react'
 import { useI18n } from '../../i18n/i18n'
 import {
   COLLOCATION_ROWS,
+  FUNCTION_TABLE,
+  NONFINITE_TABLE,
   NOTE_FOLDERS,
+  PATTERN_TABLE,
+  POS_TABLE,
   PREP_PAIRS,
   PREPOSITION_ROWS,
   PUNCTUATION_MARKS,
   SERIES_CROSSWALK,
+  SOUND_TABLE,
   STUDY_STAGES,
   SUBJUNCTIVE_ROWS,
   SYNTHESIS_SERIES,
   TENSE_ROWS,
+  TRANSITION_TABLE,
   type SeriesPoint,
+  type TeachTable,
 } from '../data/synthesisSeries'
 
 type Props = {
@@ -24,6 +31,32 @@ function pick(point: SeriesPoint, lang: Lang) {
   if (lang === 'ja') return point.ja
   if (lang === 'en') return point.en
   return point.zh
+}
+
+function TeachGrid({ table, lang }: { table: TeachTable; lang: Lang }) {
+  return (
+    <div className="table-responsive">
+      <table className="decision-table">
+        <caption>{pick(table.caption, lang)}</caption>
+        <thead>
+          <tr>
+            {table.columns.map((col) => (
+              <th key={col.en} scope="col">{pick(col, lang)}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {table.rows.map((row) => (
+            <tr key={row.id}>
+              <th scope="row">{pick(row.cells[0], lang)}</th>
+              <td>{pick(row.cells[1], lang)}</td>
+              <td>{pick(row.cells[2], lang)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
 }
 
 export function ToeicSynthesisSeries({ instructionLang = 'zh' }: Props) {
@@ -71,7 +104,9 @@ export function ToeicSynthesisSeries({ instructionLang = 'zh' }: Props) {
       </article>
 
       {active.id === 'pos' ? (
-        <div className="table-responsive">
+        <>
+          <TeachGrid table={POS_TABLE} lang={lang} />
+          <div className="table-responsive">
           <table className="decision-table">
             <caption>{t('en.synthesis.prepCaption')}</caption>
             <thead>
@@ -102,7 +137,10 @@ export function ToeicSynthesisSeries({ instructionLang = 'zh' }: Props) {
             ))}
           </ul>
         </div>
+        </>
       ) : null}
+
+      {active.id === 'syntax' ? <TeachGrid table={PATTERN_TABLE} lang={lang} /> : null}
 
       {active.id === 'verbal' ? (
         <div className="table-responsive">
@@ -135,6 +173,7 @@ export function ToeicSynthesisSeries({ instructionLang = 'zh' }: Props) {
           </ul>
         </div>
       ) : null}
+      {active.id === 'verbal' ? <TeachGrid table={NONFINITE_TABLE} lang={lang} /> : null}
 
       {active.id === 'lexicon' ? (
         <div className="table-responsive">
@@ -183,6 +222,9 @@ export function ToeicSynthesisSeries({ instructionLang = 'zh' }: Props) {
           </table>
         </div>
       ) : null}
+      {active.id === 'mechanics' ? <TeachGrid table={TRANSITION_TABLE} lang={lang} /> : null}
+      {active.id === 'sound' ? <TeachGrid table={SOUND_TABLE} lang={lang} /> : null}
+      {active.id === 'function' ? <TeachGrid table={FUNCTION_TABLE} lang={lang} /> : null}
 
       <section aria-labelledby="toeic-synthesis-map">
         <h3 id="toeic-synthesis-map">{t('en.synthesis.mapTitle')}</h3>
