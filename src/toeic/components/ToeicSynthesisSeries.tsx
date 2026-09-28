@@ -19,6 +19,7 @@ import {
   PUNCT_DRILLS,
   PUNCTUATION_MARKS,
   SERIES_CROSSWALK,
+  SEMANTICS_DRILLS,
   SEMANTICS_TABLE,
   SOUND_DRILLS,
   SOUND_TABLE,
@@ -358,6 +359,15 @@ export function ToeicSynthesisSeries({ instructionLang = 'zh' }: Props) {
         />
       ) : null}
       {active.id === 'semantics' ? <TeachGrid table={SEMANTICS_TABLE} lang={lang} /> : null}
+      {active.id === 'semantics' ? (
+        <ChoiceCheck
+          lang={lang}
+          items={SEMANTICS_DRILLS}
+          titleKey="en.synthesis.semanticsDrill"
+          noteKey="en.synthesis.semanticsDrillNote"
+          stemId="semantics-drill-stem"
+        />
+      ) : null}
       {active.id === 'function' ? <TeachGrid table={FUNCTION_TABLE} lang={lang} /> : null}
       {active.id === 'function' ? (
         <ChoiceCheck

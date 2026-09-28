@@ -1027,6 +1027,66 @@ export const SOUND_DRILLS: PrepDrill[] = [
   },
 ]
 
+export const SEMANTICS_DRILLS: PrepDrill[] = [
+  {
+    id: 'tell',
+    stem: { zh: 'Please ___ me the time.', en: 'Please ___ me the time.', ja: 'Please ___ me the time.' },
+    choices: ['tell', 'say', 'speak'],
+    answer: 'tell',
+    why: { zh: 'tell 接人。不要寫成和 say 完全相同。', en: 'tell takes a person. Do not write that it is identical to say.', ja: 'tell は人を取る。say と同一ではない。' },
+  },
+  {
+    id: 'say',
+    stem: { zh: 'Please ___ the words again.', en: 'Please ___ the words again.', ja: 'Please ___ the words again.' },
+    choices: ['say', 'tell', 'talk'],
+    answer: 'say',
+    why: { zh: 'say 接話，不接人當間接受詞。', en: 'say takes the words, not a person as an indirect object.', ja: 'say は言葉を取る。人を間接目的語にしない。' },
+  },
+  {
+    id: 'heavy',
+    stem: { zh: 'a light bag 的相反。', en: 'The opposite of a light bag.', ja: 'a light bag の反対。' },
+    choices: ['heavy', 'dark', 'late'],
+    answer: 'heavy',
+    why: { zh: '先標是重量。light 也可以對 dark，那是另一個意思。', en: 'Mark the weight sense. light can also oppose dark. That is another sense.', ja: '重さの意味と書く。light は dark とも対になる。別の意味。' },
+  },
+  {
+    id: 'their',
+    stem: { zh: '___ bag is here.（他們的）', en: '___ bag is here. (belonging to them)', ja: '___ bag is here.（彼らの）' },
+    choices: ['Their', 'There', "They're"],
+    answer: 'Their',
+    why: { zh: '讀音一樣不代表能互換。', en: 'The same sound does not mean they swap.', ja: '同じ音でも入れ替えられない。' },
+  },
+  {
+    id: 'theyre',
+    stem: { zh: '___ late.（他們遲到）', en: '___ late. (they are late)', ja: '___ late.（彼らは遅れている）' },
+    choices: ["They're", 'Their', 'There'],
+    answer: "They're",
+    why: { zh: '這裡是 they are。', en: 'This one means they are.', ja: 'ここは they are。' },
+  },
+  {
+    id: 'run',
+    stem: { zh: 'She will ___ the team.（管理，不是跑步）', en: 'She will ___ the team. (manage, not race)', ja: 'She will ___ the team.（運営。走るではない）' },
+    choices: ['run', 'race', 'sit'],
+    answer: 'run',
+    why: { zh: '先寫本義「移動」，再寫延伸義「管理」。', en: 'Write the core sense, move, then the extension, manage.', ja: '本義は移動。派生は運営。' },
+  },
+  {
+    id: 'bank',
+    stem: { zh: '河岸的 bank 和銀行的 bank 怎麼記？', en: 'How do you record river bank and a bank account?', ja: '川岸の bank と銀行の bank はどう書く？' },
+    choices: ['two entries', 'one gloss', 'the same place'],
+    answer: 'two entries',
+    why: { zh: '分成兩條，不要寫成一個字的兩個翻譯。', en: 'Two entries. Not one word with two glosses jammed together.', ja: '二項目に分ける。一つの訳に混ぜない。' },
+  },
+  {
+    id: 'trouble',
+    stem: { zh: '哪一個是比喻，不是 in/on/at 的空間公式？', en: 'Which is a metaphor, not the in/on/at space formula?', ja: 'どれが比喩で、in/on/at の空間公式ではない？' },
+    choices: ['in trouble', 'in the box', 'in Taipei'],
+    answer: 'in trouble',
+    why: { zh: '這是比喻，不是空間公式。', en: 'This is a metaphor, not the space formula.', ja: '比喩であり、空間公式ではない。' },
+  },
+]
+
+
 
 
 
