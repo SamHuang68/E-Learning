@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useI18n } from '../../i18n/i18n'
 import {
+  CAPITAL_TABLE,
   COLLOCATION_ROWS,
   FUNCTION_TABLE,
   NONFINITE_TABLE,
@@ -11,6 +12,7 @@ import {
   PREPOSITION_ROWS,
   PUNCTUATION_MARKS,
   SERIES_CROSSWALK,
+  SEMANTICS_TABLE,
   SOUND_TABLE,
   STUDY_STAGES,
   SUBJUNCTIVE_ROWS,
@@ -223,7 +225,9 @@ export function ToeicSynthesisSeries({ instructionLang = 'zh' }: Props) {
         </div>
       ) : null}
       {active.id === 'mechanics' ? <TeachGrid table={TRANSITION_TABLE} lang={lang} /> : null}
+      {active.id === 'mechanics' ? <TeachGrid table={CAPITAL_TABLE} lang={lang} /> : null}
       {active.id === 'sound' ? <TeachGrid table={SOUND_TABLE} lang={lang} /> : null}
+      {active.id === 'semantics' ? <TeachGrid table={SEMANTICS_TABLE} lang={lang} /> : null}
       {active.id === 'function' ? <TeachGrid table={FUNCTION_TABLE} lang={lang} /> : null}
 
       <section aria-labelledby="toeic-synthesis-map">

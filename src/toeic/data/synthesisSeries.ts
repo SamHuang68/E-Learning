@@ -483,5 +483,70 @@ export const FUNCTION_TABLE: TeachTable = {
   ],
 }
 
+export const SEMANTICS_TABLE: TeachTable = {
+  caption: { zh: '語意怎麼記差別', en: 'How to record a meaning difference', ja: '意味の差の書き方' },
+  columns: [colClass, colExample, colWatch],
+  rows: [
+    { id: 'syn', cells: [
+      { zh: '近義', en: 'Near synonym', ja: '類義' },
+      en('say the words / tell a person'),
+      { zh: '寫使用對象，不要寫完全相同。', en: 'Write who or what it takes. Do not write that they are identical.', ja: '対象を書く。同一とは書かない。' },
+    ] },
+    { id: 'ant', cells: [
+      { zh: '反義', en: 'Antonym', ja: '反義' },
+      en('light / heavy, light / dark'),
+      { zh: '一個字可以有不只一個相反。先標是哪一個意思。', en: 'One word can have more than one opposite. Mark which sense.', ja: '反対は一つとは限らない。どの意味かを書く。' },
+    ] },
+    { id: 'homo', cells: [
+      { zh: '同音', en: 'Homophone', ja: '同音' },
+      en('their / there / they are'),
+      { zh: '讀音一樣不代表能互換。', en: 'The same sound does not mean they swap.', ja: '同じ音でも入れ替えられない。' },
+    ] },
+    { id: 'poly', cells: [
+      { zh: '多義', en: 'Polysemy', ja: '多義' },
+      en('run a race / run a team'),
+      { zh: '先寫本義，再寫延伸義。', en: 'Write the core sense, then the extension.', ja: '本義を先に、派生を後に。' },
+    ] },
+    { id: 'homonym', cells: [
+      { zh: '同形異義', en: 'Homonym', ja: '同形異義' },
+      en('bank of a river / a bank account'),
+      { zh: '分成兩條，不要寫成一個字的兩個翻譯。', en: 'Two entries. Not one word with two glosses jammed together.', ja: '二項目に分ける。一つの訳に混ぜない。' },
+    ] },
+    { id: 'meta', cells: [
+      { zh: '空間比喻', en: 'Spatial metaphor', ja: '空間の比喩' },
+      en('in trouble, on time'),
+      { zh: '這是比喻，不是 in/on/at 的空間公式。', en: 'This is a metaphor, not the in/on/at space formula.', ja: '比喩であり、in/on/at の空間公式ではない。' },
+    ] },
+  ],
+}
+
+export const CAPITAL_TABLE: TeachTable = {
+  caption: { zh: '大寫', en: 'Capitals', ja: '大文字' },
+  columns: [colClass, colExample, colWatch],
+  rows: [
+    { id: 'start', cells: [
+      { zh: '句首', en: 'Sentence start', ja: '文頭' },
+      en('The file is ready.'),
+      { zh: '第一個詞大寫。', en: 'Capitalize the first word.', ja: '最初の語を大文字にする。' },
+    ] },
+    { id: 'proper', cells: [
+      { zh: '專有名詞', en: 'Proper noun', ja: '固有名詞' },
+      en('Taipei, Monday, the Pacific'),
+      { zh: '月份、星期、地名大寫。普通名詞不大寫。', en: 'Months, weekdays, and place names. Ordinary nouns stay lower case.', ja: '月・曜日・地名。普通名詞は小文字。' },
+    ] },
+    { id: 'title', cells: [
+      { zh: '標題', en: 'Title case', ja: 'タイトル' },
+      en('A Guide to the Report'),
+      { zh: '主要詞大寫即可，全篇一致。', en: 'Capitalize the main words, and stay consistent.', ja: '主な語を大文字にし、全体で統一。' },
+    ] },
+    { id: 'i', cells: [
+      { zh: '人稱 I', en: 'The pronoun I', ja: '代名詞 I' },
+      en('I sent it.'),
+      { zh: 'I 永遠大寫。不要把一般名詞也大寫。', en: 'I is always a capital. Do not capitalize ordinary nouns.', ja: 'I は常に大文字。普通名詞まで大文字にしない。' },
+    ] },
+  ],
+}
+
+
 
 
