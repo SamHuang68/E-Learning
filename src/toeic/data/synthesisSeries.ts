@@ -261,4 +261,227 @@ export const COLLOCATION_ROWS: ChunkRow[] = [
   { chunk: 'turn down', use: { zh: '拒絕，或把音量調小。', en: 'Refuse, or lower the volume.', ja: '断る、または音量を下げる。' }, avoid: { zh: '先看上下文，不要只背一個中文。', en: 'Read the context. Do not keep only one gloss.', ja: '文脈を見る。訳は一つに固定しない。' } },
 ]
 
+export type TeachTable = {
+  caption: SeriesPoint
+  columns: [SeriesPoint, SeriesPoint, SeriesPoint]
+  rows: { id: string; cells: [SeriesPoint, SeriesPoint, SeriesPoint] }[]
+}
+
+const colClass: SeriesPoint = { zh: '項目', en: 'Item', ja: '項目' }
+const colSort: SeriesPoint = { zh: '怎麼分', en: 'How to sort it', ja: '分け方' }
+const colWatch: SeriesPoint = { zh: '注意', en: 'Watch', ja: '注意' }
+const colExample: SeriesPoint = { zh: '例句', en: 'Example', ja: '例' }
+
+function en(text: string): SeriesPoint {
+  return { zh: text, en: text, ja: text }
+}
+
+export const POS_TABLE: TeachTable = {
+  caption: { zh: '詞類怎麼分', en: 'How to sort word classes', ja: '品詞の分け方' },
+  columns: [colClass, colSort, colWatch],
+  rows: [
+    { id: 'noun', cells: [
+      { zh: '名詞', en: 'Noun', ja: '名詞' },
+      { zh: '可數／不可數、單複數、具體／抽象。', en: 'Count or mass, singular or plural, concrete or abstract.', ja: '可算・不可算、単複、具体・抽象。' },
+      { zh: '集合名詞的單複數看語意，不要背死。', en: 'Collective nouns follow meaning. Do not freeze one number.', ja: '集合名詞の数は意味で決まる。' },
+    ] },
+    { id: 'pronoun', cells: [
+      { zh: '代名詞', en: 'Pronoun', ja: '代名詞' },
+      { zh: '人稱、反身、指示、不定、關係。', en: 'Personal, reflexive, demonstrative, indefinite, relative.', ja: '人称・再帰・指示・不定・関係。' },
+      { zh: '關係代名詞先找先行詞。', en: 'Find the antecedent before the relative pronoun.', ja: '関係代名詞は先行詞を先に探す。' },
+    ] },
+    { id: 'verb', cells: [
+      { zh: '動詞', en: 'Verb', ja: '動詞' },
+      { zh: '及物／不及物、連綴、情態、使役。', en: 'Transitive or not, linking, modal, causative.', ja: '他動・自動、連結、法助動、使役。' },
+      { zh: '情態動詞後面用原形。', en: 'A modal takes a base verb.', ja: '法助動詞の後は原形。' },
+    ] },
+    { id: 'adj', cells: [
+      { zh: '形容詞', en: 'Adjective', ja: '形容詞' },
+      { zh: '位置、比較級、最高級。', en: 'Position, comparative, superlative.', ja: '位置、比較、最上級。' },
+      { zh: '形容詞順序是習慣，不是必考公式。', en: 'Adjective order is a habit, not a required formula.', ja: '形容詞の順は習慣であり公式ではない。' },
+    ] },
+    { id: 'adv', cells: [
+      { zh: '副詞', en: 'Adverb', ja: '副詞' },
+      { zh: '時間、地方、頻率、程度、連接副詞。', en: 'Time, place, frequency, degree, conjunctive adverb.', ja: '時・場所・頻度・程度・接続副詞。' },
+      { zh: 'however 是連接副詞，不是 and。', en: 'however is a conjunctive adverb, not and.', ja: 'however は接続副詞であり and ではない。' },
+    ] },
+    { id: 'conj', cells: [
+      { zh: '連接詞', en: 'Conjunction', ja: '接続詞' },
+      { zh: '對等（and, but, or）、從屬、相關（both...and）。', en: 'Coordinating, subordinating, and correlative pairs.', ja: '等位・従属・相関。' },
+      { zh: '對等連接詞兩邊的詞性要對得上。', en: 'The two sides of a coordinating conjunction should match.', ja: '等位接続詞の両側は形を揃える。' },
+    ] },
+    { id: 'det', cells: [
+      { zh: '限定詞', en: 'Determiner', ja: '限定詞' },
+      { zh: 'a/an、the、零冠詞、some/any。', en: 'a/an, the, no article, some/any.', ja: 'a/an、the、無冠詞、some/any。' },
+      { zh: 'some/any 不只要看肯定或否定。', en: 'some/any is not only positive versus negative.', ja: 'some/any は肯定・否定だけでは決まらない。' },
+    ] },
+    { id: 'interj', cells: [
+      { zh: '感嘆與標記', en: 'Interjection and marker', ja: '感嘆と標識' },
+      { zh: '情緒（wow）與填充（well, you know）。', en: 'Emotion (wow) and fillers (well, you know).', ja: '感情（wow）と埋草（well, you know）。' },
+      { zh: '填充詞不是文法錯誤本身。', en: 'A filler is not itself a grammar error.', ja: '埋草自体は文法の誤りではない。' },
+    ] },
+  ],
+}
+
+export const PATTERN_TABLE: TeachTable = {
+  caption: { zh: '五大句型', en: 'Five clause patterns', ja: '五文型' },
+  columns: [colClass, colExample, colWatch],
+  rows: [
+    { id: 'sv', cells: [
+      { zh: 'S+V', en: 'S+V', ja: 'S+V' },
+      en('Birds fly.'),
+      { zh: '不及物。不要硬加受詞。', en: 'Intransitive. Do not force an object.', ja: '自動詞。目的語を無理に足さない。' },
+    ] },
+    { id: 'svo', cells: [
+      { zh: 'S+V+O', en: 'S+V+O', ja: 'S+V+O' },
+      en('She sent the file.'),
+      { zh: '受詞是名詞性成分。', en: 'The object is noun-like.', ja: '目的語は名詞相当。' },
+    ] },
+    { id: 'svc', cells: [
+      { zh: 'S+V+C', en: 'S+V+C', ja: 'S+V+C' },
+      en('The report is late.'),
+      { zh: '補語說明主詞。be 這裡不是動作。', en: 'The complement describes the subject. be is not an action here.', ja: '補語は主語を説明する。ここでの be は動作ではない。' },
+    ] },
+    { id: 'svoo', cells: [
+      { zh: 'S+V+O+O', en: 'S+V+O+O', ja: 'S+V+O+O' },
+      en('She sent me the file.'),
+      { zh: '人在前、物在後很常見，但不是唯一寫法。', en: 'Person then thing is common, not the only order.', ja: '人・物の順は多いが唯一ではない。' },
+    ] },
+    { id: 'svoc', cells: [
+      { zh: 'S+V+O+C', en: 'S+V+O+C', ja: 'S+V+O+C' },
+      en('They made the plan public.'),
+      { zh: '補語說明受詞，不是第二個受詞。', en: 'The complement describes the object. It is not a second object.', ja: '補語は目的語を説明する。第二目的語ではない。' },
+    ] },
+  ],
+}
+
+export const NONFINITE_TABLE: TeachTable = {
+  caption: { zh: '非限定動詞', en: 'Non-finite verbs', ja: '非定形動詞' },
+  columns: [colClass, colSort, colWatch],
+  rows: [
+    { id: 'inf', cells: [
+      { zh: '不定詞 to V', en: 'Infinitive to V', ja: '不定詞 to V' },
+      { zh: '目的，或 want / decide 之後。', en: 'Purpose, or after want / decide.', ja: '目的、または want / decide の後。' },
+      { zh: '不是每個動詞後面都接 to。', en: 'Not every verb takes to.', ja: 'すべての動詞が to を取るわけではない。' },
+    ] },
+    { id: 'ger', cells: [
+      { zh: '動名詞 V-ing', en: 'Gerund V-ing', ja: '動名詞 V-ing' },
+      { zh: '當主詞，或 enjoy / finish 之後。', en: 'As a subject, or after enjoy / finish.', ja: '主語、または enjoy / finish の後。' },
+      { zh: 'look forward to 後面是 V-ing，不是原形。', en: 'look forward to takes V-ing, not a base verb.', ja: 'look forward to の後は V-ing。' },
+    ] },
+    { id: 'part', cells: [
+      { zh: '分詞', en: 'Participle', ja: '分詞' },
+      { zh: '修飾名詞，或分詞構句。', en: 'Modifies a noun, or a participle clause.', ja: '名詞を修飾する、または分詞構文。' },
+      { zh: '分詞構句的主詞要跟主句一致，否則先寫完整句。', en: 'The participle subject should match the main clause. Else write a full clause.', ja: '分詞の主語は主節と揃える。揃わないなら完全文にする。' },
+    ] },
+  ],
+}
+
+export const TRANSITION_TABLE: TeachTable = {
+  caption: { zh: '銜接詞', en: 'Transitions', ja: 'つなぎ語' },
+  columns: [colClass, colSort, colWatch],
+  rows: [
+    { id: 'add', cells: [
+      { zh: '補充', en: 'Addition', ja: '追加' },
+      en('furthermore, in addition'),
+      { zh: '前面要已經有一句。', en: 'A sentence has to come first.', ja: '前に文が必要。' },
+    ] },
+    { id: 'contrast', cells: [
+      { zh: '對比', en: 'Contrast', ja: '対比' },
+      en('however, nevertheless'),
+      { zh: 'however 常用句點或分號，不要只用逗號接兩個完整句。', en: 'however usually wants a period or semicolon, not a comma splice.', ja: 'however はピリオドかセミコロン。コンマつなぎにしない。' },
+    ] },
+    { id: 'cause', cells: [
+      { zh: '因果', en: 'Cause', ja: '因果' },
+      en('therefore, consequently'),
+      { zh: '先寫原因，再寫結果。', en: 'Write the cause, then the result.', ja: '原因を先に、結果を後に。' },
+    ] },
+    { id: 'sum', cells: [
+      { zh: '總結', en: 'Summary', ja: 'まとめ' },
+      en('in conclusion, to sum up'),
+      { zh: '不要在第一句就總結。', en: 'Do not summarize in the first sentence.', ja: '最初の文でまとめない。' },
+    ] },
+  ],
+}
+
+export const SOUND_TABLE: TeachTable = {
+  caption: { zh: '語音怎麼聽', en: 'What to listen for', ja: '音声の聞き方' },
+  columns: [colClass, colSort, colWatch],
+  rows: [
+    { id: 'word', cells: [
+      { zh: '字重音', en: 'Word stress', ja: '語強勢' },
+      en('REcord (noun) / reCORD (verb)'),
+      { zh: '重音可以改詞性。不要只記一個讀音。', en: 'Stress can change the word class. Do not store only one pronunciation.', ja: '強勢で品詞が変わる。読みは一つではない。' },
+    ] },
+    { id: 'sent', cells: [
+      { zh: '句重音', en: 'Sentence stress', ja: '文強勢' },
+      { zh: '新資訊通常較重。', en: 'New information is usually heavier.', ja: '新しい情報は通常強い。' },
+      { zh: '不是每個字都要重讀。', en: 'Not every word is stressed.', ja: 'すべての語を強くしない。' },
+    ] },
+    { id: 'tone', cells: [
+      { zh: '語調', en: 'Intonation', ja: 'イントネーション' },
+      { zh: '降調常是確定；升調常是未完或客氣。', en: 'A fall often marks certainty. A rise often marks unfinished or polite.', ja: '下降は確定、上昇は未完や丁寧。' },
+      { zh: '問句不一定升調。', en: 'A question is not always a rise.', ja: '疑問は必ず上昇とは限らない。' },
+    ] },
+    { id: 'weak', cells: [
+      { zh: '弱讀', en: 'Weak forms', ja: '弱形' },
+      en('a, of, to → /ə/'),
+      { zh: '字典音不是語流音。', en: 'A dictionary vowel is not the vowel in fast speech.', ja: '辞書の母音は速い話の母音ではない。' },
+    ] },
+    { id: 'link', cells: [
+      { zh: '連音', en: 'Linking', ja: '連音' },
+      en('pick it up'),
+      { zh: '聽力不要按字母切開。', en: 'Do not slice listening by letters.', ja: '聞き取りを文字で切らない。' },
+    ] },
+  ],
+}
+
+export const FUNCTION_TABLE: TeachTable = {
+  caption: { zh: '溝通功能句', en: 'Functional frames', ja: '機能の型' },
+  columns: [colClass, colExample, colWatch],
+  rows: [
+    { id: 'greet', cells: [
+      { zh: '問候／道別', en: 'Greet / leave', ja: '挨拶・別れ' },
+      en('Good morning. Thanks for your time.'),
+      { zh: '正式信不要用 hey 當開頭。', en: 'Do not open formal mail with hey.', ja: '正式なメールを hey で始めない。' },
+    ] },
+    { id: 'sorry', cells: [
+      { zh: '致歉', en: 'Apologize', ja: '謝罪' },
+      en('I am sorry for the delay.'),
+      { zh: '先說事情，再補原因。', en: 'Name the fact, then the reason.', ja: '事実を先に、理由を後に。' },
+    ] },
+    { id: 'agree', cells: [
+      { zh: '同意', en: 'Agree', ja: '同意' },
+      en('I agree with the plan.'),
+      { zh: 'agree 後面接 with，不是直接接 me。', en: 'agree takes with. It does not take me directly.', ja: 'agree の後は with。' },
+    ] },
+    { id: 'disagree', cells: [
+      { zh: '不同意', en: 'Disagree', ja: '反対' },
+      en('I see it differently.'),
+      { zh: '先不要寫 you are wrong。', en: 'Do not start with you are wrong.', ja: 'you are wrong から始めない。' },
+    ] },
+    { id: 'suggest', cells: [
+      { zh: '建議', en: 'Suggest', ja: '提案' },
+      en('I suggest that we wait.'),
+      { zh: 'suggest that 後面常用原形。', en: 'suggest that often takes a base verb.', ja: 'suggest that の後は原形が多い。' },
+    ] },
+    { id: 'refuse', cells: [
+      { zh: '委婉拒絕', en: 'Soft refusal', ja: '婉曲な断り' },
+      en('I am afraid we cannot meet that date.'),
+      { zh: '拒絕後給一個替代，不要只寫 no。', en: 'Offer an alternative. Do not stop at no.', ja: '代わりを出す。no だけで終わらない。' },
+    ] },
+    { id: 'clarify', cells: [
+      { zh: '請對方再說', en: 'Ask to repeat', ja: '言い直しを頼む' },
+      en('Could you say that again?'),
+      { zh: '這是要求重述，不是承認自己全錯。', en: 'This asks for a repeat. It does not admit you were entirely wrong.', ja: '繰り返しの依頼であり、全誤りではない。' },
+    ] },
+    { id: 'mail', cells: [
+      { zh: '郵件頭尾', en: 'Mail open / close', ja: 'メールの頭と締め' },
+      en('Thank you for your email. Best regards,'),
+      { zh: '練習句，不是公司範本或認證。', en: 'Practice lines, not a company template or a certificate.', ja: '練習文であり社内ひな型や資格ではない。' },
+    ] },
+  ],
+}
+
+
 

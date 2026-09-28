@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { COLLOCATION_ROWS, NOTE_FOLDERS, PREPOSITION_ROWS, PUNCTUATION_MARKS, STUDY_STAGES, SYNTHESIS_SERIES, TENSE_ROWS } from './data/synthesisSeries'
+import { COLLOCATION_ROWS, FUNCTION_TABLE, NONFINITE_TABLE, NOTE_FOLDERS, PATTERN_TABLE, POS_TABLE, PREPOSITION_ROWS, PUNCTUATION_MARKS, SOUND_TABLE, STUDY_STAGES, SYNTHESIS_SERIES, TENSE_ROWS, TRANSITION_TABLE } from './data/synthesisSeries'
 import { translate } from '../i18n/messages'
 
 describe('TOEIC synthesis series', () => {
@@ -24,6 +24,13 @@ describe('TOEIC synthesis series', () => {
     expect(STUDY_STAGES.length).toBeGreaterThanOrEqual(5)
     expect(NOTE_FOLDERS.some((row) => row.zh.includes('假分數'))).toBe(true)
     expect(COLLOCATION_ROWS.some((row) => row.chunk === 'make a decision')).toBe(true)
+    expect(POS_TABLE.rows.length).toBeGreaterThanOrEqual(8)
+    expect(PATTERN_TABLE.rows).toHaveLength(5)
+    expect(NONFINITE_TABLE.rows).toHaveLength(3)
+    expect(TRANSITION_TABLE.rows).toHaveLength(4)
+    expect(SOUND_TABLE.rows).toHaveLength(5)
+    expect(FUNCTION_TABLE.rows).toHaveLength(8)
+    expect(FUNCTION_TABLE.rows.some((row) => row.cells[2].en.includes('not a company template'))).toBe(true)
     expect(translate('zh-Hant', 'en.synthesis.honesty')).toMatch(/不是多益分數/)
     expect(translate('en', 'en.synthesis.honesty')).toMatch(/Not a TOEIC score/)
     const view = readFileSync(join(process.cwd(), 'src/toeic/components/ToeicSynthesisSeries.tsx'), 'utf8')
