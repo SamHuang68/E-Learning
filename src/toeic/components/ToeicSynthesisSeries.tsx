@@ -5,6 +5,7 @@ import {
   CAPITAL_TABLE,
   CHUNK_DRILLS,
   COLLOCATION_ROWS,
+  FUNCTION_DRILLS,
   FUNCTION_TABLE,
   NONFINITE_DRILLS,
   NONFINITE_TABLE,
@@ -348,6 +349,15 @@ export function ToeicSynthesisSeries({ instructionLang = 'zh' }: Props) {
       {active.id === 'sound' ? <TeachGrid table={SOUND_TABLE} lang={lang} /> : null}
       {active.id === 'semantics' ? <TeachGrid table={SEMANTICS_TABLE} lang={lang} /> : null}
       {active.id === 'function' ? <TeachGrid table={FUNCTION_TABLE} lang={lang} /> : null}
+      {active.id === 'function' ? (
+        <ChoiceCheck
+          lang={lang}
+          items={FUNCTION_DRILLS}
+          titleKey="en.synthesis.functionDrill"
+          noteKey="en.synthesis.functionDrillNote"
+          stemId="function-drill-stem"
+        />
+      ) : null}
 
       <section aria-labelledby="toeic-synthesis-map">
         <h3 id="toeic-synthesis-map">{t('en.synthesis.mapTitle')}</h3>
