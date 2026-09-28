@@ -10,6 +10,7 @@ import {
   POS_TABLE,
   PREP_PAIRS,
   PREPOSITION_ROWS,
+  PREP_DRILLS,
   PUNCTUATION_MARKS,
   SERIES_CROSSWALK,
   SEMANTICS_TABLE,
@@ -57,6 +58,54 @@ function TeachGrid({ table, lang }: { table: TeachTable; lang: Lang }) {
           ))}
         </tbody>
       </table>
+    </div>
+  )
+}
+
+function PrepCheck({ lang }: { lang: Lang }) {
+  const { t } = useI18n()
+  const [index, setIndex] = useState(0)
+  const [picked, setPicked] = useState<string | null>(null)
+  const item = PREP_DRILLS[index] ?? PREP_DRILLS[0]
+  const matched = picked !== null && picked === item.answer
+
+  return (
+    <div className="practice-card">
+      <h3>{t('en.synthesis.prepDrill')}</h3>
+      <p className="section-subtext">{t('en.synthesis.prepDrillNote')}</p>
+      <p id="prep-drill-stem">{pick(item.stem, lang)}</p>
+      <div role="group" aria-labelledby="prep-drill-stem">
+        {item.choices.map((choice) => {
+          const wrong = picked === choice && choice !== item.answer
+          return (
+            <button
+              key={choice}
+              type="button"
+              className={picked === choice ? 'pill-btn active' : 'pill-btn'}
+              aria-pressed={picked === choice}
+              aria-invalid={wrong ? true : undefined}
+              aria-describedby={picked === choice ? 'prep-drill-status' : undefined}
+              onClick={() => setPicked(choice)}
+            >
+              {choice}
+            </button>
+          )
+        })}
+      </div>
+      <p id="prep-drill-status" role="status" aria-live="polite">
+        {picked === null ? '' : matched ? t('en.synthesis.drillOk') : t('en.synthesis.drillNo')}
+        {picked !== null ? ` ${pick(item.why, lang)}` : ''}
+      </p>
+      <button
+        type="button"
+        className="pill-btn"
+        onClick={() => {
+          setIndex((current) => (current + 1) % PREP_DRILLS.length)
+          setPicked(null)
+        }}
+      >
+        {t('en.synthesis.drillNext')}
+      </button>
     </div>
   )
 }
@@ -138,6 +187,7 @@ export function ToeicSynthesisSeries({ instructionLang = 'zh' }: Props) {
               <li key={row.en}>{pick(row, lang)}</li>
             ))}
           </ul>
+          <PrepCheck lang={lang} />
         </div>
         </>
       ) : null}
