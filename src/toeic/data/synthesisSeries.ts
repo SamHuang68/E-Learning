@@ -968,6 +968,66 @@ export const FUNCTION_DRILLS: PrepDrill[] = [
   },
 ]
 
+export const SOUND_DRILLS: PrepDrill[] = [
+  {
+    id: 'noun',
+    stem: { zh: '名詞「紀錄」的重音。', en: 'Stress on the noun record.', ja: '名詞 record の強勢。' },
+    choices: ['REcord', 'reCORD', 'same stress'],
+    answer: 'REcord',
+    why: { zh: '重音可以改詞性。不要只記一個讀音。這不是發音認證。', en: 'Stress can change the word class. Do not store only one pronunciation. Not a pronunciation certificate.', ja: '強勢で品詞が変わる。読みは一つではない。発音の資格ではない。' },
+  },
+  {
+    id: 'verb',
+    stem: { zh: '動詞「錄下」的重音。', en: 'Stress on the verb record.', ja: '動詞 record の強勢。' },
+    choices: ['reCORD', 'REcord', 'same stress'],
+    answer: 'reCORD',
+    why: { zh: '動詞常把重音放後面。名詞和動詞不要共用一個重音。', en: 'The verb often stresses the later syllable. Do not share one stress with the noun.', ja: '動詞は後ろに強勢が来やすい。名詞と同じ強勢にしない。' },
+  },
+  {
+    id: 'new',
+    stem: { zh: 'I need the FILE. 哪個通常較重？（FILE 是新資訊）', en: 'I need the FILE. Which is usually heavier? (FILE is new)', ja: 'I need the FILE. どれが通常強い？（FILE が新しい情報）' },
+    choices: ['FILE', 'the', 'I'],
+    answer: 'FILE',
+    why: { zh: '新資訊通常較重。不是每個字都要重讀。', en: 'New information is usually heavier. Not every word is stressed.', ja: '新しい情報は通常強い。すべての語を強くしない。' },
+  },
+  {
+    id: 'light',
+    stem: { zh: '語流裡哪個常不重讀？', en: 'Which is often unstressed in a sentence?', ja: '文の中で強くしないことが多いのは？' },
+    choices: ['of', 'deadline', 'report'],
+    answer: 'of',
+    why: { zh: '功能詞常輕。內容詞才常重。', en: 'Function words are often light. Content words carry the weight.', ja: '機能語は軽いことが多い。内容語が重い。' },
+  },
+  {
+    id: 'fall',
+    stem: { zh: 'The file is ready. 說完、確定時常見什麼？', en: 'The file is ready. What is common when it is finished and sure?', ja: 'The file is ready. 言い切って確定のとき多いのは？' },
+    choices: ['a fall', 'must rise', 'no tone'],
+    answer: 'a fall',
+    why: { zh: '降調常是確定。', en: 'A fall often marks certainty.', ja: '下降は確定が多い。' },
+  },
+  {
+    id: 'wh',
+    stem: { zh: 'Where is the file? 問句一定升調嗎？', en: 'Where is the file? Must a question rise?', ja: 'Where is the file? 疑問は必ず上昇？' },
+    choices: ['not always', 'always a rise', 'never a fall'],
+    answer: 'not always',
+    why: { zh: '問句不一定升調。', en: 'A question is not always a rise.', ja: '疑問は必ず上昇とは限らない。' },
+  },
+  {
+    id: 'weak',
+    stem: { zh: 'to / of 在快語流裡常變成什麼？', en: 'What do to and of often become in fast speech?', ja: '速い発話で to と of は何になりやすい？' },
+    choices: ['a weak schwa', 'the dictionary vowel', 'silent'],
+    answer: 'a weak schwa',
+    why: { zh: '字典音不是語流音。', en: 'A dictionary vowel is not the vowel in fast speech.', ja: '辞書の母音は速い話の母音ではない。' },
+  },
+  {
+    id: 'link',
+    stem: { zh: 'pick it up 怎麼聽？', en: 'How should you hear pick it up?', ja: 'pick it up はどう聞く？' },
+    choices: ['as one chunk', 'letter by letter', 'only pick'],
+    answer: 'as one chunk',
+    why: { zh: '聽力不要按字母切開。', en: 'Do not slice listening by letters.', ja: '聞き取りを文字で切らない。' },
+  },
+]
+
+
 
 
 
