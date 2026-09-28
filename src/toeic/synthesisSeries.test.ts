@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { CAPITAL_TABLE, CHUNK_DRILLS, COLLOCATION_ROWS, FUNCTION_TABLE, NONFINITE_TABLE, NOTE_FOLDERS, PATTERN_DRILLS, PATTERN_TABLE, POS_TABLE, PREP_DRILLS, PREPOSITION_ROWS, PUNCT_DRILLS, PUNCTUATION_MARKS, SEMANTICS_TABLE, SOUND_TABLE, STUDY_STAGES, SYNTHESIS_SERIES, TENSE_ROWS, TRANSITION_TABLE } from './data/synthesisSeries'
+import { CAPITAL_TABLE, CHUNK_DRILLS, COLLOCATION_ROWS, FUNCTION_TABLE, NONFINITE_DRILLS, NONFINITE_TABLE, NOTE_FOLDERS, PATTERN_DRILLS, PATTERN_TABLE, POS_TABLE, PREP_DRILLS, PREPOSITION_ROWS, PUNCT_DRILLS, PUNCTUATION_MARKS, SEMANTICS_TABLE, SOUND_TABLE, STUDY_STAGES, SYNTHESIS_SERIES, TENSE_ROWS, TRANSITION_TABLE } from './data/synthesisSeries'
 import { translate } from '../i18n/messages'
 
 describe('TOEIC synthesis series', () => {
@@ -47,6 +47,9 @@ describe('TOEIC synthesis series', () => {
     expect(PATTERN_DRILLS).toHaveLength(8)
     expect(PATTERN_DRILLS.every((item) => item.choices.includes(item.answer))).toBe(true)
     expect(new Set(PATTERN_DRILLS.map((item) => item.answer))).toEqual(new Set(['S+V', 'S+V+O', 'S+V+C', 'S+V+O+O', 'S+V+O+C']))
+    expect(NONFINITE_DRILLS).toHaveLength(8)
+    expect(NONFINITE_DRILLS.every((item) => item.choices.includes(item.answer))).toBe(true)
+    expect(NONFINITE_DRILLS.some((item) => item.id === 'dangling' && item.answer.includes('After I left'))).toBe(true)
     expect(translate('zh-Hant', 'en.synthesis.prepDrillNote')).toMatch(/不計分/)
     expect(translate('en', 'en.synthesis.prepDrillNote')).toMatch(/not a score/)
     expect(translate('zh-Hant', 'en.synthesis.honesty')).toMatch(/不是多益分數/)
@@ -58,6 +61,7 @@ describe('TOEIC synthesis series', () => {
     expect(view).toContain('stemId="punct-drill-stem"')
     expect(view).toContain('stemId="chunk-drill-stem"')
     expect(view).toContain('stemId="pattern-drill-stem"')
+    expect(view).toContain('stemId="nonfinite-drill-stem"')
     expect(view).toContain('aria-live="polite"')
     expect(view).toContain("t('en.synthesis.honesty')")
   })
