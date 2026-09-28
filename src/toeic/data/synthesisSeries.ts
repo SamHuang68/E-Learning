@@ -673,6 +673,66 @@ export const PUNCT_DRILLS: PrepDrill[] = [
   },
 ]
 
+export const CHUNK_DRILLS: PrepDrill[] = [
+  {
+    id: 'decision',
+    stem: { zh: '做決定。', en: 'Decide.', ja: '決定する。' },
+    choices: ['make a decision', 'do a decision', 'make a rain'],
+    answer: 'make a decision',
+    why: { zh: '整組是 make a decision，不是 do。', en: 'The chunk is make a decision, not do.', ja: 'make a decision。do ではない。' },
+  },
+  {
+    id: 'rain',
+    stem: { zh: '大雨。', en: 'A lot of rain.', ja: '大雨。' },
+    choices: ['heavy rain', 'strong rain', 'hard rain'],
+    answer: 'heavy rain',
+    why: { zh: '大雨是 heavy rain。', en: 'Heavy rain, not strong rain.', ja: '大雨は heavy rain。' },
+  },
+  {
+    id: 'give-up',
+    stem: { zh: '放棄這個計畫。', en: 'Stop this plan.', ja: 'この計画をあきらめる。' },
+    choices: ['give up the plan', 'give up to the plan', 'give on the plan'],
+    answer: 'give up the plan',
+    why: { zh: 'give up 後面直接接受詞，不是 give up to do。', en: 'give up takes the object. It is not give up to do.', ja: 'give up は目的語を取る。give up to do ではない。' },
+  },
+  {
+    id: 'forward',
+    stem: { zh: '期待見到你。', en: 'Expect to see you with pleasure.', ja: 'お会いするのを楽しみにする。' },
+    choices: ['look forward to seeing you', 'look forward to see you', 'look forward for seeing you'],
+    answer: 'look forward to seeing you',
+    why: { zh: 'to 後面是 V-ing。', en: 'After to, use V-ing.', ja: 'to の後は V-ing。' },
+  },
+  {
+    id: 'turn-down',
+    stem: { zh: 'She turned ___ the offer.（拒絕）', en: 'She turned ___ the offer. (refused)', ja: 'She turned ___ the offer.（断った）' },
+    choices: ['down', 'up', 'on'],
+    answer: 'down',
+    why: { zh: '這裡是拒絕。調音量也用 turn down，要看上下文。', en: 'Here it means refuse. Volume uses the same chunk. Read the context.', ja: 'ここは断り。音量も turn down。文脈を見る。' },
+  },
+  {
+    id: 'tea',
+    stem: { zh: '濃茶。', en: 'Tea with a strong flavor.', ja: '濃いお茶。' },
+    choices: ['strong tea', 'powerful tea', 'heavy tea'],
+    answer: 'strong tea',
+    why: { zh: '濃茶是 strong tea，不是 powerful。', en: 'Strong tea, not powerful tea.', ja: '濃いお茶は strong tea。' },
+  },
+  {
+    id: 'mistake',
+    stem: { zh: '犯錯。', en: 'Make an error.', ja: '間違いをする。' },
+    choices: ['make a mistake', 'do a mistake', 'take a mistake'],
+    answer: 'make a mistake',
+    why: { zh: 'make a mistake，不是 do。', en: 'make a mistake, not do a mistake.', ja: 'make a mistake。do ではない。' },
+  },
+  {
+    id: 'photo',
+    stem: { zh: '拍照。', en: 'Capture a picture.', ja: '写真を撮る。' },
+    choices: ['take a photo', 'make a photo', 'do a photo'],
+    answer: 'take a photo',
+    why: { zh: '拍照是 take a photo。', en: 'take a photo, not make a photo.', ja: '写真は take a photo。' },
+  },
+]
+
+
 
 
 

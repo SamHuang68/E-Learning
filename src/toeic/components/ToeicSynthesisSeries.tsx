@@ -3,6 +3,7 @@ import { useI18n } from '../../i18n/i18n'
 import type { MessageKey } from '../../i18n/messages'
 import {
   CAPITAL_TABLE,
+  CHUNK_DRILLS,
   COLLOCATION_ROWS,
   FUNCTION_TABLE,
   NONFINITE_TABLE,
@@ -270,6 +271,13 @@ export function ToeicSynthesisSeries({ instructionLang = 'zh' }: Props) {
               ))}
             </tbody>
           </table>
+          <ChoiceCheck
+            lang={lang}
+            items={CHUNK_DRILLS}
+            titleKey="en.synthesis.chunkDrill"
+            noteKey="en.synthesis.chunkDrillNote"
+            stemId="chunk-drill-stem"
+          />
         </div>
       ) : null}
 
