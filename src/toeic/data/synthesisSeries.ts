@@ -1381,6 +1381,52 @@ export const POS_DRILLS: PrepDrill[] = [
   },
 ]
 
+export const STAGE_DRILLS: PrepDrill[] = [
+  {
+    id: 's1',
+    stem: { zh: '先聽得見、說得出口。哪一段？', en: 'Hear it, then say it. Which stage?', ja: '聞こえて、言える。どの段？' },
+    choices: ['Stage 1', 'Stage 3', 'Stage 5'],
+    answer: 'Stage 1',
+    why: { zh: '第 1 段是語音與高頻語塊。順序只是建議。', en: 'Stage 1 is sound and high-frequency chunks. The order is only a suggestion.', ja: '第1段は音声と高頻度の塊。順番は提案。' },
+  },
+  {
+    id: 's2',
+    stem: { zh: '先分詞類，再記 in/on/at。哪一段？', en: 'Word class first, then in/on/at. Which stage?', ja: '品詞を先に、その後 in/on/at。どの段？' },
+    choices: ['Stage 2', 'Stage 4', 'Stage 1'],
+    answer: 'Stage 2',
+    why: { zh: '第 2 段是詞類與介系詞。', en: 'Stage 2 is word class and prepositions.', ja: '第2段は品詞と前置詞。' },
+  },
+  {
+    id: 's3',
+    stem: { zh: '五句型與時態表。哪一段？', en: 'Five patterns and the tense grid. Which stage?', ja: '五文型と時制表。どの段？' },
+    choices: ['Stage 3', 'Stage 1', 'Stage 5'],
+    answer: 'Stage 3',
+    why: { zh: '第 3 段用表，不背散句。', en: 'Stage 3 uses the grid. Do not memorize loose sentences.', ja: '第3段は表を使う。ばらばらの文を暗記しない。' },
+  },
+  {
+    id: 's4',
+    stem: { zh: '先避免逗號接兩個完整句。哪一段？', en: 'Stop comma splices first. Which stage?', ja: 'コンマで二文をつなぐのを先に避ける。どの段？' },
+    choices: ['Stage 4', 'Stage 2', 'Stage 5'],
+    answer: 'Stage 4',
+    why: { zh: '第 4 段是標點與銜接。', en: 'Stage 4 is punctuation and cohesion.', ja: '第4段は句読点と結束。' },
+  },
+  {
+    id: 's5',
+    stem: { zh: '郵件、同意、拒絕。哪一段？', en: 'Mail, agree, refuse. Which stage?', ja: 'メール、同意、断り。どの段？' },
+    choices: ['Stage 5', 'Stage 1', 'Stage 3'],
+    answer: 'Stage 5',
+    why: { zh: '第 5 段是語域與溝通功能。', en: 'Stage 5 is register and functions.', ja: '第5段はレジスターと機能。' },
+  },
+  {
+    id: 'skip',
+    stem: { zh: '可以跳著查嗎？', en: 'May you skip around?', ja: '飛ばして調べてよいか？' },
+    choices: ['Yes. The order is a suggestion.', 'No. Finish stage 1 first.', 'Only if it raises a TOEIC score.'],
+    answer: 'Yes. The order is a suggestion.',
+    why: { zh: '順序只是建議。不是多益分數進度。', en: 'The order is a suggestion. It is not a TOEIC score path.', ja: '順番は提案。TOEIC の得点ではない。' },
+  },
+]
+
+
 
 
 

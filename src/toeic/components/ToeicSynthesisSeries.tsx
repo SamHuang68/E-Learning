@@ -27,6 +27,7 @@ import {
   SEMANTICS_TABLE,
   SOUND_DRILLS,
   SOUND_TABLE,
+  STAGE_DRILLS,
   STUDY_STAGES,
   SUBJUNCTIVE_ROWS,
   SYNTHESIS_SERIES,
@@ -437,6 +438,13 @@ export function ToeicSynthesisSeries({ instructionLang = 'zh' }: Props) {
             <li key={row.en}>{pick(row, lang)}</li>
           ))}
         </ol>
+        <ChoiceCheck
+          lang={lang}
+          items={STAGE_DRILLS}
+          titleKey="en.synthesis.stageDrill"
+          noteKey="en.synthesis.stageDrillNote"
+          stemId="stage-drill-stem"
+        />
       </section>
 
       <section aria-labelledby="toeic-synthesis-notes">
