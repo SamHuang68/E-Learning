@@ -1457,6 +1457,59 @@ export const NOTE_DRILLS: PrepDrill[] = [
   },
 ]
 
+export const CROSSWALK_DRILLS: PrepDrill[] = [
+  {
+    id: 'mech',
+    stem: { zh: '標點記在哪一系？', en: 'Where do you file punctuation?', ja: '句読点はどの系列？' },
+    choices: ['series 4', 'series 6', 'series 2'],
+    answer: 'series 4',
+    why: { zh: '書寫與標點在系列 4。這是歸檔，不是多益題型。', en: 'Mechanics and punctuation sit in series 4. This is a filing aid, not a TOEIC part.', ja: '表記と句読点は系列 4。整理であり TOEIC のパートではない。' },
+  },
+  {
+    id: 'sound',
+    stem: { zh: '語音記在哪一系？', en: 'Where do you file sound?', ja: '音声はどの系列？' },
+    choices: ['series 6', 'series 4', 'series 8'],
+    answer: 'series 6',
+    why: { zh: '語音與韻律在系列 6。', en: 'Phonetics and prosody sit in series 6.', ja: '音声と韻律は系列 6。' },
+  },
+  {
+    id: 'lex',
+    stem: { zh: '構詞與語塊記在哪？', en: 'Where do you file word formation and chunks?', ja: '語形成と語塊はどこ？' },
+    choices: ['series 1 and 5', 'series 6 only', 'series 8 only'],
+    answer: 'series 1 and 5',
+    why: { zh: '詞彙與構詞跨系列 1 與 5。', en: 'Morphology and vocabulary span series 1 and 5.', ja: '語形成と語彙は系列 1 と 5。' },
+  },
+  {
+    id: 'pos',
+    stem: { zh: '詞類記在哪一系？', en: 'Where do you file parts of speech?', ja: '品詞はどの系列？' },
+    choices: ['series 1', 'series 3', 'series 8'],
+    answer: 'series 1',
+    why: { zh: '詞類在系列 1。介系詞也在這系，但自測是分開的。', en: 'Parts of speech sit in series 1. Prepositions live there too, but that check is separate.', ja: '品詞は系列 1。前置詞もそこだが、確認は別。' },
+  },
+  {
+    id: 'syntax',
+    stem: { zh: '句型與時態記在哪？', en: 'Where do you file patterns and tenses?', ja: '文型と時制はどこ？' },
+    choices: ['series 2 and 3', 'series 4', 'series 6'],
+    answer: 'series 2 and 3',
+    why: { zh: '句法在系列 2，動詞系統在系列 3。', en: 'Syntax is series 2. The verb system is series 3.', ja: '統語は系列 2。動詞は系列 3。' },
+  },
+  {
+    id: 'discourse',
+    stem: { zh: '銜接詞記在哪一系？', en: 'Where do you file cohesion?', ja: '結束はどの系列？' },
+    choices: ['series 4', 'series 1', 'series 6'],
+    answer: 'series 4',
+    why: { zh: '篇章銜接和標點同一個系列 4，不是另一張地圖。', en: 'Discourse cohesion shares series 4 with punctuation. It is not a second map.', ja: '談話の結束は句読点と同じ系列 4。別の地図ではない。' },
+  },
+  {
+    id: 'pragma',
+    stem: { zh: '語域與郵件記在哪？', en: 'Where do you file register and mail?', ja: 'レジスターとメールはどこ？' },
+    choices: ['series 5 and 8', 'series 2 and 3', 'series 6'],
+    answer: 'series 5 and 8',
+    why: { zh: '語用與文體在系列 5 與 8。', en: 'Pragmatics and style sit in series 5 and 8.', ja: '語用と文体は系列 5 と 8。' },
+  },
+]
+
+
 
 
 
