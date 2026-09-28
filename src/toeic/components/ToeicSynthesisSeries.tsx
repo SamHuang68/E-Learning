@@ -5,16 +5,22 @@ import {
   ASPECT_DRILLS,
   CAPITAL_DRILLS,
   CAPITAL_TABLE,
+  CLAUSE_DRILLS,
+  CLAUSE_TABLE,
   CHUNK_DRILLS,
   COLLOCATION_ROWS,
   CROSSWALK_DRILLS,
   FUNCTION_DRILLS,
   FUNCTION_TABLE,
   IF_DRILLS,
+  MORPHOLOGY_DRILLS,
+  MORPHOLOGY_TABLE,
   NONFINITE_DRILLS,
   NONFINITE_TABLE,
   NOTE_DRILLS,
   NOTE_FOLDERS,
+  PASSIVE_DRILLS,
+  PASSIVE_TABLE,
   PATTERN_DRILLS,
   PATTERN_TABLE,
   POS_DRILLS,
@@ -189,6 +195,14 @@ export function ToeicSynthesisSeries({ instructionLang = 'zh' }: Props) {
       {active.id === 'pos' ? (
         <>
           <TeachGrid table={POS_TABLE} lang={lang} />
+          <TeachGrid table={MORPHOLOGY_TABLE} lang={lang} />
+          <ChoiceCheck
+            lang={lang}
+            items={MORPHOLOGY_DRILLS}
+            titleKey="en.synthesis.morphDrill"
+            noteKey="en.synthesis.morphDrillNote"
+            stemId="morph-drill-stem"
+          />
           <ChoiceCheck
             lang={lang}
             items={POS_DRILLS}
@@ -247,6 +261,16 @@ export function ToeicSynthesisSeries({ instructionLang = 'zh' }: Props) {
           stemId="pattern-drill-stem"
         />
       ) : null}
+      {active.id === 'syntax' ? <TeachGrid table={CLAUSE_TABLE} lang={lang} /> : null}
+      {active.id === 'syntax' ? (
+        <ChoiceCheck
+          lang={lang}
+          items={CLAUSE_DRILLS}
+          titleKey="en.synthesis.clauseDrill"
+          noteKey="en.synthesis.clauseDrillNote"
+          stemId="clause-drill-stem"
+        />
+      ) : null}
 
       {active.id === 'verbal' ? (
         <div className="table-responsive">
@@ -303,6 +327,16 @@ export function ToeicSynthesisSeries({ instructionLang = 'zh' }: Props) {
             stemId="aspect-drill-stem"
           />
         </div>
+      ) : null}
+      {active.id === 'verbal' ? <TeachGrid table={PASSIVE_TABLE} lang={lang} /> : null}
+      {active.id === 'verbal' ? (
+        <ChoiceCheck
+          lang={lang}
+          items={PASSIVE_DRILLS}
+          titleKey="en.synthesis.passiveDrill"
+          noteKey="en.synthesis.passiveDrillNote"
+          stemId="passive-drill-stem"
+        />
       ) : null}
       {active.id === 'verbal' ? <TeachGrid table={NONFINITE_TABLE} lang={lang} /> : null}
       {active.id === 'verbal' ? (

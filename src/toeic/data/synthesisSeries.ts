@@ -60,7 +60,7 @@ export const SYNTHESIS_SERIES: SynthesisSeries[] = [
     points: [
       { zh: '十二時態是四個時間乘四種貌：簡單、進行、完成、完成進行。', en: 'Twelve forms: four times by four aspects (simple, progressive, perfect, perfect progressive).', ja: '12時制は四つの時と四つの相。' },
       { zh: '被動：be + p.p.。使役被動與授與動詞被動要另列，不要跟一般被動混。', en: 'Passive is be + past participle. Causative and ditransitive passives are separate rows.', ja: '受動態は be + 過去分詞。使役受動は別枠。' },
-      { zh: '假設語氣分三格：與現在、過去、未來事實相反。建議／要求動詞後面用原形。', en: 'Subjunctive: contrary to present, past, or future. Suggest/demand take a base verb.', ja: '仮定法は現在・過去・未来の事実と反対。提案・要求は原形。' },
+      { zh: '假設語氣看表：零條件、第一、第二、第三、混合，以及 that + 原形。倒退一格是記法，不是完整度。', en: 'Read the if-table: zero, first, second, third, mixed, and that + base verb. Backshift is a memory aid, not mastery.', ja: '表を見る：ゼロ、第一、第二、第三、混合、that + 原形。一段階戻すのは覚え方であり熟達ではない。' },
       { zh: '非限定：to V、V-ing、分詞構句。先問它是主詞、受詞，還是修飾。', en: 'Infinitive, gerund, participle. Ask whether it is subject, object, or modifier.', ja: '不定詞・動名詞・分詞。主語か目的語か修飾か。' },
     ],
   },
@@ -388,6 +388,77 @@ export const PATTERN_TABLE: TeachTable = {
       { zh: 'S+V+O+C', en: 'S+V+O+C', ja: 'S+V+O+C' },
       en('They made the plan public.'),
       { zh: '補語說明受詞，不是第二個受詞。', en: 'The complement describes the object. It is not a second object.', ja: '補語は目的語を説明する。第二目的語ではない。' },
+    ] },
+  ],
+}
+
+export const CLAUSE_TABLE: TeachTable = {
+  caption: { zh: '三種子句', en: 'Three clause types', ja: '三つの節' },
+  columns: [colClass, colExample, colWatch],
+  rows: [
+    { id: 'noun', cells: [
+      { zh: '名詞子句', en: 'Noun clause', ja: '名詞節' },
+      en('I know that the file arrived.'),
+      { zh: '填主詞或受詞的位置。that 可留可省，不是關係子句。', en: 'It fills a subject or object slot. that may stay or drop. This is not a relative clause.', ja: '主語か目的語の位置。that は残しても省いてもよい。関係節ではない。' },
+    ] },
+    { id: 'relative', cells: [
+      { zh: '關係子句', en: 'Relative clause', ja: '関係節' },
+      en('The file that she sent is late.'),
+      { zh: '修飾名詞。主句的動詞還要在。who / which / that 不是三個完全相同的字。', en: 'It modifies a noun. The main verb stays. who, which, and that are not identical.', ja: '名詞を修飾する。主節の動詞は残す。who / which / that は同一ではない。' },
+    ] },
+    { id: 'adverb', cells: [
+      { zh: '副詞子句', en: 'Adverb clause', ja: '副詞節' },
+      en('We left after the meeting ended.'),
+      { zh: '時間、條件、讓步、原因。after the meeting 只有片語，這列要有主詞和動詞。', en: 'Time, condition, concession, or cause. after the meeting is only a phrase. This row needs a subject and a verb.', ja: '時・条件・譲歩・原因。after the meeting は句。この行は主語と動詞が要る。' },
+    ] },
+  ],
+}
+
+export const PASSIVE_TABLE: TeachTable = {
+  caption: { zh: '被動三列', en: 'Three passive rows', ja: '受動の三行' },
+  columns: [colClass, colExample, colWatch],
+  rows: [
+    { id: 'be', cells: [
+      { zh: '一般被動', en: 'be + past participle', ja: 'be + 過去分詞' },
+      en('The file was sent.'),
+      { zh: '施事不明或不必說時才用。不是每句主動都要改被動。', en: 'Use it when the doer is unknown or not needed. Do not flip every active sentence.', ja: '行為者が不明か不要なとき。すべての能動を受動にしない。' },
+    ] },
+    { id: 'cause', cells: [
+      { zh: '使役', en: 'have / get + object + past participle', ja: 'have / get + 目的語 + 過去分詞' },
+      en('She had the file checked.'),
+      { zh: '她請人查。不是 The file was checked 的同一列。', en: 'She arranged for someone to check it. Not the same row as The file was checked.', ja: '誰かに確認させた。The file was checked と同じ行ではない。' },
+    ] },
+    { id: 'two', cells: [
+      { zh: '授與動詞', en: 'Ditransitive', ja: '授与動詞' },
+      en('She was sent the file. / The file was sent to her.'),
+      { zh: '兩個受詞可以有兩種被動。不要再造第三個受詞。', en: 'Two objects can give two passives. Do not invent a third object.', ja: '二つの目的語で二種類の受動。第三の目的語は作らない。' },
+    ] },
+  ],
+}
+
+export const MORPHOLOGY_TABLE: TeachTable = {
+  caption: { zh: '構詞四列', en: 'Four word-building rows', ja: '語形成の四行' },
+  columns: [colClass, colExample, colWatch],
+  rows: [
+    { id: 'prefix', cells: [
+      { zh: '前綴', en: 'Prefix', ja: '接頭辞' },
+      en('unhappy, rewrite, disagree'),
+      { zh: '多半改意思，不改詞性。un- 不是每字的相反。', en: 'Usually changes meaning, not word class. un- is not an opposite for every word.', ja: '多くは意味を変え、品詞は変えない。un- はすべての反対ではない。' },
+    ] },
+    { id: 'root', cells: [
+      { zh: '字根', en: 'Root', ja: '語根' },
+      en('port in transport'),
+      { zh: '可當記憶鉤。現代詞不一定還等於字根的古義。', en: 'A memory hook. A modern word need not still mean the old root sense.', ja: '覚え方。現代語が古い語根の意味のままとは限らない。' },
+    ] },
+    { id: 'suffix', cells: [
+      { zh: '後綴', en: 'Suffix', ja: '接尾辞' },
+      en('-tion noun, -able adjective, -ly adverb'),
+      { zh: '常決定詞性。不是每個 -ly 都是副詞。', en: 'Often sets the word class. Not every -ly word is an adverb.', ja: '品詞を決めることが多い。-ly がすべて副詞とは限らない。' },
+    ] },
+    { id: 'compound', cells: [
+      { zh: '複合詞', en: 'Compound', ja: '複合語' },
+      en('a real-time tool / in real time'),
+      { zh: '名詞前常加連字號。不是每兩個字都要黏起來。', en: 'A hyphen is common before a noun. Do not glue every pair of words.', ja: '名詞の前はハイフンが多い。すべての二語をくっつけない。' },
     ] },
   ],
 }
@@ -1575,6 +1646,85 @@ export const CROSSWALK_DRILLS: PrepDrill[] = [
     choices: ['series 5 and 8', 'series 2 and 3', 'series 6'],
     answer: 'series 5 and 8',
     why: { zh: '語用與文體在系列 5 與 8。', en: 'Pragmatics and style sit in series 5 and 8.', ja: '語用と文体は系列 5 と 8。' },
+  },
+]
+
+export const CLAUSE_DRILLS: PrepDrill[] = [
+  {
+    id: 'noun',
+    stem: { zh: 'I know that the file arrived. 哪一種？', en: 'I know that the file arrived. Which clause?', ja: 'I know that the file arrived. どの節？' },
+    choices: ['noun clause', 'relative clause', 'adverb clause'],
+    answer: 'noun clause',
+    why: { zh: 'that 子句填受詞。不是修飾 file 的關係子句。', en: 'The that-clause fills the object slot. It does not modify a noun the way a relative clause does.', ja: 'that 節は目的語。名詞を修飾する関係節ではない。' },
+  },
+  {
+    id: 'relative',
+    stem: { zh: 'The file that she sent is late. 哪一種？', en: 'The file that she sent is late. Which clause?', ja: 'The file that she sent is late. どの節？' },
+    choices: ['relative clause', 'noun clause', 'adverb clause'],
+    answer: 'relative clause',
+    why: { zh: 'that she sent 修飾 file。is 仍是主句動詞。', en: 'that she sent modifies file. is is still the main verb.', ja: 'that she sent は file を修飾。is は主節の動詞。' },
+  },
+  {
+    id: 'adverb',
+    stem: { zh: 'We left after the meeting ended. 哪一種？', en: 'We left after the meeting ended. Which clause?', ja: 'We left after the meeting ended. どの節？' },
+    choices: ['adverb clause', 'noun clause', 'after the meeting, a phrase only'],
+    answer: 'adverb clause',
+    why: { zh: 'ended 使它成為子句。after the meeting 單獨只是片語。', en: 'ended makes it a clause. after the meeting alone is only a phrase.', ja: 'ended があるので節。after the meeting だけなら句。' },
+  },
+]
+
+export const PASSIVE_DRILLS: PrepDrill[] = [
+  {
+    id: 'be',
+    stem: { zh: 'The file was sent. 哪一列？', en: 'The file was sent. Which row?', ja: 'The file was sent. どの行？' },
+    choices: ['be + past participle', 'have + object + past participle', 'a third object'],
+    answer: 'be + past participle',
+    why: { zh: '一般被動。不是每句主動都要改成這樣。', en: 'The ordinary passive. Do not flip every active sentence into this.', ja: '一般の受動。すべての能動をこれにしない。' },
+  },
+  {
+    id: 'cause',
+    stem: { zh: 'She had the file checked. 哪一列？', en: 'She had the file checked. Which row?', ja: 'She had the file checked. どの行？' },
+    choices: ['have / get + object + past participle', 'be + past participle', 'ditransitive'],
+    answer: 'have / get + object + past participle',
+    why: { zh: '她請人查。和 The file was checked 不是同一列。', en: 'She arranged the checking. Not the same row as The file was checked.', ja: '誰かに確認させた。The file was checked と同じ行ではない。' },
+  },
+  {
+    id: 'two',
+    stem: { zh: 'She was sent the file. 哪一列？', en: 'She was sent the file. Which row?', ja: 'She was sent the file. どの行？' },
+    choices: ['ditransitive', 'have / get + object + past participle', 'be + past participle only, with no second object'],
+    answer: 'ditransitive',
+    why: { zh: '授與動詞可以有兩種被動。不要再造第三個受詞。', en: 'A ditransitive verb can take two passives. Do not invent a third object.', ja: '授与動詞は二種類の受動。第三の目的語は作らない。' },
+  },
+]
+
+export const MORPHOLOGY_DRILLS: PrepDrill[] = [
+  {
+    id: 'prefix',
+    stem: { zh: 'unhappy 的 un- 多半做什麼？', en: 'What does un- usually do in unhappy?', ja: 'unhappy の un- は多く何をする？' },
+    choices: ['changes meaning, not word class', 'always makes an adverb', 'always an opposite of every word'],
+    answer: 'changes meaning, not word class',
+    why: { zh: '前綴多半改意思。un- 不是每個字的相反。', en: 'A prefix usually changes meaning. un- is not an opposite for every word.', ja: '接頭辞は多く意味を変える。un- はすべての反対ではない。' },
+  },
+  {
+    id: 'root',
+    stem: { zh: 'transport 裡的 port。', en: 'port inside transport.', ja: 'transport の port。' },
+    choices: ['a memory hook, not a modern definition', 'the full modern meaning', 'a suffix that sets word class'],
+    answer: 'a memory hook, not a modern definition',
+    why: { zh: '字根可當記憶鉤。現代詞不一定還等於古義。', en: 'A root can be a memory hook. A modern word need not still mean the old sense.', ja: '語根は覚え方。現代語が古い意味のままとは限らない。' },
+  },
+  {
+    id: 'suffix',
+    stem: { zh: '-tion 常把詞變成什麼？', en: 'What word class does -tion often make?', ja: '-tion は多く何の品詞にする？' },
+    choices: ['a noun', 'always an adverb', 'always a verb'],
+    answer: 'a noun',
+    why: { zh: '後綴常決定詞性。不是每個 -ly 都是副詞。', en: 'A suffix often sets the word class. Not every -ly word is an adverb.', ja: '接尾辞は品詞を決めることが多い。-ly がすべて副詞とは限らない。' },
+  },
+  {
+    id: 'compound',
+    stem: { zh: '名詞前的 real-time。', en: 'real-time before a noun.', ja: '名詞の前の real-time。' },
+    choices: ['a compound, hyphen common before the noun', 'a prefix', 'glue every pair of words'],
+    answer: 'a compound, hyphen common before the noun',
+    why: { zh: '複合詞在名詞前常加連字號。不是每兩個字都要黏起來。', en: 'A compound often takes a hyphen before a noun. Do not glue every pair.', ja: '複合語は名詞の前にハイフンが多い。すべての二語をくっつけない。' },
   },
 ]
 

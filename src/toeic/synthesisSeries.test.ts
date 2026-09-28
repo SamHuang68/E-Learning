@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { ASPECT_DRILLS, CAPITAL_DRILLS, CAPITAL_TABLE, CHUNK_DRILLS, COLLOCATION_ROWS, CROSSWALK_DRILLS, FUNCTION_DRILLS, FUNCTION_TABLE, IF_DRILLS, NONFINITE_DRILLS, NONFINITE_TABLE, NOTE_DRILLS, NOTE_FOLDERS, PATTERN_DRILLS, PATTERN_TABLE, POS_DRILLS, POS_TABLE, PREP_DRILLS, PREPOSITION_ROWS, PUNCT_DEEP_DRILLS, PUNCT_DRILLS, PUNCTUATION_MARKS, SEMANTICS_DRILLS, SEMANTICS_TABLE, SERIES_CROSSWALK, SOUND_DRILLS, SOUND_TABLE, STAGE_DRILLS, STUDY_STAGES, SUBJUNCTIVE_ROWS, SYNTHESIS_SERIES, TENSE_DRILLS, TENSE_ROWS, TRANSITION_DRILLS, TRANSITION_TABLE } from './data/synthesisSeries'
+import { ASPECT_DRILLS, CAPITAL_DRILLS, CAPITAL_TABLE, CHUNK_DRILLS, CLAUSE_DRILLS, CLAUSE_TABLE, COLLOCATION_ROWS, CROSSWALK_DRILLS, FUNCTION_DRILLS, FUNCTION_TABLE, IF_DRILLS, MORPHOLOGY_DRILLS, MORPHOLOGY_TABLE, NONFINITE_DRILLS, NONFINITE_TABLE, NOTE_DRILLS, NOTE_FOLDERS, PASSIVE_DRILLS, PASSIVE_TABLE, PATTERN_DRILLS, PATTERN_TABLE, POS_DRILLS, POS_TABLE, PREP_DRILLS, PREPOSITION_ROWS, PUNCT_DEEP_DRILLS, PUNCT_DRILLS, PUNCTUATION_MARKS, SEMANTICS_DRILLS, SEMANTICS_TABLE, SERIES_CROSSWALK, SOUND_DRILLS, SOUND_TABLE, STAGE_DRILLS, STUDY_STAGES, SUBJUNCTIVE_ROWS, SYNTHESIS_SERIES, TENSE_DRILLS, TENSE_ROWS, TRANSITION_DRILLS, TRANSITION_TABLE } from './data/synthesisSeries'
 import { translate } from '../i18n/messages'
 
 describe('TOEIC synthesis series', () => {
@@ -44,6 +44,16 @@ describe('TOEIC synthesis series', () => {
     expect(POS_DRILLS.every((item) => item.choices.includes(item.answer))).toBe(true)
     expect(POS_DRILLS.some((item) => item.why.en.includes('not a required formula'))).toBe(true)
     expect(PATTERN_TABLE.rows).toHaveLength(5)
+    expect(CLAUSE_TABLE.rows.map((row) => row.id)).toEqual(['noun', 'relative', 'adverb'])
+    expect(CLAUSE_DRILLS).toHaveLength(3)
+    expect(CLAUSE_DRILLS.every((item) => item.choices.includes(item.answer))).toBe(true)
+    expect(PASSIVE_TABLE.rows.map((row) => row.id)).toEqual(['be', 'cause', 'two'])
+    expect(PASSIVE_DRILLS).toHaveLength(3)
+    expect(PASSIVE_DRILLS.every((item) => item.choices.includes(item.answer))).toBe(true)
+    expect(MORPHOLOGY_TABLE.rows.map((row) => row.id)).toEqual(['prefix', 'root', 'suffix', 'compound'])
+    expect(MORPHOLOGY_DRILLS).toHaveLength(4)
+    expect(MORPHOLOGY_DRILLS.every((item) => item.choices.includes(item.answer))).toBe(true)
+    expect(SYNTHESIS_SERIES.find((item) => item.id === 'verbal')?.points.some((point) => point.en.includes('not mastery'))).toBe(true)
     expect(NONFINITE_TABLE.rows).toHaveLength(3)
     expect(TRANSITION_TABLE.rows).toHaveLength(4)
     expect(SOUND_TABLE.rows).toHaveLength(5)
@@ -108,6 +118,9 @@ describe('TOEIC synthesis series', () => {
     expect(view).toContain('stemId="punct-deep-stem"')
     expect(view).toContain('stemId="chunk-drill-stem"')
     expect(view).toContain('stemId="pattern-drill-stem"')
+    expect(view).toContain('stemId="clause-drill-stem"')
+    expect(view).toContain('stemId="passive-drill-stem"')
+    expect(view).toContain('stemId="morph-drill-stem"')
     expect(view).toContain('stemId="nonfinite-drill-stem"')
     expect(view).toContain('stemId="transition-drill-stem"')
     expect(view).toContain('stemId="function-drill-stem"')
