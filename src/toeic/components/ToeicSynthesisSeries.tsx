@@ -24,6 +24,7 @@ import {
   SUBJUNCTIVE_ROWS,
   SYNTHESIS_SERIES,
   TENSE_ROWS,
+  TRANSITION_DRILLS,
   TRANSITION_TABLE,
   type PrepDrill,
   type SeriesPoint,
@@ -334,6 +335,15 @@ export function ToeicSynthesisSeries({ instructionLang = 'zh' }: Props) {
         />
       ) : null}
       {active.id === 'mechanics' ? <TeachGrid table={TRANSITION_TABLE} lang={lang} /> : null}
+      {active.id === 'mechanics' ? (
+        <ChoiceCheck
+          lang={lang}
+          items={TRANSITION_DRILLS}
+          titleKey="en.synthesis.transitionDrill"
+          noteKey="en.synthesis.transitionDrillNote"
+          stemId="transition-drill-stem"
+        />
+      ) : null}
       {active.id === 'mechanics' ? <TeachGrid table={CAPITAL_TABLE} lang={lang} /> : null}
       {active.id === 'sound' ? <TeachGrid table={SOUND_TABLE} lang={lang} /> : null}
       {active.id === 'semantics' ? <TeachGrid table={SEMANTICS_TABLE} lang={lang} /> : null}
