@@ -1263,6 +1263,66 @@ export const ASPECT_DRILLS: PrepDrill[] = [
   },
 ]
 
+export const CAPITAL_DRILLS: PrepDrill[] = [
+  {
+    id: 'start',
+    stem: { zh: '句首。', en: 'Start of a sentence.', ja: '文頭。' },
+    choices: ['The file is ready.', 'the file is ready.', 'THE file is ready.'],
+    answer: 'The file is ready.',
+    why: { zh: '第一個詞大寫。', en: 'Capitalize the first word.', ja: '最初の語を大文字にする。' },
+  },
+  {
+    id: 'period',
+    stem: { zh: '句點後面的新句子。', en: 'A new sentence after a period.', ja: 'ピリオドの後の新しい文。' },
+    choices: ['She left. The file stayed.', 'She left. the file stayed.', 'She left the File stayed.'],
+    answer: 'She left. The file stayed.',
+    why: { zh: '新句子的第一個詞也要大寫。', en: 'The first word of the new sentence is a capital too.', ja: '新しい文の最初も大文字。' },
+  },
+  {
+    id: 'proper',
+    stem: { zh: '地名與星期。', en: 'A place and a weekday.', ja: '地名と曜日。' },
+    choices: ['They meet in Taipei on Monday.', 'They meet in taipei on monday.', 'they meet in Taipei on Monday.'],
+    answer: 'They meet in Taipei on Monday.',
+    why: { zh: '地名、星期大寫。句首也大寫。', en: 'Place names and weekdays take capitals. So does the first word.', ja: '地名と曜日は大文字。文頭も大文字。' },
+  },
+  {
+    id: 'month',
+    stem: { zh: 'The meeting is in ___.', en: 'The meeting is in ___.', ja: 'The meeting is in ___.' },
+    choices: ['March', 'march', 'the March'],
+    answer: 'March',
+    why: { zh: '月份大寫。這裡不要加 the。', en: 'Months take a capital. Do not add the here.', ja: '月は大文字。ここに the は不要。' },
+  },
+  {
+    id: 'ordinary',
+    stem: { zh: '普通名詞不要大寫。', en: 'An ordinary noun stays lower.', ja: '普通名詞は小文字。' },
+    choices: ['Please send the file today.', 'Please send the File today.', 'Please Send The File Today.'],
+    answer: 'Please send the file today.',
+    why: { zh: 'file 不是專有名詞。', en: 'file is not a proper noun.', ja: 'file は固有名詞ではない。' },
+  },
+  {
+    id: 'title',
+    stem: { zh: '標題：主要詞大寫，小詞可以小寫。', en: 'A title: main words capital, small words can stay lower.', ja: 'タイトル：主な語は大文字、短い語は小文字でもよい。' },
+    choices: ['A Guide to the Report', 'a guide to the report', 'A guide to The report'],
+    answer: 'A Guide to the Report',
+    why: { zh: '主要詞大寫即可，全篇一致。這不是公司標題規範。', en: 'Capitalize the main words and stay consistent. Not a company title rule.', ja: '主な語を大文字にし、統一する。社内規則ではない。' },
+  },
+  {
+    id: 'i',
+    stem: { zh: '人稱 I。', en: 'The pronoun I.', ja: '代名詞 I。' },
+    choices: ['I sent it.', 'i sent it.', 'I Sent It.'],
+    answer: 'I sent it.',
+    why: { zh: 'I 永遠大寫。不要把後面的普通詞也大寫。', en: 'I is always a capital. Do not capitalize the ordinary words after it.', ja: 'I は常に大文字。後ろの普通の語まで大文字にしない。' },
+  },
+  {
+    id: 'mid',
+    stem: { zh: '句子中間的普通名詞。', en: 'An ordinary noun in the middle.', ja: '文の途中の普通名詞。' },
+    choices: ['The report is late.', 'The Report is late.', 'the Report is late.'],
+    answer: 'The report is late.',
+    why: { zh: '只有句首大寫。report 保持小寫。', en: 'Only the first word is a capital. report stays lower.', ja: '文頭だけ大文字。report は小文字。' },
+  },
+]
+
+
 
 
 
