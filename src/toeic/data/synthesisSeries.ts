@@ -614,6 +614,66 @@ export const PREP_DRILLS: PrepDrill[] = [
   },
 ]
 
+export const PUNCT_DRILLS: PrepDrill[] = [
+  {
+    id: 'splice',
+    stem: { zh: 'The report is late, the client is waiting. 兩個完整句之間該用什麼？', en: 'The report is late, the client is waiting. What can replace that comma splice?', ja: 'The report is late, the client is waiting. コンマの代わりは？' },
+    choices: [';', '-', '?'],
+    answer: ';',
+    why: { zh: '兩個完整句用分號、句點，或連接詞。連字號不行。', en: 'Two full sentences take a semicolon, a period, or a conjunction. Not a hyphen.', ja: '完全な二文はセミコロン、ピリオド、または接続詞。ハイフンではない。' },
+  },
+  {
+    id: 'its',
+    stem: { zh: 'The printer lost ___ cover.', en: 'The printer lost ___ cover.', ja: 'The printer lost ___ cover.' },
+    choices: ['its', "it's", "its'"],
+    answer: 'its',
+    why: { zh: '所有格不加撇號。', en: 'The possessive has no apostrophe.', ja: '所有格にアポストロフィはない。' },
+  },
+  {
+    id: 'its-is',
+    stem: { zh: '___ raining, so we waited.', en: '___ raining, so we waited.', ja: '___ raining, so we waited.' },
+    choices: ["It's", 'Its', "Its'"],
+    answer: "It's",
+    why: { zh: '這裡是 it is。', en: 'This one means it is.', ja: 'ここは it is。' },
+  },
+  {
+    id: 'indirect',
+    stem: { zh: 'I asked where the file was___', en: 'I asked where the file was___', ja: 'I asked where the file was___' },
+    choices: ['.', '?', '!'],
+    answer: '.',
+    why: { zh: '間接問句用句點。', en: 'An indirect question ends with a period.', ja: '間接疑問はピリオド。' },
+  },
+  {
+    id: 'hyphen',
+    stem: { zh: 'a well___known delay', en: 'a well___known delay', ja: 'a well___known delay' },
+    choices: ['-', ';', ':'],
+    answer: '-',
+    why: { zh: '複合詞用連字號，不是分號。', en: 'A compound takes a hyphen, not a semicolon.', ja: '複合語はハイフン。セミコロンではない。' },
+  },
+  {
+    id: 'shout',
+    stem: { zh: '正式信結尾：Thanks for the update___', en: 'Formal close: Thanks for the update___', ja: '正式な結び：Thanks for the update___' },
+    choices: ['.', '!', '?'],
+    answer: '.',
+    why: { zh: '正式信少用驚嘆號。', en: 'Formal mail rarely needs an exclamation mark.', ja: '正式なメールに感嘆符は少ない。' },
+  },
+  {
+    id: 'colon',
+    stem: { zh: 'We need three files___ the brief, the draft, and the receipt.', en: 'We need three files___ the brief, the draft, and the receipt.', ja: 'We need three files___ the brief, the draft, and the receipt.' },
+    choices: [':', '-', '?'],
+    answer: ':',
+    why: { zh: '冒號引出清單，而且前面已是完整句。', en: 'A colon introduces the list, and a full sentence comes before it.', ja: 'コロンはリストを導く。前は完全文。' },
+  },
+  {
+    id: 'abbr',
+    stem: { zh: 'Mr___ Chen sent the file yesterday.', en: 'Mr___ Chen sent the file yesterday.', ja: 'Mr___ Chen sent the file yesterday.' },
+    choices: ['.', '?', '!'],
+    answer: '.',
+    why: { zh: 'Mr. 的句點是縮寫，句子還沒結束。', en: 'The period in Mr. is an abbreviation. The sentence is not over.', ja: 'Mr. の点は略語。文はまだ終わっていない。' },
+  },
+]
+
+
 
 
 

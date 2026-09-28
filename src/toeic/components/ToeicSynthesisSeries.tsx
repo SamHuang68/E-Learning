@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useI18n } from '../../i18n/i18n'
+import type { MessageKey } from '../../i18n/messages'
 import {
   CAPITAL_TABLE,
   COLLOCATION_ROWS,
@@ -11,6 +12,7 @@ import {
   PREP_PAIRS,
   PREPOSITION_ROWS,
   PREP_DRILLS,
+  PUNCT_DRILLS,
   PUNCTUATION_MARKS,
   SERIES_CROSSWALK,
   SEMANTICS_TABLE,
@@ -20,6 +22,7 @@ import {
   SYNTHESIS_SERIES,
   TENSE_ROWS,
   TRANSITION_TABLE,
+  type PrepDrill,
   type SeriesPoint,
   type TeachTable,
 } from '../data/synthesisSeries'
@@ -62,19 +65,32 @@ function TeachGrid({ table, lang }: { table: TeachTable; lang: Lang }) {
   )
 }
 
-function PrepCheck({ lang }: { lang: Lang }) {
+function ChoiceCheck({
+  lang,
+  items,
+  titleKey,
+  noteKey,
+  stemId,
+}: {
+  lang: Lang
+  items: PrepDrill[]
+  titleKey: MessageKey
+  noteKey: MessageKey
+  stemId: string
+}) {
   const { t } = useI18n()
   const [index, setIndex] = useState(0)
   const [picked, setPicked] = useState<string | null>(null)
-  const item = PREP_DRILLS[index] ?? PREP_DRILLS[0]
+  const item = items[index] ?? items[0]
   const matched = picked !== null && picked === item.answer
+  const statusId = `${stemId}-status`
 
   return (
     <div className="practice-card">
-      <h3>{t('en.synthesis.prepDrill')}</h3>
-      <p className="section-subtext">{t('en.synthesis.prepDrillNote')}</p>
-      <p id="prep-drill-stem">{pick(item.stem, lang)}</p>
-      <div role="group" aria-labelledby="prep-drill-stem">
+      <h3>{t(titleKey)}</h3>
+      <p className="section-subtext">{t(noteKey)}</p>
+      <p id={stemId}>{pick(item.stem, lang)}</p>
+      <div role="group" aria-labelledby={stemId}>
         {item.choices.map((choice) => {
           const wrong = picked === choice && choice !== item.answer
           return (
@@ -84,7 +100,7 @@ function PrepCheck({ lang }: { lang: Lang }) {
               className={picked === choice ? 'pill-btn active' : 'pill-btn'}
               aria-pressed={picked === choice}
               aria-invalid={wrong ? true : undefined}
-              aria-describedby={picked === choice ? 'prep-drill-status' : undefined}
+              aria-describedby={picked === choice ? statusId : undefined}
               onClick={() => setPicked(choice)}
             >
               {choice}
@@ -92,7 +108,7 @@ function PrepCheck({ lang }: { lang: Lang }) {
           )
         })}
       </div>
-      <p id="prep-drill-status" role="status" aria-live="polite">
+      <p id={statusId} role="status" aria-live="polite">
         {picked === null ? '' : matched ? t('en.synthesis.drillOk') : t('en.synthesis.drillNo')}
         {picked !== null ? ` ${pick(item.why, lang)}` : ''}
       </p>
@@ -100,7 +116,7 @@ function PrepCheck({ lang }: { lang: Lang }) {
         type="button"
         className="pill-btn"
         onClick={() => {
-          setIndex((current) => (current + 1) % PREP_DRILLS.length)
+          setIndex((current) => (current + 1) % items.length)
           setPicked(null)
         }}
       >
@@ -187,7 +203,13 @@ export function ToeicSynthesisSeries({ instructionLang = 'zh' }: Props) {
               <li key={row.en}>{pick(row, lang)}</li>
             ))}
           </ul>
-          <PrepCheck lang={lang} />
+          <ChoiceCheck
+            lang={lang}
+            items={PREP_DRILLS}
+            titleKey="en.synthesis.prepDrill"
+            noteKey="en.synthesis.prepDrillNote"
+            stemId="prep-drill-stem"
+          />
         </div>
         </>
       ) : null}
@@ -273,6 +295,15 @@ export function ToeicSynthesisSeries({ instructionLang = 'zh' }: Props) {
             </tbody>
           </table>
         </div>
+      ) : null}
+      {active.id === 'mechanics' ? (
+        <ChoiceCheck
+          lang={lang}
+          items={PUNCT_DRILLS}
+          titleKey="en.synthesis.punctDrill"
+          noteKey="en.synthesis.punctDrillNote"
+          stemId="punct-drill-stem"
+        />
       ) : null}
       {active.id === 'mechanics' ? <TeachGrid table={TRANSITION_TABLE} lang={lang} /> : null}
       {active.id === 'mechanics' ? <TeachGrid table={CAPITAL_TABLE} lang={lang} /> : null}
