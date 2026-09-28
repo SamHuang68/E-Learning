@@ -7,6 +7,7 @@ import {
   COLLOCATION_ROWS,
   FUNCTION_DRILLS,
   FUNCTION_TABLE,
+  IF_DRILLS,
   NONFINITE_DRILLS,
   NONFINITE_TABLE,
   NOTE_FOLDERS,
@@ -268,6 +269,13 @@ export function ToeicSynthesisSeries({ instructionLang = 'zh' }: Props) {
             titleKey="en.synthesis.tenseDrill"
             noteKey="en.synthesis.tenseDrillNote"
             stemId="tense-drill-stem"
+          />
+          <ChoiceCheck
+            lang={lang}
+            items={IF_DRILLS}
+            titleKey="en.synthesis.ifDrill"
+            noteKey="en.synthesis.ifDrillNote"
+            stemId="if-drill-stem"
           />
         </div>
       ) : null}
