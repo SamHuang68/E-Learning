@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useAuth } from '../auth/AuthContext'
 import { useI18n } from '../i18n/i18n'
 import type { MessageKey } from '../i18n/messages'
@@ -26,51 +26,141 @@ import {
 } from '../utils/storage'
 import { toeicCertificates } from './data/certificates'
 import { getToeicPractice } from './data/practiceContent'
-import { PhonicsLab } from './components/PhonicsLab'
-import { ToeicBuilder } from './components/ToeicBuilder'
-import { ToeicPractice } from './components/ToeicPractice'
 import { ToeicSidebar, type ToeicNavId } from './components/ToeicSidebar'
 import { ToeicToday } from './components/ToeicToday'
-import { ToeicChunkLab } from './components/ToeicChunkLab'
-import { ToeicStoryReview } from './components/ToeicStoryReview'
-import { ToeicSignalsView } from './components/ToeicSignalsView'
-import { ToeicErrorVault } from './components/ToeicErrorVault'
-import { DoublePassageLab } from './components/DoublePassageLab'
-import { ChartAnalysisLab } from './components/ChartAnalysisLab'
-import { NegotiationLab } from './components/NegotiationLab'
-import { EmailMasterLab } from './components/EmailMasterLab'
-import { PhoneLab } from './components/PhoneLab'
-import { TravelLab } from './components/TravelLab'
-import { ConferenceLab } from './components/ConferenceLab'
-import { InterviewLab } from './components/InterviewLab'
-import { MarketingLab } from './components/MarketingLab'
-import { SupplyChainLab } from './components/SupplyChainLab'
-import { CybersecurityLab } from './components/CybersecurityLab'
-import { TradeLab } from './components/TradeLab'
-import { RealEstateLab } from './components/RealEstateLab'
-import { PrLab } from './components/PrLab'
-import { MnaLab } from './components/MnaLab'
-import { IpLab } from './components/IpLab'
-import { EsgLab } from './components/EsgLab'
-import { AiCloudLab } from './components/AiCloudLab'
-import { ColdChainLab } from './components/ColdChainLab'
-import { BondedWarehouseLab } from './components/BondedWarehouseLab'
-import { RfpBiddingLab } from './components/RfpBiddingLab'
-import { ForceMajeureLab } from './components/ForceMajeureLab'
-import { TechTransferLab } from './components/TechTransferLab'
-import { AntitrustLab } from './components/AntitrustLab'
-import { ConflictMineralsLab } from './components/ConflictMineralsLab'
-import { PatentLitigationLab } from './components/PatentLitigationLab'
-import { GdprPrivacyLab } from './components/GdprPrivacyLab'
-import { NdaTradeSecretsLab } from './components/NdaTradeSecretsLab'
-import { CloudSlaLab } from './components/CloudSlaLab'
-import { MarineInsuranceLab } from './components/MarineInsuranceLab'
-import { RoyaltyAuditLab } from './components/RoyaltyAuditLab'
-import { FcpaComplianceLab } from './components/FcpaComplianceLab'
-import { AntitrustHhiLab } from './components/AntitrustHhiLab'
-import { BusinessInterruptionLab } from './components/BusinessInterruptionLab'
-import { LetterOfCreditLab } from './components/LetterOfCreditLab'
-import { ToeicSynthesisSeries } from './components/ToeicSynthesisSeries'
+
+// Secondary labs and modes stay out of the ToeicApp shell chunk. Each view
+// loads on navigation, matching ChineseApp / CsApp, so the route chunk stays
+// under the offline JS size gate without moving code into the entry bundle.
+const PhonicsLab = lazy(() =>
+  import('./components/PhonicsLab').then((m) => ({ default: m.PhonicsLab })),
+)
+const ToeicBuilder = lazy(() =>
+  import('./components/ToeicBuilder').then((m) => ({ default: m.ToeicBuilder })),
+)
+const ToeicPractice = lazy(() =>
+  import('./components/ToeicPractice').then((m) => ({ default: m.ToeicPractice })),
+)
+const ToeicChunkLab = lazy(() =>
+  import('./components/ToeicChunkLab').then((m) => ({ default: m.ToeicChunkLab })),
+)
+const ToeicStoryReview = lazy(() =>
+  import('./components/ToeicStoryReview').then((m) => ({ default: m.ToeicStoryReview })),
+)
+const ToeicSignalsView = lazy(() =>
+  import('./components/ToeicSignalsView').then((m) => ({ default: m.ToeicSignalsView })),
+)
+const ToeicErrorVault = lazy(() =>
+  import('./components/ToeicErrorVault').then((m) => ({ default: m.ToeicErrorVault })),
+)
+const DoublePassageLab = lazy(() =>
+  import('./components/DoublePassageLab').then((m) => ({ default: m.DoublePassageLab })),
+)
+const ChartAnalysisLab = lazy(() =>
+  import('./components/ChartAnalysisLab').then((m) => ({ default: m.ChartAnalysisLab })),
+)
+const NegotiationLab = lazy(() =>
+  import('./components/NegotiationLab').then((m) => ({ default: m.NegotiationLab })),
+)
+const EmailMasterLab = lazy(() =>
+  import('./components/EmailMasterLab').then((m) => ({ default: m.EmailMasterLab })),
+)
+const PhoneLab = lazy(() =>
+  import('./components/PhoneLab').then((m) => ({ default: m.PhoneLab })),
+)
+const TravelLab = lazy(() =>
+  import('./components/TravelLab').then((m) => ({ default: m.TravelLab })),
+)
+const ConferenceLab = lazy(() =>
+  import('./components/ConferenceLab').then((m) => ({ default: m.ConferenceLab })),
+)
+const InterviewLab = lazy(() =>
+  import('./components/InterviewLab').then((m) => ({ default: m.InterviewLab })),
+)
+const MarketingLab = lazy(() =>
+  import('./components/MarketingLab').then((m) => ({ default: m.MarketingLab })),
+)
+const SupplyChainLab = lazy(() =>
+  import('./components/SupplyChainLab').then((m) => ({ default: m.SupplyChainLab })),
+)
+const CybersecurityLab = lazy(() =>
+  import('./components/CybersecurityLab').then((m) => ({ default: m.CybersecurityLab })),
+)
+const TradeLab = lazy(() =>
+  import('./components/TradeLab').then((m) => ({ default: m.TradeLab })),
+)
+const RealEstateLab = lazy(() =>
+  import('./components/RealEstateLab').then((m) => ({ default: m.RealEstateLab })),
+)
+const PrLab = lazy(() =>
+  import('./components/PrLab').then((m) => ({ default: m.PrLab })),
+)
+const MnaLab = lazy(() =>
+  import('./components/MnaLab').then((m) => ({ default: m.MnaLab })),
+)
+const IpLab = lazy(() =>
+  import('./components/IpLab').then((m) => ({ default: m.IpLab })),
+)
+const EsgLab = lazy(() =>
+  import('./components/EsgLab').then((m) => ({ default: m.EsgLab })),
+)
+const AiCloudLab = lazy(() =>
+  import('./components/AiCloudLab').then((m) => ({ default: m.AiCloudLab })),
+)
+const ColdChainLab = lazy(() =>
+  import('./components/ColdChainLab').then((m) => ({ default: m.ColdChainLab })),
+)
+const BondedWarehouseLab = lazy(() =>
+  import('./components/BondedWarehouseLab').then((m) => ({ default: m.BondedWarehouseLab })),
+)
+const RfpBiddingLab = lazy(() =>
+  import('./components/RfpBiddingLab').then((m) => ({ default: m.RfpBiddingLab })),
+)
+const ForceMajeureLab = lazy(() =>
+  import('./components/ForceMajeureLab').then((m) => ({ default: m.ForceMajeureLab })),
+)
+const TechTransferLab = lazy(() =>
+  import('./components/TechTransferLab').then((m) => ({ default: m.TechTransferLab })),
+)
+const AntitrustLab = lazy(() =>
+  import('./components/AntitrustLab').then((m) => ({ default: m.AntitrustLab })),
+)
+const ConflictMineralsLab = lazy(() =>
+  import('./components/ConflictMineralsLab').then((m) => ({ default: m.ConflictMineralsLab })),
+)
+const PatentLitigationLab = lazy(() =>
+  import('./components/PatentLitigationLab').then((m) => ({ default: m.PatentLitigationLab })),
+)
+const GdprPrivacyLab = lazy(() =>
+  import('./components/GdprPrivacyLab').then((m) => ({ default: m.GdprPrivacyLab })),
+)
+const NdaTradeSecretsLab = lazy(() =>
+  import('./components/NdaTradeSecretsLab').then((m) => ({ default: m.NdaTradeSecretsLab })),
+)
+const CloudSlaLab = lazy(() =>
+  import('./components/CloudSlaLab').then((m) => ({ default: m.CloudSlaLab })),
+)
+const MarineInsuranceLab = lazy(() =>
+  import('./components/MarineInsuranceLab').then((m) => ({ default: m.MarineInsuranceLab })),
+)
+const RoyaltyAuditLab = lazy(() =>
+  import('./components/RoyaltyAuditLab').then((m) => ({ default: m.RoyaltyAuditLab })),
+)
+const FcpaComplianceLab = lazy(() =>
+  import('./components/FcpaComplianceLab').then((m) => ({ default: m.FcpaComplianceLab })),
+)
+const AntitrustHhiLab = lazy(() =>
+  import('./components/AntitrustHhiLab').then((m) => ({ default: m.AntitrustHhiLab })),
+)
+const BusinessInterruptionLab = lazy(() =>
+  import('./components/BusinessInterruptionLab').then((m) => ({ default: m.BusinessInterruptionLab })),
+)
+const LetterOfCreditLab = lazy(() =>
+  import('./components/LetterOfCreditLab').then((m) => ({ default: m.LetterOfCreditLab })),
+)
+const ToeicSynthesisSeries = lazy(() =>
+  import('./components/ToeicSynthesisSeries').then((m) => ({ default: m.ToeicSynthesisSeries })),
+)
 
 type Props = {
   onBackHub: () => void
@@ -880,7 +970,15 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
           <span>{cert.audience}</span>
         </div>
 
-        {renderContent()}
+        <Suspense
+          fallback={
+            <div className="module-fallback" role="status">
+              {t('common.loadingModule')}
+            </div>
+          }
+        >
+          {renderContent()}
+        </Suspense>
 
         <footer>
           <span>
