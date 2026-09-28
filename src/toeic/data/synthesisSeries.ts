@@ -909,6 +909,66 @@ export const TRANSITION_DRILLS: PrepDrill[] = [
   },
 ]
 
+export const FUNCTION_DRILLS: PrepDrill[] = [
+  {
+    id: 'greet',
+    stem: { zh: '正式信開頭。', en: 'Open a formal mail.', ja: '正式なメールの書き出し。' },
+    choices: ['Good morning.', 'Hey,', 'Yo,'],
+    answer: 'Good morning.',
+    why: { zh: '正式信不要用 hey 當開頭。', en: 'Do not open formal mail with hey.', ja: '正式なメールを hey で始めない。' },
+  },
+  {
+    id: 'sorry',
+    stem: { zh: '為延遲致歉。哪一句先說事情？', en: 'Apologize for a delay. Which names the fact first?', ja: '遅れを謝る。事実が先なのは？' },
+    choices: ['I am sorry for the delay. The file arrived late.', 'Because the train was late, sorry.', 'Sorry!!!'],
+    answer: 'I am sorry for the delay. The file arrived late.',
+    why: { zh: '先說事情，再補原因。', en: 'Name the fact, then the reason.', ja: '事実を先に、理由を後に。' },
+  },
+  {
+    id: 'agree',
+    stem: { zh: 'I agree ___ the plan.', en: 'I agree ___ the plan.', ja: 'I agree ___ the plan.' },
+    choices: ['with', 'to me', 'me'],
+    answer: 'with',
+    why: { zh: 'agree 後面接 with。', en: 'agree takes with.', ja: 'agree の後は with。' },
+  },
+  {
+    id: 'disagree',
+    stem: { zh: '不同意，但不攻擊對方。', en: 'Disagree without attacking the person.', ja: '相手を攻撃せず反対する。' },
+    choices: ['I see it differently.', 'You are wrong.', 'No way.'],
+    answer: 'I see it differently.',
+    why: { zh: '先不要寫 you are wrong。', en: 'Do not start with you are wrong.', ja: 'you are wrong から始めない。' },
+  },
+  {
+    id: 'suggest',
+    stem: { zh: 'I suggest that we ___ .', en: 'I suggest that we ___ .', ja: 'I suggest that we ___ .' },
+    choices: ['wait', 'waiting', 'to waited'],
+    answer: 'wait',
+    why: { zh: 'suggest that 後面常用原形。', en: 'suggest that often takes a base verb.', ja: 'suggest that の後は原形が多い。' },
+  },
+  {
+    id: 'refuse',
+    stem: { zh: '委婉拒絕日期。', en: 'Refuse a date softly.', ja: '日程を婉曲に断る。' },
+    choices: ['I am afraid we cannot meet that date. Friday works.', 'No.', 'Impossible.'],
+    answer: 'I am afraid we cannot meet that date. Friday works.',
+    why: { zh: '拒絕後給一個替代，不要只寫 no。', en: 'Offer an alternative. Do not stop at no.', ja: '代わりを出す。no だけで終わらない。' },
+  },
+  {
+    id: 'clarify',
+    stem: { zh: '沒聽清，請對方再說。', en: 'You did not hear it. Ask for a repeat.', ja: '聞き取れなかった。言い直しを頼む。' },
+    choices: ['Could you say that again?', 'I was entirely wrong.', 'You are unclear.'],
+    answer: 'Could you say that again?',
+    why: { zh: '這是要求重述，不是承認自己全錯。', en: 'This asks for a repeat. It does not admit you were entirely wrong.', ja: '繰り返しの依頼であり、全誤りではない。' },
+  },
+  {
+    id: 'mail',
+    stem: { zh: '練習用的郵件收尾。', en: 'A practice mail close.', ja: '練習用のメール締め。' },
+    choices: ['Best regards,', 'Certified TOEIC close', 'Company template #1'],
+    answer: 'Best regards,',
+    why: { zh: '練習句，不是公司範本或認證。', en: 'Practice lines, not a company template or a certificate.', ja: '練習文であり社内ひな型や資格ではない。' },
+  },
+]
+
+
 
 
 
