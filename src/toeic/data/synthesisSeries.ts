@@ -1426,6 +1426,38 @@ export const STAGE_DRILLS: PrepDrill[] = [
   },
 ]
 
+export const NOTE_DRILLS: PrepDrill[] = [
+  {
+    id: 'folder',
+    stem: { zh: '一個系列的資料夾放什麼？', en: 'What goes in one series folder?', ja: '一つのシリーズのフォルダに何を入れる？' },
+    choices: ['definitions, grids, and your own wrong sentences', 'a score', 'every preposition on one page'],
+    answer: 'definitions, grids, and your own wrong sentences',
+    why: { zh: '每個系列一個資料夾。只放定義、對照表、自己的錯句。', en: 'One folder per series. Store definitions, grids, and your own wrong sentences.', ja: 'シリーズごとに一つのフォルダ。定義・表・自分の誤文。' },
+  },
+  {
+    id: 'prep',
+    stem: { zh: '介系詞夾怎麼收？', en: 'How do you store the preposition folder?', ja: '前置詞フォルダはどう収める？' },
+    choices: ['four tables plus fixed pairs', 'a loose page of every preposition', 'only a score'],
+    answer: 'four tables plus fixed pairs',
+    why: { zh: '時間、空間、方向、抽象四表，加固定搭配。不要另開散頁。', en: 'Four tables plus fixed pairs. No loose page of every preposition.', ja: '四表と固定ペア。ばらばらの全前置詞ページは作らない。' },
+  },
+  {
+    id: 'punct',
+    stem: { zh: '標點夾的三欄。', en: 'The three columns of the punctuation folder.', ja: '句読点フォルダの三列。' },
+    choices: ['mark, job, pitfall', 'score, rank, pass', 'only commas'],
+    answer: 'mark, job, pitfall',
+    why: { zh: '符號、工作、避坑。', en: 'Mark, job, pitfall.', ja: '記号、働き、注意。' },
+  },
+  {
+    id: 'fake',
+    stem: { zh: '筆記裡不要寫什麼？', en: 'What must the notes not contain?', ja: 'ノートに書いてはいけないものは？' },
+    choices: ['a fake score or "passed"', 'your own wrong sentence', 'a definition'],
+    answer: 'a fake score or "passed"',
+    why: { zh: '不要寫假分數、假正確率或「已通過」。', en: 'Do not write fake scores, fake accuracy, or "passed".', ja: '偽の点数や「合格」は書かない。' },
+  },
+]
+
+
 
 
 

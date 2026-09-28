@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { ASPECT_DRILLS, CAPITAL_DRILLS, CAPITAL_TABLE, CHUNK_DRILLS, COLLOCATION_ROWS, FUNCTION_DRILLS, FUNCTION_TABLE, IF_DRILLS, NONFINITE_DRILLS, NONFINITE_TABLE, NOTE_FOLDERS, PATTERN_DRILLS, PATTERN_TABLE, POS_DRILLS, POS_TABLE, PREP_DRILLS, PREPOSITION_ROWS, PUNCT_DRILLS, PUNCTUATION_MARKS, SEMANTICS_DRILLS, SEMANTICS_TABLE, SOUND_DRILLS, SOUND_TABLE, STAGE_DRILLS, STUDY_STAGES, SYNTHESIS_SERIES, TENSE_DRILLS, TENSE_ROWS, TRANSITION_DRILLS, TRANSITION_TABLE } from './data/synthesisSeries'
+import { ASPECT_DRILLS, CAPITAL_DRILLS, CAPITAL_TABLE, CHUNK_DRILLS, COLLOCATION_ROWS, FUNCTION_DRILLS, FUNCTION_TABLE, IF_DRILLS, NONFINITE_DRILLS, NONFINITE_TABLE, NOTE_DRILLS, NOTE_FOLDERS, PATTERN_DRILLS, PATTERN_TABLE, POS_DRILLS, POS_TABLE, PREP_DRILLS, PREPOSITION_ROWS, PUNCT_DRILLS, PUNCTUATION_MARKS, SEMANTICS_DRILLS, SEMANTICS_TABLE, SOUND_DRILLS, SOUND_TABLE, STAGE_DRILLS, STUDY_STAGES, SYNTHESIS_SERIES, TENSE_DRILLS, TENSE_ROWS, TRANSITION_DRILLS, TRANSITION_TABLE } from './data/synthesisSeries'
 import { translate } from '../i18n/messages'
 
 describe('TOEIC synthesis series', () => {
@@ -25,6 +25,10 @@ describe('TOEIC synthesis series', () => {
     expect(STAGE_DRILLS).toHaveLength(6)
     expect(STAGE_DRILLS.every((item) => item.choices.includes(item.answer))).toBe(true)
     expect(STAGE_DRILLS.some((item) => item.why.en.includes('not a TOEIC score path'))).toBe(true)
+    expect(NOTE_FOLDERS).toHaveLength(4)
+    expect(NOTE_DRILLS).toHaveLength(4)
+    expect(NOTE_DRILLS.every((item) => item.choices.includes(item.answer))).toBe(true)
+    expect(NOTE_DRILLS.some((item) => item.why.en.includes('fake scores'))).toBe(true)
     expect(NOTE_FOLDERS.some((row) => row.zh.includes('假分數'))).toBe(true)
     expect(COLLOCATION_ROWS.some((row) => row.chunk === 'make a decision')).toBe(true)
     expect(POS_TABLE.rows.length).toBeGreaterThanOrEqual(8)
@@ -103,6 +107,7 @@ describe('TOEIC synthesis series', () => {
     expect(view).toContain('stemId="capital-drill-stem"')
     expect(view).toContain('stemId="pos-drill-stem"')
     expect(view).toContain('stemId="stage-drill-stem"')
+    expect(view).toContain('stemId="note-drill-stem"')
     expect(view).toContain('aria-live="polite"')
     expect(view).toContain("t('en.synthesis.honesty')")
   })
