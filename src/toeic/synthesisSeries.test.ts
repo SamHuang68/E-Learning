@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { CAPITAL_TABLE, CHUNK_DRILLS, COLLOCATION_ROWS, FUNCTION_DRILLS, FUNCTION_TABLE, NONFINITE_DRILLS, NONFINITE_TABLE, NOTE_FOLDERS, PATTERN_DRILLS, PATTERN_TABLE, POS_TABLE, PREP_DRILLS, PREPOSITION_ROWS, PUNCT_DRILLS, PUNCTUATION_MARKS, SEMANTICS_TABLE, SOUND_TABLE, STUDY_STAGES, SYNTHESIS_SERIES, TENSE_ROWS, TRANSITION_DRILLS, TRANSITION_TABLE } from './data/synthesisSeries'
+import { CAPITAL_TABLE, CHUNK_DRILLS, COLLOCATION_ROWS, FUNCTION_DRILLS, FUNCTION_TABLE, NONFINITE_DRILLS, NONFINITE_TABLE, NOTE_FOLDERS, PATTERN_DRILLS, PATTERN_TABLE, POS_TABLE, PREP_DRILLS, PREPOSITION_ROWS, PUNCT_DRILLS, PUNCTUATION_MARKS, SEMANTICS_TABLE, SOUND_DRILLS, SOUND_TABLE, STUDY_STAGES, SYNTHESIS_SERIES, TENSE_ROWS, TRANSITION_DRILLS, TRANSITION_TABLE } from './data/synthesisSeries'
 import { translate } from '../i18n/messages'
 
 describe('TOEIC synthesis series', () => {
@@ -56,6 +56,9 @@ describe('TOEIC synthesis series', () => {
     expect(FUNCTION_DRILLS).toHaveLength(8)
     expect(FUNCTION_DRILLS.every((item) => item.choices.includes(item.answer))).toBe(true)
     expect(FUNCTION_DRILLS.some((item) => item.why.en.includes('not a company template'))).toBe(true)
+    expect(SOUND_DRILLS).toHaveLength(8)
+    expect(SOUND_DRILLS.every((item) => item.choices.includes(item.answer))).toBe(true)
+    expect(SOUND_DRILLS.some((item) => item.why.en.includes('Not a pronunciation certificate'))).toBe(true)
     expect(translate('zh-Hant', 'en.synthesis.prepDrillNote')).toMatch(/不計分/)
     expect(translate('en', 'en.synthesis.prepDrillNote')).toMatch(/not a score/)
     expect(translate('zh-Hant', 'en.synthesis.honesty')).toMatch(/不是多益分數/)
@@ -70,6 +73,7 @@ describe('TOEIC synthesis series', () => {
     expect(view).toContain('stemId="nonfinite-drill-stem"')
     expect(view).toContain('stemId="transition-drill-stem"')
     expect(view).toContain('stemId="function-drill-stem"')
+    expect(view).toContain('stemId="sound-drill-stem"')
     expect(view).toContain('aria-live="polite"')
     expect(view).toContain("t('en.synthesis.honesty')")
   })

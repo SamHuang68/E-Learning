@@ -20,6 +20,7 @@ import {
   PUNCTUATION_MARKS,
   SERIES_CROSSWALK,
   SEMANTICS_TABLE,
+  SOUND_DRILLS,
   SOUND_TABLE,
   STUDY_STAGES,
   SUBJUNCTIVE_ROWS,
@@ -347,6 +348,15 @@ export function ToeicSynthesisSeries({ instructionLang = 'zh' }: Props) {
       ) : null}
       {active.id === 'mechanics' ? <TeachGrid table={CAPITAL_TABLE} lang={lang} /> : null}
       {active.id === 'sound' ? <TeachGrid table={SOUND_TABLE} lang={lang} /> : null}
+      {active.id === 'sound' ? (
+        <ChoiceCheck
+          lang={lang}
+          items={SOUND_DRILLS}
+          titleKey="en.synthesis.soundDrill"
+          noteKey="en.synthesis.soundDrillNote"
+          stemId="sound-drill-stem"
+        />
+      ) : null}
       {active.id === 'semantics' ? <TeachGrid table={SEMANTICS_TABLE} lang={lang} /> : null}
       {active.id === 'function' ? <TeachGrid table={FUNCTION_TABLE} lang={lang} /> : null}
       {active.id === 'function' ? (
