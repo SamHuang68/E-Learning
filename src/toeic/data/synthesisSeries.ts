@@ -1204,6 +1204,66 @@ export const IF_DRILLS: PrepDrill[] = [
   },
 ]
 
+export const ASPECT_DRILLS: PrepDrill[] = [
+  {
+    id: 'has-been',
+    stem: { zh: 'She ___ the report since 9.（從那時到現在還有關）', en: 'She ___ the report since 9. (from then until now)', ja: 'She ___ the report since 9.（その時から今まで）' },
+    choices: ['has been writing', 'wrote', 'writes'],
+    answer: 'has been writing',
+    why: { zh: 'have / has been doing。不是每一段長時間都要用這格。', en: 'have / has been doing. Not every long action uses this cell.', ja: 'have / has been doing。長い動作が全部この形とは限らない。' },
+  },
+  {
+    id: 'was-doing',
+    stem: { zh: 'At 3 yesterday she ___ the file.（那個時刻正在）', en: 'At 3 yesterday she ___ the file. (in progress at that moment)', ja: 'At 3 yesterday she ___ the file.（その時点で進行中）' },
+    choices: ['was sending', 'sent', 'has sent'],
+    answer: 'was sending',
+    why: { zh: 'was / were doing 是過去某刻正在做，不是做完。', en: 'was / were doing is in progress at a past moment, not finished.', ja: 'was / were doing はその時点の進行であり完了ではない。' },
+  },
+  {
+    id: 'had-been',
+    stem: { zh: 'She ___ for an hour when the call came.', en: 'She ___ for an hour when the call came.', ja: 'She ___ for an hour when the call came.' },
+    choices: ['had been waiting', 'has been waiting', 'waits'],
+    answer: 'had been waiting',
+    why: { zh: 'had been doing：另一個過去時間之前已經持續。', en: 'had been doing: already in progress before another past time.', ja: 'had been doing：もう一つの過去より前から続いていた。' },
+  },
+  {
+    id: 'will-be',
+    stem: { zh: 'This time tomorrow she ___ the file.', en: 'This time tomorrow she ___ the file.', ja: 'This time tomorrow she ___ the file.' },
+    choices: ['will be sending', 'sends', 'sent'],
+    answer: 'will be sending',
+    why: { zh: 'will be doing：未來某刻正在做。', en: 'will be doing: in progress at a future time.', ja: 'will be doing：未来の時点で進行中。' },
+  },
+  {
+    id: 'will-have',
+    stem: { zh: 'By Friday she ___ the file.', en: 'By Friday she ___ the file.', ja: 'By Friday she ___ the file.' },
+    choices: ['will have sent', 'will send', 'sent'],
+    answer: 'will have sent',
+    why: { zh: 'will have done：在未來某時之前做完。不等於 will send。', en: 'will have done: finished before a future time. Not the same as will send.', ja: 'will have done：未来の時点より前に完了。will send ではない。' },
+  },
+  {
+    id: 'will-have-been',
+    stem: { zh: 'By Friday she ___ for three hours.', en: 'By Friday she ___ for three hours.', ja: 'By Friday she ___ for three hours.' },
+    choices: ['will have been working', 'works', 'worked'],
+    answer: 'will have been working',
+    why: { zh: 'will have been doing：到未來某時為止持續了多久。', en: 'will have been doing: duration up to a future time.', ja: 'will have been doing：未来の時点までの継続。' },
+  },
+  {
+    id: 'yesterday-not',
+    stem: { zh: '昨天已結束。哪一句對得上？', en: 'Yesterday is finished. Which matches?', ja: '昨日は終わっている。合うのは？' },
+    choices: ['wrote it yesterday', 'has been writing it yesterday', 'will have written it yesterday'],
+    answer: 'wrote it yesterday',
+    why: { zh: 'yesterday 不接 has been doing。', en: 'yesterday does not take has been doing.', ja: 'yesterday に has been doing は付かない。' },
+  },
+  {
+    id: 'finished-at',
+    stem: { zh: '三點正在寄，四點寄完。哪一句是寄完？', en: 'Sending at 3, finished at 4. Which is the finish?', ja: '3時は送信中、4時に完了。完了は？' },
+    choices: ['sent it at 4', 'was sending it at 3', 'will be sending it'],
+    answer: 'sent it at 4',
+    why: { zh: 'was doing 是進行的那一刻，不是完成。', en: 'was doing is the moment in progress, not the completion.', ja: 'was doing は進行の時点であり完了ではない。' },
+  },
+]
+
+
 
 
 

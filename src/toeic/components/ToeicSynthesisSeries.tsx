@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useI18n } from '../../i18n/i18n'
 import type { MessageKey } from '../../i18n/messages'
 import {
+  ASPECT_DRILLS,
   CAPITAL_TABLE,
   CHUNK_DRILLS,
   COLLOCATION_ROWS,
@@ -276,6 +277,13 @@ export function ToeicSynthesisSeries({ instructionLang = 'zh' }: Props) {
             titleKey="en.synthesis.ifDrill"
             noteKey="en.synthesis.ifDrillNote"
             stemId="if-drill-stem"
+          />
+          <ChoiceCheck
+            lang={lang}
+            items={ASPECT_DRILLS}
+            titleKey="en.synthesis.aspectDrill"
+            noteKey="en.synthesis.aspectDrillNote"
+            stemId="aspect-drill-stem"
           />
         </div>
       ) : null}
