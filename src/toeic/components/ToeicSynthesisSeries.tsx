@@ -7,6 +7,7 @@ import {
   CAPITAL_TABLE,
   CHUNK_DRILLS,
   COLLOCATION_ROWS,
+  CROSSWALK_DRILLS,
   FUNCTION_DRILLS,
   FUNCTION_TABLE,
   IF_DRILLS,
@@ -430,6 +431,13 @@ export function ToeicSynthesisSeries({ instructionLang = 'zh' }: Props) {
             <li key={row.en}>{pick(row, lang)}</li>
           ))}
         </ul>
+        <ChoiceCheck
+          lang={lang}
+          items={CROSSWALK_DRILLS}
+          titleKey="en.synthesis.crosswalkDrill"
+          noteKey="en.synthesis.crosswalkDrillNote"
+          stemId="crosswalk-drill-stem"
+        />
       </section>
 
       <section aria-labelledby="toeic-synthesis-stages">
