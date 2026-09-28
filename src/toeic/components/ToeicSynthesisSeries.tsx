@@ -1,8 +1,13 @@
 import { useState } from 'react'
 import { useI18n } from '../../i18n/i18n'
 import {
-  PUNCTUATION_PITFALLS,
+  COLLOCATION_ROWS,
+  NOTE_FOLDERS,
+  PREP_PAIRS,
+  PREPOSITION_ROWS,
+  PUNCTUATION_MARKS,
   SERIES_CROSSWALK,
+  STUDY_STAGES,
   SUBJUNCTIVE_ROWS,
   SYNTHESIS_SERIES,
   TENSE_ROWS,
@@ -65,6 +70,40 @@ export function ToeicSynthesisSeries({ instructionLang = 'zh' }: Props) {
         </ul>
       </article>
 
+      {active.id === 'pos' ? (
+        <div className="table-responsive">
+          <table className="decision-table">
+            <caption>{t('en.synthesis.prepCaption')}</caption>
+            <thead>
+              <tr>
+                <th scope="col">{t('en.synthesis.colRelation')}</th>
+                <th scope="col">at</th>
+                <th scope="col">on</th>
+                <th scope="col">in</th>
+                <th scope="col">{t('en.synthesis.colNote')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {PREPOSITION_ROWS.map((row) => (
+                <tr key={row.relation.en}>
+                  <th scope="row">{pick(row.relation, lang)}</th>
+                  <td>{row.at}</td>
+                  <td>{row.on}</td>
+                  <td>{row.in}</td>
+                  <td>{pick(row.note, lang)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <h3>{t('en.synthesis.prepPairs')}</h3>
+          <ul>
+            {PREP_PAIRS.map((row) => (
+              <li key={row.en}>{pick(row, lang)}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
       {active.id === 'verbal' ? (
         <div className="table-responsive">
           <table className="decision-table">
@@ -97,18 +136,76 @@ export function ToeicSynthesisSeries({ instructionLang = 'zh' }: Props) {
         </div>
       ) : null}
 
+      {active.id === 'lexicon' ? (
+        <div className="table-responsive">
+          <table className="decision-table">
+            <caption>{t('en.synthesis.chunkCaption')}</caption>
+            <thead>
+              <tr>
+                <th scope="col">{t('en.synthesis.colChunk')}</th>
+                <th scope="col">{t('en.synthesis.colUse')}</th>
+                <th scope="col">{t('en.synthesis.colAvoid')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {COLLOCATION_ROWS.map((row) => (
+                <tr key={row.chunk}>
+                  <th scope="row">{row.chunk}</th>
+                  <td>{pick(row.use, lang)}</td>
+                  <td>{pick(row.avoid, lang)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : null}
+
       {active.id === 'mechanics' ? (
-        <ul>
-          {PUNCTUATION_PITFALLS.map((row) => (
-            <li key={row.en}>{pick(row, lang)}</li>
-          ))}
-        </ul>
+        <div className="table-responsive">
+          <table className="decision-table">
+            <caption>{t('en.synthesis.punctCaption')}</caption>
+            <thead>
+              <tr>
+                <th scope="col">{t('en.synthesis.colMark')}</th>
+                <th scope="col">{t('en.synthesis.colJob')}</th>
+                <th scope="col">{t('en.synthesis.colPitfall')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {PUNCTUATION_MARKS.map((row) => (
+                <tr key={row.mark}>
+                  <th scope="row">{row.mark}</th>
+                  <td>{pick(row.job, lang)}</td>
+                  <td>{pick(row.pitfall, lang)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : null}
 
       <section aria-labelledby="toeic-synthesis-map">
         <h3 id="toeic-synthesis-map">{t('en.synthesis.mapTitle')}</h3>
         <ul>
           {SERIES_CROSSWALK.map((row) => (
+            <li key={row.en}>{pick(row, lang)}</li>
+          ))}
+        </ul>
+      </section>
+
+      <section aria-labelledby="toeic-synthesis-stages">
+        <h3 id="toeic-synthesis-stages">{t('en.synthesis.stageTitle')}</h3>
+        <ol>
+          {STUDY_STAGES.map((row) => (
+            <li key={row.en}>{pick(row, lang)}</li>
+          ))}
+        </ol>
+      </section>
+
+      <section aria-labelledby="toeic-synthesis-notes">
+        <h3 id="toeic-synthesis-notes">{t('en.synthesis.noteTitle')}</h3>
+        <ul>
+          {NOTE_FOLDERS.map((row) => (
             <li key={row.en}>{pick(row, lang)}</li>
           ))}
         </ul>
