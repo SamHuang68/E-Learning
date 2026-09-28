@@ -850,6 +850,66 @@ export const NONFINITE_DRILLS: PrepDrill[] = [
   },
 ]
 
+export const TRANSITION_DRILLS: PrepDrill[] = [
+  {
+    id: 'add',
+    stem: { zh: 'The file is late. ___, we sent a copy.（補充）', en: 'The file is late. ___, we sent a copy. (add)', ja: 'The file is late. ___, we sent a copy.（追加）' },
+    choices: ['Furthermore', 'However', 'In conclusion'],
+    answer: 'Furthermore',
+    why: { zh: '補充。前面已經有一句。', en: 'Addition. A sentence already came first.', ja: '追加。前に文がある。' },
+  },
+  {
+    id: 'however',
+    stem: { zh: 'The file is late, however we sent it. 哪一句清楚？', en: 'The file is late, however we sent it. Which is clearer?', ja: 'The file is late, however we sent it. どれがはっきりする？' },
+    choices: ['The file is late. However, we sent it.', 'The file is late, however we sent it.', 'The file is late however, we sent it.'],
+    answer: 'The file is late. However, we sent it.',
+    why: { zh: 'however 常用句點或分號，不要只用逗號接兩個完整句。', en: 'however usually wants a period or semicolon, not a comma splice.', ja: 'however はピリオドかセミコロン。コンマつなぎにしない。' },
+  },
+  {
+    id: 'therefore',
+    stem: { zh: 'We missed the train. ___, we took a taxi.', en: 'We missed the train. ___, we took a taxi.', ja: 'We missed the train. ___, we took a taxi.' },
+    choices: ['Therefore', 'Furthermore', 'In conclusion'],
+    answer: 'Therefore',
+    why: { zh: '先原因，再結果。', en: 'Cause first, then the result.', ja: '原因を先に、結果を後に。' },
+  },
+  {
+    id: 'first',
+    stem: { zh: '這是信件第一句。哪一句比較穩？', en: 'This is the first sentence of a mail. Which is safer?', ja: 'メールの最初の文。どれが安定する？' },
+    choices: ['The report is late.', 'In conclusion, the report is late.', 'To sum up, the report is late.'],
+    answer: 'The report is late.',
+    why: { zh: '不要在第一句就總結。', en: 'Do not summarize in the first sentence.', ja: '最初の文でまとめない。' },
+  },
+  {
+    id: 'nevertheless',
+    stem: { zh: 'The budget is tight. ___, we kept the deadline.（對比）', en: 'The budget is tight. ___, we kept the deadline. (contrast)', ja: 'The budget is tight. ___, we kept the deadline.（対比）' },
+    choices: ['Nevertheless', 'Furthermore', 'Therefore'],
+    answer: 'Nevertheless',
+    why: { zh: '這是對比，不是補充，也不是結果。', en: 'This is contrast, not addition and not a result.', ja: '対比であり、追加でも結果でもない。' },
+  },
+  {
+    id: 'addition',
+    stem: { zh: 'We booked the room. ___, we ordered lunch.', en: 'We booked the room. ___, we ordered lunch.', ja: 'We booked the room. ___, we ordered lunch.' },
+    choices: ['In addition', 'In conclusion', 'Therefore'],
+    answer: 'In addition',
+    why: { zh: '第二句是補充，不是總結。', en: 'The second sentence adds. It does not conclude.', ja: '二文目は追加。まとめではない。' },
+  },
+  {
+    id: 'order',
+    stem: { zh: '因果順序哪一句對？', en: 'Which cause-result order is sound?', ja: '因果の順はどれ？' },
+    choices: ['The file was late. Consequently, we waited.', 'Consequently, we waited. The file was late.', 'We waited consequently the file was late.'],
+    answer: 'The file was late. Consequently, we waited.',
+    why: { zh: '先寫原因，再寫結果。', en: 'Write the cause, then the result.', ja: '原因を先に、結果を後に。' },
+  },
+  {
+    id: 'semi',
+    stem: { zh: 'however 接兩個完整句，哪一句清楚？', en: 'however joins two full sentences. Which is clearer?', ja: 'however で二文をつなぐ。どれがはっきりする？' },
+    choices: ['The room is small; however, it is quiet.', 'The room is small, however it is quiet.', 'The room is small however it is quiet.'],
+    answer: 'The room is small; however, it is quiet.',
+    why: { zh: '分號或句點都可以。逗號單獨接兩個完整句不行。', en: 'A semicolon or a period works. A comma alone does not join two full sentences.', ja: 'セミコロンかピリオド。コンマだけでは二文をつなげない。' },
+  },
+]
+
+
 
 
 
