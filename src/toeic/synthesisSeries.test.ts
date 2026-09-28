@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { CAPITAL_TABLE, COLLOCATION_ROWS, FUNCTION_TABLE, NONFINITE_TABLE, NOTE_FOLDERS, PATTERN_TABLE, POS_TABLE, PREPOSITION_ROWS, PUNCTUATION_MARKS, SEMANTICS_TABLE, SOUND_TABLE, STUDY_STAGES, SYNTHESIS_SERIES, TENSE_ROWS, TRANSITION_TABLE } from './data/synthesisSeries'
+import { CAPITAL_TABLE, COLLOCATION_ROWS, FUNCTION_TABLE, NONFINITE_TABLE, NOTE_FOLDERS, PATTERN_TABLE, POS_TABLE, PREP_DRILLS, PREPOSITION_ROWS, PUNCTUATION_MARKS, SEMANTICS_TABLE, SOUND_TABLE, STUDY_STAGES, SYNTHESIS_SERIES, TENSE_ROWS, TRANSITION_TABLE } from './data/synthesisSeries'
 import { translate } from '../i18n/messages'
 
 describe('TOEIC synthesis series', () => {
@@ -34,11 +34,18 @@ describe('TOEIC synthesis series', () => {
     expect(SEMANTICS_TABLE.rows.map((row) => row.id)).toEqual(['syn', 'ant', 'homo', 'poly', 'homonym', 'meta'])
     expect(SEMANTICS_TABLE.rows.some((row) => row.cells[2].zh.includes('完全相同'))).toBe(true)
     expect(CAPITAL_TABLE.rows).toHaveLength(4)
+    expect(PREP_DRILLS).toHaveLength(8)
+    expect(PREP_DRILLS.map((item) => item.answer)).toEqual(['on', 'in', 'at', 'in', 'at', 'to', 'for', 'of'])
+    expect(PREP_DRILLS.every((item) => item.choices.includes(item.answer))).toBe(true)
+    expect(translate('zh-Hant', 'en.synthesis.prepDrillNote')).toMatch(/不計分/)
+    expect(translate('en', 'en.synthesis.prepDrillNote')).toMatch(/not a score/)
     expect(translate('zh-Hant', 'en.synthesis.honesty')).toMatch(/不是多益分數/)
     expect(translate('en', 'en.synthesis.honesty')).toMatch(/Not a TOEIC score/)
     const view = readFileSync(join(process.cwd(), 'src/toeic/components/ToeicSynthesisSeries.tsx'), 'utf8')
     expect(view).toContain('scope="col"')
     expect(view).toContain('scope="row"')
+    expect(view).toContain('prep-drill-status')
+    expect(view).toContain('aria-live="polite"')
     expect(view).toContain("t('en.synthesis.honesty')")
   })
 })

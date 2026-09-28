@@ -547,6 +547,74 @@ export const CAPITAL_TABLE: TeachTable = {
   ],
 }
 
+export type PrepDrill = {
+  id: string
+  stem: SeriesPoint
+  choices: string[]
+  answer: string
+  why: SeriesPoint
+}
+
+export const PREP_DRILLS: PrepDrill[] = [
+  {
+    id: 'depend',
+    stem: { zh: 'We depend ___ the weather.', en: 'We depend ___ the weather.', ja: 'We depend ___ the weather.' },
+    choices: ['on', 'in', 'at'],
+    answer: 'on',
+    why: { zh: 'depend on 整組記。', en: 'Learn depend on as a pair.', ja: 'depend on はセット。' },
+  },
+  {
+    id: 'interested',
+    stem: { zh: 'She is interested ___ the plan.', en: 'She is interested ___ the plan.', ja: 'She is interested ___ the plan.' },
+    choices: ['in', 'on', 'at'],
+    answer: 'in',
+    why: { zh: 'interested in。', en: 'interested in.', ja: 'interested in。' },
+  },
+  {
+    id: 'good',
+    stem: { zh: 'He is good ___ writing reports.', en: 'He is good ___ writing reports.', ja: 'He is good ___ writing reports.' },
+    choices: ['at', 'in', 'on'],
+    answer: 'at',
+    why: { zh: 'good at + 名詞或 V-ing。', en: 'good at plus a noun or V-ing.', ja: 'good at の後は名詞か V-ing。' },
+  },
+  {
+    id: 'city',
+    stem: { zh: 'They arrive ___ Taipei on Monday.', en: 'They arrive ___ Taipei on Monday.', ja: 'They arrive ___ Taipei on Monday.' },
+    choices: ['in', 'at', 'on'],
+    answer: 'in',
+    why: { zh: '城市用 arrive in。', en: 'A city takes arrive in.', ja: '都市は arrive in。' },
+  },
+  {
+    id: 'station',
+    stem: { zh: 'She arrives ___ the station at noon.', en: 'She arrives ___ the station at noon.', ja: 'She arrives ___ the station at noon.' },
+    choices: ['at', 'in', 'on'],
+    answer: 'at',
+    why: { zh: '車站這種點用 arrive at。', en: 'A station is a point: arrive at.', ja: '駅のような点は arrive at。' },
+  },
+  {
+    id: 'forward',
+    stem: { zh: 'I look forward ___ seeing you.', en: 'I look forward ___ seeing you.', ja: 'I look forward ___ seeing you.' },
+    choices: ['to', 'for', 'at'],
+    answer: 'to',
+    why: { zh: 'look forward to 後面是 V-ing。', en: 'look forward to is followed by V-ing.', ja: 'look forward to の後は V-ing。' },
+  },
+  {
+    id: 'responsible',
+    stem: { zh: 'Who is responsible ___ this report?', en: 'Who is responsible ___ this report?', ja: 'Who is responsible ___ this report?' },
+    choices: ['for', 'of', 'to'],
+    answer: 'for',
+    why: { zh: 'responsible for。', en: 'responsible for.', ja: 'responsible for。' },
+  },
+  {
+    id: 'consist',
+    stem: { zh: 'The kit consists ___ three parts.', en: 'The kit consists ___ three parts.', ja: 'The kit consists ___ three parts.' },
+    choices: ['of', 'in', 'with'],
+    answer: 'of',
+    why: { zh: 'consist of。', en: 'consist of.', ja: 'consist of。' },
+  },
+]
+
+
 
 
 
