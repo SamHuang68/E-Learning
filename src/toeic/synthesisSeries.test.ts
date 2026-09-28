@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { ASPECT_DRILLS, CAPITAL_TABLE, CHUNK_DRILLS, COLLOCATION_ROWS, FUNCTION_DRILLS, FUNCTION_TABLE, IF_DRILLS, NONFINITE_DRILLS, NONFINITE_TABLE, NOTE_FOLDERS, PATTERN_DRILLS, PATTERN_TABLE, POS_TABLE, PREP_DRILLS, PREPOSITION_ROWS, PUNCT_DRILLS, PUNCTUATION_MARKS, SEMANTICS_DRILLS, SEMANTICS_TABLE, SOUND_DRILLS, SOUND_TABLE, STUDY_STAGES, SYNTHESIS_SERIES, TENSE_DRILLS, TENSE_ROWS, TRANSITION_DRILLS, TRANSITION_TABLE } from './data/synthesisSeries'
+import { ASPECT_DRILLS, CAPITAL_DRILLS, CAPITAL_TABLE, CHUNK_DRILLS, COLLOCATION_ROWS, FUNCTION_DRILLS, FUNCTION_TABLE, IF_DRILLS, NONFINITE_DRILLS, NONFINITE_TABLE, NOTE_FOLDERS, PATTERN_DRILLS, PATTERN_TABLE, POS_TABLE, PREP_DRILLS, PREPOSITION_ROWS, PUNCT_DRILLS, PUNCTUATION_MARKS, SEMANTICS_DRILLS, SEMANTICS_TABLE, SOUND_DRILLS, SOUND_TABLE, STUDY_STAGES, SYNTHESIS_SERIES, TENSE_DRILLS, TENSE_ROWS, TRANSITION_DRILLS, TRANSITION_TABLE } from './data/synthesisSeries'
 import { translate } from '../i18n/messages'
 
 describe('TOEIC synthesis series', () => {
@@ -34,6 +34,9 @@ describe('TOEIC synthesis series', () => {
     expect(SEMANTICS_TABLE.rows.map((row) => row.id)).toEqual(['syn', 'ant', 'homo', 'poly', 'homonym', 'meta'])
     expect(SEMANTICS_TABLE.rows.some((row) => row.cells[2].zh.includes('完全相同'))).toBe(true)
     expect(CAPITAL_TABLE.rows).toHaveLength(4)
+    expect(CAPITAL_DRILLS).toHaveLength(8)
+    expect(CAPITAL_DRILLS.every((item) => item.choices.includes(item.answer))).toBe(true)
+    expect(CAPITAL_DRILLS.some((item) => item.why.en.includes('Not a company title rule'))).toBe(true)
     expect(PREP_DRILLS).toHaveLength(8)
     expect(PREP_DRILLS.map((item) => item.answer)).toEqual(['on', 'in', 'at', 'in', 'at', 'to', 'for', 'of'])
     expect(PREP_DRILLS.every((item) => item.choices.includes(item.answer))).toBe(true)
@@ -91,6 +94,7 @@ describe('TOEIC synthesis series', () => {
     expect(view).toContain('stemId="tense-drill-stem"')
     expect(view).toContain('stemId="if-drill-stem"')
     expect(view).toContain('stemId="aspect-drill-stem"')
+    expect(view).toContain('stemId="capital-drill-stem"')
     expect(view).toContain('aria-live="polite"')
     expect(view).toContain("t('en.synthesis.honesty')")
   })

@@ -3,6 +3,7 @@ import { useI18n } from '../../i18n/i18n'
 import type { MessageKey } from '../../i18n/messages'
 import {
   ASPECT_DRILLS,
+  CAPITAL_DRILLS,
   CAPITAL_TABLE,
   CHUNK_DRILLS,
   COLLOCATION_ROWS,
@@ -372,6 +373,15 @@ export function ToeicSynthesisSeries({ instructionLang = 'zh' }: Props) {
         />
       ) : null}
       {active.id === 'mechanics' ? <TeachGrid table={CAPITAL_TABLE} lang={lang} /> : null}
+      {active.id === 'mechanics' ? (
+        <ChoiceCheck
+          lang={lang}
+          items={CAPITAL_DRILLS}
+          titleKey="en.synthesis.capitalDrill"
+          noteKey="en.synthesis.capitalDrillNote"
+          stemId="capital-drill-stem"
+        />
+      ) : null}
       {active.id === 'sound' ? <TeachGrid table={SOUND_TABLE} lang={lang} /> : null}
       {active.id === 'sound' ? (
         <ChoiceCheck
