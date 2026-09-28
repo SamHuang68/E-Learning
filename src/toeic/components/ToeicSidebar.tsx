@@ -6,6 +6,7 @@ import { useI18n } from '../../i18n/i18n'
 
 export type ToeicNavId =
   | 'phonics'
+  | 'synthesis'
   | 'chunks'
   | 'signals'
   | 'double-passage'
@@ -87,6 +88,7 @@ export function ToeicSidebar({
 
   const items: { id: ToeicNavId; icon: string; label: string; badge?: string }[] = [
     { id: 'today', icon: '★', label: isJa ? '今日学習' : t('en.nav.today') },
+    { id: 'synthesis', icon: '系', label: isJa ? '英語の整理シリーズ' : t('en.nav.synthesis') },
     { id: 'chunks', icon: '⚡', label: isJa ? 'ビジネスチャンク' : t('en.nav.chunks') },
     { id: 'signals', icon: '🎯', label: isJa ? '3秒解答シグナル' : t('en.nav.signals') },
     { id: 'double-passage', icon: '📑', label: isJa ? '複数文書読解' : t('en.nav.double') },
