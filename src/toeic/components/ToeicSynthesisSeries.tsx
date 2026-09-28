@@ -8,6 +8,7 @@ import {
   FUNCTION_TABLE,
   NONFINITE_TABLE,
   NOTE_FOLDERS,
+  PATTERN_DRILLS,
   PATTERN_TABLE,
   POS_TABLE,
   PREP_PAIRS,
@@ -216,6 +217,15 @@ export function ToeicSynthesisSeries({ instructionLang = 'zh' }: Props) {
       ) : null}
 
       {active.id === 'syntax' ? <TeachGrid table={PATTERN_TABLE} lang={lang} /> : null}
+      {active.id === 'syntax' ? (
+        <ChoiceCheck
+          lang={lang}
+          items={PATTERN_DRILLS}
+          titleKey="en.synthesis.patternDrill"
+          noteKey="en.synthesis.patternDrillNote"
+          stemId="pattern-drill-stem"
+        />
+      ) : null}
 
       {active.id === 'verbal' ? (
         <div className="table-responsive">
