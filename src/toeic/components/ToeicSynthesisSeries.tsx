@@ -12,6 +12,7 @@ import {
   IF_DRILLS,
   NONFINITE_DRILLS,
   NONFINITE_TABLE,
+  NOTE_DRILLS,
   NOTE_FOLDERS,
   PATTERN_DRILLS,
   PATTERN_TABLE,
@@ -454,6 +455,13 @@ export function ToeicSynthesisSeries({ instructionLang = 'zh' }: Props) {
             <li key={row.en}>{pick(row, lang)}</li>
           ))}
         </ul>
+        <ChoiceCheck
+          lang={lang}
+          items={NOTE_DRILLS}
+          titleKey="en.synthesis.noteDrill"
+          noteKey="en.synthesis.noteDrillNote"
+          stemId="note-drill-stem"
+        />
       </section>
     </section>
   )
