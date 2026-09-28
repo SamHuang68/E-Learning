@@ -1145,6 +1145,66 @@ export const TENSE_DRILLS: PrepDrill[] = [
   },
 ]
 
+export const IF_DRILLS: PrepDrill[] = [
+  {
+    id: 'would',
+    stem: { zh: 'She said she ___ the file the next day.（從過去看之後）', en: 'She said she ___ the file the next day. (later, seen from the past)', ja: 'She said she ___ the file the next day.（過去から見た後）' },
+    choices: ['would send', 'will send', 'sent'],
+    answer: 'would send',
+    why: { zh: '過去看未來：would + 原形。不是唯一寫法。', en: 'Future seen from the past: would + base verb. Not the only form.', ja: '過去から見た未来：would + 原形。唯一の形ではない。' },
+  },
+  {
+    id: 'would-be',
+    stem: { zh: 'She said she ___ the file at 3.（那時正在）', en: 'She said she ___ the file at 3. (in progress then)', ja: 'She said she ___ the file at 3.（その時進行中）' },
+    choices: ['would be sending', 'is sending', 'sends'],
+    answer: 'would be sending',
+    why: { zh: '過去看未來的進行：would be doing。', en: 'Progressive, seen from the past: would be doing.', ja: '過去から見た進行：would be doing。' },
+  },
+  {
+    id: 'would-have',
+    stem: { zh: 'She said that by Friday she ___ the file.（在那個較晚時間之前做完）', en: 'She said that by Friday she ___ the file. (finished before that later time)', ja: 'She said that by Friday she ___ the file.（その後の時点より前に完了）' },
+    choices: ['would have sent', 'has sent', 'sends'],
+    answer: 'would have sent',
+    why: { zh: '這是過去看未來的完成，不是「與事實相反」。', en: 'This is future-perfect seen from the past, not "contrary to fact".', ja: '過去から見た未来完了であり、「事実と反対」ではない。' },
+  },
+  {
+    id: 'had',
+    stem: { zh: 'If she ___ earlier, we would have started.（她當時沒有）', en: 'If she ___ earlier, we would have started. (she did not)', ja: 'If she ___ earlier, we would have started.（当時しなかった）' },
+    choices: ['had left', 'left', 'has left'],
+    answer: 'had left',
+    why: { zh: '與過去相反：If + had + 過去分詞。', en: 'Contrary to the past: If + had + past participle.', ja: '過去と反対：If + had + 過去分詞。' },
+  },
+  {
+    id: 'would-have-started',
+    stem: { zh: 'If she had left earlier, we ___ on time.', en: 'If she had left earlier, we ___ on time.', ja: 'If she had left earlier, we ___ on time.' },
+    choices: ['would have started', 'would start', 'started'],
+    answer: 'would have started',
+    why: { zh: '與過去相反的結果：would have + 過去分詞。', en: 'The past-contrary result: would have + past participle.', ja: '過去と反対の結果：would have + 過去分詞。' },
+  },
+  {
+    id: 'were-to',
+    stem: { zh: 'If she ___ to leave, we would wait.', en: 'If she ___ to leave, we would wait.', ja: 'If she ___ to leave, we would wait.' },
+    choices: ['were', 'is', 'will'],
+    answer: 'were',
+    why: { zh: '與未來相反或可能性低：If + were to，would + 原形。不是預測分數。', en: 'Unlikely future: If + were to, would + base verb. Not a prediction score.', ja: '可能性の低い未来：If + were to、would + 原形。予測の点数ではない。' },
+  },
+  {
+    id: 'should',
+    stem: { zh: 'If the train ___ be late, we would call.', en: 'If the train ___ be late, we would call.', ja: 'If the train ___ be late, we would call.' },
+    choices: ['should', 'will', 'is'],
+    answer: 'should',
+    why: { zh: 'If + should，would + 原形。同一列的另一種寫法。', en: 'If + should, would + base verb. The other form on the same row.', ja: 'If + should、would + 原形。同じ列のもう一つの形。' },
+  },
+  {
+    id: 'would-have-been',
+    stem: { zh: 'She said that by 5 she ___ for an hour.', en: 'She said that by 5 she ___ for an hour.', ja: 'She said that by 5 she ___ for an hour.' },
+    choices: ['would have been waiting', 'is waiting', 'waits'],
+    answer: 'would have been waiting',
+    why: { zh: '過去看未來的完成進行：would have been doing。教學標籤，不是時態認證。', en: 'would have been doing. A teaching label, not a tense certificate.', ja: 'would have been doing。学習用のラベルであり時制の資格ではない。' },
+  },
+]
+
+
 
 
 
