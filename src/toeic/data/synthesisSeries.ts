@@ -264,12 +264,12 @@ export const PUNCTUATION_MARKS: PunctRow[] = [
   { mark: '.', job: { zh: '句末陳述。', en: 'Ends a statement.', ja: '平叙文の終わり。' }, pitfall: { zh: '縮寫的句點（Mr.）不是句末。', en: 'Mr. is an abbreviation, not a new sentence.', ja: 'Mr. の点は文末ではない。' } },
   { mark: '?', job: { zh: '直接問句。', en: 'Direct question.', ja: '直接疑問。' }, pitfall: { zh: '間接問句用句點：I asked where it was.', en: 'Indirect questions take a period: I asked where it was.', ja: '間接疑問はピリオド。' } },
   { mark: '!', job: { zh: '強烈語氣或命令。', en: 'Strong tone or a command.', ja: '強い調子や命令。' }, pitfall: { zh: '正式信少用。', en: 'Rare in formal mail.', ja: '正式なメールでは少ない。' } },
-  { mark: ',', job: { zh: '停頓、列舉、附屬句前。', en: 'Pause, list, or before some clauses.', ja: '区切り・列挙・従属節の前。' }, pitfall: { zh: '不要只用逗號接兩個完整句。', en: 'Do not splice two full sentences with only a comma.', ja: '完全な二文をコンマだけでつなぐな。' } },
-  { mark: ';', job: { zh: '兩個相關完整句。', en: 'Two related full sentences.', ja: '関係する二つの完全文。' }, pitfall: { zh: '分號後面通常不接連接詞 and。', en: 'A semicolon usually does not take and.', ja: 'セミコロンの後に and は普通置かない。' } },
-  { mark: ':', job: { zh: '引出說明或清單。', en: 'Introduces an explanation or a list.', ja: '説明やリストを導く。' }, pitfall: { zh: '冒號前要是完整句。', en: 'What comes before the colon should be a full sentence.', ja: 'コロンの前は完全文。' } },
-  { mark: '-', job: { zh: '連字號，接複合詞。', en: 'Hyphen, joins a compound.', ja: 'ハイフン。複合語。' }, pitfall: { zh: '不要拿來代替破折號。', en: 'Do not use it as a dash.', ja: 'ダッシュの代わりにしない。' } },
+  { mark: ',', job: { zh: '兩個完整句要加 FANBOYS（for, and, nor, but, or, yet, so）。列舉三項以上時，最後一個 and 前的逗號全篇一致即可。', en: 'Join two full sentences with FANBOYS (for, and, nor, but, or, yet, so). In a list of three or more, keep the comma before the last and consistent.', ja: '二つの完全文は FANBOYS。三つ以上の列挙では最後の and の前のコンマを統一。' }, pitfall: { zh: '不要只用逗號接兩個完整句。可加 so、改分號，或拆成兩句。', en: 'Do not splice two full sentences with only a comma. Add so, use a semicolon, or split them.', ja: '完全な二文をコンマだけでつながない。so、セミコロン、または二文。' } },
+  { mark: ';', job: { zh: '兩個相關的完整句。也可寫成 ; however, 。清單內部已有逗號時，用分號隔開項目。', en: 'Two related full sentences. Also ; however, . Use it between list items that already contain commas.', ja: '関係する二つの完全文。; however, も可。中にコンマがある項目はセミコロンで区切る。' }, pitfall: { zh: '兩邊都要是完整句。後面不要接 because。', en: 'Both sides must be full sentences. Do not follow it with because.', ja: '両側は完全文。because は続けない。' } },
+  { mark: ':', job: { zh: '引出清單或說明。前面必須已是完整句。', en: 'Introduces a list or an explanation. A full sentence must come before it.', ja: 'リストや説明を導く。前は完全文。' }, pitfall: { zh: '不要寫 The steps are: 。動詞後面直接斷開。', en: 'Do not write The steps are: . Do not break right after the verb.', ja: 'The steps are: は書かない。動詞の直後で切らない。' } },
+  { mark: '-', job: { zh: '連字號接名詞前的複合形容詞：a real-time tool。名詞後的 in real time 常常不加。', en: 'A hyphen joins a compound before a noun: a real-time tool. After the noun, in real time often has none.', ja: '名詞の前の複合形容詞にハイフン：a real-time tool。名詞の後の in real time は付けないことが多い。' }, pitfall: { zh: '連字號不是破折號。破折號用來插入旁白，兩者不要混。', en: 'A hyphen is not an em dash. An em dash sets off an aside. Do not mix them.', ja: 'ハイフンはダッシュではない。ダッシュは挿入。混ぜない。' } },
   { mark: "'", job: { zh: '縮寫或所有格。', en: 'Contraction or possessive.', ja: '短縮または所有格。' }, pitfall: { zh: 'its 無撇號；it\'s = it is。', en: 'its has none; it\'s means it is.', ja: 'its に記号なし。it\'s は it is。' } },
-  { mark: '"', job: { zh: '直接引語。', en: 'Direct quotation.', ja: '直接引用。' }, pitfall: { zh: '引號裡的句末符號位置全篇一致。', en: 'Keep end marks inside or outside quotes consistently.', ja: '引用符と終止符の位置を統一。' } },
+  { mark: '"', job: { zh: '直接引語。美式常把句號和逗號放在引號內。', en: 'Direct quotation. US style often puts the period and the comma inside the quotes.', ja: '直接引用。米国式ではピリオドとコンマを引用符の中に置くことが多い。' }, pitfall: { zh: '這是一種慣例，不是唯一排版。問號跟問句走，不跟著引號習慣走。', en: 'That is one convention, not the only house style. A question mark follows the question.', ja: '一つの慣例であり唯一の組版ではない。疑問符は疑問に従う。' } },
   { mark: '()', job: { zh: '補充，拿掉仍成句。', en: 'An aside. The sentence still works without it.', ja: '補足。外しても文は立つ。' }, pitfall: { zh: '括號不能當主句的唯一動詞。', en: 'Parentheses cannot hold the only verb of the main clause.', ja: '括弧だけに本動詞を置かない。' } },
 ]
 
@@ -710,6 +710,45 @@ export const PUNCT_DRILLS: PrepDrill[] = [
     why: { zh: 'Mr. 的句點是縮寫，句子還沒結束。', en: 'The period in Mr. is an abbreviation. The sentence is not over.', ja: 'Mr. の点は略語。文はまだ終わっていない。' },
   },
 ]
+
+export const PUNCT_DEEP_DRILLS: PrepDrill[] = [
+  {
+    id: 'fanboys',
+    stem: { zh: '兩個完整句。哪一句站得住？', en: 'Two full sentences. Which one stands?', ja: '二つの完全文。どれが立つか？' },
+    choices: ['The service crashed, so we restarted.', 'The service crashed, we restarted.', 'The service crashed we restarted.'],
+    answer: 'The service crashed, so we restarted.',
+    why: { zh: '要 FANBOYS、分號，或拆成兩句。列舉最後的逗號全篇一致即可，不是必考。', en: 'Use FANBOYS, a semicolon, or two sentences. The comma before the last and only needs to stay consistent.', ja: 'FANBOYS、セミコロン、または二文。最後の and の前のコンマは統一すればよい。' },
+  },
+  {
+    id: 'however',
+    stem: { zh: '分號哪一句對？', en: 'Which semicolon is sound?', ja: 'セミコロンはどれ？' },
+    choices: ['The feature passed; however, deployment waited.', 'The feature passed; because deployment waited.', 'The feature passed, however deployment waited.'],
+    answer: 'The feature passed; however, deployment waited.',
+    why: { zh: '分號兩邊都要是完整句。because 不接在分號後面。', en: 'Both sides of a semicolon are full sentences. because does not follow it.', ja: 'セミコロンの両側は完全文。because は続かない。' },
+  },
+  {
+    id: 'are-colon',
+    stem: { zh: '冒號哪一句對？', en: 'Which colon is sound?', ja: 'コロンはどれ？' },
+    choices: ['We have three steps: planning, coding, and testing.', 'The steps are: planning, coding, and testing.', 'We have three steps; planning, coding, and testing.'],
+    answer: 'We have three steps: planning, coding, and testing.',
+    why: { zh: '冒號前要是完整句。不要在 are 後面直接斷開。', en: 'A full sentence comes before the colon. Do not break right after are.', ja: 'コロンの前は完全文。are の直後で切らない。' },
+  },
+  {
+    id: 'realtime',
+    stem: { zh: '名詞前的複合形容詞。', en: 'A compound before a noun.', ja: '名詞の前の複合形容詞。' },
+    choices: ['a real-time monitoring tool', 'a real time monitoring tool', 'a real time-monitoring-tool'],
+    answer: 'a real-time monitoring tool',
+    why: { zh: '連字號接名詞前的複合詞。破折號是另一個符號。in real time 在名詞後常常不加連字號。', en: 'The hyphen joins the compound before the noun. The em dash is a different mark. in real time after the noun often has no hyphen.', ja: '名詞の前はハイフン。ダッシュは別記号。名詞の後の in real time はハイフンなしが多い。' },
+  },
+  {
+    id: 'quotes',
+    stem: { zh: '美式引號裡的句號放哪？', en: 'Where does a US-style period go with a closing quote?', ja: '米国式で閉じ引用符とピリオドは？' },
+    choices: ['inside the quotes', 'always outside the quotes', 'always before the opening quote'],
+    answer: 'inside the quotes',
+    why: { zh: '美式常把句號和逗號放在引號內。這不是唯一排版。問號跟問句走。', en: 'US style often puts the period and the comma inside. Not the only house style. A question mark follows the question.', ja: '米国式ではピリオドとコンマを中に置くことが多い。唯一の組版ではない。疑問符は疑問に従う。' },
+  },
+]
+
 
 export const CHUNK_DRILLS: PrepDrill[] = [
   {

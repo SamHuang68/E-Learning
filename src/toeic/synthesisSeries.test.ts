@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { ASPECT_DRILLS, CAPITAL_DRILLS, CAPITAL_TABLE, CHUNK_DRILLS, COLLOCATION_ROWS, CROSSWALK_DRILLS, FUNCTION_DRILLS, FUNCTION_TABLE, IF_DRILLS, NONFINITE_DRILLS, NONFINITE_TABLE, NOTE_DRILLS, NOTE_FOLDERS, PATTERN_DRILLS, PATTERN_TABLE, POS_DRILLS, POS_TABLE, PREP_DRILLS, PREPOSITION_ROWS, PUNCT_DRILLS, PUNCTUATION_MARKS, SEMANTICS_DRILLS, SEMANTICS_TABLE, SERIES_CROSSWALK, SOUND_DRILLS, SOUND_TABLE, STAGE_DRILLS, STUDY_STAGES, SUBJUNCTIVE_ROWS, SYNTHESIS_SERIES, TENSE_DRILLS, TENSE_ROWS, TRANSITION_DRILLS, TRANSITION_TABLE } from './data/synthesisSeries'
+import { ASPECT_DRILLS, CAPITAL_DRILLS, CAPITAL_TABLE, CHUNK_DRILLS, COLLOCATION_ROWS, CROSSWALK_DRILLS, FUNCTION_DRILLS, FUNCTION_TABLE, IF_DRILLS, NONFINITE_DRILLS, NONFINITE_TABLE, NOTE_DRILLS, NOTE_FOLDERS, PATTERN_DRILLS, PATTERN_TABLE, POS_DRILLS, POS_TABLE, PREP_DRILLS, PREPOSITION_ROWS, PUNCT_DEEP_DRILLS, PUNCT_DRILLS, PUNCTUATION_MARKS, SEMANTICS_DRILLS, SEMANTICS_TABLE, SERIES_CROSSWALK, SOUND_DRILLS, SOUND_TABLE, STAGE_DRILLS, STUDY_STAGES, SUBJUNCTIVE_ROWS, SYNTHESIS_SERIES, TENSE_DRILLS, TENSE_ROWS, TRANSITION_DRILLS, TRANSITION_TABLE } from './data/synthesisSeries'
 import { translate } from '../i18n/messages'
 
 describe('TOEIC synthesis series', () => {
@@ -61,6 +61,9 @@ describe('TOEIC synthesis series', () => {
     expect(PUNCT_DRILLS).toHaveLength(8)
     expect(PUNCT_DRILLS.every((item) => item.choices.includes(item.answer))).toBe(true)
     expect(PUNCT_DRILLS.map((item) => item.id)).toEqual(['splice', 'its', 'its-is', 'indirect', 'hyphen', 'shout', 'colon', 'abbr'])
+    expect(PUNCT_DEEP_DRILLS).toHaveLength(5)
+    expect(PUNCT_DEEP_DRILLS.every((item) => item.choices.includes(item.answer))).toBe(true)
+    expect(PUNCT_DEEP_DRILLS.some((item) => item.why.en.includes('Not the only house style'))).toBe(true)
     expect(CHUNK_DRILLS).toHaveLength(8)
     expect(CHUNK_DRILLS.every((item) => item.choices.includes(item.answer))).toBe(true)
     expect(CHUNK_DRILLS.map((item) => item.answer)).toContain('make a decision')
@@ -102,6 +105,7 @@ describe('TOEIC synthesis series', () => {
     expect(view).toContain('scope="row"')
     expect(view).toContain('stemId="prep-drill-stem"')
     expect(view).toContain('stemId="punct-drill-stem"')
+    expect(view).toContain('stemId="punct-deep-stem"')
     expect(view).toContain('stemId="chunk-drill-stem"')
     expect(view).toContain('stemId="pattern-drill-stem"')
     expect(view).toContain('stemId="nonfinite-drill-stem"')
