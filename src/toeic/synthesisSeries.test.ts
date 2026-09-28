@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { CAPITAL_TABLE, CHUNK_DRILLS, COLLOCATION_ROWS, FUNCTION_DRILLS, FUNCTION_TABLE, IF_DRILLS, NONFINITE_DRILLS, NONFINITE_TABLE, NOTE_FOLDERS, PATTERN_DRILLS, PATTERN_TABLE, POS_TABLE, PREP_DRILLS, PREPOSITION_ROWS, PUNCT_DRILLS, PUNCTUATION_MARKS, SEMANTICS_DRILLS, SEMANTICS_TABLE, SOUND_DRILLS, SOUND_TABLE, STUDY_STAGES, SYNTHESIS_SERIES, TENSE_DRILLS, TENSE_ROWS, TRANSITION_DRILLS, TRANSITION_TABLE } from './data/synthesisSeries'
+import { ASPECT_DRILLS, CAPITAL_TABLE, CHUNK_DRILLS, COLLOCATION_ROWS, FUNCTION_DRILLS, FUNCTION_TABLE, IF_DRILLS, NONFINITE_DRILLS, NONFINITE_TABLE, NOTE_FOLDERS, PATTERN_DRILLS, PATTERN_TABLE, POS_TABLE, PREP_DRILLS, PREPOSITION_ROWS, PUNCT_DRILLS, PUNCTUATION_MARKS, SEMANTICS_DRILLS, SEMANTICS_TABLE, SOUND_DRILLS, SOUND_TABLE, STUDY_STAGES, SYNTHESIS_SERIES, TENSE_DRILLS, TENSE_ROWS, TRANSITION_DRILLS, TRANSITION_TABLE } from './data/synthesisSeries'
 import { translate } from '../i18n/messages'
 
 describe('TOEIC synthesis series', () => {
@@ -68,6 +68,10 @@ describe('TOEIC synthesis series', () => {
     expect(IF_DRILLS).toHaveLength(8)
     expect(IF_DRILLS.every((item) => item.choices.includes(item.answer))).toBe(true)
     expect(IF_DRILLS.some((item) => item.id === 'would-have' && item.why.en.includes('not "contrary to fact"'))).toBe(true)
+    expect(ASPECT_DRILLS).toHaveLength(8)
+    expect(ASPECT_DRILLS.every((item) => item.choices.includes(item.answer))).toBe(true)
+    expect(ASPECT_DRILLS.map((item) => item.answer)).toContain('has been writing')
+    expect(ASPECT_DRILLS.map((item) => item.answer)).toContain('will have sent')
     expect(translate('zh-Hant', 'en.synthesis.prepDrillNote')).toMatch(/不計分/)
     expect(translate('en', 'en.synthesis.prepDrillNote')).toMatch(/not a score/)
     expect(translate('zh-Hant', 'en.synthesis.honesty')).toMatch(/不是多益分數/)
@@ -86,6 +90,7 @@ describe('TOEIC synthesis series', () => {
     expect(view).toContain('stemId="semantics-drill-stem"')
     expect(view).toContain('stemId="tense-drill-stem"')
     expect(view).toContain('stemId="if-drill-stem"')
+    expect(view).toContain('stemId="aspect-drill-stem"')
     expect(view).toContain('aria-live="polite"')
     expect(view).toContain("t('en.synthesis.honesty')")
   })
