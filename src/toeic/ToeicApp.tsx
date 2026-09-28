@@ -70,6 +70,7 @@ import { FcpaComplianceLab } from './components/FcpaComplianceLab'
 import { AntitrustHhiLab } from './components/AntitrustHhiLab'
 import { BusinessInterruptionLab } from './components/BusinessInterruptionLab'
 import { LetterOfCreditLab } from './components/LetterOfCreditLab'
+import { ToeicSynthesisSeries } from './components/ToeicSynthesisSeries'
 
 type Props = {
   onBackHub: () => void
@@ -271,6 +272,8 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
           ? 'chrome.storyReview'
           : nav === 'phonics'
             ? 'en.nav.phonics'
+            : nav === 'synthesis'
+              ? 'en.nav.synthesis'
             : nav === 'builder'
               ? 'en.nav.builder'
               : nav === 'vocab'
@@ -704,6 +707,9 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
           onXp={(n) => patch({ xp: progress.xp + n })}
         />
       )
+    }
+    if (nav === 'synthesis') {
+      return <ToeicSynthesisSeries instructionLang={instructionLang} />
     }
     if (nav === 'builder') return <ToeicBuilder />
     if (nav === 'vocab' || nav === 'listening' || nav === 'grammar') {
