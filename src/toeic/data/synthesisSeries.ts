@@ -1322,6 +1322,66 @@ export const CAPITAL_DRILLS: PrepDrill[] = [
   },
 ]
 
+export const POS_DRILLS: PrepDrill[] = [
+  {
+    id: 'noun',
+    stem: { zh: 'information 是哪一種名詞？', en: 'What kind of noun is information?', ja: 'information はどの名詞？' },
+    choices: ['a mass noun', 'always plural', 'a verb'],
+    answer: 'a mass noun',
+    why: { zh: '先分可數或不可數。集合名詞的單複數看語意，不要背死。', en: 'Sort count or mass first. Collective nouns follow meaning. Do not freeze one number.', ja: '可算か不可算かを先に。集合名詞の数は意味で決まる。' },
+  },
+  {
+    id: 'pronoun',
+    stem: { zh: 'the file that she sent 裡的 that。', en: 'that in the file that she sent.', ja: 'the file that she sent の that。' },
+    choices: ['a relative pronoun', 'and', 'an adverb'],
+    answer: 'a relative pronoun',
+    why: { zh: '先找先行詞 the file。', en: 'Find the antecedent, the file, first.', ja: '先行詞 the file を先に探す。' },
+  },
+  {
+    id: 'modal',
+    stem: { zh: 'She can ___ the file.', en: 'She can ___ the file.', ja: 'She can ___ the file.' },
+    choices: ['send', 'sends', 'sent'],
+    answer: 'send',
+    why: { zh: '情態動詞後面用原形。', en: 'A modal takes a base verb.', ja: '法助動詞の後は原形。' },
+  },
+  {
+    id: 'adj',
+    stem: { zh: '形容詞順序怎麼記？', en: 'How should you store adjective order?', ja: '形容詞の順はどう覚える？' },
+    choices: ['a habit, not a required formula', 'a required exam formula', 'always color then size'],
+    answer: 'a habit, not a required formula',
+    why: { zh: '順序是習慣，不是必考公式。', en: 'The order is a habit, not a required formula.', ja: '順は習慣であり公式ではない。' },
+  },
+  {
+    id: 'however',
+    stem: { zh: 'however 是哪一類？', en: 'What class is however?', ja: 'however はどの類？' },
+    choices: ['a conjunctive adverb', 'and', 'a preposition'],
+    answer: 'a conjunctive adverb',
+    why: { zh: 'however 是連接副詞，不是 and。', en: 'however is a conjunctive adverb, not and.', ja: 'however は接続副詞であり and ではない。' },
+  },
+  {
+    id: 'and',
+    stem: { zh: 'She likes to write and ___.', en: 'She likes to write and ___.', ja: 'She likes to write and ___.' },
+    choices: ['to read', 'reading', 'read'],
+    answer: 'to read',
+    why: { zh: '對等連接詞兩邊的形式要對得上。', en: 'The two sides of a coordinating conjunction should match.', ja: '等位接続詞の両側は形を揃える。' },
+  },
+  {
+    id: 'some',
+    stem: { zh: 'some 和 any 怎麼記？', en: 'How should you store some and any?', ja: 'some と any はどう覚える？' },
+    choices: ['not only positive versus negative', 'some is always wrong in a question', 'any is only for plurals'],
+    answer: 'not only positive versus negative',
+    why: { zh: '不要只背肯定用 some、否定用 any。', en: 'Do not reduce it to some for positive and any for negative.', ja: '肯定は some、否定は any、だけでは覚えない。' },
+  },
+  {
+    id: 'well',
+    stem: { zh: 'Well, the file is late. 裡的 Well。', en: 'Well in Well, the file is late.', ja: 'Well, the file is late. の Well。' },
+    choices: ['a filler', 'a grammar error', 'a conjunction'],
+    answer: 'a filler',
+    why: { zh: '填充詞不是文法錯誤本身。', en: 'A filler is not itself a grammar error.', ja: '埋草自体は文法の誤りではない。' },
+  },
+]
+
+
 
 
 
