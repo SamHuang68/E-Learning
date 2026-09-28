@@ -26,6 +26,7 @@ import {
   STUDY_STAGES,
   SUBJUNCTIVE_ROWS,
   SYNTHESIS_SERIES,
+  TENSE_DRILLS,
   TENSE_ROWS,
   TRANSITION_DRILLS,
   TRANSITION_TABLE,
@@ -261,6 +262,13 @@ export function ToeicSynthesisSeries({ instructionLang = 'zh' }: Props) {
               <li key={row.en}>{pick(row, lang)}</li>
             ))}
           </ul>
+          <ChoiceCheck
+            lang={lang}
+            items={TENSE_DRILLS}
+            titleKey="en.synthesis.tenseDrill"
+            noteKey="en.synthesis.tenseDrillNote"
+            stemId="tense-drill-stem"
+          />
         </div>
       ) : null}
       {active.id === 'verbal' ? <TeachGrid table={NONFINITE_TABLE} lang={lang} /> : null}
