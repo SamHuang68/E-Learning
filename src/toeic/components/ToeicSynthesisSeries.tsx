@@ -22,6 +22,7 @@ import {
   PREP_PAIRS,
   PREPOSITION_ROWS,
   PREP_DRILLS,
+  PUNCT_DEEP_DRILLS,
   PUNCT_DRILLS,
   PUNCTUATION_MARKS,
   SERIES_CROSSWALK,
@@ -375,6 +376,15 @@ export function ToeicSynthesisSeries({ instructionLang = 'zh' }: Props) {
           titleKey="en.synthesis.punctDrill"
           noteKey="en.synthesis.punctDrillNote"
           stemId="punct-drill-stem"
+        />
+      ) : null}
+      {active.id === 'mechanics' ? (
+        <ChoiceCheck
+          lang={lang}
+          items={PUNCT_DEEP_DRILLS}
+          titleKey="en.synthesis.punctDeep"
+          noteKey="en.synthesis.punctDeepNote"
+          stemId="punct-deep-stem"
         />
       ) : null}
       {active.id === 'mechanics' ? <TeachGrid table={TRANSITION_TABLE} lang={lang} /> : null}
