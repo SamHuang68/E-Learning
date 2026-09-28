@@ -172,3 +172,93 @@ export const PUNCTUATION_PITFALLS: SeriesPoint[] = [
   { zh: 'it is 寫成 it\'s。所有格 its 不加撇號。', en: 'it is becomes it\'s. The possessive its has no apostrophe.', ja: 'it is は it\'s。所有格 its にアポストロフィはない。' },
   { zh: '連字號與破折號分開。標題大小寫全篇一致即可。', en: 'Keep hyphen and dash apart. Title case only needs to stay consistent.', ja: 'ハイフンとダッシュを混ぜない。タイトルの大文字は統一。' },
 ]
+
+export type PrepRow = {
+  relation: SeriesPoint
+  at: string
+  on: string
+  in: string
+  note: SeriesPoint
+}
+
+export const PREPOSITION_ROWS: PrepRow[] = [
+  {
+    relation: { zh: '時間', en: 'Time', ja: '時間' },
+    at: 'at 7, at noon',
+    on: 'on Monday, on May 1',
+    in: 'in May, in 2026, in the morning',
+    note: { zh: 'at 點、on 一天、in 較長時段。', en: 'at a point, on a day, in a longer span.', ja: 'at は時点、on は一日、in は長い期間。' },
+  },
+  {
+    relation: { zh: '空間', en: 'Place', ja: '空間' },
+    at: 'at the desk, at the door',
+    on: 'on the desk, on the wall',
+    in: 'in the room, in Taipei',
+    note: { zh: 'at 點、on 面、in 範圍。', en: 'at a point, on a surface, in a volume.', ja: 'at は点、on は面、in は範囲。' },
+  },
+  {
+    relation: { zh: '方向', en: 'Direction', ja: '方向' },
+    at: 'look at, arrive at',
+    on: 'onto the shelf',
+    in: 'into the room',
+    note: { zh: 'to 朝向；into / onto 進入範圍或面。', en: 'to is toward; into / onto enter a volume or surface.', ja: 'to は向かう。into / onto は中や面に入る。' },
+  },
+  {
+    relation: { zh: '抽象', en: 'Abstract', ja: '抽象' },
+    at: 'good at, at risk',
+    on: 'on purpose, on time',
+    in: 'in charge, in trouble',
+    note: { zh: '抽象用法要整組記，不能用空間公式硬套。', en: 'Abstract uses are chunks. Do not force the space formula.', ja: '抽象は塊で覚える。空間の公式を無理に当てない。' },
+  },
+]
+
+export const PREP_PAIRS: SeriesPoint[] = [
+  { zh: 'depend on / rely on', en: 'depend on / rely on', ja: 'depend on / rely on' },
+  { zh: 'interested in / good at / familiar with', en: 'interested in / good at / familiar with', ja: 'interested in / good at / familiar with' },
+  { zh: 'responsible for / consist of / wait for', en: 'responsible for / consist of / wait for', ja: 'responsible for / consist of / wait for' },
+  { zh: 'arrive at 小地點；arrive in 城市或國家。', en: 'arrive at a small point; arrive in a city or country.', ja: 'arrive at は小さい地点。arrive in は都市や国。' },
+  { zh: 'look at 看；look for 找；look forward to + V-ing。', en: 'look at, look for, look forward to + V-ing.', ja: 'look at は見る。look for は探す。look forward to の後は V-ing。' },
+]
+
+export type PunctRow = { mark: string; job: SeriesPoint; pitfall: SeriesPoint }
+
+export const PUNCTUATION_MARKS: PunctRow[] = [
+  { mark: '.', job: { zh: '句末陳述。', en: 'Ends a statement.', ja: '平叙文の終わり。' }, pitfall: { zh: '縮寫的句點（Mr.）不是句末。', en: 'Mr. is an abbreviation, not a new sentence.', ja: 'Mr. の点は文末ではない。' } },
+  { mark: '?', job: { zh: '直接問句。', en: 'Direct question.', ja: '直接疑問。' }, pitfall: { zh: '間接問句用句點：I asked where it was.', en: 'Indirect questions take a period: I asked where it was.', ja: '間接疑問はピリオド。' } },
+  { mark: '!', job: { zh: '強烈語氣或命令。', en: 'Strong tone or a command.', ja: '強い調子や命令。' }, pitfall: { zh: '正式信少用。', en: 'Rare in formal mail.', ja: '正式なメールでは少ない。' } },
+  { mark: ',', job: { zh: '停頓、列舉、附屬句前。', en: 'Pause, list, or before some clauses.', ja: '区切り・列挙・従属節の前。' }, pitfall: { zh: '不要只用逗號接兩個完整句。', en: 'Do not splice two full sentences with only a comma.', ja: '完全な二文をコンマだけでつなぐな。' } },
+  { mark: ';', job: { zh: '兩個相關完整句。', en: 'Two related full sentences.', ja: '関係する二つの完全文。' }, pitfall: { zh: '分號後面通常不接連接詞 and。', en: 'A semicolon usually does not take and.', ja: 'セミコロンの後に and は普通置かない。' } },
+  { mark: ':', job: { zh: '引出說明或清單。', en: 'Introduces an explanation or a list.', ja: '説明やリストを導く。' }, pitfall: { zh: '冒號前要是完整句。', en: 'What comes before the colon should be a full sentence.', ja: 'コロンの前は完全文。' } },
+  { mark: '-', job: { zh: '連字號，接複合詞。', en: 'Hyphen, joins a compound.', ja: 'ハイフン。複合語。' }, pitfall: { zh: '不要拿來代替破折號。', en: 'Do not use it as a dash.', ja: 'ダッシュの代わりにしない。' } },
+  { mark: "'", job: { zh: '縮寫或所有格。', en: 'Contraction or possessive.', ja: '短縮または所有格。' }, pitfall: { zh: 'its 無撇號；it\'s = it is。', en: 'its has none; it\'s means it is.', ja: 'its に記号なし。it\'s は it is。' } },
+  { mark: '"', job: { zh: '直接引語。', en: 'Direct quotation.', ja: '直接引用。' }, pitfall: { zh: '引號裡的句末符號位置全篇一致。', en: 'Keep end marks inside or outside quotes consistently.', ja: '引用符と終止符の位置を統一。' } },
+  { mark: '()', job: { zh: '補充，拿掉仍成句。', en: 'An aside. The sentence still works without it.', ja: '補足。外しても文は立つ。' }, pitfall: { zh: '括號不能當主句的唯一動詞。', en: 'Parentheses cannot hold the only verb of the main clause.', ja: '括弧だけに本動詞を置かない。' } },
+]
+
+export const STUDY_STAGES: SeriesPoint[] = [
+  { zh: '第 1 段：語音與高頻語塊（系列 6、5）。先聽得見、說得出口。', en: 'Stage 1: sound and high-frequency chunks (series 6 and 5). Hear it, then say it.', ja: '第1段：音声と高頻度の塊（6 と 5）。' },
+  { zh: '第 2 段：詞類與介系詞（系列 1）。先分角色，再記 in/on/at 與固定搭配。', en: 'Stage 2: word class and prepositions (series 1). Role first, then in/on/at and fixed pairs.', ja: '第2段：品詞と前置詞（1）。' },
+  { zh: '第 3 段：五句型與十二時態（系列 2、3）。用表，不背散句。', en: 'Stage 3: five patterns and the twelve tense frames (series 2 and 3). Use the grid.', ja: '第3段：五文型と12時制（2 と 3）。' },
+  { zh: '第 4 段：標點與銜接（系列 4）。先避免逗號接兩句。', en: 'Stage 4: punctuation and cohesion (series 4). Stop comma splices first.', ja: '第4段：句読点と結束（4）。' },
+  { zh: '第 5 段：語域與溝通功能（系列 5、8）。郵件、同意拒絕、短說明。', en: 'Stage 5: register and functions (series 5 and 8). Mail, agree or refuse, a short explanation.', ja: '第5段：レジスターと機能（5 と 8）。' },
+  { zh: '順序只是建議。可跳著查。不是多益分數進度。', en: 'The order is a suggestion. Skip around. It is not a TOEIC score path.', ja: '順番は提案。飛ばしてよい。TOEIC の得点ではない。' },
+]
+
+export const NOTE_FOLDERS: SeriesPoint[] = [
+  { zh: '每個系列一個資料夾。筆記只放定義、對照表、自己的錯句。', en: 'One folder per series. Store definitions, grids, and your own wrong sentences.', ja: 'シリーズごとに一つのフォルダ。定義・表・自分の誤文。' },
+  { zh: '介系詞夾：時間／空間／方向／抽象四表，加固定搭配，不另開「全部介系詞」散頁。', en: 'Preposition folder: four tables plus fixed pairs. No loose page of every preposition.', ja: '前置詞は四表と固定ペアだけ。' },
+  { zh: '標點夾：符號、工作、避坑三欄。', en: 'Punctuation folder: mark, job, pitfall.', ja: '句読点は記号・働き・注意の三列。' },
+  { zh: '不要在筆記裡寫假分數、假正確率或「已通過」。', en: 'Do not write fake scores, fake accuracy, or "passed".', ja: '偽の点数や「合格」は書かない。' },
+]
+
+export type ChunkRow = { chunk: string; use: SeriesPoint; avoid: SeriesPoint }
+
+export const COLLOCATION_ROWS: ChunkRow[] = [
+  { chunk: 'make a decision', use: { zh: '做決定。', en: 'Make a decision.', ja: '決定する。' }, avoid: { zh: '不要寫 do a decision。', en: 'Do not write do a decision.', ja: 'do a decision は書かない。' } },
+  { chunk: 'heavy rain', use: { zh: '大雨。', en: 'Heavy rain.', ja: '大雨。' }, avoid: { zh: '不要寫 strong rain。', en: 'Do not write strong rain.', ja: 'strong rain は書かない。' } },
+  { chunk: 'give up', use: { zh: '放棄。受詞可放中間或後面。', en: 'Stop trying. The object can split it or follow it.', ja: 'あきらめる。目的語は間にも後にも。' }, avoid: { zh: 'give up to do 不是這個意思。', en: 'give up to do is not this meaning.', ja: 'give up to do はこの意味ではない。' } },
+  { chunk: 'look forward to', use: { zh: '期待。後面接名詞或 V-ing。', en: 'Expect with pleasure. Follow with a noun or V-ing.', ja: '楽しみにする。後は名詞か V-ing。' }, avoid: { zh: '不要接 to + 原形。', en: 'Do not follow with to + base verb.', ja: 'to + 原形は続かない。' } },
+  { chunk: 'turn down', use: { zh: '拒絕，或把音量調小。', en: 'Refuse, or lower the volume.', ja: '断る、または音量を下げる。' }, avoid: { zh: '先看上下文，不要只背一個中文。', en: 'Read the context. Do not keep only one gloss.', ja: '文脈を見る。訳は一つに固定しない。' } },
+]
+
+
