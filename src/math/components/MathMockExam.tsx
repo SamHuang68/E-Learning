@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
-import { MOCK_EXAMS, type MockExamType } from '../data/mockExams'
+import { MOCK_EXAMS, practiceScoreLabel, type MockExamType } from '../data/mockExams'
 import { MathFormula } from './MathFormula'
 import { recordMockScore, loadMathProgress, saveMathProgress } from '../utils/mathStorage'
 
@@ -8,8 +8,7 @@ type Props = {
 }
 
 /**
- * 數學科全真模擬考系統 (MathMockExam)
- * 支援：國小學力檢測、國中教育會考 (CAP)、大學學測 (GSAT) 15 級分制
+ * 三張短練習卷。答對率不換算會考等級或學測級分。
  */
 export const MathMockExam: React.FC<Props> = ({ onExit }) => {
   const [examType, setExamType] = useState<MockExamType>('cap')
@@ -81,23 +80,7 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
     })
 
     const pct = Math.round((correct / exam.questions.length) * 100)
-
-    // 換算級分
-    let scale = ''
-    if (examType === 'cap') {
-      if (pct >= 90) scale = 'A++ (精熟頂級)'
-      else if (pct >= 80) scale = 'A+ (精熟優等)'
-      else if (pct >= 70) scale = 'A (精熟)'
-      else if (pct >= 60) scale = 'B++ (基礎前段)'
-      else if (pct >= 50) scale = 'B+ (基礎中段)'
-      else if (pct >= 40) scale = 'B (基礎)'
-      else scale = 'C (待加強)'
-    } else if (examType === 'gsat') {
-      const scaled = Math.min(15, Math.max(1, Math.round((pct / 100) * 15)))
-      scale = `${scaled} 級分 (${scaled >= 13 ? '頂標' : scaled >= 11 ? '前標' : scaled >= 8 ? '均標' : '後標'})`
-    } else {
-      scale = pct >= 80 ? '優等評級 (Distinction)' : pct >= 60 ? '通過評級 (Pass)' : '建議補強 (Review Needed)'
-    }
+    const scale = practiceScoreLabel(correct, exam.questions.length)
 
     // 自動將錯題寫入 LocalStorage
     try {
@@ -161,21 +144,21 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
               className={`mock-tab ${examType === 'elementary' ? 'active' : ''}`}
               onClick={() => setExamType('elementary')}
             >
-              國小學力檢測
+              國小練習卷
             </button>
             <button
               type="button"
               className={`mock-tab ${examType === 'cap' ? 'active' : ''}`}
               onClick={() => setExamType('cap')}
             >
-              國中教育會考 (CAP)
+              國中練習卷
             </button>
             <button
               type="button"
               className={`mock-tab ${examType === 'gsat' ? 'active' : ''}`}
               onClick={() => setExamType('gsat')}
             >
-              大學學科能力測驗 (GSAT)
+              高中練習卷
             </button>
           </div>
 
@@ -198,7 +181,7 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
             </div>
             <div className="mock-actions">
               <button type="button" className="btn-primary btn-start-exam" onClick={handleStart}>
-                開始全真模擬考 🚀
+                開始練習卷
               </button>
               <button type="button" className="btn-back" onClick={onExit}>
                 返回今日學習
@@ -355,16 +338,16 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
       ) : (
         <div className="mock-result-card">
           <div className="result-header">
-            <h3>{exam.title} · 成績報告單</h3>
+            <h3>{exam.title} · 答對紀錄</h3>
           </div>
 
           <div className="score-hero">
             <div className="score-circle">
               <span className="score-num">{scoreResult?.percentage}</span>
-              <span className="score-unit">分</span>
+              <span className="score-unit">%</span>
             </div>
             <div className="scale-result">
-              <span className="scale-label">評定等級：</span>
+              <span className="scale-label">這一卷：</span>
               <strong className="scale-badge">{scoreResult?.scaleGrade}</strong>
               <p>答對 {scoreResult?.correctCount} / {scoreResult?.totalCount} 題</p>
             </div>

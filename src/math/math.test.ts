@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { ALL_MATH_GRADES, getGradeInfo, getGradeUnit, getGradesInStage } from './data/gradeStore'
-import { MOCK_EXAMS } from './data/mockExams'
+import { MOCK_EXAMS, practiceScoreLabel } from './data/mockExams'
 import { recordMathAnswer, defaultMathProgress } from './utils/mathStorage'
 
 describe('臺灣 108 課綱 K-12 數學課程架構與資料完整性測試', () => {
@@ -91,8 +91,16 @@ describe('模擬考模組 (Mock Exams) 測試', () => {
     expect(MOCK_EXAMS.cap).toBeDefined()
     expect(MOCK_EXAMS.gsat).toBeDefined()
 
-    expect(MOCK_EXAMS.cap.questions.length).toBeGreaterThanOrEqual(5)
-    expect(MOCK_EXAMS.gsat.questions.length).toBeGreaterThanOrEqual(4)
+    expect(MOCK_EXAMS.elementary.questions.length).toBeGreaterThanOrEqual(6)
+    expect(MOCK_EXAMS.cap.questions.length).toBeGreaterThanOrEqual(7)
+    expect(MOCK_EXAMS.gsat.questions.length).toBeGreaterThanOrEqual(6)
+
+    for (const exam of Object.values(MOCK_EXAMS)) {
+      expect(exam.gradingScale).not.toMatch(/級分|頂標|A\+\+|倒扣/)
+      expect(exam.subtitle).not.toMatch(/A\+\+|倒扣|15 級分/)
+    }
+    expect(practiceScoreLabel(4, 6)).toContain('不是學測級分')
+    expect(practiceScoreLabel(4, 6)).not.toMatch(/頂標|A\+\+/)
   })
 
   it('作答紀錄與錯題本收入機制運作正常', () => {
