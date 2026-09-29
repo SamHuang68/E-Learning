@@ -7,7 +7,7 @@ export const G10_DATA: MathGradeInfo = {
   nameEn: 'Grade 10',
   band: '高中必修',
   description: '實數與算幾不等式、多項式函數（除法/餘式/勘根）、指數與對數、直線與圓、數據分析。',
-  targetExam: '學科能力測驗 (GSAT)',
+  targetExam: '高中教學題，不是學測分數',
   labs: [
     { id: 'coordinate', name: '多項式函數動態實驗室', description: '探索三次多項式局部特徵與勘根定理。' },
   ],
@@ -149,7 +149,7 @@ export const G11_DATA: MathGradeInfo = {
   nameEn: 'Grade 11',
   band: '高中選組',
   description: '廣義三角函數、空間向量與平面直線、二階矩陣與線性變換、條件機率與貝氏定理。',
-  targetExam: '學科能力測驗 (GSAT)',
+  targetExam: '高中教學題，不是學測分數',
   labs: [
     { id: 'unitcircle', name: '三角函數單位圓實驗室', description: '動態展示 $\\sin\\theta, \\cos\\theta, \\tan\\theta$ 的幾何定義與正負象限週期。' },
   ],
@@ -294,7 +294,7 @@ export const G12_DATA: MathGradeInfo = {
   nameEn: 'Grade 12',
   band: '高中選修',
   description: '極限與連續、微分學（導數與極值判定）、定積分與面積計算、複數極式、二次曲線。',
-  targetExam: '分科測驗 (AST) / 學測總複習',
+  targetExam: '高中教學題，不是分科測驗分數',
   labs: [
     { id: 'calculus', name: '微積分切線與定積分實驗室', description: '動態拖曳觀察切線斜率（導數）與黎曼和/定積分著色面積。' },
   ],

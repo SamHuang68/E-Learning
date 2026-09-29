@@ -76,6 +76,13 @@ describe('臺灣 108 課綱 K-12 數學課程架構與資料完整性測試', ()
     }
   })
 
+  it('國中和高中的年級標籤不寫成正式考試', () => {
+    for (const grade of [...getGradesInStage('junior'), ...getGradesInStage('senior')]) {
+      expect(grade.targetExam ?? '').not.toMatch(/會考 \(CAP\)|學科能力測驗|分科測驗 \(AST\)/)
+      expect(grade.targetExam ?? '').toContain('不是')
+    }
+  })
+
   it('能正確取得指定年級與單元資料', () => {
     const g7 = getGradeInfo('g7')
     expect(g7.name).toContain('七年級')

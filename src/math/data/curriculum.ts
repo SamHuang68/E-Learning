@@ -126,7 +126,7 @@ export const MATH_GRADES: Record<MathGradeId, {
     nameEn: 'Grade 7',
     band: '國中基礎',
     description: '負數與數線、整數四則與科學記號、一元一次方程式、二元一次聯立方程式、直角坐標。',
-    targetExam: '國中教育會考 (CAP)',
+    targetExam: '國中教學題，不是會考分數',
   },
   g8: {
     stage: 'junior',
@@ -134,7 +134,7 @@ export const MATH_GRADES: Record<MathGradeId, {
     nameEn: 'Grade 8',
     band: '國中進階',
     description: '乘法公式、多項式四則、二次方根與畢氏定理、因式分解、一元二次方程式、三角形全等。',
-    targetExam: '國中教育會考 (CAP)',
+    targetExam: '國中教學題，不是會考分數',
   },
   g9: {
     stage: 'junior',
@@ -142,7 +142,7 @@ export const MATH_GRADES: Record<MathGradeId, {
     nameEn: 'Grade 9',
     band: '國中衝刺',
     description: '相似形與連比、圓形幾何性質、三角形三心 (外心/內心/重心)、二次函數與極值、統計機率。',
-    targetExam: '國中教育會考 (CAP)',
+    targetExam: '國中教學題，不是會考分數',
   },
   g10: {
     stage: 'senior',
@@ -150,7 +150,7 @@ export const MATH_GRADES: Record<MathGradeId, {
     nameEn: 'Grade 10',
     band: '高中必修',
     description: '實數與算幾不等式、多項式函數 (除法/餘式/勘根)、指數與對數、直線與圓、數據分析。',
-    targetExam: '學科能力測驗 (GSAT)',
+    targetExam: '高中教學題，不是學測分數',
   },
   g11: {
     stage: 'senior',
@@ -158,7 +158,7 @@ export const MATH_GRADES: Record<MathGradeId, {
     nameEn: 'Grade 11',
     band: '高中選組',
     description: '廣義三角函數、空間向量與平面直線、二階矩陣與線性變換、條件機率與貝氏定理。',
-    targetExam: '學科能力測驗 (GSAT)',
+    targetExam: '高中教學題，不是學測分數',
   },
   g12: {
     stage: 'senior',
@@ -166,7 +166,7 @@ export const MATH_GRADES: Record<MathGradeId, {
     nameEn: 'Grade 12',
     band: '高中選修',
     description: '極限與連續、微分學 (導函數/切線/極值)、定積分與面積、複數極式、二次曲線。',
-    targetExam: '分科測驗 (AST) / 學測總複習',
+    targetExam: '高中教學題，不是分科測驗分數',
   },
 }
 

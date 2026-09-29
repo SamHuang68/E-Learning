@@ -528,7 +528,7 @@ export const MathSignalsView: React.FC<Props> = ({ initialStage = 'all', onBack 
                 onClick={() => setSelectedStage('junior')}
                 style={{ fontSize: '0.78rem', padding: '0.35rem 0.65rem' }}
               >
-                國中會考 G7~G9 ({juniorCount})
+                國中 G7~G9 ({juniorCount})
               </button>
               <button
                 type="button"
@@ -536,7 +536,7 @@ export const MathSignalsView: React.FC<Props> = ({ initialStage = 'all', onBack 
                 onClick={() => setSelectedStage('senior')}
                 style={{ fontSize: '0.78rem', padding: '0.35rem 0.65rem' }}
               >
-                高中學測 G10~G12 ({seniorCount})
+                高中 G10~G12 ({seniorCount})
               </button>
             </div>
 
@@ -1145,7 +1145,7 @@ export const MathSignalsView: React.FC<Props> = ({ initialStage = 'all', onBack 
                 本輪 3 秒破題快答測驗完成！
               </h3>
               <p style={{ fontSize: '0.85rem', color: 'var(--muted)', margin: '0 0 1.5rem' }}>
-                看見題目關鍵訊號，即刻反射第一步核心公式與破題口訣，是考場秒殺高分的關鍵思維！
+                看見題目裡的條件，先寫出對應的第一步。這是練習，不是考場分數。
               </p>
 
               {/* 成績數據面板 */}
