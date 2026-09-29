@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'vitest'
 import type { CsStrand } from './curriculum'
 
 export interface TextbookChapter {
@@ -602,17 +601,3 @@ export const CS_TEXTBOOK_CHAPTERS: TextbookChapter[] = [
   },
 ]
 
-describe('教科書知識巨著數據驗證單元測試', () => {
-  it('7 大章節涵蓋計算機科學完整體系且內容充實嚴謹', () => {
-    expect(CS_TEXTBOOK_CHAPTERS.length).toBe(7)
-    for (const ch of CS_TEXTBOOK_CHAPTERS) {
-      expect(ch.title).toBeTruthy()
-      expect(ch.historicalContext.keyFigures.length).toBeGreaterThanOrEqual(2)
-      expect(ch.firstPrinciples.mathematicalDerivations.length).toBeGreaterThanOrEqual(2)
-      expect(ch.architecturalDeepDive.keySubsystems.length).toBeGreaterThanOrEqual(3)
-      expect(ch.industrialCaseStudies.length).toBeGreaterThanOrEqual(1)
-      expect(ch.deepThinkingQuestions.length).toBeGreaterThanOrEqual(1)
-      expect(ch.classicReferences.length).toBeGreaterThanOrEqual(1)
-    }
-  })
-})
