@@ -102,7 +102,7 @@ export const MathSignalsView: React.FC<Props> = ({ initialStage = 'all', onBack 
 
   // 重設所有掌握度
   const handleResetAllMastery = useCallback(() => {
-    if (window.confirm('確定要重設所有數學 3 秒破題卡的掌握度紀錄嗎？')) {
+    if (window.confirm('確定要清掉這些卡片的自評紀錄嗎？自評不是測驗分數。')) {
       setMasteryMap({})
     }
   }, [])
@@ -292,7 +292,7 @@ export const MathSignalsView: React.FC<Props> = ({ initialStage = 'all', onBack 
                   letterSpacing: '0.04em',
                 }}
               >
-                📐 數學 3 秒破題訊號庫 · 108 課綱專屬
+                📐 數學條件對公式 · 少數例題，不是完整課綱
               </span>
             </div>
             <h2
@@ -304,7 +304,7 @@ export const MathSignalsView: React.FC<Props> = ({ initialStage = 'all', onBack 
                 lineHeight: 1.3,
               }}
             >
-              ⚡ 數學 3 秒破題訊號決策卡
+              看到條件，先寫第一步
             </h2>
             <p
               style={{
@@ -314,7 +314,7 @@ export const MathSignalsView: React.FC<Props> = ({ initialStage = 'all', onBack 
                 lineHeight: 1.4,
               }}
             >
-              看到題目特徵關鍵字 ➜ 3 秒直覺反射核心數學公式與破題第一步！
+              看到題目條件，先對上公式和第一步。看過不等於會算。
             </p>
           </div>
 
@@ -379,7 +379,7 @@ export const MathSignalsView: React.FC<Props> = ({ initialStage = 'all', onBack 
                 minWidth: 0,
               }}
             >
-              <span>⚡ 3秒快答翻轉測驗</span>
+              <span>翻卡練習</span>
               {reviewCount > 0 && (
                 <span
                   style={{
@@ -423,13 +423,13 @@ export const MathSignalsView: React.FC<Props> = ({ initialStage = 'all', onBack 
               minWidth: 0,
             }}
           >
-            <span>
-              🎯 掌握率：<strong>{masteryPercentage}%</strong> ({masteredCount}/{totalCount})
+            <span title="自己點的紀錄，不是測驗分數">
+              自評會了：<strong>{masteryPercentage}%</strong> ({masteredCount}/{totalCount})
             </span>
             <span style={{ color: '#c7d2fe' }}>•</span>
-            <span style={{ color: '#86efac' }}>🟢 已掌握 {masteredCount}</span>
+            <span style={{ color: '#86efac' }}>🟢 自評會了 {masteredCount}</span>
             <span style={{ color: '#fca5a5' }}>🔴 需複習 {reviewCount}</span>
-            <span style={{ color: '#cbd5e1' }}>⚪ 尚未測驗 {totalCount - masteredCount - reviewCount}</span>
+            <span style={{ color: '#cbd5e1' }}>⚪ 尚未自評 {totalCount - masteredCount - reviewCount}</span>
           </div>
 
           <div
@@ -465,7 +465,7 @@ export const MathSignalsView: React.FC<Props> = ({ initialStage = 'all', onBack 
               <button
                 type="button"
                 onClick={handleResetAllMastery}
-                title="重設掌握度紀錄"
+                title="清掉自評紀錄"
                 style={{
                   background: 'rgba(255, 255, 255, 0.15)',
                   border: 'none',
@@ -543,7 +543,7 @@ export const MathSignalsView: React.FC<Props> = ({ initialStage = 'all', onBack 
             {/* 狀態篩選與搜尋框 */}
             <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap', alignItems: 'center', minWidth: 0 }}>
               <select
-                aria-label="掌握狀態篩選"
+                aria-label="自評狀態篩選"
                 id="math-signals-status-filter"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
@@ -558,9 +558,9 @@ export const MathSignalsView: React.FC<Props> = ({ initialStage = 'all', onBack 
                 }}
               >
                 <option value="all">全部狀態</option>
-                <option value="mastered">🟢 僅已掌握</option>
+                <option value="mastered">🟢 僅自評會了</option>
                 <option value="review">🔴 僅需複習</option>
-                <option value="untested">⚪ 尚未測驗</option>
+                <option value="untested">⚪ 尚未自評</option>
               </select>
 
               <input
@@ -696,10 +696,10 @@ export const MathSignalsView: React.FC<Props> = ({ initialStage = 'all', onBack 
                         }}
                       >
                         {status === 'mastered'
-                          ? '🟢 已掌握'
+                          ? '🟢 自評會了'
                           : status === 'review'
                           ? '🔴 需複習'
-                          : '⚪ 未測驗'}
+                          : '⚪ 未自評'}
                       </span>
                     </div>
 
@@ -753,7 +753,7 @@ export const MathSignalsView: React.FC<Props> = ({ initialStage = 'all', onBack 
                           marginBottom: '0.15rem',
                         }}
                       >
-                        ⚡ 3 秒破題口訣：
+                        口訣：
                       </div>
                       <div
                         style={{
@@ -801,7 +801,7 @@ export const MathSignalsView: React.FC<Props> = ({ initialStage = 'all', onBack 
                       </div>
                     </div>
 
-                    {/* 秒殺解題示範 (可折疊) */}
+                    {/* 例題 (可折疊) */}
                     <details
                       style={{
                         background: '#f8fafc',
@@ -820,7 +820,7 @@ export const MathSignalsView: React.FC<Props> = ({ initialStage = 'all', onBack 
                           userSelect: 'none',
                         }}
                       >
-                        💡 查看秒殺解題示範
+                        查看例題
                       </summary>
                       <div
                         style={{
@@ -846,7 +846,7 @@ export const MathSignalsView: React.FC<Props> = ({ initialStage = 'all', onBack 
                             lineHeight: 1.4,
                           }}
                         >
-                          <strong>⚡ 秒解：</strong>
+                          <strong>怎麼想：</strong>
                           <MathFormula math={sig.exampleProblem.quickSolve} />
                         </div>
                       </div>
@@ -885,7 +885,7 @@ export const MathSignalsView: React.FC<Props> = ({ initialStage = 'all', onBack 
                             cursor: 'pointer',
                           }}
                         >
-                          {status === 'mastered' ? '✓ 已掌握' : '標為掌握'}
+                          {status === 'mastered' ? '✓ 這張標過會了' : '標為這張會了'}
                         </button>
                         <button
                           type="button"
@@ -1142,7 +1142,7 @@ export const MathSignalsView: React.FC<Props> = ({ initialStage = 'all', onBack 
             >
               <div style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>🏆</div>
               <h3 style={{ margin: '0 0 0.4rem', fontSize: '1.3rem', color: '#4338ca' }}>
-                本輪 3 秒破題快答測驗完成！
+                這輪翻卡做完了
               </h3>
               <p style={{ fontSize: '0.85rem', color: 'var(--muted)', margin: '0 0 1.5rem' }}>
                 看見題目裡的條件，先寫出對應的第一步。這是練習，不是考場分數。
@@ -1180,7 +1180,7 @@ export const MathSignalsView: React.FC<Props> = ({ initialStage = 'all', onBack 
                     padding: '0.85rem',
                   }}
                 >
-                  <span style={{ fontSize: '0.72rem', color: '#047857', fontWeight: 600 }}>本輪掌握</span>
+                  <span style={{ fontSize: '0.72rem', color: '#047857', fontWeight: 600 }}>本輪標會了</span>
                   <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#059669' }}>
                     {Object.values(sessionRecord).filter((v) => v === 'mastered').length}{' '}
                     <span style={{ fontSize: '0.8rem' }}>組</span>
@@ -1384,10 +1384,10 @@ export const MathSignalsView: React.FC<Props> = ({ initialStage = 'all', onBack 
                       }}
                     >
                       {masteryMap[currentDrillCard.id] === 'mastered'
-                        ? '🟢 歷史記錄：已掌握'
+                        ? '🟢 上次自評：會了'
                         : masteryMap[currentDrillCard.id] === 'review'
-                        ? '🔴 歷史記錄：需複習'
-                        : '⚪ 歷史記錄：未測驗'}
+                        ? '🔴 上次自評：再看'
+                        : '⚪ 上次自評：還沒點'}
                     </span>
                   </div>
 
@@ -1442,10 +1442,10 @@ export const MathSignalsView: React.FC<Props> = ({ initialStage = 'all', onBack 
                     >
                       <div style={{ fontSize: '1.4rem' }}>🧠</div>
                       <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#5b21b6' }}>
-                        請在腦中進行 3 秒直覺反射：
+                        請先自己想一步：
                       </div>
                       <div style={{ fontSize: '0.8rem', color: '#6d28d9', maxWidth: '420px', lineHeight: 1.4 }}>
-                        「針對此特徵，3 秒破題口訣是什麼？解題第一步該列出哪一道關鍵公式？」
+                        這個條件對哪一個公式？第一步要寫什麼？
                       </div>
 
                       <button
@@ -1468,7 +1468,7 @@ export const MathSignalsView: React.FC<Props> = ({ initialStage = 'all', onBack 
                           gap: '0.4rem',
                         }}
                       >
-                        <span>👁️ 揭曉 3 秒破題口訣與第一步算式</span>
+                        <span>揭曉口訣與第一步</span>
                       </button>
                     </div>
                   ) : (
@@ -1501,7 +1501,7 @@ export const MathSignalsView: React.FC<Props> = ({ initialStage = 'all', onBack 
                             marginBottom: '0.2rem',
                           }}
                         >
-                          ⚡ 3 秒破題口訣：
+                          口訣：
                         </div>
                         <div
                           style={{
@@ -1549,7 +1549,7 @@ export const MathSignalsView: React.FC<Props> = ({ initialStage = 'all', onBack 
                         </div>
                       </div>
 
-                      {/* 秒殺解題示範 */}
+                      {/* 例題 */}
                       <div
                         style={{
                           background: '#f8fafc',
@@ -1573,7 +1573,7 @@ export const MathSignalsView: React.FC<Props> = ({ initialStage = 'all', onBack 
                             lineHeight: 1.4,
                           }}
                         >
-                          <strong>⚡ 秒殺步驟：</strong>
+                          <strong>例題怎麼想：</strong>
                           <MathFormula math={currentDrillCard.exampleProblem.quickSolve} />
                         </div>
                       </div>
@@ -1592,7 +1592,7 @@ export const MathSignalsView: React.FC<Props> = ({ initialStage = 'all', onBack 
                         }}
                       >
                         <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--ink)' }}>
-                          剛才你在 3 秒內成功反射破題口訣與公式了嗎？
+                          這張卡的第一步，你現在寫得出來嗎？寫得出來只代表這張卡。
                         </div>
 
                         <div
@@ -1648,7 +1648,7 @@ export const MathSignalsView: React.FC<Props> = ({ initialStage = 'all', onBack 
                               gap: '0.3rem',
                             }}
                           >
-                            <span>🟢 3秒秒殺 (已精準掌握)</span>
+                            <span>這張卡會了</span>
                           </button>
                         </div>
                       </div>
