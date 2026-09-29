@@ -39,14 +39,14 @@ export const SolvingSignalCards: React.FC<Props> = ({ initialStage = 'junior' })
             className={`pill-btn ${selectedStage === 'junior' ? 'active' : ''}`}
             onClick={() => setSelectedStage('junior')}
           >
-            國中會考訊號 (G7~G9)
+            國中訊號 (G7~G9)
           </button>
           <button
             type="button"
             className={`pill-btn ${selectedStage === 'senior' ? 'active' : ''}`}
             onClick={() => setSelectedStage('senior')}
           >
-            高中學測訊號 (G10~G12)
+            高中訊號 (G10~G12)
           </button>
         </div>
       </div>

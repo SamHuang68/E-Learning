@@ -65,7 +65,7 @@ export const MathErrorVault: React.FC<Props> = ({ onBack }) => {
         <div>
           <h2>錯題筆記本 (Error Notebook)</h2>
           <p className="vault-desc">
-            自動彙整平常單元練習與模擬考答錯之題目。徹底訂正並再次答對即可移出錯題本！
+            自動彙整單元練習與練習卷答錯的題目。訂正後再答對，就會移出錯題本。
           </p>
         </div>
         <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
@@ -90,7 +90,7 @@ export const MathErrorVault: React.FC<Props> = ({ onBack }) => {
         <div className="vault-empty-card">
           <span className="empty-icon">🎉</span>
           <h3>太厲害了！目前沒有未解決的錯題</h3>
-          <p>繼續保持良好的學習節奏，多做練習與模擬考挑戰高分！</p>
+          <p>目前沒有未訂正的錯題。再做單元練習或練習卷即可，這裡不記會考或學測分數。</p>
         </div>
       ) : (
         <div className="vault-grid">

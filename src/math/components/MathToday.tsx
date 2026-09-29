@@ -69,7 +69,7 @@ export const MathToday: React.FC<Props> = ({
             </button>
           )}
           <button type="button" className="btn-hero-secondary" onClick={onOpenMock}>
-            📝 模擬測驗
+            📝 練習卷
           </button>
           <button type="button" className="btn-hero-secondary" onClick={onOpenVault}>
             📖 錯題本 ({progress.errorQuestions.length})

@@ -7,7 +7,7 @@ export const G7_DATA: MathGradeInfo = {
   nameEn: 'Grade 7',
   band: '國中基礎',
   description: '負數與數線、整數四則與科學記號、一元一次方程式、二元一次聯立方程式、直角坐標系。',
-  targetExam: '國中教育會考 (CAP)',
+  targetExam: '國中教學題，不是會考分數',
   labs: [
     { id: 'coordinate', name: '2D 坐標平面繪圖器', description: '動態探索直線方程式 $ax + by = c$ 的斜率與截距。' },
   ],
@@ -151,7 +151,7 @@ export const G8_DATA: MathGradeInfo = {
   nameEn: 'Grade 8',
   band: '國中進階',
   description: '乘法公式、二次方根與畢氏定理、因式分解、一元二次方程式、等差數列與級數、三角形全等。',
-  targetExam: '國中教育會考 (CAP)',
+  targetExam: '國中教學題，不是會考分數',
   labs: [
     { id: 'pythagoras', name: '畢氏定理幾何證明實驗室', description: '操作直角三角形 $a^2 + b^2 = c^2$ 的面積拼圖。' },
   ],
@@ -297,7 +297,7 @@ export const G9_DATA: MathGradeInfo = {
   nameEn: 'Grade 9',
   band: '國中衝刺',
   description: '相似形、圓形幾何性質、三角形三心（外心/內心/重心）、二次函數拋物線與極值、統計與機率。',
-  targetExam: '國中教育會考 (CAP)',
+  targetExam: '國中教學題，不是會考分數',
   labs: [
     { id: 'coordinate', name: '二次函數拋物線動態實驗室', description: '調控 $y = a(x-h)^2 + k$ 的頂點 $(h,k)$ 與開口方向 $a$。' },
   ],
