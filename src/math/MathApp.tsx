@@ -320,7 +320,7 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         {renderMainContent()}
 
         <footer className="math-footer">
-          <span>臺灣 K-12 數學學習平台 · 涵蓋國小 1~6 年級、國中三年、高中三年完整課綱</span>
+          <span>臺灣 K-12 數學練習 · 十二個年級各有教學題，不是完整課綱，也不是會考或學測分數</span>
           <span>進度儲存於本機 · 支援離線學習</span>
         </footer>
       </section>

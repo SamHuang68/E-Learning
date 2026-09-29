@@ -42,6 +42,16 @@ describe('臺灣 108 課綱 K-12 數學課程架構與資料完整性測試', ()
     })
   })
 
+  it('國小與國中每個單元至少兩題', () => {
+    for (const grade of [...getGradesInStage('elementary'), ...getGradesInStage('junior')]) {
+      for (const unit of grade.units) {
+        expect(unit.questions.length).toBeGreaterThanOrEqual(2)
+        const ids = unit.questions.map((q) => q.id)
+        expect(new Set(ids).size).toBe(ids.length)
+      }
+    }
+  })
+
   it('能正確取得指定年級與單元資料', () => {
     const g7 = getGradeInfo('g7')
     expect(g7.name).toContain('七年級')
