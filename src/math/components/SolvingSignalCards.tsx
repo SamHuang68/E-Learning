@@ -7,9 +7,9 @@ type Props = {
 }
 
 /**
- * 數學 3 秒解題訊號破題卡 (SolvingSignalCards)
+ * 數學條件對公式卡片 (SolvingSignalCards)
  * 借鏡 English Chunker「看到情境訊號 ➜ 3 秒直覺決策」理念：
- * 針對常考題型展示題目關鍵特徵、破題口訣、第一步算式與秒殺示範。
+ * 看到條件就先寫第一步。例題不是計時測驗。
  */
 export const SolvingSignalCards: React.FC<Props> = ({ initialStage = 'junior' }) => {
   const [selectedStage, setSelectedStage] = useState<'elementary' | 'junior' | 'senior'>(initialStage)
@@ -20,9 +20,9 @@ export const SolvingSignalCards: React.FC<Props> = ({ initialStage = 'junior' })
     <div className="solving-signals-container">
       <div className="signals-header-row">
         <div>
-          <h3>⚡ 3 秒破題訊號決策卡 (Problem-Solving Chunks)</h3>
+          <h3>看到條件，先寫第一步</h3>
           <p className="signals-sub">
-            公式記不住？教你看見題目關鍵字「秒射連結」對應公式與破題第一步！
+            這些卡片只把條件對上公式。看過不等於會算。
           </p>
         </div>
 
@@ -67,7 +67,7 @@ export const SolvingSignalCards: React.FC<Props> = ({ initialStage = 'junior' })
 
             {/* 3 秒口訣 */}
             <div className="signal-rule-box">
-              <span className="rule-icon">💡 3 秒破題口訣：</span>
+              <span className="rule-icon">口訣：</span>
               <p className="rule-text">{item.threeSecondRule}</p>
             </div>
 
@@ -81,10 +81,10 @@ export const SolvingSignalCards: React.FC<Props> = ({ initialStage = 'junior' })
 
             {/* 快速示範 */}
             <details className="example-details">
-              <summary className="example-summary">查看秒殺解題示範</summary>
+              <summary className="example-summary">查看例題</summary>
               <div className="example-content">
                 <p><strong>題目：</strong>{item.exampleProblem.question}</p>
-                <p className="quick-solve"><strong>秒解：</strong>{item.exampleProblem.quickSolve}</p>
+                <p className="quick-solve"><strong>怎麼想：</strong>{item.exampleProblem.quickSolve}</p>
               </div>
             </details>
           </div>

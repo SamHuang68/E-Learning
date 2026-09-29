@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+import { readFileSync } from 'node:fs'
 import { ALL_MATH_GRADES, getGradeInfo, getGradeUnit, getGradesInStage } from './data/gradeStore'
 import { MOCK_EXAMS, practiceScoreLabel } from './data/mockExams'
 import { recordMathAnswer, defaultMathProgress } from './utils/mathStorage'
@@ -108,6 +109,21 @@ describe('模擬考模組 (Mock Exams) 測試', () => {
     }
     expect(practiceScoreLabel(4, 6)).toContain('不是學測級分')
     expect(practiceScoreLabel(4, 6)).not.toMatch(/頂標|A\+\+/)
+  })
+
+  it('訊號卡不把自評寫成掌握率或秒殺', () => {
+    const files = [
+      'src/math/components/MathSignalsView.tsx',
+      'src/math/components/SolvingSignalCards.tsx',
+    ]
+    for (const file of files) {
+      const src = readFileSync(file, 'utf8')
+      expect(src).not.toContain('秒殺')
+      expect(src).not.toContain('精準掌握')
+      expect(src).not.toContain('108 課綱專屬')
+      expect(src).not.toContain('掌握率')
+      expect(src).not.toContain('秒解')
+    }
   })
 
   it('作答紀錄與錯題本收入機制運作正常', () => {
