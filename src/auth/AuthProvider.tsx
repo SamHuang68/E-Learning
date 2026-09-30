@@ -21,6 +21,8 @@ import {
 } from '../utils/cloudProgress'
 import { AuthContext, type AuthContextValue } from './AuthContext'
 import { sanitizeClientError } from '../utils/sanitizeClientError'
+import { loadUiLocale } from '../i18n/locale'
+import { translate } from '../i18n/messages'
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const configured = isSupabaseConfigured()
@@ -85,13 +87,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       syncStatus,
       async signIn(email, password) {
         const sb = getSupabase()
-        if (!sb) return '尚未設定 Supabase（缺少環境變數）。'
+        if (!sb) return translate(loadUiLocale(), 'auth.missingConfig')
         const { error } = await sb.auth.signInWithPassword({ email, password })
         return error ? sanitizeClientError(error.message, '') || null : null
       },
       async signUp(email, password) {
         const sb = getSupabase()
-        if (!sb) return '尚未設定 Supabase（缺少環境變數）。'
+        if (!sb) return translate(loadUiLocale(), 'auth.missingConfig')
         const { error } = await sb.auth.signUp({ email, password })
         return error ? sanitizeClientError(error.message, '') || null : null
       },
@@ -104,12 +106,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       },
       async deleteAccount() {
         if (getBackendKind() !== 'local') {
-          return '雲端帳號刪除需由 Supabase 帳號管理流程處理。'
+          return translate(loadUiLocale(), 'auth.deleteCloudBlocked')
         }
         const userId = session?.user?.id
-        if (!userId) return '目前沒有已登入的本機帳號。'
+        if (!userId) return translate(loadUiLocale(), 'auth.deleteNoLocal')
         const deleted = deleteLocalProfile(userId)
-        if (!deleted) return '找不到可刪除的本機帳號。'
+        if (!deleted) return translate(loadUiLocale(), 'auth.deleteMissingLocal')
         setCloudUserId(null)
         setSession(null)
         return null
