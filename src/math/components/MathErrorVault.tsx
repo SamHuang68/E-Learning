@@ -4,6 +4,7 @@ import { ALL_MATH_GRADES } from '../data/gradeStore'
 import type { MathQuestion } from '../data/curriculum'
 import { MathFormula } from './MathFormula'
 import { exportErrorVaultToAnki } from '../../utils/ankiExporter'
+import { useI18n } from '../../i18n/i18n'
 
 type Props = {
   onBack: () => void
@@ -14,6 +15,7 @@ type Props = {
  * 自動蒐集作答錯誤的題目，提供再次挑戰、步驟解析與清除機制。
  */
 export const MathErrorVault: React.FC<Props> = ({ onBack }) => {
+  const { t } = useI18n()
   const [progress, setProgress] = useState(() => loadMathProgress())
   const [selectedQ, setSelectedQ] = useState<MathQuestion | null>(null)
   const [testInput, setTestInput] = useState('')
@@ -63,9 +65,9 @@ export const MathErrorVault: React.FC<Props> = ({ onBack }) => {
     <div className="math-error-vault">
       <div className="vault-header">
         <div>
-          <h2>錯題筆記本 (Error Notebook)</h2>
+          <h2>{t('vault.title')}</h2>
           <p className="vault-desc">
-            自動彙整單元練習與練習卷答錯的題目。訂正後再答對，就會移出錯題本。
+            {t('vault.desc')}
           </p>
         </div>
         <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
@@ -75,13 +77,13 @@ export const MathErrorVault: React.FC<Props> = ({ onBack }) => {
               className="btn-back"
               style={{ background: 'rgba(37, 99, 235, 0.12)', color: '#2563eb', borderColor: '#2563eb' }}
               onClick={() => exportErrorVaultToAnki('數學', errorQuestions)}
-              title="一鍵匯出數學錯題至 Anki 記憶牌組"
+              title={t('vault.exportTitle')}
             >
-              📑 匯出 Anki 牌組
+              📋 {t('vault.exportAnki')}
             </button>
           )}
           <button type="button" className="btn-back" onClick={onBack}>
-            ← 返回學習中心
+            ← {t('vault.back')}
           </button>
         </div>
       </div>
@@ -89,8 +91,8 @@ export const MathErrorVault: React.FC<Props> = ({ onBack }) => {
       {errorQuestions.length === 0 ? (
         <div className="vault-empty-card">
           <span className="empty-icon">🎉</span>
-          <h3>太厲害了！目前沒有未解決的錯題</h3>
-          <p>目前沒有未訂正的錯題。再做單元練習或練習卷即可，這裡不記會考或學測分數。</p>
+          <h3>{t('vault.emptyTitle')}</h3>
+          <p>{t('vault.emptyBody')}</p>
         </div>
       ) : (
         <div className="vault-grid">
@@ -100,7 +102,7 @@ export const MathErrorVault: React.FC<Props> = ({ onBack }) => {
             if (text.includes('畢氏') || text.includes('勾股') || text.includes('直角')) {
               labInfo = { name: '📐 畢氏勾股定理教具', tab: 'pythagoras' }
             } else if (text.includes('三角') || text.includes('sin') || text.includes('cos') || text.includes('單位圓')) {
-              labInfo = { name: '⭕ 三角函數單位圓教具', tab: 'unit-circle' }
+              labInfo = { name: '🔴 三角函數單位圓教具', tab: 'unit-circle' }
             } else if (text.includes('座標') || text.includes('坐標') || text.includes('函數') || text.includes('直線')) {
               labInfo = { name: '📊 平面坐標系幾何板', tab: 'coordinate' }
             } else if (text.includes('分數') || text.includes('分母') || text.includes('分子')) {
@@ -131,7 +133,7 @@ export const MathErrorVault: React.FC<Props> = ({ onBack }) => {
                         fontWeight: 600,
                       }}
                     >
-                      🔬 關聯教具：{labInfo.name}
+                      🔬 {t('vault.relatedLab', { name: labInfo.name })}
                     </span>
                   </div>
                 )}
@@ -144,7 +146,7 @@ export const MathErrorVault: React.FC<Props> = ({ onBack }) => {
                     setFeedback(null)
                   }}
                 >
-                  再次訂正挑戰 →
+                  {t('vault.retry')}
                 </button>
               </div>
             )
@@ -156,7 +158,7 @@ export const MathErrorVault: React.FC<Props> = ({ onBack }) => {
       {selectedQ && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <h3>訂正題目：{selectedQ.title}</h3>
+            <h3>{t('vault.reviewTitle', { title: selectedQ.title })}</h3>
             <div className="modal-q-text">
               <MathFormula math={selectedQ.question} />
             </div>
@@ -189,11 +191,11 @@ export const MathErrorVault: React.FC<Props> = ({ onBack }) => {
             )}
 
             {feedback === 'correct' && (
-              <p className="feedback-badge correct">✅ 恭喜答對！已移出錯題本 (+5 XP)</p>
+              <p className="feedback-badge correct">✅ {t('vault.correct')}</p>
             )}
             {feedback === 'wrong' && (
               <div className="feedback-badge wrong">
-                <p>❌ 依然不對喔，參考詳解：</p>
+                <p>❌ {t('vault.wrong')}</p>
                 <MathFormula math={selectedQ.solution} block={true} />
               </div>
             )}
@@ -204,7 +206,7 @@ export const MathErrorVault: React.FC<Props> = ({ onBack }) => {
                 className="btn-primary"
                 onClick={() => handleRecheck(selectedQ)}
               >
-                提交訂正
+                {t('vault.submit')}
               </button>
               <button
                 type="button"
