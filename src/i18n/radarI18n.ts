@@ -14,3 +14,24 @@ const TRACK_NAME: Record<TrackRadar['track'], Pair> = {
   zh: ['🇹🇼 台湾華語 (日本語で学ぶ)', '🇹🇼 Taiwan Mandarin'],
   cs: ['💻 計算機概論 (硬體+軟體+AI)', '💻 CS survey'],
 }
+
+function localizeDimension(dim: RadarDimension, locale: UiLocale): RadarDimension {
+  return {
+    ...dim,
+    label: pickUi(locale, dim.label, dim.label),
+    description: pickUi(locale, dim.description, dim.description),
+  }
+}
+
+export function localizeTrackRadar(radar: TrackRadar, locale: UiLocale): TrackRadar {
+  const name = TRACK_NAME[radar.track]
+  const dimensions = radar.dimensions.map((dim) => localizeDimension(dim, locale))
+  const byKey = Object.fromEntries(dimensions.map((dim) => [dim.key, dim]))
+  return {
+    ...radar,
+    trackName: name ? pickUi(locale, name[0], name[1]) : radar.trackName,
+    dimensions,
+    strongestDimension: byKey[radar.strongestDimension.key] ?? radar.strongestDimension,
+    weakestDimension: byKey[radar.weakestDimension.key] ?? radar.weakestDimension,
+  }
+}
