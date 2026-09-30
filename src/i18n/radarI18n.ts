@@ -1,6 +1,7 @@
 import type { RadarDimension, TrackRadar } from '../engine/radar'
 import type { UiLocale } from './locale'
 import { pickUi } from './pickUi'
+import { RADAR_DIM_COPY } from './radarDimCopy'
 
 type Pair = [string, string]
 
@@ -15,17 +16,19 @@ const TRACK_NAME: Record<TrackRadar['track'], Pair> = {
   cs: ['💻 計算機概論 (硬體+軟體+AI)', '💻 CS survey'],
 }
 
-function localizeDimension(dim: RadarDimension, locale: UiLocale): RadarDimension {
+function localizeDimension(track: TrackRadar['track'], dim: RadarDimension, locale: UiLocale): RadarDimension {
+  const copy = RADAR_DIM_COPY[track]?.[dim.key]
+  if (!copy) return dim
   return {
     ...dim,
-    label: pickUi(locale, dim.label, dim.label),
-    description: pickUi(locale, dim.description, dim.description),
+    label: pickUi(locale, copy.label[0], copy.label[1]),
+    description: pickUi(locale, copy.description[0], copy.description[1]),
   }
 }
 
 export function localizeTrackRadar(radar: TrackRadar, locale: UiLocale): TrackRadar {
   const name = TRACK_NAME[radar.track]
-  const dimensions = radar.dimensions.map((dim) => localizeDimension(dim, locale))
+  const dimensions = radar.dimensions.map((dim) => localizeDimension(radar.track, dim, locale))
   const byKey = Object.fromEntries(dimensions.map((dim) => [dim.key, dim]))
   return {
     ...radar,
