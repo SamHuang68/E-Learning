@@ -1,4 +1,4 @@
-import { teachingCopy } from '../i18n/teachingCopy'
+import { jaTeachingCopy } from '../i18n/jaTeachingCopy'
 import type { CSSProperties } from 'react'
 import type { JlptLevel, Unit } from '../data/course'
 import type { LangId } from '../utils/storage'
@@ -130,7 +130,7 @@ export function Sidebar({
             {level.band}
             <small>{jlptTierLabel(level.tier, t)}</small>
           </strong>
-          <span>{teachingCopy(locale, level.scoreHint)}</span>
+          <span>{jaTeachingCopy(locale, level.scoreHint)}</span>
         </div>
         <span style={{ display: 'block', marginTop: '0.45rem' }}>
           {t('ja.unitMeta', { words: unit.words, id: unit.id })}

@@ -31,11 +31,11 @@ describe('Aoba EN chrome: level/unit select labels', () => {
     }
   })
 
-  it('unit select options under en use titleJa, not ZH titles', () => {
+  it('英文單元選單採用英文標題，保留繁中標題', () => {
     for (const level of jlptLevels) {
       for (const unit of level.units) {
         const option = aobaUnitChromeTitle('en', unit)
-        expect(option).toBe(unit.titleJa)
+        expect(option).not.toMatch(HAN)
         expect(option).not.toBe(unit.title)
         expect(aobaUnitChromeTitle('zh-Hant', unit)).toBe(unit.title)
       }

@@ -1,3 +1,4 @@
+import { jaTeachingCopy } from './jaTeachingCopy'
 import type { JlptLevel, Unit } from '../data/course'
 import type { UiLocale } from './locale'
 import type { MessageKey } from './messages'
@@ -38,7 +39,7 @@ export function aobaLevelOptionLabel(
 }
 
 export function aobaUnitChromeTitle(locale: UiLocale, unit: Pick<Unit, 'title' | 'titleJa'>): string {
-  return locale === 'en' ? unit.titleJa : unit.title
+  return jaTeachingCopy(locale, unit.title)
 }
 
 export function jlptMapTitleKey(levelId: string): MessageKey | undefined {

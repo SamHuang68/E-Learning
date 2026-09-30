@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { teachingCopy } from './teachingCopy'
+import { mathTeachingCopy as teachingCopy } from './mathTeachingCopy'
+import { jaTeachingCopy } from './jaTeachingCopy'
 import { localizeMathSignal } from './mathSignalCopy'
 import { getJaPractice } from '../data/practiceContent'
 import { G1_DATA } from '../math/data/elementary/g1_to_g3'
@@ -29,9 +30,9 @@ describe('英文驗收路徑的教材翻譯', () => {
   it('日語第一單元的十三張卡片均保留識別與日語題目並翻譯中文說明', () => {
     const pack = getJaPractice('n5n4', 1)!
     const localized = Object.fromEntries(Object.entries(pack).map(([key, cards]) => [key, cards.map(card => ({
-      ...card, meaning: teachingCopy('en', card.meaning),
-      sentenceZh: teachingCopy('en', card.sentenceZh ?? ''),
-      scenario: teachingCopy('en', card.scenario),
+      ...card, meaning: jaTeachingCopy('en', card.meaning),
+      sentenceZh: jaTeachingCopy('en', card.sentenceZh ?? ''),
+      scenario: jaTeachingCopy('en', card.scenario),
     }))])) as typeof pack
     const cards = [...localized.vocab, ...localized.passage, ...localized.grammar]
     expect(cards).toHaveLength(13)

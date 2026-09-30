@@ -1,5 +1,5 @@
 import { useI18n } from '../../i18n/i18n'
-import { teachingCopy } from '../../i18n/teachingCopy'
+import { mathTeachingCopy } from '../../i18n/mathTeachingCopy'
 import { localizeMathSignal } from '../../i18n/mathSignalCopy'
 import React, { useState } from 'react'
 import { MATH_SOLVING_SIGNALS, type MathSolvingSignal } from '../data/solvingSignals'
@@ -16,7 +16,7 @@ type Props = {
  */
 export const SolvingSignalCards: React.FC<Props> = ({ initialStage = 'junior' }) => {
   const { locale } = useI18n()
-  const text = (value: string) => teachingCopy(locale, value)
+  const text = (value: string) => mathTeachingCopy(locale, value)
   const [selectedStage, setSelectedStage] = useState<'elementary' | 'junior' | 'senior'>(initialStage)
 
   const filteredSignals = MATH_SOLVING_SIGNALS.filter((s) => s.stage === selectedStage).map((item) => localizeMathSignal(item, locale))

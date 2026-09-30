@@ -1,4 +1,4 @@
-import { teachingCopy } from '../i18n/teachingCopy'
+import { mathTeachingCopy } from '../i18n/mathTeachingCopy'
 import React, { useState, useEffect, useMemo } from 'react'
 import type { MathGradeId } from './data/curriculum'
 import { ALL_MATH_GRADES, getGradeInfo, getGradeUnit } from './data/gradeStore'
@@ -246,8 +246,8 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         <Breadcrumbs
           items={[
             { label: t('math.brand'), onClick: () => setActiveNav('today') },
-            { label: `${locale === 'en' ? gradeInfo.nameEn : gradeInfo.name} (${teachingCopy(locale, gradeInfo.band)})`, onClick: () => setActiveNav('today') },
-            { label: t('chrome.unitN', { n: currentUnit.id, title: teachingCopy(locale, currentUnit.title) }), active: activeNav === 'today' },
+            { label: `${locale === 'en' ? gradeInfo.nameEn : gradeInfo.name} (${mathTeachingCopy(locale, gradeInfo.band)})`, onClick: () => setActiveNav('today') },
+            { label: t('chrome.unitN', { n: currentUnit.id, title: mathTeachingCopy(locale, currentUnit.title) }), active: activeNav === 'today' },
             ...(activeNav !== 'today'
               ? [
                   {
@@ -273,7 +273,7 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         <header className="topbar">
           <div>
             <p className="eyebrow">
-              {t('chrome.curriculum108')} · {teachingCopy(locale, gradeInfo.band)} · {gradeInfo.nameEn}
+              {t('chrome.curriculum108')} · {mathTeachingCopy(locale, gradeInfo.band)} · {gradeInfo.nameEn}
             </p>
             <h1>{locale === 'en' ? gradeInfo.nameEn : gradeInfo.name}</h1>
           </div>
@@ -289,7 +289,7 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
               >
                 {Object.values(ALL_MATH_GRADES).map((g) => (
                   <option key={g.id} value={g.id}>
-                    {locale === 'en' ? g.nameEn : g.name} ({teachingCopy(locale, g.band)})
+                    {locale === 'en' ? g.nameEn : g.name} ({mathTeachingCopy(locale, g.band)})
                   </option>
                 ))}
               </select>
@@ -305,7 +305,7 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
               >
                 {gradeInfo.units.map((u) => (
                   <option key={u.id} value={u.id}>
-                    {t('chrome.unitN', { n: u.id, title: teachingCopy(locale, u.title) })}
+                    {t('chrome.unitN', { n: u.id, title: mathTeachingCopy(locale, u.title) })}
                   </option>
                 ))}
               </select>
@@ -321,8 +321,8 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         {renderMainContent()}
 
         <footer className="math-footer">
-          <span>{teachingCopy(locale, '臺灣 K-12 數學練習 · 十二個年級各有教學題，不是完整課綱，也不是會考或學測分數')}</span>
-          <span>{teachingCopy(locale, '進度儲存於本機 · 支援離線學習')}</span>
+          <span>{mathTeachingCopy(locale, '臺灣 K-12 數學練習 · 十二個年級各有教學題，不是完整課綱，也不是會考或學測分數')}</span>
+          <span>{mathTeachingCopy(locale, '進度儲存於本機 · 支援離線學習')}</span>
         </footer>
       </section>
     </main>

@@ -1,6 +1,6 @@
 import type { MathSolvingSignal } from '../math/data/solvingSignals'
 import type { UiLocale } from './locale'
-import { teachingCopy } from './teachingCopy'
+import { mathTeachingCopy } from './mathTeachingCopy'
 
 const EN: Record<string, [string, string, string, string, string]> = {
   "sig-lcm": [
@@ -50,5 +50,5 @@ const EN: Record<string, [string, string, string, string, string]> = {
 export function localizeMathSignal(item: MathSolvingSignal, locale: UiLocale): MathSolvingSignal {
   const copy = EN[item.id]
   if (locale !== 'en' || !copy) return item
-  return { ...item, gradeBand: teachingCopy(locale, item.gradeBand), topic: copy[0], problemSignal: copy[1], threeSecondRule: copy[2], firstStepFormula: item.firstStepFormula.replace(/總塊數/g, 'tiles').replace(/相遇/g, 'meeting').replace(/總距離/g, 'distance').replace(/追趕/g, 'catch').replace(/領先距離/g, 'lead').replace(/快/g, 'fast').replace(/慢/g, 'slow'), exampleProblem: { question: copy[3], quickSolve: copy[4] } }
+  return { ...item, gradeBand: mathTeachingCopy(locale, item.gradeBand), topic: copy[0], problemSignal: copy[1], threeSecondRule: copy[2], firstStepFormula: item.firstStepFormula.replace(/總塊數/g, 'tiles').replace(/相遇/g, 'meeting').replace(/總距離/g, 'distance').replace(/追趕/g, 'catch').replace(/領先距離/g, 'lead').replace(/快/g, 'fast').replace(/慢/g, 'slow'), exampleProblem: { question: copy[3], quickSolve: copy[4] } }
 }

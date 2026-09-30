@@ -1,6 +1,6 @@
 import { useI18n } from '../i18n/i18n'
-import { teachingCopy } from '../i18n/teachingCopy'
-import { useEffect, useState } from 'react'
+import { jaTeachingCopy, localizeJaPractice } from '../i18n/jaTeachingCopy'
+import { useEffect, useMemo, useState } from 'react'
 import type { Unit } from '../data/course'
 import { itemKey } from '../data/contentPack'
 import { getJaPractice } from '../data/practiceContent'
@@ -89,11 +89,10 @@ export function PracticeView({
   onProgress,
 }: Props) {
   const { locale } = useI18n()
-  const text = (value: string) => teachingCopy(locale, value)
+  const text = (value: string) => jaTeachingCopy(locale, value)
   const meta = { ...copy[kind], title: text(copy[kind].title), action: text(copy[kind].action) }
   const rawPack = getJaPractice(levelId, unit.id)
-  const localizeCards = (cards: SpeakableCard[]) => cards.map((card) => ({ ...card, meaning: text(card.meaning), sentenceZh: card.sentenceZh ? text(card.sentenceZh) : undefined, scenario: text(card.scenario) }))
-  const pack = rawPack && { vocab: localizeCards(rawPack.vocab), passage: localizeCards(rawPack.passage), grammar: localizeCards(rawPack.grammar) }
+  const pack = useMemo(() => localizeJaPractice(rawPack, locale), [rawPack, locale])
   const isReview = Boolean(reviewIds)
   const sourceCards = isReview ? allCards(pack) : cardsForKind(kind, pack)
   const cards = reviewFilter(sourceCards, reviewIds)
