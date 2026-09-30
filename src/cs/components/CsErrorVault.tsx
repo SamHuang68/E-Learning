@@ -1,7 +1,8 @@
-﻿import React from 'react'
+import React from 'react'
 import { CS_CURRICULUM, type CsQuestion } from '../data/curriculum'
 import { CS_MOCK_EXAMS } from '../data/mockExams'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
 
 interface Props {
   errorQuestionIds: string[]
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export const CsErrorVault: React.FC<Props> = ({ errorQuestionIds, onRemoveError }) => {
+  const { t } = useI18n()
   // 匯總所有題目池
   const allQuestionsMap: Record<string, CsQuestion> = {}
 
@@ -46,14 +48,14 @@ export const CsErrorVault: React.FC<Props> = ({ errorQuestionIds, onRemoveError 
       >
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>📕</span> 計算機概論 錯題弱點本
+            <span>📕</span> {t('vault.csTitle')}
           </h3>
           <span style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
-            集中收錄單元練習與模擬考中答錯的題目，逐題突破盲點，徹底掌握底層運算邏輯！
+            {t('vault.csDesc')}
           </span>
         </div>
         <span style={{ fontSize: '0.78rem', padding: '0.2rem 0.6rem', borderRadius: '999px', background: errorQuestions.length > 0 ? '#ef4444' : '#10b981', color: '#fff', fontWeight: 700 }}>
-          待複習錯題：{errorQuestions.length} 題
+          {t('vault.pending', { count: errorQuestions.length })}
         </span>
       </div>
 
@@ -61,9 +63,9 @@ export const CsErrorVault: React.FC<Props> = ({ errorQuestionIds, onRemoveError 
       {errorQuestions.length === 0 ? (
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '2.5rem 1.5rem', textAlign: 'center' }}>
           <div style={{ fontSize: '2.5rem', marginBottom: '0.6rem' }}>🎉 🏆</div>
-          <h3 style={{ margin: '0 0 0.4rem', fontSize: '1.1rem' }}>太棒了！目前沒有任何待複習錯題</h3>
+          <h3 style={{ margin: '0 0 0.4rem', fontSize: '1.1rem' }}>{t('vault.csEmptyTitle')}</h3>
           <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--muted)' }}>
-            您的計算機概論知識儲備極為扎實。建議前往「五大單元動態實驗室」或「現代 AI 矩陣實驗室」進行深度探究！
+            {t('vault.csEmptyBody')}
           </p>
         </div>
       ) : (
@@ -81,7 +83,7 @@ export const CsErrorVault: React.FC<Props> = ({ errorQuestionIds, onRemoveError 
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                 <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(239, 68, 68, 0.15)', color: '#ef4444', fontWeight: 700 }}>
-                  錯題 #{idx + 1}
+                  {t('vault.item', { n: idx + 1 })}
                 </span>
                 <button
                   type="button"
@@ -100,7 +102,7 @@ export const CsErrorVault: React.FC<Props> = ({ errorQuestionIds, onRemoveError 
                     onRemoveError(q.id)
                   }}
                 >
-                  ✓ 我已掌握 (移出錯題)
+                  ✓ {t('vault.mastered')}
                 </button>
               </div>
 
@@ -110,14 +112,14 @@ export const CsErrorVault: React.FC<Props> = ({ errorQuestionIds, onRemoveError 
               {q.options && (
                 <div style={{ background: 'var(--surface-soft)', padding: '0.6rem 0.8rem', borderRadius: '8px', border: '1px solid var(--line)', marginBottom: '0.6rem' }}>
                   <span style={{ fontSize: '0.72rem', color: '#10b981', fontWeight: 700, display: 'block', marginBottom: '0.2rem' }}>
-                    正確答案：{q.options[Number(q.answer)]}
+                    {t('vault.answer', { answer: q.options[Number(q.answer)] })}
                   </span>
                 </div>
               )}
 
               <div style={{ background: 'var(--surface-soft)', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
                 <strong style={{ fontSize: '0.76rem', color: '#2563eb', display: 'block', marginBottom: '0.25rem' }}>
-                  💡 步驟解析與避坑指南：
+                  💡 {t('vault.explain')}
                 </strong>
                 <ol style={{ margin: 0, paddingLeft: '1.2rem', fontSize: '0.74rem', lineHeight: 1.5, color: 'var(--text)' }}>
                   {q.solution.map((step, sIdx) => (
@@ -125,7 +127,7 @@ export const CsErrorVault: React.FC<Props> = ({ errorQuestionIds, onRemoveError 
                   ))}
                 </ol>
                 <div style={{ marginTop: '0.35rem', fontSize: '0.72rem', color: 'var(--muted)' }}>
-                  <strong>盲點精析：</strong>{q.explanation}
+                  <strong>{t('vault.blindspot')}</strong>{q.explanation}
                 </div>
               </div>
             </div>
