@@ -17,7 +17,7 @@ if (import.meta.env.PROD && 'serviceWorker' in navigator) {
 }
 
 try {
-  if (!rootEl) throw new Error('找不到 #root')
+  if (!rootEl) throw new Error(translate(loadUiLocale(), 'ui.rootMissing'))
   createRoot(rootEl).render(
     <StrictMode>
       <App />
