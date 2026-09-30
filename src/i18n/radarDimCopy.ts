@@ -17,8 +17,8 @@ export const RADAR_DIM_COPY: Record<string, Record<string, { label: Pair; descri
   },
   en: {
     chunks: { label: ['高頻商務語塊', 'Chunks'], description: ['固定搭配、介系詞語塊與 3 秒反射', 'Collocations and short retrieval'] },
-    listening: { label: ['聽力理解辨析', 'Listening'], description: ['Part 1~4 圖片、簡短對話與廣播訊息', 'Parts 1-4 pictures, talks, and talks'] },
-    grammar: { label: ['Part 5 文法結構', 'Part 5 grammar'], description: ['詞性填空、連接詞、主被動時態', 'Speech-part, conjunction, and voice items'] },
+    listening: { label: ['聽力理解辨析', 'Listening'], description: ['Part 1~4 圖片、簡短對話與廣播訊息', 'Parts 1-4 pictures, short conversations, and announcements'] },
+    grammar: { label: ['Part 5 文法結構', 'Part 5 grammar'], description: ['詞性填空、連接詞、主被動時態', 'Parts of speech, conjunctions, tense, and voice'] },
     reading: { label: ['長文閱讀速讀', 'Reading'], description: ['Part 7 雙篇/三篇閱讀快速定位細節', 'Part 7 multi-passage detail location'] },
     vocab: { label: ['核心商務字彙', 'Business vocab'], description: ['證書級距（Orange→Gold）高頻單字', 'High-frequency words by practice band'] },
   },
@@ -27,7 +27,7 @@ export const RADAR_DIM_COPY: Record<string, Record<string, { label: Pair; descri
     derivatives: { label: ['導數與切線極值', 'Derivatives'], description: ['鏈鎖律、微分幾何斜率、臨界點與凹凸反曲點', 'Chain rule, slope, critical points'] },
     integrals: { label: ['黎曼和與定積分', 'Integrals'], description: ['分割逼近、梯形/辛普森法與旋轉體體積', 'Slices, trapezoid/Simpson, solids'] },
     ftc: { label: ['微積分基本定理 (FTC)', 'FTC'], description: ['累積函數面積變化率與微分/積分互逆關係', 'Accumulation rate and inverse pair'] },
-    taylor: { label: ['泰勒級數與逼近', 'Taylor series'], description: ['多項式局部逼近、收斂半徑與拉格朗日餘項', 'Local polynomials and remainder'] },
+    taylor: { label: ['泰勒級數與逼近', 'Taylor series'], description: ['多項式局部逼近、收斂半徑與拉格朗日餘項', 'Local polynomial approximations, convergence radius, and Lagrange remainder'] },
   },
   physics: {
     mechanics: { label: ['力學與運動定律', 'Mechanics'], description: ['斜拋、牛頓定律、動量與力學能守恆、SHM', 'Projectile, Newton, momentum, SHM'] },
