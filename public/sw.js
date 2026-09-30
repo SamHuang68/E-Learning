@@ -10,6 +10,38 @@ const STATIC_ASSETS = [
   './content/manifest.json',
 ]
 
+function assetPath(url) {
+  try {
+    return new URL(url, self.location.href).pathname
+  } catch {
+    return ''
+  }
+}
+
+function isCodeAsset(url) {
+  return /\.(?:js|mjs|css)$/i.test(assetPath(url))
+}
+
+function isHtmlBody(response) {
+  const type = (response && response.headers.get('content-type')) || ''
+  return type.toLowerCase().indexOf('text/html') !== -1
+}
+
+function canStore(url, response) {
+  if (!response || !response.ok) return false
+  if (isCodeAsset(url) && isHtmlBody(response)) return false
+  return true
+}
+
+async function precacheUrl(cache, url) {
+  try {
+    const response = await fetch(url, { cache: 'no-store' })
+    if (!canStore(url, response)) return
+    await cache.put(url, response)
+  } catch {
+    // One missing file must not fail install and leave the previous worker in control.
+  }
+}
 self.addEventListener('install', (event) => {
   event.waitUntil(
     (async () => {
@@ -18,7 +50,8 @@ self.addEventListener('install', (event) => {
       if (!response.ok) throw new Error(`Precache manifest unavailable: ${response.status}`)
       const manifest = await response.json()
       const generatedAssets = Array.isArray(manifest.files) ? manifest.files : []
-      await cache.addAll([...new Set([...STATIC_ASSETS, PRECACHE_MANIFEST, ...generatedAssets])])
+      const urls = [...new Set([...STATIC_ASSETS, PRECACHE_MANIFEST, ...generatedAssets])]
+      await Promise.all(urls.map((url) => precacheUrl(cache, url)))
     })(),
   )
   self.skipWaiting()
@@ -59,24 +92,24 @@ self.addEventListener('fetch', (event) => {
     return
   }
 
-  // 2. 靜態資源（JS/CSS/圖檔/音訊）：快取優先，並快取新抓取內容
-  // 注意：若 JS 資源 404，嚴禁回退至 index.html（避免 HTML 當作 JS 解析引發語法錯誤）
+  // 2. 靜態資源：快取優先。JS/CSS 若被回成 HTML（自訂網域的 200 後備頁），不存也不拿來執行。
   event.respondWith(
-    // Vite preview/CDN responses may carry `Vary: Origin`. Module-script
-    // requests include an Origin header while install-time cache.addAll
-    // requests may not, so a strict Vary comparison can miss an otherwise
-    // identical same-origin precache entry and break lazy routes offline.
-    caches.match(request, { ignoreVary: true }).then((cached) => {
-      if (cached) return cached
-      return fetch(request).then((response) => {
-        if (response.ok && new URL(request.url).origin === self.location.origin) {
-          const copy = response.clone()
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, copy)
-          })
-        }
-        return response
-      })
+    caches.match(request, { ignoreVary: true }).then(async (cached) => {
+      if (cached && canStore(request.url, cached)) return cached
+      if (cached) {
+        const stale = await caches.open(CACHE_NAME)
+        await stale.delete(request)
+      }
+      const response = await fetch(request)
+      if (canStore(request.url, response) && new URL(request.url).origin === self.location.origin) {
+        const copy = response.clone()
+        const cache = await caches.open(CACHE_NAME)
+        await cache.put(request, copy)
+      }
+      if (isCodeAsset(request.url) && isHtmlBody(response)) {
+        return new Response('', { status: 404, headers: { 'content-type': 'text/plain' } })
+      }
+      return response
     }),
   )
 })

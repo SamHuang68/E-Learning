@@ -55,6 +55,105 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // Classic script so a failed module still shows a way out of a blank page.
+      (function () {
+        var root = document.getElementById('root')
+        if (!root) return
+        var key = 'e-learning-boot-recover'
+        var timer = window.setTimeout(recover, 6000)
+        if (window.MutationObserver) {
+          var obs = new MutationObserver(function () {
+            if (root.childNodes.length > 0) {
+              window.clearTimeout(timer)
+              obs.disconnect()
+            }
+          })
+          obs.observe(root, { childList: true })
+        }
+        function clearCaches() {
+          var jobs = []
+          if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+            jobs.push(
+              navigator.serviceWorker.getRegistrations().then(function (regs) {
+                return Promise.all(
+                  regs.map(function (reg) {
+                    return reg.unregister()
+                  }),
+                )
+              }),
+            )
+          }
+          if (window.caches && window.caches.keys) {
+            jobs.push(
+              window.caches.keys().then(function (keys) {
+                return Promise.all(
+                  keys.map(function (name) {
+                    return window.caches.delete(name)
+                  }),
+                )
+              }),
+            )
+          }
+          return Promise.all(jobs)
+        }
+        function recover() {
+          if (root.childNodes.length > 0) return
+          var already = false
+          try {
+            already = window.sessionStorage.getItem(key) === '1'
+          } catch (err) {
+            already = false
+          }
+          if (!already) {
+            try {
+              window.sessionStorage.setItem(key, '1')
+            } catch (err) {
+              /* private mode */
+            }
+            clearCaches().then(
+              function () {
+                window.location.reload()
+              },
+              function () {
+                window.location.reload()
+              },
+            )
+            return
+          }
+          var wrap = document.createElement('div')
+          wrap.setAttribute('role', 'alert')
+          wrap.style.padding = '1.5rem'
+          wrap.style.maxWidth = '28rem'
+          wrap.style.margin = '2rem auto'
+          wrap.style.fontFamily = 'sans-serif'
+          var title = document.createElement('h1')
+          title.style.fontSize = '1.25rem'
+          title.textContent = '畫面沒有載入'
+          var text = document.createElement('p')
+          text.textContent = '這支手機可能留著壞掉的離線快取。清掉後會重新整理。'
+          var button = document.createElement('button')
+          button.type = 'button'
+          button.textContent = '清掉快取並重開'
+          button.style.minHeight = '44px'
+          button.style.padding = '0.6rem 1rem'
+          button.onclick = function () {
+            clearCaches().then(
+              function () {
+                window.location.reload()
+              },
+              function () {
+                window.location.reload()
+              },
+            )
+          }
+          wrap.appendChild(title)
+          wrap.appendChild(text)
+          wrap.appendChild(button)
+          root.appendChild(wrap)
+        }
+      })()
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
