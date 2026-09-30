@@ -1,3 +1,4 @@
+import { teachingCopy } from '../../i18n/teachingCopy'
 import React, { useState } from 'react'
 import { loadMathProgress, recordMathAnswer } from '../utils/mathStorage'
 import { ALL_MATH_GRADES } from '../data/gradeStore'
@@ -15,7 +16,7 @@ type Props = {
  * 自動蒐集作答錯誤的題目，提供再次挑戰、步驟解析與清除機制。
  */
 export const MathErrorVault: React.FC<Props> = ({ onBack }) => {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const [progress, setProgress] = useState(() => loadMathProgress())
   const [selectedQ, setSelectedQ] = useState<MathQuestion | null>(null)
   const [testInput, setTestInput] = useState('')
@@ -182,7 +183,7 @@ export const MathErrorVault: React.FC<Props> = ({ onBack }) => {
               <div className="modal-fill">
                 <input
                   type="text"
-                  placeholder="輸入計算結果..."
+                  placeholder={t('exercise.typeAnswer')}
                   value={testInput}
                   onChange={(e) => setTestInput(e.target.value)}
                   className="fill-text-input"
@@ -213,7 +214,7 @@ export const MathErrorVault: React.FC<Props> = ({ onBack }) => {
                 className="btn-secondary"
                 onClick={() => setSelectedQ(null)}
               >
-                關閉
+                {teachingCopy(locale, '關閉')}
               </button>
             </div>
           </div>

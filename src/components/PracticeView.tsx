@@ -1,3 +1,5 @@
+import { useI18n } from '../i18n/i18n'
+import { teachingCopy } from '../i18n/teachingCopy'
 import { useEffect, useState } from 'react'
 import type { Unit } from '../data/course'
 import { itemKey } from '../data/contentPack'
@@ -86,8 +88,12 @@ export function PracticeView({
   onBack,
   onProgress,
 }: Props) {
-  const meta = copy[kind]
-  const pack = getJaPractice(levelId, unit.id)
+  const { locale } = useI18n()
+  const text = (value: string) => teachingCopy(locale, value)
+  const meta = { ...copy[kind], title: text(copy[kind].title), action: text(copy[kind].action) }
+  const rawPack = getJaPractice(levelId, unit.id)
+  const localizeCards = (cards: SpeakableCard[]) => cards.map((card) => ({ ...card, meaning: text(card.meaning), sentenceZh: card.sentenceZh ? text(card.sentenceZh) : undefined, scenario: text(card.scenario) }))
+  const pack = rawPack && { vocab: localizeCards(rawPack.vocab), passage: localizeCards(rawPack.passage), grammar: localizeCards(rawPack.grammar) }
   const isReview = Boolean(reviewIds)
   const sourceCards = isReview ? allCards(pack) : cardsForKind(kind, pack)
   const cards = reviewFilter(sourceCards, reviewIds)
@@ -116,14 +122,14 @@ export function PracticeView({
         className={activeMode === 'learn' ? 'active' : ''}
         onClick={() => setActiveMode('learn')}
       >
-        認識閃卡
+        {text('認識閃卡')}
       </button>
       <button
         type="button"
         className={activeMode === 'quiz' ? 'active' : ''}
         onClick={() => setActiveMode('quiz')}
       >
-        答題練習
+        {text('答題練習')}
       </button>
     </div>
   )
@@ -143,7 +149,7 @@ export function PracticeView({
       <>
         {modeTabs}
         <ExerciseSession
-          title={`${isReview ? '今日複習' : meta.title} · Unit ${unit.id}`}
+          title={`${isReview ? text('今日複習') : meta.title} · Unit ${unit.id}`}
           lang="ja"
           exercises={exercises}
           onComplete={handleQuizComplete}
@@ -156,7 +162,7 @@ export function PracticeView({
   return (
     <section className="practice-view">
       <button type="button" className="ghost back" onClick={onBack}>
-        ← 返回今日學習
+        {text('← 返回今日學習')}
       </button>
       <p className="eyebrow">{meta.eyebrow}</p>
       <h2>
@@ -165,10 +171,10 @@ export function PracticeView({
       </h2>
       <p className="lede">
         {isReview
-          ? '根據今日 SRS 佇列複習到期與新卡。'
+          ? text('根據今日 SRS 佇列複習到期與新卡。')
           : kind === 'grammar'
-          ? `本課重點：${unit.grammar}｜練習場面與敬語／丁寧語對照`
-          : `圍繞「${unit.titleJa}」建立可輸出的日語基礎。`}
+          ? locale === 'en' ? `Focus: ${unit.grammar} | Practice scenarios and register contrasts` : `本課重點：${unit.grammar}｜練習場面與敬語／丁寧語對照`
+          : locale === 'en' ? `Build practical Japanese around ${unit.titleJa}.` : `圍繞「${unit.titleJa}」建立可輸出的日語基礎。`}
       </p>
 
       {modeTabs}
@@ -186,7 +192,7 @@ export function PracticeView({
                 disabled={index <= 0}
                 onClick={() => setIndex((i) => Math.max(0, i - 1))}
               >
-                ← 上一張
+                {text('← 上一張')}
               </button>
               <button
                 type="button"
@@ -194,7 +200,7 @@ export function PracticeView({
                 disabled={index >= total - 1}
                 onClick={() => setIndex((i) => Math.min(total - 1, i + 1))}
               >
-                下一張 →
+                {text('下一張 →')}
               </button>
             </div>
           </div>
@@ -218,16 +224,16 @@ export function PracticeView({
                 className="register-chip"
                 data-register={card.register}
               >
-                {REGISTER_LABELS[card.register].ja}
+                {REGISTER_LABELS[card.register][locale === 'en' ? 'en' : 'ja']}
               </span>
             </div>
-            <p className="flash-scenario">使用場景：{card.scenario}</p>
+            <p className="flash-scenario">{locale === 'en' ? 'Scenario: ' : '使用場景：'}{card.scenario}</p>
           </div>
         ) : (
           <div className="practice-empty">
-            <strong>本單元內容準備中</strong>
+            <strong>{text('本單元內容準備中')}</strong>
             <p>
-              「{unit.titleJa}」的練習卡尚未就緒，仍可先用單元標題練習發音。
+              {locale === 'en' ? `Cards for ${unit.titleJa} are not ready yet. Practice pronunciation with the unit title.` : `「${unit.titleJa}」的練習卡尚未就緒，仍可先用單元標題練習發音。`}
             </p>
           </div>
         )}
@@ -235,23 +241,23 @@ export function PracticeView({
         <div className="flash-actions">
           {card && (
             <>
-              <SpeakButton lang="ja" text={card.head} label="單字播" />
+              <SpeakButton lang="ja" text={card.head} label={text('單字播')} />
               <SpeakButton
                 lang="ja"
                 text={card.speakText ?? card.sentence}
-                label="整句播"
+                label={text('整句播')}
               />
             </>
           )}
           {!card && (
-            <SpeakButton lang="ja" text={fallbackSpeak} label="播放單元標題" />
+            <SpeakButton lang="ja" text={fallbackSpeak} label={text('播放單元標題')} />
           )}
           <button
             type="button"
             className="primary-btn inline"
             onClick={() => onProgress()}
           >
-            {isReview ? '標記複習 +1' : meta.action}
+            {isReview ? text('標記複習 +1') : meta.action}
           </button>
         </div>
       </div>

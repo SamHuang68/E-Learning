@@ -1,3 +1,5 @@
+import { localizeTrackRadar } from './i18n/radarI18n'
+import { localizeBadge } from './i18n/badgeI18n'
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { AuthPanel } from './auth/AuthPanel'
 import { DataControls } from './components/DataControls'
@@ -278,7 +280,7 @@ export function selectHubDerived(snapshot: HubSnapshot) {
  * 八軌入口：數學、微積分、物理、化學、計算機概論、日語、多益、華語。
  */
 export function Hub({ onChoose, onOpenPrivacy }: Props) {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const [activeRadarTab, setActiveRadarTab] = useState<RadarTab>('math')
   const [tick, setTick] = useState(0)
   const [isMuted, setIsMuted] = useState(() => isAudioMuted())
@@ -335,7 +337,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
     leechCount,
     todaySuggestion,
   } = derived
-  const activeRadar = radarMap[activeRadarTab]
+  const activeRadar = localizeTrackRadar(radarMap[activeRadarTab], locale)
   const calculusRadar = radarMap.calculus
 
   const catalogFirstTitle = catalogFirst ? t('hub.catalogFirst.title') : ''
@@ -790,7 +792,8 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
               <h2 id="badges-title">{t('hub.badgesTitle')}</h2>
             </div>
             <div className="hub-badges-grid">
-              {BADGE_CATALOG.map((badge) => {
+              {BADGE_CATALOG.map((rawBadge) => {
+                const badge = localizeBadge(rawBadge, locale)
                 const isUnlocked =
                   learningMeta.achievements.includes(badge.id) ||
                   (badge.id === 'badge-first-step' && totalXp > 0) ||

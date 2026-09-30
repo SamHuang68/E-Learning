@@ -1,3 +1,4 @@
+import { teachingCopy } from '../i18n/teachingCopy'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useAuth } from '../auth/AuthContext'
@@ -581,14 +582,14 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
             {t('ja.alignBand', { band: level.band, tier: jlptTierLabel(level.tier, t) })}
             {learningMeta.proUnlocked ? ` · ${t('pro.badgeOn')}` : ` · ${t('pro.badgeOff')}`}
           </strong>
-          <span>{level.audience}</span>
+          <span>{teachingCopy(locale, level.audience)}</span>
         </div>
 
         {renderContent()}
 
         <footer>
           <span>
-            最上層以 JLPT 難度與適合對象分級；五十音為非必修補強的零基礎層，含語音導讀。
+            {teachingCopy(locale, '最上層以 JLPT 難度與適合對象分級；五十音為非必修補強的零基礎層，含語音導讀。')}
           </span>
           <span>
             {user
