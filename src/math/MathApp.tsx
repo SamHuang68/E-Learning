@@ -152,7 +152,7 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
                 setActiveLabId(null)
               }}
             >
-              ← 返回課程
+              {mathTeachingCopy(locale, '← 返回課程')}
             </button>
             <div className="lab-switcher-pills">
               <button
@@ -160,49 +160,49 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
                 className={`pill-btn ${activeLabId === 'blocks' ? 'active' : ''}`}
                 onClick={() => setActiveLabId('blocks')}
               >
-                十進位積木
+                {mathTeachingCopy(locale, '十進位積木')}
               </button>
               <button
                 type="button"
                 className={`pill-btn ${activeLabId === 'multiplication' ? 'active' : ''}`}
                 onClick={() => setActiveLabId('multiplication')}
               >
-                九九乘法
+                {mathTeachingCopy(locale, '九九乘法')}
               </button>
               <button
                 type="button"
                 className={`pill-btn ${activeLabId === 'fraction' ? 'active' : ''}`}
                 onClick={() => setActiveLabId('fraction')}
               >
-                分數圓盤
+                {mathTeachingCopy(locale, '分數圓盤')}
               </button>
               <button
                 type="button"
                 className={`pill-btn ${activeLabId === 'coordinate' ? 'active' : ''}`}
                 onClick={() => setActiveLabId('coordinate')}
               >
-                坐標與函數
+                {mathTeachingCopy(locale, '坐標與函數')}
               </button>
               <button
                 type="button"
                 className={`pill-btn ${activeLabId === 'pythagoras' ? 'active' : ''}`}
                 onClick={() => setActiveLabId('pythagoras')}
               >
-                畢氏定理
+                {mathTeachingCopy(locale, '畢氏定理')}
               </button>
               <button
                 type="button"
                 className={`pill-btn ${activeLabId === 'unitcircle' ? 'active' : ''}`}
                 onClick={() => setActiveLabId('unitcircle')}
               >
-                三角單位圓
+                {mathTeachingCopy(locale, '三角單位圓')}
               </button>
               <button
                 type="button"
                 className={`pill-btn ${activeLabId === 'calculus' ? 'active' : ''}`}
                 onClick={() => setActiveLabId('calculus')}
               >
-                微積分
+                {mathTeachingCopy(locale, '微積分')}
               </button>
             </div>
           </div>

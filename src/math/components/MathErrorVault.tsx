@@ -102,7 +102,7 @@ export const MathErrorVault: React.FC<Props> = ({ onBack }) => {
               type="button"
               className="btn-back"
               style={{ background: 'rgba(37, 99, 235, 0.12)', color: '#2563eb', borderColor: '#2563eb' }}
-              onClick={() => exportErrorVaultToAnki('數學', errorQuestions)}
+              onClick={() => exportErrorVaultToAnki(locale === 'en' ? 'Math' : '數學', errorQuestions)}
               title={t('vault.exportTitle')}
             >
               📋 {t('vault.exportAnki')}

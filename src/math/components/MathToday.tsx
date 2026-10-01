@@ -44,7 +44,7 @@ export const MathToday: React.FC<Props> = ({
             <span className="stage-pill">{mathTeachingCopy(locale, gradeInfo.band)}</span>
             <h2>{t('math.today.classroom', { name: locale === 'en' ? gradeInfo.nameEn : gradeInfo.name })}</h2>
             {gradeInfo.targetExam && (
-              <span className="exam-target-pill">🎯 {gradeInfo.targetExam}</span>
+              <span className="exam-target-pill">🎯 {mathTeachingCopy(locale, gradeInfo.targetExam)}</span>
             )}
           </div>
           <span className="hero-desc-inline">{mathTeachingCopy(locale, gradeInfo.description)}</span>
