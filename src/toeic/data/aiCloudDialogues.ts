@@ -6,10 +6,12 @@
 export interface AiCloudScenarioItem {
   id: string
   title: string
+  titleEn: string
   titleJa: string
   icon: string
   targetAccent: 'en-US' | 'en-GB' | 'en-AU' | 'en-CA'
   accentLabel: string
+  accentLabelEn: string
   audioScript: string
   dialogueRoles: {
     chiefTechnologyOfficer: string
@@ -22,14 +24,19 @@ export interface AiCloudScenarioItem {
     options: string[]
     correctIndex: number
     explanationZh: string
+    explanationEn: string
     explanationJa: string
   }>
   aiCloudKeywordsTipsJa: string
+  aiCloudKeywordsTipsEn: string
 }
 
 export const AI_CLOUD_SCENARIOS: AiCloudScenarioItem[] = [
   {
     id: 'ai-cloud-procurement',
+    titleEn: 'On-premise AI and hybrid cloud SLA negotiations',
+    accentLabelEn: 'American accent 🇺🇸',
+    aiCloudKeywordsTipsEn: 'on-premise, uptime / downtime, redundancy, and service level agreement (SLA).',
     title: '跨國金融集團自建本地端 AI 推論集群與雲端備援 SLA 談判',
     titleJa: '金融機関のオンプレミスAI推論クラスタ構築とクラウドSLA交渉',
     icon: '🤖',
@@ -43,6 +50,7 @@ export const AI_CLOUD_SCENARIOS: AiCloudScenarioItem[] = [
     questions: [
       {
         id: 'aq-1',
+        explanationEn: 'Marcus says the air-gapped on-premise cluster meets regulatory requirements and prevents customer financial data leakage.',
         question: 'Why did the financial group choose an air-gapped on-premise AI cluster?',
         questionJa: '金融グループが完全隔離（air-gapped）のオンプレミスAIクラスタを選択した理由は何ですか？',
         options: [
@@ -57,6 +65,7 @@ export const AI_CLOUD_SCENARIOS: AiCloudScenarioItem[] = [
       },
       {
         id: 'aq-2',
+        explanationEn: 'The SLA guarantees 99.99 percent uptime. Firmware maintenance is limited to off-peak weekend windows with twelve hours of advance notice.',
         question: 'What term is specified in the hybrid cloud service level agreement (SLA)?',
         questionJa: 'ハイブリッドクラウドのサービス品質保証（SLA）で規定されている条件は何ですか？',
         options: [

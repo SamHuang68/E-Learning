@@ -1,3 +1,4 @@
+import { localizeToeicCertificate } from '../i18n/toeicCertificateCopy'
 import { lazy, Suspense, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useAuth } from '../auth/AuthContext'
 import { useI18n } from '../i18n/i18n'
@@ -183,9 +184,9 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
     loadLearningMeta(),
   )
 
-  const cert =
+  const cert = localizeToeicCertificate(
     toeicCertificates.find((c) => c.id === progress.certificateId) ??
-    toeicCertificates[0]
+    toeicCertificates[0], locale)
   const unit = cert.units.find((u) => u.id === progress.unitId) ?? cert.units[0]
   const currentPack = useMemo(
     () => getToeicPractice(progress.certificateId, unit.id),
@@ -982,7 +983,7 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
 
         <footer>
           <span>
-            最上層以多益四色證書分數級距分級；橘／棕級含字母與高頻字語音導讀。
+            {locale === 'en' ? 'Organized by TOEIC certificate score bands; orange and brown bands include alphabet and high-frequency vocabulary audio guides.' : '最上層以多益四色證書分數級距分級；橘／棕級含字母與高頻字語音導讀。'}
           </span>
           <span>
             {user

@@ -1,3 +1,4 @@
+import { stemVaultCopy } from '../i18n/stemVaultCopy'
 import React, { useState, useEffect } from 'react'
 import {
   type ChemistryGradeId,
@@ -157,7 +158,7 @@ export const ChemistryApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         <header className="topbar">
           <div>
             <p className="eyebrow" style={{ color: '#059669' }}>
-              CHEMISTRY · {gradeInfo.band} · {gradeInfo.nameEn}
+              CHEMISTRY · {stemVaultCopy(locale, gradeInfo.band)} · {gradeInfo.nameEn}
             </p>
             <h1>{locale === 'en' ? gradeInfo.nameEn : gradeInfo.name}</h1>
           </div>
