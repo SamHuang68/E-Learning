@@ -1,3 +1,4 @@
+import { useMathLabCopy } from '../../i18n/mathLabCopy'
 import React, { useState } from 'react'
 import { BalanceScaleSolver } from '../diagrams/BalanceScaleSolver'
 import { BarModelSolver } from '../diagrams/BarModelSolver'
@@ -27,15 +28,16 @@ const TABS: Array<{ id: DiagramTabId; stage: string; icon: string; name: string;
  * 聚合 6 大幾何與代數視覺解題教具，告別死記硬背與純數字計算。
  */
 export const MathVisualHub: React.FC<Props> = ({ initialTab = 'balance', onBack }) => {
+  const ml = useMathLabCopy()
   const [activeTab, setActiveTab] = useState<DiagramTabId>(initialTab)
 
   return (
     <div className="math-visual-hub">
       <div className="hub-top-bar">
         <button type="button" className="btn-back" onClick={onBack}>
-          ← 返回今日學習
+          {ml('← 返回今日學習')}
         </button>
-        <span className="hub-tag">🎨 幾何直觀 · 抽象概念圖示解題</span>
+        <span className="hub-tag">{ml('🎨 幾何直觀 · 抽象概念圖示解題')}</span>
       </div>
 
       {/* 6 大教具水平切換選單 */}
@@ -51,10 +53,10 @@ export const MathVisualHub: React.FC<Props> = ({ initialTab = 'balance', onBack 
             >
               <div className="tab-card-top">
                 <span className="tab-icon">{tab.icon}</span>
-                <span className="stage-pill">{tab.stage}</span>
+                <span className="stage-pill">{ml(tab.stage)}</span>
               </div>
-              <strong className="tab-name">{tab.name}</strong>
-              <span className="tab-desc">{tab.desc}</span>
+              <strong className="tab-name">{ml(tab.name)}</strong>
+              <span className="tab-desc">{ml(tab.desc)}</span>
             </button>
           )
         })}

@@ -1,3 +1,5 @@
+import { use } from 'react'
+import { loadStemConceptCopy, stemConceptCopy } from '../../i18n/stemConceptCopy'
 import { stemCatalogCopy } from '../../i18n/stemCatalogCopy'
 import { useI18n } from '../../i18n/i18n'
 import { physicsFormulaSheetSections } from '../data/curriculum'
@@ -14,6 +16,7 @@ type Props = {
  */
 export function PhysicsFormulaSheet({ onBack }: Props) {
   const { t, locale } = useI18n()
+  if (locale === 'en') use(loadStemConceptCopy())
   const sections = physicsFormulaSheetSections()
 
   return (
@@ -39,7 +42,7 @@ export function PhysicsFormulaSheet({ onBack }: Props) {
                   <div key={idx} className="concept-item-card">
                     <span className="concept-idx">{t('physics.formulas.item', { n: idx + 1 })}</span>
                     <div className="concept-text">
-                      <MathFormula math={concept} />
+                      <MathFormula math={stemConceptCopy(locale, concept)} />
                     </div>
                   </div>
                 ))}

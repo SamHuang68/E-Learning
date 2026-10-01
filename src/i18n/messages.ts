@@ -882,7 +882,7 @@ export type MessageKey = keyof typeof ZH_HANT
 
 export const EN: Record<MessageKey, string> = Object.assign({
   'locale.toggleLabel': 'Interface language',
-  'locale.zh': '繁中',
+  'locale.zh': 'Traditional Chinese',
   'locale.en': 'EN',
 
   'common.skipToContent': 'Skip to main content',
@@ -970,7 +970,7 @@ export const EN: Record<MessageKey, string> = Object.assign({
   'track.ja': 'Japanese',
   'track.en': 'TOEIC English',
   'track.zh': 'Taiwan Mandarin',
-  'trackSelect.ja': 'あ Japanese',
+  'trackSelect.ja': 'Japanese',
   'trackSelect.en': 'TOEIC English',
   'trackSelect.zh': '🀄 Mandarin',
   'trackSelect.math': '∑ Math',

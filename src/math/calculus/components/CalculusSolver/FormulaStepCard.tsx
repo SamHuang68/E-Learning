@@ -1,3 +1,4 @@
+import { useCalculusCopy } from '../../../../i18n/calculusCopy'
 import React, { useState } from 'react'
 import { MathFormula } from '../../../components/MathFormula'
 import type { DerivationStep } from '../../types'
@@ -18,6 +19,7 @@ export const FormulaStepCard: React.FC<Props> = ({
   onSelect,
   onCheckpointComplete,
 }) => {
+  const c = useCalculusCopy()
   const { t } = useI18n()
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
   const [hasAnswered, setHasAnswered] = useState(false)
@@ -37,33 +39,33 @@ export const FormulaStepCard: React.FC<Props> = ({
     >
       <div className="step-card-header">
         <span className="step-number-badge">Step {step.stepNumber}</span>
-        <strong className="step-rule-name">{step.ruleName}</strong>
+        <strong className="step-rule-name">{c(step.ruleName)}</strong>
         {isCompleted && <span className="step-check-icon">✓</span>}
       </div>
 
       <div className="step-card-body">
         <div className="step-formula-box">
           <div className="formula-row before">
-            <span className="label">{t('calculus.derivBefore') || '推導前 / Before:'}</span>
-            <MathFormula math={step.beforeLatex} a11yLabel={`微積分推導步驟前公式: ${step.beforeLatex} / Calculus derivation before: ${step.beforeLatex}`} />
+            <span className="label">{t('calculus.derivBefore') || c('推導前 / Before:')}</span>
+            <MathFormula math={c(step.beforeLatex)} a11yLabel={c(`微積分推導步驟前公式: ${c(step.beforeLatex)} / Calculus derivation before: ${c(step.beforeLatex)}`)} />
           </div>
-          <div className="formula-arrow">↓ <MathFormula math={step.ruleLatex} a11yLabel={`規則: ${step.ruleLatex} / Rule: ${step.ruleLatex}`} /></div>
+          <div className="formula-arrow">↓ <MathFormula math={c(step.ruleLatex)} a11yLabel={c(`規則: ${c(step.ruleLatex)} / Rule: ${c(step.ruleLatex)}`)} /></div>
           <div className="formula-row after">
-            <span className="label">{t('calculus.derivAfter') || '推導後 / After:'}</span>
-            <MathFormula math={step.afterLatex} a11yLabel={`微積分推導步驟後公式: ${step.afterLatex} / Calculus derivation after: ${step.afterLatex}`} />
+            <span className="label">{t('calculus.derivAfter') || c('推導後 / After:')}</span>
+            <MathFormula math={c(step.afterLatex)} a11yLabel={c(`微積分推導步驟後公式: ${c(step.afterLatex)} / Calculus derivation after: ${c(step.afterLatex)}`)} />
           </div>
         </div>
 
-        <p className="step-explanation">{step.explanation}</p>
+        <p className="step-explanation">{c(step.explanation)}</p>
 
         <div className="step-insight-badge">
-          💡 <strong>核心關鍵</strong>：{step.keyInsight}
+          💡 <strong>{c("核心關鍵")}</strong>：{c(step.keyInsight)}
         </div>
 
         {/* 形成性檢測題 */}
         {step.checkpoint && (
           <div className="step-checkpoint-box" onClick={(e) => e.stopPropagation()}>
-            <p className="checkpoint-prompt">❓ <strong>隨堂檢測</strong>：{step.checkpoint.prompt}</p>
+            <p className="checkpoint-prompt">❓ <strong>{c("隨堂檢測")}</strong>：{c(step.checkpoint.prompt)}</p>
             <div className="checkpoint-options">
               {step.checkpoint.options.map((opt, idx) => {
                 const isSelected = selectedOption === idx
@@ -82,7 +84,7 @@ export const FormulaStepCard: React.FC<Props> = ({
                     onClick={() => handleChooseOption(idx)}
                     disabled={hasAnswered}
                   >
-                    {opt}
+                    {c(opt)}
                   </button>
                 )
               })}
@@ -90,8 +92,8 @@ export const FormulaStepCard: React.FC<Props> = ({
             {hasAnswered && (
               <p className="checkpoint-hint">
                 {selectedOption === step.checkpoint.correctIndex
-                  ? '🎉 正確！概念掌握清晰！'
-                  : `⚠️ ${step.checkpoint.hint}`}
+                  ? c('🎉 正確！概念掌握清晰！')
+                  : `⚠️ ${c(step.checkpoint.hint)}`}
               </p>
             )}
           </div>

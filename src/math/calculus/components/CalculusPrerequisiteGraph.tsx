@@ -1,3 +1,4 @@
+import { useCalculusCopy } from '../../../i18n/calculusCopy'
 import { useI18n } from '../../../i18n/i18n'
 import { catalogPrerequisiteRows } from '../data/calculusCatalog'
 
@@ -6,6 +7,7 @@ import { catalogPrerequisiteRows } from '../data/calculusCatalog'
  * Not a mastery lock, fluency claim, or invented dependency graph.
  */
 export function CalculusPrerequisiteGraph() {
+  const c = useCalculusCopy()
   const { t, locale } = useI18n()
   const rows = catalogPrerequisiteRows()
   const join = locale === 'en' ? ', ' : '、'
@@ -16,10 +18,10 @@ export function CalculusPrerequisiteGraph() {
       <p className="section-subtext">{t('calculus.prereq.honesty')}</p>
       <ol>
         {rows.map((row) => {
-          const names = row.prereqs.map((p) => p.name).join(join)
+          const names = row.prereqs.map((p) => c(p.name)).join(join)
           return (
             <li key={row.id}>
-              <strong>{row.name}</strong>
+              <strong>{c(row.name)}</strong>
               <span className={row.prereqs.some((p) => !p.known) ? 'calc-prereq-unknown' : 'calc-prereq-edge'}>
                 {row.prereqs.length === 0
                   ? t('calculus.prereq.none')

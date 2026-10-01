@@ -1,3 +1,4 @@
+import { useCalculusCopy } from '../../i18n/calculusCopy'
 import React, { useState, useMemo } from 'react'
 import { CalculusCanvas } from './components/CalculusCanvas/CalculusCanvas'
 import { CalculusLabPanel } from './components/CalculusLab/CalculusLabPanel'
@@ -10,6 +11,7 @@ import { GradientIntuitionCard } from './components/GradientIntuitionCard'
 import type { CalculusLabMode, RiemannMethod, CalculusProblem } from './types'
 
 export const CalculusStudio: React.FC = () => {
+  const c = useCalculusCopy()
   const [activeTab, setActiveTab] = useState<'canvas_lab' | 'step_solver' | 'adaptive_practice'>('canvas_lab')
   const [mode, setMode] = useState<CalculusLabMode>('tangent_secant')
   const [expression, setExpression] = useState<string>('x^2 - 2*x + 2')
@@ -51,9 +53,9 @@ export const CalculusStudio: React.FC = () => {
       {/* 專題頂部標題列與模式導覽 */}
       <header className="calculus-studio-header">
         <div className="title-group">
-          <span className="studio-tag">108 課綱數甲 · AP Calculus BC · 大一先修</span>
-          <h2>∫ 微積分互動專題 (Calculus Interactive Studio)</h2>
-          <p className="subtitle">以幾何動態為先、代數求解為本 · 雙向反應式即時推導工作台</p>
+          <span className="studio-tag">{c("108 課綱數甲 · AP Calculus BC · 大一先修")}</span>
+          <h2>{c("∫ 微積分互動專題 (Calculus Interactive Studio)")}</h2>
+          <p className="subtitle">{c("以幾何動態為先、代數求解為本 · 雙向反應式即時推導工作台")}</p>
         </div>
 
         <div className="studio-tabs-row">
@@ -62,21 +64,19 @@ export const CalculusStudio: React.FC = () => {
             className={`studio-tab-btn ${activeTab === 'canvas_lab' ? 'active' : ''}`}
             onClick={() => setActiveTab('canvas_lab')}
           >
-            🎨 幾何動態實驗室 (Canvas Lab)
-          </button>
+            {c("🎨 幾何動態實驗室 (Canvas Lab)")}</button>
           <button
             type="button"
             className={`studio-tab-btn ${activeTab === 'step_solver' ? 'active' : ''}`}
             onClick={() => setActiveTab('step_solver')}
           >
-            📝 步驟式推導解題器 (Step Solver)
-          </button>
+            {c("📝 步驟式推導解題器 (Step Solver)")}</button>
           <button
             type="button"
             className={`studio-tab-btn ${activeTab === 'adaptive_practice' ? 'active' : ''}`}
             onClick={() => setActiveTab('adaptive_practice')}
           >
-            🎯 4 階認知能力挑戰 (IRT θ: {currentTheta >= 0 ? `+${currentTheta.toFixed(2)}` : currentTheta.toFixed(2)})
+            {c("🎯 4 階認知能力挑戰 (IRT θ: ")}{currentTheta >= 0 ? `+${currentTheta.toFixed(2)}` : currentTheta.toFixed(2)})
           </button>
         </div>
       </header>
@@ -117,7 +117,7 @@ export const CalculusStudio: React.FC = () => {
 
           {activeTab === 'step_solver' && (
             <StepByStepSolver
-              problemTitle={`求函數 f(x) = ${expression} 的符號導函數與臨界點`}
+              problemTitle={c(`求函數 f(x) = ${expression} 的符號導函數與臨界點`)}
               steps={dynamicSteps}
               currentStepIndex={currentStepIdx}
               onStepChange={setCurrentStepIdx}
@@ -162,20 +162,19 @@ export const CalculusStudio: React.FC = () => {
         <div className="calculus-badge-modal-overlay" onClick={clearBadgeNotification}>
           <div className="calculus-badge-modal-card" onClick={(e) => e.stopPropagation()}>
             <div className="badge-unlock-animation">🏆</div>
-            <h3>恭喜解鎖微積分微認證！</h3>
+            <h3>{c("恭喜解鎖微積分微認證！")}</h3>
             {newlyUnlockedBadges.map((badge) => (
               <div key={badge.id} className="unlocked-badge-detail">
                 <span className="badge-icon-lg">{badge.icon}</span>
                 <div>
-                  <strong>{badge.title}</strong>
-                  <p>{badge.description}</p>
+                  <strong>{c(badge.title)}</strong>
+                  <p>{c(badge.description)}</p>
                   <span className="reward-tag">+{badge.xpReward} XP</span>
                 </div>
               </div>
             ))}
             <button type="button" className="btn-close-modal" onClick={clearBadgeNotification}>
-              太棒了，繼續挑戰！
-            </button>
+              {c("太棒了，繼續挑戰！")}</button>
           </div>
         </div>
       )}

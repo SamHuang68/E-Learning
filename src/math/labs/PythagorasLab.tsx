@@ -1,3 +1,4 @@
+import { useMathLabCopy } from '../../i18n/mathLabCopy'
 import React, { useState } from 'react'
 import { MathFormula } from '../components/MathFormula'
 
@@ -6,6 +7,7 @@ import { MathFormula } from '../components/MathFormula'
  * 透過可調節的直角三角形兩股 $a, b$，動態展示 $a^2$ 面積、$b^2$ 面積與斜邊 $c^2$ 面積之和諧相等關係。
  */
 export const PythagorasLab: React.FC = () => {
+  const ml = useMathLabCopy()
   const [legA, setLegA] = useState(3)
   const [legB, setLegB] = useState(4)
 
@@ -28,15 +30,11 @@ export const PythagorasLab: React.FC = () => {
     <div className="math-lab pythagoras-lab">
       <div className="lab-header">
         <div>
-          <h3>畢氏定理幾何證明實驗室 (Pythagorean Theorem)</h3>
-          <p className="lab-desc">
-            直角三角形中：兩股平方和等於斜邊平方（<MathFormula math="$a^2 + b^2 = c^2$" />）。
-          </p>
+          <h3>{ml("畢氏定理幾何證明實驗室 (Pythagorean Theorem)")}</h3>
+          <p className="lab-desc">{ml("直角三角形中：兩股平方和等於斜邊平方（")}<MathFormula math="$a^2 + b^2 = c^2$" />{ml("）。")}</p>
         </div>
         <div className="lab-header-actions">
-          <button type="button" className="btn-lab-reset" onClick={handleReset}>
-            🔄 重設預設 (3-4-5)
-          </button>
+          <button type="button" className="btn-lab-reset" onClick={handleReset}>{ml("🔄 重設預設 (3-4-5)")}</button>
         </div>
       </div>
 
@@ -88,25 +86,25 @@ export const PythagorasLab: React.FC = () => {
 
         <div className="pythagoras-calc-card">
           <div className="calc-row">
-            <span>股 <MathFormula math="$a$" /> 長度：</span>
-            <strong>{legA}</strong> ➜ 面積 <MathFormula math={`$a^2 = ${areaA}$`} />
+            <span>{ml("股 ")}<MathFormula math="$a$" />{ml(" 長度：")}</span>
+            <strong>{legA}</strong>{ml(" ➜ 面積 ")}<MathFormula math={`$a^2 = ${areaA}$`} />
           </div>
           <div className="calc-row">
-            <span>股 <MathFormula math="$b$" /> 長度：</span>
-            <strong>{legB}</strong> ➜ 面積 <MathFormula math={`$b^2 = ${areaB}$`} />
+            <span>{ml("股 ")}<MathFormula math="$b$" />{ml(" 長度：")}</span>
+            <strong>{legB}</strong>{ml(" ➜ 面積 ")}<MathFormula math={`$b^2 = ${areaB}$`} />
           </div>
           <div className="calc-divider" />
           <div className="calc-sum-row">
-            <span>兩股平方和 (<MathFormula math="$a^2 + b^2$" />)：</span>
+            <span>{ml("兩股平方和 (")}<MathFormula math="$a^2 + b^2$" />{ml(")：")}</span>
             <strong>{areaA + areaB}</strong>
           </div>
           <div className="calc-sum-row">
-            <span>斜邊 <MathFormula math="$c$" /> 長度：</span>
-            <strong>{hypC.toFixed(2)}</strong> ➜ 面積 <MathFormula math={`$c^2 = ${areaC}$`} />
+            <span>{ml("斜邊 ")}<MathFormula math="$c$" />{ml(" 長度：")}</span>
+            <strong>{hypC.toFixed(2)}</strong>{ml(" ➜ 面積 ")}<MathFormula math={`$c^2 = ${areaC}$`} />
           </div>
 
           <div className="quick-triples-row" style={{ marginTop: '0.75rem', display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '0.78rem', color: 'var(--muted)', alignSelf: 'center' }}>常用勾股數：</span>
+            <span style={{ fontSize: '0.78rem', color: 'var(--muted)', alignSelf: 'center' }}>{ml("常用勾股數：")}</span>
             <button type="button" className="btn-preset-pill" onClick={() => applyTriple(3, 4)}>3-4-5</button>
             <button type="button" className="btn-preset-pill" onClick={() => applyTriple(6, 8)}>6-8-10</button>
             <button type="button" className="btn-preset-pill" onClick={() => applyTriple(5, 12)}>5-12-13</button>
@@ -114,12 +112,12 @@ export const PythagorasLab: React.FC = () => {
 
           <div className="slider-item">
             <label>
-              <span>調整股 <MathFormula math={`$a$: ${legA}`} /></span>
+              <span>{ml("調整股 ")}<MathFormula math={`$a$: ${legA}`} /></span>
             </label>
             <input
               type="range"
-              aria-label="畢氏定理股長 a"
-              aria-valuetext={`${legA} 長度單位`}
+              aria-label={ml("畢氏定理股長 a")}
+              aria-valuetext={ml("{v0} 長度單位", [legA])}
               min="2"
               max="6"
               step="1"
@@ -130,12 +128,12 @@ export const PythagorasLab: React.FC = () => {
 
           <div className="slider-item">
             <label>
-              <span>調整股 <MathFormula math={`$b$: ${legB}`} /></span>
+              <span>{ml("調整股 ")}<MathFormula math={`$b$: ${legB}`} /></span>
             </label>
             <input
               type="range"
-              aria-label="畢氏定理股長 b"
-              aria-valuetext={`${legB} 長度單位`}
+              aria-label={ml("畢氏定理股長 b")}
+              aria-valuetext={ml("{v0} 長度單位", [legB])}
               min="2"
               max="6"
               step="1"

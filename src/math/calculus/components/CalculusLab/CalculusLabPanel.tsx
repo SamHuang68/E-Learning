@@ -1,3 +1,4 @@
+import { useCalculusCopy } from '../../../../i18n/calculusCopy'
 import React from 'react'
 import type { CalculusLabMode, RiemannMethod } from '../../types'
 
@@ -50,10 +51,11 @@ export const CalculusLabPanel: React.FC<Props> = ({
   onExpressionChange,
   onParamChange,
 }) => {
+  const c = useCalculusCopy()
   return (
     <div className="calculus-lab-control-card">
       <div className="control-card-header">
-        <h4>🎛️ 幾何實驗室參數面板</h4>
+        <h4>{c("🎛️ 幾何實驗室參數面板")}</h4>
         <span className="mode-badge">{mode.toUpperCase()}</span>
       </div>
 
@@ -64,55 +66,48 @@ export const CalculusLabPanel: React.FC<Props> = ({
           className={`btn-mode-tab ${mode === 'limit_epsilon' ? 'active' : ''}`}
           onClick={() => onModeSelect('limit_epsilon')}
         >
-          🔍 極限 ε-δ
-        </button>
+          {c("🔍 極限 ε-δ")}</button>
         <button
           type="button"
           className={`btn-mode-tab ${mode === 'tangent_secant' ? 'active' : ''}`}
           onClick={() => onModeSelect('tangent_secant')}
         >
-          📈 割線切線
-        </button>
+          {c("📈 割線切線")}</button>
         <button
           type="button"
           className={`btn-mode-tab ${mode === 'optimization_mvt' ? 'active' : ''}`}
           onClick={() => onModeSelect('optimization_mvt')}
         >
-          🎯 均值極值
-        </button>
+          {c("🎯 均值極值")}</button>
         <button
           type="button"
           className={`btn-mode-tab ${mode === 'riemann_sum' ? 'active' : ''}`}
           onClick={() => onModeSelect('riemann_sum')}
         >
-          📊 黎曼和
-        </button>
+          {c("📊 黎曼和")}</button>
         <button
           type="button"
           className={`btn-mode-tab ${mode === 'ftc_accumulation' ? 'active' : ''}`}
           onClick={() => onModeSelect('ftc_accumulation')}
         >
-          🔄 FTC 基本定理
-        </button>
+          {c("🔄 FTC 基本定理")}</button>
         <button
           type="button"
           className={`btn-mode-tab ${mode === 'taylor_series' ? 'active' : ''}`}
           onClick={() => onModeSelect('taylor_series')}
         >
-          〰️ 泰勒級數
-        </button>
+          {c("〰️ 泰勒級數")}</button>
         <button
           type="button"
           className={`btn-mode-tab ${mode === 'newton_slope_field' ? 'active' : ''}`}
           onClick={() => onModeSelect('newton_slope_field')}
         >
-          ⚡ 牛頓法求根
-        </button>
+          {c("⚡ 牛頓法求根")}</button>
       </div>
 
       {/* 函數選擇器與輸入框 */}
       <div className="form-group expr-select-group">
-        <label htmlFor="calculus-preset-classic">快速挑選經典函數：</label>
+        <label htmlFor="calculus-preset-classic">{c("快速挑選經典函數：")}</label>
         <select
           id="calculus-preset-classic"
           value={expression}
@@ -124,20 +119,20 @@ export const CalculusLabPanel: React.FC<Props> = ({
         >
           {PRESET_FUNCTIONS.map((p, idx) => (
             <option key={idx} value={p.expr}>
-              {p.label}
+              {c(p.label)}
             </option>
           ))}
         </select>
       </div>
 
       <div className="form-group expr-input-group">
-        <label htmlFor="calculus-expression">自訂函數表達式 f(x)：</label>
+        <label htmlFor="calculus-expression">{c("自訂函數表達式 f(x)：")}</label>
         <input
           id="calculus-expression"
           type="text"
           value={expression}
           onChange={(e) => onExpressionChange(e.target.value)}
-          placeholder="例如: x^3 - 3*x + 1"
+          placeholder={c("例如: x^3 - 3*x + 1")}
         />
       </div>
 
@@ -146,13 +141,13 @@ export const CalculusLabPanel: React.FC<Props> = ({
         {/* 切點 x0 */}
         <div className="slider-item">
           <div className="slider-label-row">
-            <span id="calculus-x0-label">探索焦點 / 切點 x₀:</span>
+            <span id="calculus-x0-label">{c("探索焦點 / 切點 x₀:")}</span>
             <strong>{x0.toFixed(2)}</strong>
           </div>
           <input
             type="range"
             aria-labelledby="calculus-x0-label"
-            aria-valuetext={`${x0.toFixed(2)} x 座標`}
+            aria-valuetext={c(`${x0.toFixed(2)} x 座標`)}
             min="-1"
             max="4"
             step="0.1"
@@ -165,13 +160,13 @@ export const CalculusLabPanel: React.FC<Props> = ({
         {(mode === 'tangent_secant' || mode === 'limit_epsilon') && (
           <div className="slider-item">
             <div className="slider-label-row">
-              <span id="calculus-dx-label">微元步長 Δx:</span>
+              <span id="calculus-dx-label">{c("微元步長 Δx:")}</span>
               <strong className={deltaX < 0.1 ? 'highlight-green' : ''}>{deltaX.toFixed(3)}</strong>
             </div>
             <input
               type="range"
               aria-labelledby="calculus-dx-label"
-              aria-valuetext={`${deltaX.toFixed(3)} x 單位`}
+              aria-valuetext={c(`${deltaX.toFixed(3)} x 單位`)}
               min="0.005"
               max="2.0"
               step="0.005"
@@ -185,13 +180,13 @@ export const CalculusLabPanel: React.FC<Props> = ({
         {mode === 'limit_epsilon' && (
           <div className="slider-item">
             <div className="slider-label-row">
-              <span id="calculus-epsilon-label">目標容忍誤差 ε:</span>
+              <span id="calculus-epsilon-label">{c("目標容忍誤差 ε:")}</span>
               <strong>{epsilon.toFixed(2)}</strong>
             </div>
             <input
               type="range"
               aria-labelledby="calculus-epsilon-label"
-              aria-valuetext={`${epsilon.toFixed(2)} 函數值單位`}
+              aria-valuetext={c(`${epsilon.toFixed(2)} 函數值單位`)}
               min="0.1"
               max="2.0"
               step="0.05"
@@ -206,13 +201,13 @@ export const CalculusLabPanel: React.FC<Props> = ({
           <>
             <div className="slider-item">
               <div className="slider-label-row">
-                <span id="calculus-int-a-label">積分下限 a:</span>
+                <span id="calculus-int-a-label">{c("積分下限 a:")}</span>
                 <strong>{intA.toFixed(1)}</strong>
               </div>
               <input
                 type="range"
                 aria-labelledby="calculus-int-a-label"
-                aria-valuetext={`${intA.toFixed(1)} x 座標`}
+                aria-valuetext={c(`${intA.toFixed(1)} x 座標`)}
                 min="-1"
                 max={intB - 0.5}
                 step="0.5"
@@ -223,13 +218,13 @@ export const CalculusLabPanel: React.FC<Props> = ({
 
             <div className="slider-item">
               <div className="slider-label-row">
-                <span id="calculus-int-b-label">積分上限 b:</span>
+                <span id="calculus-int-b-label">{c("積分上限 b:")}</span>
                 <strong>{intB.toFixed(1)}</strong>
               </div>
               <input
                 type="range"
                 aria-labelledby="calculus-int-b-label"
-                aria-valuetext={`${intB.toFixed(1)} x 座標`}
+                aria-valuetext={c(`${intB.toFixed(1)} x 座標`)}
                 min={intA + 0.5}
                 max="5"
                 step="0.5"
@@ -245,13 +240,13 @@ export const CalculusLabPanel: React.FC<Props> = ({
           <>
             <div className="slider-item">
               <div className="slider-label-row">
-                <span id="calculus-slices-label">黎曼和切片數 N:</span>
+                <span id="calculus-slices-label">{c("黎曼和切片數 N:")}</span>
                 <strong>{slicesN}</strong>
               </div>
               <input
                 type="range"
                 aria-labelledby="calculus-slices-label"
-                aria-valuetext={`${slicesN} 個切片`}
+                aria-valuetext={c(`${slicesN} 個切片`)}
                 min="2"
                 max="80"
                 step="2"
@@ -261,29 +256,26 @@ export const CalculusLabPanel: React.FC<Props> = ({
             </div>
 
             <div className="riemann-method-selector">
-              <label>採樣端點：</label>
+              <label>{c("採樣端點：")}</label>
               <div className="segmented-btn-group">
                 <button
                   type="button"
                   className={`seg-btn ${riemannMethod === 'left' ? 'active' : ''}`}
                   onClick={() => onParamChange({ riemannMethod: 'left' })}
                 >
-                  左端點
-                </button>
+                  {c("左端點")}</button>
                 <button
                   type="button"
                   className={`seg-btn ${riemannMethod === 'midpoint' ? 'active' : ''}`}
                   onClick={() => onParamChange({ riemannMethod: 'midpoint' })}
                 >
-                  中點
-                </button>
+                  {c("中點")}</button>
                 <button
                   type="button"
                   className={`seg-btn ${riemannMethod === 'right' ? 'active' : ''}`}
                   onClick={() => onParamChange({ riemannMethod: 'right' })}
                 >
-                  右端點
-                </button>
+                  {c("右端點")}</button>
               </div>
             </div>
           </>
@@ -293,13 +285,13 @@ export const CalculusLabPanel: React.FC<Props> = ({
         {mode === 'taylor_series' && (
           <div className="slider-item">
             <div className="slider-label-row">
-              <span id="calculus-order-label">泰勒展開多項式階數 N:</span>
-              <strong>{taylorOrder} 階</strong>
+              <span id="calculus-order-label">{c("泰勒展開多項式階數 N:")}</span>
+              <strong>{taylorOrder}{c(" 階")}</strong>
             </div>
             <input
               type="range"
               aria-labelledby="calculus-order-label"
-              aria-valuetext={`${taylorOrder} 階`}
+              aria-valuetext={c(`${taylorOrder} 階`)}
               min="0"
               max="8"
               step="1"

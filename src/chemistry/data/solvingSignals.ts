@@ -1,3 +1,5 @@
+import type { ChemistryStrand } from './curriculum'
+
 /**
  * 臺灣 108 課綱化學 · 3 秒破題訊號庫 (Chemistry Problem-Solving Signals)
  * 專為國中會考、高中學測與分科測驗設計：
@@ -5,6 +7,7 @@
  */
 
 export interface ChemistrySolvingSignal {
+  strand: ChemistryStrand
   id: string
   stage: 'junior' | 'senior'
   gradeBand: string // e.g. "國中八年級", "高中十年級", "高中選修"
@@ -22,6 +25,7 @@ export const CHEMISTRY_SOLVING_SIGNALS: ChemistrySolvingSignal[] = [
   // 國中會考 (CAP) 階段
   {
     id: 'sig-solubility-cooling',
+    strand: 'matter_structure',
     stage: 'junior',
     gradeBand: '國中七年級',
     topic: '水溶液 · 降溫結晶析出量',
@@ -35,6 +39,7 @@ export const CHEMISTRY_SOLVING_SIGNALS: ChemistrySolvingSignal[] = [
   },
   {
     id: 'sig-mass-conservation-limiting',
+    strand: 'reactions',
     stage: 'junior',
     gradeBand: '國中八年級',
     topic: '化學反應 · 限量試劑判斷',
@@ -48,6 +53,7 @@ export const CHEMISTRY_SOLVING_SIGNALS: ChemistrySolvingSignal[] = [
   },
   {
     id: 'sig-metal-activity-redox',
+    strand: 'reactions',
     stage: 'junior',
     gradeBand: '國中八年級',
     topic: '氧化還原 · 金屬活性與置換',
@@ -63,6 +69,7 @@ export const CHEMISTRY_SOLVING_SIGNALS: ChemistrySolvingSignal[] = [
   // 高中學測 (GSAT) 必修化學階段
   {
     id: 'sig-density-molarity',
+    strand: 'reactions',
     stage: 'senior',
     gradeBand: '高中十年級',
     topic: '化學計量 · 濃度雙向秒殺換算',
@@ -76,6 +83,7 @@ export const CHEMISTRY_SOLVING_SIGNALS: ChemistrySolvingSignal[] = [
   },
   {
     id: 'sig-combustion-analysis',
+    strand: 'reactions',
     stage: 'senior',
     gradeBand: '高中十年級',
     topic: '化學式 · 燃燒分析求實驗式',
@@ -89,6 +97,7 @@ export const CHEMISTRY_SOLVING_SIGNALS: ChemistrySolvingSignal[] = [
   },
   {
     id: 'sig-atom-economy',
+    strand: 'organic',
     stage: 'senior',
     gradeBand: '高中十年級',
     topic: '綠色化學 · 原子經濟性 (AE)',
@@ -104,6 +113,7 @@ export const CHEMISTRY_SOLVING_SIGNALS: ChemistrySolvingSignal[] = [
   // 高中分科測驗 (AST) 選修化學階段
   {
     id: 'sig-water-vapor-pressure',
+    strand: 'equilibrium_kinetics',
     stage: 'senior',
     gradeBand: '高中十一年級',
     topic: '氣體定律 · 排水集氣蒸氣壓修正',
@@ -117,6 +127,7 @@ export const CHEMISTRY_SOLVING_SIGNALS: ChemistrySolvingSignal[] = [
   },
   {
     id: 'sig-graham-diffusion',
+    strand: 'equilibrium_kinetics',
     stage: 'senior',
     gradeBand: '高中十一年級',
     topic: '氣體動力論 · 格拉罕擴散定律',
@@ -130,6 +141,7 @@ export const CHEMISTRY_SOLVING_SIGNALS: ChemistrySolvingSignal[] = [
   },
   {
     id: 'sig-colligative-freezing',
+    strand: 'equilibrium_kinetics',
     stage: 'senior',
     gradeBand: '高中十一年級',
     topic: '溶液依數性 · 凝固點下降求分子量',
@@ -143,6 +155,7 @@ export const CHEMISTRY_SOLVING_SIGNALS: ChemistrySolvingSignal[] = [
   },
   {
     id: 'sig-vsepr-hybridization',
+    strand: 'matter_structure',
     stage: 'senior',
     gradeBand: '高中十一年級',
     topic: '微觀結構 · VSEPR 構型與混成軌域',
@@ -156,6 +169,7 @@ export const CHEMISTRY_SOLVING_SIGNALS: ChemistrySolvingSignal[] = [
   },
   {
     id: 'sig-rate-law-half-life',
+    strand: 'equilibrium_kinetics',
     stage: 'senior',
     gradeBand: '高中十一年級',
     topic: '反應動力學 · 一級反應半生期定值',
@@ -169,6 +183,7 @@ export const CHEMISTRY_SOLVING_SIGNALS: ChemistrySolvingSignal[] = [
   },
   {
     id: 'sig-weak-acid-ph',
+    strand: 'electrochemistry',
     stage: 'senior',
     gradeBand: '高中十二年級',
     topic: '酸鹼平衡 · 弱酸解離快速開根號',
@@ -182,6 +197,7 @@ export const CHEMISTRY_SOLVING_SIGNALS: ChemistrySolvingSignal[] = [
   },
   {
     id: 'sig-buffer-henderson',
+    strand: 'electrochemistry',
     stage: 'senior',
     gradeBand: '高中十二年級',
     topic: '酸鹼滴定 · 緩衝溶液與半當量點',
@@ -195,6 +211,7 @@ export const CHEMISTRY_SOLVING_SIGNALS: ChemistrySolvingSignal[] = [
   },
   {
     id: 'sig-cell-potential',
+    strand: 'electrochemistry',
     stage: 'senior',
     gradeBand: '高中十二年級',
     topic: '電化學 · 電池標準電動勢 E°cell',
@@ -208,6 +225,7 @@ export const CHEMISTRY_SOLVING_SIGNALS: ChemistrySolvingSignal[] = [
   },
   {
     id: 'sig-faraday-electrolysis',
+    strand: 'electrochemistry',
     stage: 'senior',
     gradeBand: '高中十二年級',
     topic: '電解定量 · 法拉第電解定律',

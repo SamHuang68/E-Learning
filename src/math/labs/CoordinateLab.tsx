@@ -1,3 +1,4 @@
+import { useMathLabCopy } from '../../i18n/mathLabCopy'
 import React, { useState, useMemo } from 'react'
 import { MathFormula } from '../components/MathFormula'
 
@@ -8,6 +9,7 @@ type FunctionType = 'linear' | 'quadratic'
  * 支援一次直線與二次拋物線，可即時調整斜率、截距、頂點平移並觀察圖像變化。
  */
 export const CoordinateLab: React.FC = () => {
+  const ml = useMathLabCopy()
   const [mode, setMode] = useState<FunctionType>('linear')
 
   // 一次函數 y = ax + b
@@ -64,15 +66,11 @@ export const CoordinateLab: React.FC = () => {
     <div className="math-lab coord-lab">
       <div className="lab-header">
         <div>
-          <h3>2D 坐標幾何與函數實驗室 (Coordinate Geometry)</h3>
-          <p className="lab-desc">
-            探索直線的斜率與截距，以及拋物線的開口、對稱軸與頂點坐標平移。
-          </p>
+          <h3>{ml("2D 坐標幾何與函數實驗室 (Coordinate Geometry)")}</h3>
+          <p className="lab-desc">{ml("探索直線的斜率與截距，以及拋物線的開口、對稱軸與頂點坐標平移。")}</p>
         </div>
         <div className="lab-header-actions" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-          <button type="button" className="btn-lab-reset" onClick={handleReset}>
-            🔄 重設函數
-          </button>
+          <button type="button" className="btn-lab-reset" onClick={handleReset}>{ml("🔄 重設函數")}</button>
         </div>
       </div>
 
@@ -81,15 +79,13 @@ export const CoordinateLab: React.FC = () => {
           type="button"
           className={`tab-pill ${mode === 'linear' ? 'active' : ''}`}
           onClick={() => setMode('linear')}
-        >
-          一次直線 (<MathFormula math="$y = ax + b$" />)
+        >{ml("一次直線 (")}<MathFormula math="$y = ax + b$" />)
         </button>
         <button
           type="button"
           className={`tab-pill ${mode === 'quadratic' ? 'active' : ''}`}
           onClick={() => setMode('quadratic')}
-        >
-          二次拋物線 (<MathFormula math="$y = a(x-h)^2 + k$" />)
+        >{ml("二次拋物線 (")}<MathFormula math="$y = a(x-h)^2 + k$" />)
         </button>
       </div>
 
@@ -155,19 +151,19 @@ export const CoordinateLab: React.FC = () => {
             <div className="control-group">
               <h4>
                 <MathFormula
-                  math={`直線方程式：$y = ${linearA}x ${linearB >= 0 ? `+ ${linearB}` : `- ${Math.abs(linearB)}`}$`}
+                  math={ml("直線方程式：$y = {v0}x {v1}$", [linearA, linearB >= 0 ? `+ ${linearB}` : `- ${Math.abs(linearB)}`])}
                 />
               </h4>
-              <p>斜率 (Slope)：{linearA} ({linearA > 0 ? '向右上傾斜' : linearA < 0 ? '向右下傾斜' : '水平線'})</p>
-              <p><MathFormula math={`$y$ 截距：$(0, ${linearB})$`} /></p>
+              <p>{ml("斜率 (Slope)：")}{linearA} ({linearA > 0 ? ml("向右上傾斜") : linearA < 0 ? ml("向右下傾斜") : ml("水平線")})</p>
+              <p><MathFormula math={ml("$y$ 截距：$(0, {v0})$", [linearB])} /></p>
 
               <div className="slider-item">
                 <label>
-                  <span><MathFormula math={`斜率 $a$: ${linearA}`} /></span>
+                  <span><MathFormula math={ml("斜率 $a$: {v0}", [linearA])} /></span>
                 </label>
                 <input
                   type="range"
-                  aria-label="一次函數斜率 a"
+                  aria-label={ml("一次函數斜率 a")}
                   aria-valuetext={`${linearA}`}
                   min="-5"
                   max="5"
@@ -179,11 +175,11 @@ export const CoordinateLab: React.FC = () => {
 
               <div className="slider-item">
                 <label>
-                  <span><MathFormula math={`截距 $b$: ${linearB}`} /></span>
+                  <span><MathFormula math={ml("截距 $b$: {v0}", [linearB])} /></span>
                 </label>
                 <input
                   type="range"
-                  aria-label="一次函數截距 b"
+                  aria-label={ml("一次函數截距 b")}
                   aria-valuetext={`${linearB}`}
                   min="-8"
                   max="8"
@@ -197,22 +193,21 @@ export const CoordinateLab: React.FC = () => {
             <div className="control-group">
               <h4>
                 <MathFormula
-                  math={`拋物線：$y = ${quadA}(x ${quadH >= 0 ? `- ${quadH}` : `+ ${Math.abs(quadH)}`})^2 ${quadK >= 0 ? `+ ${quadK}` : `- ${Math.abs(quadK)}`}$`}
+                  math={ml("拋物線：$y = {v0}(x {v1})^2 {v2}$", [quadA, quadH >= 0 ? `- ${quadH}` : `+ ${Math.abs(quadH)}`, quadK >= 0 ? `+ ${quadK}` : `- ${Math.abs(quadK)}`])}
                 />
               </h4>
-              <p><MathFormula math={`頂點坐標 Vertex：$(${quadH}, ${quadK})$`} /></p>
-              <p><MathFormula math={`對稱軸 Axis：$x = ${quadH}$`} /></p>
-              <p>
-                開口方向：{quadA > 0 ? '向上 (在頂點有最小值)' : '向下 (在頂點有最大值)'}
+              <p><MathFormula math={ml("頂點坐標 Vertex：$({v0}, {v1})$", [quadH, quadK])} /></p>
+              <p><MathFormula math={ml("對稱軸 Axis：$x = {v0}$", [quadH])} /></p>
+              <p>{ml("開口方向：")}{quadA > 0 ? ml("向上 (在頂點有最小值)") : ml("向下 (在頂點有最大值)")}
               </p>
 
               <div className="slider-item">
                 <label>
-                  <span><MathFormula math={`開口係數 $a$: ${quadA}`} /></span>
+                  <span><MathFormula math={ml("開口係數 $a$: {v0}", [quadA])} /></span>
                 </label>
                 <input
                   type="range"
-                  aria-label="二次函數開口係數 a"
+                  aria-label={ml("二次函數開口係數 a")}
                   aria-valuetext={`${quadA}`}
                   min="-3"
                   max="3"
@@ -227,11 +222,11 @@ export const CoordinateLab: React.FC = () => {
 
               <div className="slider-item">
                 <label>
-                  <span><MathFormula math={`水平平移 $h$: ${quadH}`} /></span>
+                  <span><MathFormula math={ml("水平平移 $h$: {v0}", [quadH])} /></span>
                 </label>
                 <input
                   type="range"
-                  aria-label="二次函數水平平移 h"
+                  aria-label={ml("二次函數水平平移 h")}
                   aria-valuetext={`${quadH}`}
                   min="-6"
                   max="6"
@@ -243,11 +238,11 @@ export const CoordinateLab: React.FC = () => {
 
               <div className="slider-item">
                 <label>
-                  <span><MathFormula math={`鉛直平移 $k$: ${quadK}`} /></span>
+                  <span><MathFormula math={ml("鉛直平移 $k$: {v0}", [quadK])} /></span>
                 </label>
                 <input
                   type="range"
-                  aria-label="二次函數鉛直平移 k"
+                  aria-label={ml("二次函數鉛直平移 k")}
                   aria-valuetext={`${quadK}`}
                   min="-6"
                   max="6"

@@ -1,3 +1,4 @@
+import { useCalculusCopy } from '../../i18n/calculusCopy'
 import React, { useState } from 'react'
 import { MathFormula } from '../components/MathFormula'
 
@@ -6,6 +7,7 @@ import { MathFormula } from '../components/MathFormula'
  * 函數 f(x) = x^2 - 2x + 2，可動態移動切點 x0 觀察切線斜率 f'(x0) 與極值頂點，或調整積分上下限 [a, b] 觀察定積分面積 ∫ f(x) dx。
  */
 export const CalculusLab: React.FC = () => {
+  const c = useCalculusCopy()
   const [labMode, setLabMode] = useState<'derivative' | 'integral'>('derivative')
   const [x0, setX0] = useState<number>(2) // 切點
   const [intA, setIntA] = useState<number>(0) // 積分下限
@@ -66,10 +68,9 @@ export const CalculusLab: React.FC = () => {
   return (
     <div className="math-lab-container" style={{ width: '100%', maxWidth: '100%', minWidth: 0 }}>
       <div className="math-lab-header" style={{ marginBottom: '0.6rem' }}>
-        <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.05rem' }}>∫ 微積分切線與定積分實驗室</h3>
+        <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.05rem' }}>{c("∫ 微積分切線與定積分實驗室")}</h3>
         <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)' }}>
-          觀察拋物線 <MathFormula math="f(x) = x^2 - 2x + 2" inline /> 的切線斜率（導數）與曲線下面積（定積分）。
-        </p>
+          {c("觀察拋物線 ")}<MathFormula math="f(x) = x^2 - 2x + 2" inline />{c(" 的切線斜率（導數）與曲線下面積（定積分）。")}</p>
       </div>
 
       <div className="segmented math-lab-segmented" style={{ marginBottom: '0.6rem' }}>
@@ -78,15 +79,13 @@ export const CalculusLab: React.FC = () => {
           className={labMode === 'derivative' ? 'active' : ''}
           onClick={() => setLabMode('derivative')}
         >
-          📈 切線斜率 (導數)
-        </button>
+          {c("📈 切線斜率 (導數)")}</button>
         <button
           type="button"
           className={labMode === 'integral' ? 'active' : ''}
           onClick={() => setLabMode('integral')}
         >
-          📊 定積分面積
-        </button>
+          {c("📊 定積分面積")}</button>
       </div>
 
       <div
@@ -124,7 +123,7 @@ export const CalculusLab: React.FC = () => {
 
             {/* 拋物線頂點極值點 (1, 1) */}
             <circle cx={toSx(1)} cy={toSy(1)} r="3.5" fill="#f59e0b" />
-            <text x={toSx(1)} y={toSy(1) + 14} fontSize="8" fill="#fbbf24" textAnchor="middle">極小值 (1,1)</text>
+            <text x={toSx(1)} y={toSy(1) + 14} fontSize="8" fill="#fbbf24" textAnchor="middle">{c("極小值 (1,1)")}</text>
 
             {/* 定積分面積陰影 */}
             {labMode === 'integral' && (
@@ -171,7 +170,7 @@ export const CalculusLab: React.FC = () => {
           {labMode === 'derivative' ? (
             <div>
               <h4 style={{ margin: '0 0 0.3rem', fontSize: '0.92rem' }}>
-                切點坐標：<MathFormula math={`(${x0.toFixed(1)}, ${y0.toFixed(2)})`} inline />
+                {c("切點坐標：")}<MathFormula math={`(${x0.toFixed(1)}, ${y0.toFixed(2)})`} inline />
               </h4>
               <div
                 style={{
@@ -183,22 +182,22 @@ export const CalculusLab: React.FC = () => {
                   border: '1px solid var(--line)',
                 }}
               >
-                切線斜率 <MathFormula math={`m = f'(${x0}) = 2(${x0}) - 2 = `} inline />{' '}
+                {c("切線斜率 ")}<MathFormula math={`m = f'(${x0}) = 2(${x0}) - 2 = `} inline />{' '}
                 <strong style={{ color: '#2563eb', fontFamily: 'monospace' }}>{slope.toFixed(2)}</strong>
               </div>
               <p style={{ margin: '0 0 0.5rem', fontSize: '0.74rem', color: 'var(--muted)' }}>
-                切線方程式：<MathFormula math={`y - ${y0.toFixed(1)} = ${slope.toFixed(1)}(x - ${x0.toFixed(1)})`} inline />
+                {c("切線方程式：")}<MathFormula math={`y - ${y0.toFixed(1)} = ${slope.toFixed(1)}(x - ${x0.toFixed(1)})`} inline />
               </p>
 
               <div className="slider-item">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem', fontWeight: 600, marginBottom: '0.15rem' }}>
-                  <span>移動切點 <MathFormula math="x_0" inline />：</span>
+                  <span>{c("移動切點 ")}<MathFormula math="x_0" inline />：</span>
                   <strong style={{ color: '#2563eb', fontFamily: 'monospace' }}>{x0.toFixed(1)}</strong>
                 </div>
                 <input
                   type="range"
-                  aria-label="微分切點 x0"
-                  aria-valuetext={`${x0.toFixed(1)} x 座標`}
+                  aria-label={c("微分切點 x0")}
+                  aria-valuetext={c(`${x0.toFixed(1)} x 座標`)}
                   min="-1"
                   max="5"
                   step="0.1"
@@ -211,7 +210,7 @@ export const CalculusLab: React.FC = () => {
           ) : (
             <div>
               <h4 style={{ margin: '0 0 0.3rem', fontSize: '0.92rem' }}>
-                積分區間：<MathFormula math={`[${intA}, ${intB}]`} inline />
+                {c("積分區間：")}<MathFormula math={`[${intA}, ${intB}]`} inline />
               </h4>
               <div
                 style={{
@@ -223,22 +222,22 @@ export const CalculusLab: React.FC = () => {
                   border: '1px solid var(--line)',
                 }}
               >
-                定積分面積 <MathFormula math={`\\int_{${intA}}^{${intB}} f(x)\\,dx =`} inline />{' '}
+                {c("定積分面積 ")}<MathFormula math={`\\int_{${intA}}^{${intB}} f(x)\\,dx =`} inline />{' '}
                 <strong style={{ color: '#10b981', fontFamily: 'monospace' }}>{integralArea.toFixed(3)}</strong>
               </div>
               <p style={{ margin: '0 0 0.5rem', fontSize: '0.74rem', color: 'var(--muted)' }}>
-                微積分基本定理 (FTC)：<MathFormula math={`F(${intB}) - F(${intA})`} inline />
+                {c("微積分基本定理 (FTC)：")}<MathFormula math={`F(${intB}) - F(${intA})`} inline />
               </p>
 
               <div className="slider-item" style={{ marginBottom: '0.4rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem', fontWeight: 600, marginBottom: '0.15rem' }}>
-                  <span>積分下限 <MathFormula math="a" inline />：</span>
+                  <span>{c("積分下限 ")}<MathFormula math="a" inline />：</span>
                   <strong style={{ color: '#10b981', fontFamily: 'monospace' }}>{intA.toFixed(1)}</strong>
                 </div>
                 <input
                   type="range"
-                  aria-label="積分下限 a"
-                  aria-valuetext={`${intA.toFixed(1)} x 座標`}
+                  aria-label={c("積分下限 a")}
+                  aria-valuetext={c(`${intA.toFixed(1)} x 座標`)}
                   min="-1"
                   max={intB - 0.5}
                   step="0.5"
@@ -250,13 +249,13 @@ export const CalculusLab: React.FC = () => {
 
               <div className="slider-item">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem', fontWeight: 600, marginBottom: '0.15rem' }}>
-                  <span>積分上限 <MathFormula math="b" inline />：</span>
+                  <span>{c("積分上限 ")}<MathFormula math="b" inline />：</span>
                   <strong style={{ color: '#10b981', fontFamily: 'monospace' }}>{intB.toFixed(1)}</strong>
                 </div>
                 <input
                   type="range"
-                  aria-label="積分上限 b"
-                  aria-valuetext={`${intB.toFixed(1)} x 座標`}
+                  aria-label={c("積分上限 b")}
+                  aria-valuetext={c(`${intB.toFixed(1)} x 座標`)}
                   min={intA + 0.5}
                   max="5"
                   step="0.5"

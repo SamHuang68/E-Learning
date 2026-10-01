@@ -1,3 +1,4 @@
+import { useCalculusCopy } from '../../../../i18n/calculusCopy'
 import React, { useState } from 'react'
 import { FormulaStepCard } from './FormulaStepCard'
 import type { DerivationStep } from '../../types'
@@ -19,6 +20,7 @@ export const StepByStepSolver: React.FC<Props> = ({
   onStepChange,
   onCheckpointAnswer,
 }) => {
+  const c = useCalculusCopy()
   const [revealedCount, setRevealedCount] = useState<number>(1)
 
   const handleRevealNext = () => {
@@ -36,12 +38,11 @@ export const StepByStepSolver: React.FC<Props> = ({
     <div className="step-by-step-solver-panel">
       <div className="solver-header">
         <div>
-          <h4>📝 步驟式代數推導與解題器</h4>
-          <p className="problem-title-display">{problemTitle}</p>
+          <h4>{c("📝 步驟式代數推導與解題器")}</h4>
+          <p className="problem-title-display">{c(problemTitle)}</p>
         </div>
         <span className="step-progress-indicator">
-          進度：{revealedCount} / {steps.length} 步驟
-        </span>
+          {c("進度：")}{revealedCount} / {steps.length}{c(" 步驟")}</span>
       </div>
 
       <div className="steps-stream-list">
@@ -63,7 +64,7 @@ export const StepByStepSolver: React.FC<Props> = ({
       {revealedCount < steps.length && (
         <div className="solver-actions-bar">
           <button type="button" className="btn-reveal-next-step" onClick={handleRevealNext}>
-            展開下一步推導 (Step {revealedCount + 1}) →
+            {c("展開下一步推導 (Step ")}{revealedCount + 1}) →
           </button>
         </div>
       )}
@@ -72,8 +73,8 @@ export const StepByStepSolver: React.FC<Props> = ({
         <div className="derivation-complete-banner">
           <span>✨</span>
           <div>
-            <strong>完整推導鏈已解鎖！</strong>
-            <small>右側幾何畫布已同步更新對應的特徵切線與臨界點坐標。</small>
+            <strong>{c("完整推導鏈已解鎖！")}</strong>
+            <small>{c("右側幾何畫布已同步更新對應的特徵切線與臨界點坐標。")}</small>
           </div>
         </div>
       )}
