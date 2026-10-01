@@ -14,6 +14,7 @@ const OPAQUE_SLOTS: Readonly<Record<string, readonly number[]>> = {
   '未定義符號「{0}」': [0],
   'Undefined symbol "{0}" / 未定義符號「{1}」. Allowed: {2}': [0, 1],
   '函數 f(x)={0} 無法解析：{1}': [0],
+  "求函數 f(x) = {0} 的符號導函數與臨界點": [0],
 }
 let patterns: { pattern: RegExp; translated: string; opaqueSlots: readonly number[] }[] = []
 

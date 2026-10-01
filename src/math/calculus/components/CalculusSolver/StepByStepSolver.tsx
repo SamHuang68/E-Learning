@@ -5,6 +5,7 @@ import type { DerivationStep } from '../../types'
 import { playCorrectSound, playBadgeUnlockedSound } from '../../../../engine/audioSynthesizer'
 
 interface Props {
+  // Localized by the caller; may contain an opaque user-entered expression.
   problemTitle: string
   steps: DerivationStep[]
   currentStepIndex: number
@@ -39,7 +40,7 @@ export const StepByStepSolver: React.FC<Props> = ({
       <div className="solver-header">
         <div>
           <h4>{c("📝 步驟式代數推導與解題器")}</h4>
-          <p className="problem-title-display">{c(problemTitle)}</p>
+          <p className="problem-title-display">{problemTitle}</p>
         </div>
         <span className="step-progress-indicator">
           {c("進度：")}{revealedCount} / {steps.length}{c(" 步驟")}</span>

@@ -18,7 +18,6 @@ export const CHEMISTRY_VAULT_SIGNALS: Readonly<Record<string, string>> = {
   g12_u16_q1: 'sig-faraday-electrolysis',
   gsat_q1: 'sig-atom-economy',
   ast_q2: 'sig-buffer-henderson',
-  ast_q3: 'sig-cell-potential',
 }
 
 export function findMatchingChemistrySignal(q: ChemistryQuestion) {

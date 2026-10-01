@@ -23,6 +23,8 @@ export const FormulaStepCard: React.FC<Props> = ({
   const { t } = useI18n()
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
   const [hasAnswered, setHasAnswered] = useState(false)
+  const invalidExpression = step.id === 'step-parse-error' || step.id === 'step-symbol-error'
+  const beforeMath = invalidExpression ? step.beforeLatex : c(step.beforeLatex)
 
   const handleChooseOption = (idx: number) => {
     if (hasAnswered) return
@@ -47,7 +49,7 @@ export const FormulaStepCard: React.FC<Props> = ({
         <div className="step-formula-box">
           <div className="formula-row before">
             <span className="label">{t('calculus.derivBefore') || c('推導前 / Before:')}</span>
-            <MathFormula math={c(step.beforeLatex)} a11yLabel={c(`微積分推導步驟前公式: ${c(step.beforeLatex)} / Calculus derivation before: ${c(step.beforeLatex)}`)} />
+            <MathFormula math={beforeMath} a11yLabel={invalidExpression ? `${t('calculus.derivBefore')}: ${beforeMath}` : c(`微積分推導步驟前公式: ${beforeMath} / Calculus derivation before: ${beforeMath}`)} />
           </div>
           <div className="formula-arrow">↓ <MathFormula math={c(step.ruleLatex)} a11yLabel={c(`規則: ${c(step.ruleLatex)} / Rule: ${c(step.ruleLatex)}`)} /></div>
           <div className="formula-row after">
