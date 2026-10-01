@@ -1,3 +1,5 @@
+import { use } from 'react'
+import { loadStemConceptCopy, stemConceptCopy } from '../../i18n/stemConceptCopy'
 import { stemVaultCopy } from '../../i18n/stemVaultCopy'
 import { stemCatalogCopy } from '../../i18n/stemCatalogCopy'
 import React, { useState } from 'react'
@@ -40,6 +42,7 @@ export const ChemistryPractice: React.FC<Props> = ({
   onNextUnit,
 }) => {
   const { locale, t } = useI18n()
+  if (locale === 'en') use(loadStemConceptCopy())
   const [viewMode, setViewMode] = useState<'textbook' | 'practice'>('textbook')
   const [currentIdx, setCurrentIdx] = useState(0)
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
@@ -210,7 +213,7 @@ export const ChemistryPractice: React.FC<Props> = ({
                     color: '#e2e8f0',
                   }}
                 >
-                  <MathFormula math={concept} />
+                  <MathFormula math={stemConceptCopy(locale, concept)} />
                 </div>
               ))}
             </div>
@@ -234,7 +237,7 @@ export const ChemistryPractice: React.FC<Props> = ({
               <div>
                 <strong style={{ fontSize: '0.82rem', color: '#6ee7b7' }}>{locale === 'en' ? "🔬 Related interactive lab:" : "🔬 關聯互動動態實驗室："}</strong>
                 <span style={{ fontSize: '0.8rem', color: '#cbd5e1', marginLeft: '0.25rem' }}>
-                  {locale === 'en' ? `This unit has an interactive lab (${unit.suggestedLab}). Open it from the sidebar to explore.` : `本單元具備專屬化學虛擬動態實驗室 (${unit.suggestedLab})，可於側邊欄即時開啟探索。`}
+                  {locale === 'en' ? `This unit has an interactive lab (${stemConceptCopy(locale, unit.suggestedLab)}). Open it from the sidebar to explore.` : `本單元具備專屬化學虛擬動態實驗室 (${unit.suggestedLab})，可於側邊欄即時開啟探索。`}
                 </span>
               </div>
             </div>

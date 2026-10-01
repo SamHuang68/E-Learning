@@ -1,3 +1,4 @@
+import { useMathLabCopy } from '../../i18n/mathLabCopy'
 import React, { useState } from 'react'
 
 type Props = {
@@ -9,6 +10,7 @@ type Props = {
  * 包含 9x9 矩陣互動點讀表與即時速算闖關模式。
  */
 export const MultiplicationLab: React.FC<Props> = ({ onXp }) => {
+  const ml = useMathLabCopy()
   const [selectedRow, setSelectedRow] = useState<number | null>(null)
   const [selectedCol, setSelectedCol] = useState<number | null>(null)
   const [quizMode, setQuizMode] = useState(false)
@@ -16,7 +18,7 @@ export const MultiplicationLab: React.FC<Props> = ({ onXp }) => {
   const [quizB, setQuizB] = useState(8)
   const [userAnswer, setUserAnswer] = useState('')
   const [score, setScore] = useState(0)
-  const [feedback, setFeedback] = useState<string | null>(null)
+  const [feedback, setFeedback] = useState<'correct' | 'wrong' | null>(null)
 
   function nextQuestion() {
     const a = Math.floor(Math.random() * 8) + 2 // 2~9
@@ -38,7 +40,7 @@ export const MultiplicationLab: React.FC<Props> = ({ onXp }) => {
         nextQuestion()
       }, 700)
     } else {
-      setFeedback(`答錯囉！${quizA} × ${quizB} = ${correct}`)
+      setFeedback('wrong')
     }
   }
 
@@ -46,10 +48,8 @@ export const MultiplicationLab: React.FC<Props> = ({ onXp }) => {
     <div className="math-lab multiplication-lab">
       <div className="lab-header">
         <div>
-          <h3>九九乘法速算教室 (9×9 Multiplication)</h3>
-          <p className="lab-desc">
-            點擊表格任意交叉格查看算式與幾何矩陣，或開啟速算闖關模式測驗熟練度！
-          </p>
+          <h3>{ml("九九乘法速算教室 (9×9 Multiplication)")}</h3>
+          <p className="lab-desc">{ml("點擊表格任意交叉格查看算式與幾何矩陣，或開啟速算闖關模式測驗熟練度！")}</p>
         </div>
         <button
           type="button"
@@ -59,7 +59,7 @@ export const MultiplicationLab: React.FC<Props> = ({ onXp }) => {
             if (!quizMode) nextQuestion()
           }}
         >
-          {quizMode ? '返回九九乘法表' : '⚡ 開啟速算闖關'}
+          {quizMode ? ml("返回九九乘法表") : ml("⚡ 開啟速算闖關")}
         </button>
       </div>
 
@@ -107,9 +107,7 @@ export const MultiplicationLab: React.FC<Props> = ({ onXp }) => {
               <h4>
                 {selectedRow} × {selectedCol} = {selectedRow * selectedCol}
               </h4>
-              <p>
-                意義：{selectedCol} 份，每份有 {selectedRow} 個（共連加 {selectedCol} 次 {selectedRow}）。
-              </p>
+              <p>{ml("意義：")}{selectedCol}{ml(" 份，每份有 ")}{selectedRow}{ml(" 個（共連加 ")}{selectedCol}{ml(" 次 ")}{selectedRow}{ml("）。")}</p>
               <div className="dot-matrix">
                 {Array.from({ length: selectedRow }).map((_, r) => (
                   <div key={r} className="dot-row">
@@ -136,23 +134,21 @@ export const MultiplicationLab: React.FC<Props> = ({ onXp }) => {
                 type="number"
                 value={userAnswer}
                 onChange={(e) => setUserAnswer(e.target.value)}
-                placeholder="輸入答案"
+                placeholder={ml("輸入答案")}
                 autoFocus
                 className="input-quiz-answer"
               />
-              <button type="submit" className="btn-primary">
-                確認
-              </button>
+              <button type="submit" className="btn-primary">{ml("確認")}</button>
             </form>
 
             {feedback === 'correct' && (
-              <p className="quiz-feedback-correct">🎉 太棒了！答對了 +3 XP</p>
+              <p className="quiz-feedback-correct">{ml("🎉 太棒了！答對了 +3 XP")}</p>
             )}
             {feedback && feedback !== 'correct' && (
-              <p className="quiz-feedback-wrong">{feedback}</p>
+              <p className="quiz-feedback-wrong">{ml("答錯囉！{v0} × {v1} = {v2}", [quizA, quizB, quizA * quizB])}</p>
             )}
 
-            <div className="quiz-score-badge">已連續答對：{score} 題</div>
+            <div className="quiz-score-badge">{ml("已連續答對：")}{score}{ml(" 題")}</div>
           </div>
         </div>
       )}

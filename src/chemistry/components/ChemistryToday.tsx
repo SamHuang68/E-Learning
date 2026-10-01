@@ -1,3 +1,5 @@
+import { use } from 'react'
+import { loadStemConceptCopy, stemConceptCopy } from '../../i18n/stemConceptCopy'
 import { stemCatalogCopy } from '../../i18n/stemCatalogCopy'
 import { stemVaultCopy } from '../../i18n/stemVaultCopy'
 import React from 'react'
@@ -32,6 +34,7 @@ export const ChemistryToday: React.FC<Props> = ({
   onOpenSignals,
 }) => {
   const { t, locale } = useI18n()
+  if (locale === 'en') use(loadStemConceptCopy())
   return (
     <div className="math-today-view chemistry-today-view">
       {/* 頂部年級 Banner */}
@@ -122,7 +125,7 @@ export const ChemistryToday: React.FC<Props> = ({
             <div key={idx} className="concept-item-card" style={{ borderLeftColor: '#059669' }}>
               <span className="concept-idx" style={{ color: '#059669' }}>{t('math.today.conceptN', { n: `0${idx + 1}` })}</span>
               <div className="concept-text">
-                <MathFormula math={concept} />
+                <MathFormula math={stemConceptCopy(locale, concept)} />
               </div>
             </div>
           ))}

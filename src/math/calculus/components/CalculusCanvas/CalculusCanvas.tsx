@@ -1,3 +1,4 @@
+import { useCalculusCopy } from '../../../../i18n/calculusCopy'
 import React, { useMemo } from 'react'
 import { CoordinateViewport } from './CoordinateViewport'
 import {
@@ -26,6 +27,7 @@ export const CalculusCanvas: React.FC<CalculusCanvasProps> = ({
   epsilon = 0.5,
   className = '',
 }) => {
+  const c = useCalculusCopy()
   const width = 600
   const height = 360
 
@@ -85,8 +87,8 @@ export const CalculusCanvas: React.FC<CalculusCanvasProps> = ({
   const y1 = f(x1)
   const secantSlope = (y1 - y0) / (deltaX || 1e-6)
   const probeText = parsed.ok
-    ? `x=${formatCalcNumber(x0)}，f=${formatCalcNumber(y0)}，f'=${formatCalcNumber(slope)}`
-    : `無法求值：${parsed.error}`
+    ? `x=${c(formatCalcNumber(x0))}，f=${c(formatCalcNumber(y0))}，f'=${c(formatCalcNumber(slope))}`
+    : c(`無法求值：${parsed.error}`)
 
   // 黎曼和長條切片數據
   const riemannBars = useMemo(() => {
@@ -136,27 +138,27 @@ export const CalculusCanvas: React.FC<CalculusCanvasProps> = ({
 
   const graphSummary = useMemo(() => {
     if (!parsed.ok) {
-      return `函數 f(x)=${expression} 無法解析：${parsed.error}`
+      return c(`函數 f(x)=${expression} 無法解析：${parsed.error}`)
     }
-    const base = `函數 f(x)=${expression}，顯示範圍 x 從 ${transform.minX.toFixed(1)} 到 ${transform.maxX.toFixed(1)}，y 從 ${transform.minY.toFixed(1)} 到 ${transform.maxY.toFixed(1)}。探索點 x=${formatCalcNumber(x0)}，f(x)=${formatCalcNumber(y0)}。`
+    const base = c(`函數 f(x)=${expression}，顯示範圍 x 從 ${transform.minX.toFixed(1)} 到 ${transform.maxX.toFixed(1)}，y 從 ${transform.minY.toFixed(1)} 到 ${transform.maxY.toFixed(1)}。探索點 x=${c(formatCalcNumber(x0))}，f(x)=${c(formatCalcNumber(y0))}。`)
     if (mode === 'tangent_secant' || mode === 'optimization_mvt') {
-      return `${base} 切線斜率 ${formatCalcNumber(slope)}；割線斜率 ${formatCalcNumber(secantSlope)}。`
+      return c(`${base} 切線斜率 ${c(formatCalcNumber(slope))}；割線斜率 ${c(formatCalcNumber(secantSlope))}。`)
     }
     if (mode === 'riemann_sum' || mode === 'ftc_accumulation') {
-      return `${base} 積分區間 ${intA.toFixed(1)} 到 ${(mode === 'ftc_accumulation' ? x0 : intB).toFixed(1)}，使用 ${slicesN} 個切片。`
+      return c(`${base} 積分區間 ${intA.toFixed(1)} 到 ${(mode === 'ftc_accumulation' ? x0 : intB).toFixed(1)}，使用 ${slicesN} 個切片。`)
     }
-    if (mode === 'taylor_series') return `${base} 顯示 ${taylorOrder} 階泰勒多項式近似。`
-    if (mode === 'limit_epsilon') return `${base} epsilon 容忍度 ${epsilon.toFixed(2)}，delta x ${deltaX.toFixed(3)}。`
+    if (mode === 'taylor_series') return c(`${base} 顯示 ${taylorOrder} 階泰勒多項式近似。`)
+    if (mode === 'limit_epsilon') return c(`${base} epsilon 容忍度 ${epsilon.toFixed(2)}，delta x ${deltaX.toFixed(3)}。`)
     if (mode === 'newton_slope_field' && newtonResult) {
-      return `${base} 牛頓法完成 ${newtonResult.iterations.length} 次迭代。`
+      return c(`${base} 牛頓法完成 ${newtonResult.iterations.length} 次迭代。`)
     }
     return base
-  }, [deltaX, epsilon, expression, intA, intB, mode, newtonResult, parsed, secantSlope, slicesN, slope, taylorOrder, transform, x0, y0])
+  }, [c, deltaX, epsilon, expression, intA, intB, mode, newtonResult, parsed, secantSlope, slicesN, slope, taylorOrder, transform, x0, y0])
 
   return (
     <div className={`calculus-canvas-card ${className}`}>
       <div className="canvas-header-bar">
-        <span className="canvas-badge">📈 60 FPS 向量幾何視口</span>
+        <span className="canvas-badge">{c("📈 60 FPS 向量幾何視口")}</span>
         <span className="canvas-coord-info">
           X: [{transform.minX.toFixed(1)}, {transform.maxX.toFixed(1)}] · Y: [{transform.minY.toFixed(1)}, {transform.maxY.toFixed(1)}]
         </span>
@@ -169,7 +171,7 @@ export const CalculusCanvas: React.FC<CalculusCanvasProps> = ({
         {probeText}
       </p>
       {parsed.ok ? null : (
-        <p className="canvas-parse-error">請修正函數表達式後再求值（不完整輸入如 x+ 會被拒絕）。</p>
+        <p className="canvas-parse-error">{c("請修正函數表達式後再求值（不完整輸入如 x+ 會被拒絕）。")}</p>
       )}
 
       <div className="canvas-svg-container" style={{ width: '100%', overflow: 'hidden' }}>
@@ -181,7 +183,7 @@ export const CalculusCanvas: React.FC<CalculusCanvasProps> = ({
           role="img"
           aria-labelledby="calculus-graph-title calculus-graph-desc"
         >
-          <title id="calculus-graph-title">互動函數圖：{expression}</title>
+          <title id="calculus-graph-title">{c("互動函數圖：")}{expression}</title>
           <desc id="calculus-graph-desc">{graphSummary}</desc>
           <defs>
             <clipPath id="calculus-viewport-clip">
@@ -236,7 +238,7 @@ export const CalculusCanvas: React.FC<CalculusCanvasProps> = ({
               {/* 雙語教學卡片標籤與驗證狀態 (非證書聲明) */}
               <text x={vp.toScreenX(transform.minX) + 10} y={30} fontSize="11" fill="#334155">{'ε-δ Def: ∀ε>0 ∃δ>0 s.t. |x-x₀|<δ ⇒ |f(x)-L|<ε'}</text>
               <text x={vp.toScreenX(transform.minX) + 10} y={45} fontSize="10" fill="#64748b">{'Limit ε-δ: for every ε>0 there is δ>0 so |x-x0|<δ implies |f(x)-L|<ε'}</text>
-              <text x={vp.toScreenX(x0) + 15} y={vp.toScreenY(y0) - 15} fontSize="10" fill="#854d0e">L=f(x₀)={formatCalcNumber(y0)}</text>
+              <text x={vp.toScreenX(x0) + 15} y={vp.toScreenY(y0) - 15} fontSize="10" fill="#854d0e">L=f(x₀)={c(formatCalcNumber(y0))}</text>
             </>
           )}
 
@@ -347,21 +349,21 @@ export const CalculusCanvas: React.FC<CalculusCanvasProps> = ({
       <p className="sr-only" aria-live="polite">{graphSummary}</p>
 
       <div className="canvas-footer-legend">
-        <span className="legend-item"><span className="dot blue" /> 原函數 f(x)</span>
+        <span className="legend-item"><span className="dot blue" />{c(" 原函數 f(x)")}</span>
         {(mode === 'tangent_secant' || mode === 'optimization_mvt') && (
           <>
-            <span className="legend-item"><span className="line green-dash" /> 切線 f'(x0)={formatCalcNumber(slope)}</span>
-            <span className="legend-item"><span className="line red" /> 割線 Δy/Δx={formatCalcNumber(secantSlope)}</span>
+            <span className="legend-item"><span className="line green-dash" />{c(" 切線 f'(x0)=")}{c(formatCalcNumber(slope))}</span>
+            <span className="legend-item"><span className="line red" />{c(" 割線 Δy/Δx=")}{c(formatCalcNumber(secantSlope))}</span>
           </>
         )}
         {mode === 'riemann_sum' && (
-          <span className="legend-item"><span className="box blue-fill" /> 黎曼和長條 (N={slicesN})</span>
+          <span className="legend-item"><span className="box blue-fill" />{c(" 黎曼和長條 (N=")}{slicesN})</span>
         )}
         {mode === 'taylor_series' && (
-          <span className="legend-item"><span className="line purple-dash" /> 泰勒多項式 (Order {taylorOrder})</span>
+          <span className="legend-item"><span className="line purple-dash" />{c(" 泰勒多項式 (Order ")}{taylorOrder})</span>
         )}
         {mode === 'newton_slope_field' && (
-          <span className="legend-item"><span className="line orange" /> 牛頓法切線逼近軌跡</span>
+          <span className="legend-item"><span className="line orange" />{c(" 牛頓法切線逼近軌跡")}</span>
         )}
       </div>
     </div>

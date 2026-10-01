@@ -3,6 +3,7 @@ import { loadUiLocale, UI_LOCALE_EVENT, type UiLocale } from '../i18n/locale'
 import { LocaleToggle } from '../i18n/i18n'
 import { translate } from '../i18n/messages'
 import { sanitizeClientError } from '../utils/sanitizeClientError'
+import { isChunkLoadError } from '../utils/chunkLoadError'
 
 type Props = {
   children: ReactNode
@@ -41,10 +42,7 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.state.error) {
       const t = (key: Parameters<typeof translate>[1], vars?: Record<string, string | number>) =>
         translate(this.state.locale, key, vars)
-      const isChunkError =
-        this.state.error.message.includes('dynamically imported module') ||
-        this.state.error.message.includes('Failed to fetch') ||
-        this.state.error.message.includes('Loading chunk')
+      const isChunkError = isChunkLoadError(this.state.error)
 
       return (
         <div className="error-boundary" role="alert">

@@ -18,7 +18,7 @@ import {
   PHYSICS_STRAND_NAMES,
 } from '../data/curriculum'
 import { PHYSICS_MOCK_EXAMS } from '../data/mockExams'
-import { PHYSICS_SOLVING_SIGNALS } from '../data/solvingSignals'
+import { findMatchingSignal } from '../utils/vaultSignal'
 import { MathFormula } from '../../math/components/MathFormula'
 import { exportErrorVaultToAnki } from '../../utils/ankiExporter'
 
@@ -192,20 +192,6 @@ function resolvePhysicsLab(
 /**
  * 取得與題目最匹配的 3 秒破題訊號資料
  */
-function findMatchingSignal(q: PhysicsQuestion) {
-  const text = `${q.title} ${q.question} ${q.solution}`.toLowerCase()
-  return (
-    PHYSICS_SOLVING_SIGNALS.find((s) => {
-      const topicLower = s.topic.toLowerCase()
-      const signalLower = s.problemSignal.toLowerCase()
-      return (
-        (s.strand === q.strand && text.includes(topicLower.slice(0, 4))) ||
-        signalLower.split(' ').some((kw) => kw.length > 2 && text.includes(kw))
-      )
-    }) ||
-    PHYSICS_SOLVING_SIGNALS.find((s) => s.strand === q.strand)
-  )
-}
 
 /**
  * 物理弱點錯題筆記本元件
@@ -598,7 +584,7 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
                             </p>
                           ) : (
                             <p style={{ margin: 0 }}>
-                              {stemVaultCopy(locale, '鎖定本題物理主軸【{strand}】，釐清已知物理量與待求未知量之函數關係。', { strand: item.strandName })}
+                              <MathFormula math={q.hint || stemVaultCopy(locale, '鎖定本題物理主軸【{strand}】，釐清已知物理量與待求未知量之函數關係。', { strand: item.strandName })} />
                             </p>
                           )}
                         </div>
@@ -614,7 +600,7 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
                           {matchedSignal?.firstStepFormula ? (
                             <MathFormula math={`$$${stemVaultCopy(locale, matchedSignal.firstStepFormula)}$$`} block />
                           ) : (
-                            <MathFormula math={stemVaultCopy(locale, "依據物理定律列出方程式（如 $F = ma$, $E_k = \\frac{1}{2}mv^2$, $n_1\\sin\\theta_1 = n_2\\sin\\theta_2$, $V = IR$）。")} />
+                            <MathFormula math={stemVaultCopy(locale, '依據本題主軸【{strand}】選擇適用的定義或關係式，逐一對照題目已知條件與單位。', { strand: item.strandName })} />
                           )}
                         </div>
                       </div>
@@ -640,7 +626,7 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
                           {q.hint ? (
                             <div><strong>{stemVaultCopy(locale, "⚠️ 考點警示：")}</strong>{q.hint}</div>
                           ) : (
-                            <MathFormula math={stemVaultCopy(locale, "⚠️ 常見盲區：注意 SI 單位制換算（如 $\\text{cm} \\rightarrow \\text{m}$、$\\text{gw} \\rightarrow \\text{N}$），向量方向性正負號，以及能量守恆中的散熱損失。")} />
+                            <div><strong>{stemVaultCopy(locale, "⚠️ 常見盲區：")}</strong>{stemVaultCopy(locale, "核對本題主軸【{strand}】的適用條件、符號定義與單位，勿直接套用其他情境的結論。", { strand: item.strandName })}</div>
                           )}
                         </div>
                       </div>

@@ -1,6 +1,10 @@
 import type { UiLocale } from './locale'
+import { ChunkLoadError } from '../utils/chunkLoadError'
 
 export const STEM_VAULT_EN: Readonly<Record<string, string>> = {
+  "核對本題主軸【{strand}】的適用條件、符號定義與單位，勿直接套用其他情境的結論。": "Check the assumptions, symbol definitions, and units for this strand [{strand}]. Do not apply conclusions from a different setting without checking them.",
+  "鎖定本題主軸【{strand}】，辨認題目條件、物質性質與待求量。": "Focus on the strand [{strand}]. Identify the given conditions, material properties, and unknown quantities.",
+  "依據本題主軸【{strand}】選擇適用的定義或關係式，逐一對照題目已知條件與單位。": "For this strand [{strand}], select the applicable definition or relationship, then check it against the given conditions and units.",
   "化學進階複習題目 ({id})": "Advanced chemistry review question ({id})",
   "物理進階複習題目 ({id})": "Advanced physics review question ({id})",
   "本題為歷次練習之重點錯題，請檢視化學反應式與計量推導並前往實驗室重溫觀念。": "This item was missed in earlier practice. Review chemical equations and stoichiometric reasoning, then revisit the concepts in the lab.",
@@ -118,6 +122,9 @@ export function loadStemVaultContentCopy() {
   return contentCopyPromise ??= import('./stemVaultContentEn').then(({ STEM_VAULT_CONTENT_EN }) => {
     contentCopy = STEM_VAULT_CONTENT_EN
     return contentCopy
+  }).catch(cause => {
+    // Keep the promise stable for React.use; recovery reloads the page and its module cache.
+    throw new ChunkLoadError('Unable to load English question content. Reload to retry.', { cause })
   })
 }
 
@@ -145,7 +152,8 @@ export function localizeStemVaultQuestion<T extends {
 }>(locale: UiLocale, question: T): T {
   return {
     ...question,
-    title: stemVaultCopy(locale, question.title, { id: question.id }),
+    // IDs are opaque user data, not translated copy. Validate the template before inserting them.
+    title: stemVaultCopy(locale, question.title).replace(/\{id\}/g, () => question.id),
     question: stemVaultCopy(locale, question.question),
     solution: stemVaultCopy(locale, question.solution),
     ...(question.options && { options: question.options.map(text => stemVaultCopy(locale, text)) }),

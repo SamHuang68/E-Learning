@@ -1,3 +1,4 @@
+import { useCalculusCopy } from '../i18n/calculusCopy'
 import React, { useState, useMemo, Suspense } from 'react'
 import { Breadcrumbs } from '../components/Breadcrumbs'
 import { CalculusSidebar, type CalculusNavId } from './components/CalculusSidebar'
@@ -48,6 +49,7 @@ const LazyCalculusCanvas = lazyWithRetry(
  * 提供 7 大幾何動態實驗室、符號推導解題器、4 階 IRT 自適應挑戰與微認證成就館。
  */
 export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
+  const c = useCalculusCopy()
   const { t } = useI18n()
   const [activeNav, setActiveNav] = useState<CalculusNavId>('canvas_lab')
   const [mode, setMode] = useState<CalculusLabMode>('tangent_secant')
@@ -177,7 +179,7 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
             <div className="section-header-row">
               <div>
                 <h2>🏆 {t('calculus.badgesHall')}</h2>
-                <p className="section-subtext">完成 4 階能力挑戰與推導解題，解鎖對應領域微認證勳章</p>
+                <p className="section-subtext">{c("完成 4 階能力挑戰與推導解題，解鎖對應領域微認證勳章")}</p>
               </div>
             </div>
 
@@ -188,19 +190,18 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
                     <span className="badge-icon-display">{b.icon}</span>
                     <span className="badge-reward-pill">+{b.xpReward} XP</span>
                   </div>
-                  <h3>{b.title}</h3>
-                  <p className="badge-card-desc">{b.description}</p>
+                  <h3>{c(b.title)}</h3>
+                  <p className="badge-card-desc">{c(b.description)}</p>
                   <div className="badge-criteria-box">
-                    <small>解鎖條件：</small>
-                    <span>{b.condition}</span>
+                    <small>{c("解鎖條件：")}</small>
+                    <span>{c(b.condition)}</span>
                   </div>
                   <button
                     type="button"
                     className="btn-badge-challenge"
                     onClick={() => setActiveNav('adaptive_practice')}
                   >
-                    前往挑戰 →
-                  </button>
+                    {c("前往挑戰 →")}</button>
                 </div>
               ))}
             </div>
@@ -242,7 +243,7 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
 
                 {activeNav === 'step_solver' && (
                   <LazyStepByStepSolver
-                    problemTitle={`求函數 f(x) = ${expression} 的符號導函數與臨界點`}
+                    problemTitle={c(`求函數 f(x) = ${expression} 的符號導函數與臨界點`)}
                     steps={dynamicSteps}
                     currentStepIndex={currentStepIdx}
                     onStepChange={setCurrentStepIdx}
@@ -286,8 +287,8 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
 
         {/* 底部頁腳 */}
         <footer className="math-footer calculus-footer">
-          <span>∫ 微積分互動學習平台 · 幾何動態可視化、符號步驟推導與 2PL IRT 自適應評量</span>
-          <span>一般數學作答進度儲存於本機 · 微積分工作台參數為本次工作階段</span>
+          <span>{c("∫ 微積分互動學習平台 · 幾何動態可視化、符號步驟推導與 2PL IRT 自適應評量")}</span>
+          <span>{c("一般數學作答進度儲存於本機 · 微積分工作台參數為本次工作階段")}</span>
         </footer>
       </section>
 
@@ -296,20 +297,19 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         <div className="calculus-badge-modal-overlay" onClick={clearBadgeNotification}>
           <div className="calculus-badge-modal-card" onClick={(e) => e.stopPropagation()}>
             <div className="badge-unlock-animation">🏆</div>
-            <h3>恭喜解鎖微積分微認證！</h3>
+            <h3>{c("恭喜解鎖微積分微認證！")}</h3>
             {newlyUnlockedBadges.map((badge) => (
               <div key={badge.id} className="unlocked-badge-detail">
                 <span className="badge-icon-lg">{badge.icon}</span>
                 <div>
-                  <strong>{badge.title}</strong>
-                  <p>{badge.description}</p>
+                  <strong>{c(badge.title)}</strong>
+                  <p>{c(badge.description)}</p>
                   <span className="reward-tag">+{badge.xpReward} XP</span>
                 </div>
               </div>
             ))}
             <button type="button" className="btn-close-modal" onClick={clearBadgeNotification}>
-              太棒了，繼續挑戰！
-            </button>
+              {c("太棒了，繼續挑戰！")}</button>
           </div>
         </div>
       )}

@@ -83,12 +83,13 @@ export function ToeicSidebar({
   onSwitchLang,
   errorCount = 0,
 }: Props) {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const isJa = instructionLang === 'ja'
+  const isEn = locale === 'en' && !isJa
 
   const items: { id: ToeicNavId; icon: string; label: string; badge?: string }[] = [
     { id: 'today', icon: '★', label: isJa ? '今日学習' : t('en.nav.today') },
-    { id: 'synthesis', icon: '系', label: isJa ? '英語の整理シリーズ' : t('en.nav.synthesis') },
+    { id: 'synthesis', icon: isEn ? '≡' : '系', label: isJa ? '英語の整理シリーズ' : t('en.nav.synthesis') },
     { id: 'chunks', icon: '⚡', label: isJa ? 'ビジネスチャンク' : t('en.nav.chunks') },
     { id: 'signals', icon: '🎯', label: isJa ? '3秒解答シグナル' : t('en.nav.signals') },
     { id: 'double-passage', icon: '📑', label: isJa ? '複数文書読解' : t('en.nav.double') },
@@ -133,10 +134,10 @@ export function ToeicSidebar({
     { id: 'vocab', icon: 'V', label: isJa ? '単語練習' : t('en.nav.vocab') },
     { id: 'listening', icon: '♪', label: isJa ? 'リスニング' : t('en.nav.listening') },
     { id: 'grammar', icon: 'G', label: isJa ? '文法クラス' : t('en.nav.grammar') },
-    { id: 'placement', icon: '級', label: isJa ? 'レベル判定' : t('en.nav.placement') },
-    { id: 'mock', icon: '模', label: isJa ? '模擬試験' : t('en.nav.mock') },
-    { id: 'scenario', icon: '場', label: isJa ? 'シチュエーション' : t('en.nav.scenario') },
-    { id: 'speaking', icon: '話', label: isJa ? 'シャドーイング' : t('en.nav.speaking') },
+    { id: 'placement', icon: isEn ? '↗' : '級', label: isJa ? 'レベル判定' : t('en.nav.placement') },
+    { id: 'mock', icon: isEn ? '✎' : '模', label: isJa ? '模擬試験' : t('en.nav.mock') },
+    { id: 'scenario', icon: isEn ? '◎' : '場', label: isJa ? 'シチュエーション' : t('en.nav.scenario') },
+    { id: 'speaking', icon: isEn ? '♫' : '話', label: isJa ? 'シャドーイング' : t('en.nav.speaking') },
   ]
 
   return (
@@ -160,7 +161,7 @@ export function ToeicSidebar({
       <div style={{ padding: '0.4rem 0.8rem', borderBottom: '1px solid var(--line)', background: 'var(--surface-soft)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.7rem', color: 'var(--muted)', marginBottom: '0.25rem' }}>
           <span>{isJa ? '解説言語' : t('en.explainLang')}</span>
-          <span style={{ fontWeight: 700, color: '#38bdf8' }}>{isJa ? '🇯🇵 日本語' : '🇹🇼 繁中'}</span>
+          <span style={{ fontWeight: 700, color: '#38bdf8' }}>{isJa ? '🇯🇵 日本語' : isEn ? t('en.zhTw') : '🇹🇼 繁中'}</span>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.25rem' }}>
           <button
@@ -204,7 +205,7 @@ export function ToeicSidebar({
           style={{ '--level-color': cert.color } as CSSProperties}
         >
           <strong>
-            {cert.name}
+            {isEn ? cert.nameEn : cert.name}
             <small>
               {cert.scoreMin}–{cert.scoreMax}
             </small>
@@ -212,7 +213,7 @@ export function ToeicSidebar({
           <span>{cert.nameEn}</span>
         </div>
         <p className="score-disclaimer" style={{ fontSize: '0.75rem', opacity: 0.85, margin: '0.35rem 0' }}>
-          {isJa ? cert.disclaimer.replace('分數級距', 'スコアバンド') : `${cert.disclaimer} (${cert.disclaimerEn})`}
+          {isJa ? cert.disclaimer.replace('分數級距', 'スコアバンド') : isEn ? cert.disclaimerEn : `${cert.disclaimer} (${cert.disclaimerEn})`}
         </p>
         <span style={{ display: 'block', marginTop: '0.55rem' }}>
           {isJa ? `本レベル進捗 ${progressPct}% · Unit ${unit.id}` : t('en.progress', { pct: progressPct, id: unit.id })}

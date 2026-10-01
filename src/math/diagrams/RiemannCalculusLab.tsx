@@ -1,3 +1,4 @@
+import { useCalculusCopy } from '../../i18n/calculusCopy'
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { RIEMANN_PRESETS } from '../data/diagramPresets'
 
@@ -6,6 +7,7 @@ import { RIEMANN_PRESETS } from '../data/diagramPresets'
  * 高中微積分核心：將定積分看作長條切片無限細分的極限，親手調整切片數 N 觀察階梯逼近連續曲線。
  */
 export const RiemannCalculusLab: React.FC = () => {
+  const c = useCalculusCopy()
   const [selectedPresetId, setSelectedPresetId] = useState<string>(RIEMANN_PRESETS[0].id)
   const [slicesN, setSlicesN] = useState<number>(8)
   const [sumMode, setSumMode] = useState<'left' | 'right' | 'mid'>('mid')
@@ -107,8 +109,8 @@ export const RiemannCalculusLab: React.FC = () => {
     <div className="riemann-calculus-card">
       <div className="solver-top-bar">
         <div className="solver-title-block">
-          <h3>📈 黎曼和與定積分切片極限 (Riemann Sum)</h3>
-          <p>定積分不是玄學公式！拖動滑桿將切片數 $N$ 從 4 增加到 100，親眼目睹矩陣和收斂至平滑曲線面積。</p>
+          <h3>{c("📈 黎曼和與定積分切片極限 (Riemann Sum)")}</h3>
+          <p>{c("定積分不是玄學公式！拖動滑桿將切片數 $N$ 從 4 增加到 100，親眼目睹矩陣和收斂至平滑曲線面積。")}</p>
         </div>
 
         <div className="preset-tabs">
@@ -119,7 +121,7 @@ export const RiemannCalculusLab: React.FC = () => {
               className={`pill-btn ${p.id === selectedPresetId ? 'active' : ''}`}
               onClick={() => setSelectedPresetId(p.id)}
             >
-              {p.title.split('：')[0]}
+              {c(p.title.split('：')[0])}
             </button>
           ))}
         </div>
@@ -129,10 +131,10 @@ export const RiemannCalculusLab: React.FC = () => {
         {/* Canvas 曲線與階梯和繪製區 */}
         <div className="canvas-container" style={{ width: '100%', overflow: 'hidden', minWidth: 0 }}>
           <div className="riemann-badges" style={{ flexWrap: 'wrap', gap: '0.35rem', marginBottom: '0.4rem' }}>
-            <span className="badge-fn">🔴 曲線 ${preset.fnLatex}$</span>
-            <span className="badge-slices">切片數 $N = {slicesN}$</span>
+            <span className="badge-fn">{c("🔴 曲線 $")}{preset.fnLatex}$</span>
+            <span className="badge-slices">{c("切片數 $N = ")}{slicesN}$</span>
             <span className="badge-approx">
-              黎曼和 $\approx {riemannSum.toFixed(3)}$ (精確值 {preset.exactIntegral})
+              {c("黎曼和 $\\approx ")}{riemannSum.toFixed(3)}{c("$ (精確值 ")}{preset.exactIntegral})
             </span>
           </div>
 
@@ -149,13 +151,13 @@ export const RiemannCalculusLab: React.FC = () => {
         <div className="riemann-controls-panel">
           <div className="slider-box">
             <div className="slider-label-row">
-              <label>切片細分數 $N$：<strong>{slicesN}</strong></label>
+              <label>{c("切片細分數 $N$：")}<strong>{slicesN}</strong></label>
               <span className="dx-hint">$\Delta x = {dx.toFixed(3)}$</span>
             </div>
             <input
               type="range"
-              aria-label="黎曼和切片細分數"
-              aria-valuetext={`${slicesN} 個切片`}
+              aria-label={c("黎曼和切片細分數")}
+              aria-valuetext={c(`${slicesN} 個切片`)}
               min="4"
               max="100"
               step="2"
@@ -165,44 +167,41 @@ export const RiemannCalculusLab: React.FC = () => {
           </div>
 
           <div className="mode-toggle-group">
-            <label className="group-title">取樣點模式：</label>
+            <label className="group-title">{c("取樣點模式：")}</label>
             <div className="btn-group">
               <button
                 type="button"
                 className={`btn-mode ${sumMode === 'left' ? 'active' : ''}`}
                 onClick={() => setSumMode('left')}
               >
-                左端點和 (Left)
-              </button>
+                {c("左端點和 (Left)")}</button>
               <button
                 type="button"
                 className={`btn-mode ${sumMode === 'mid' ? 'active' : ''}`}
                 onClick={() => setSumMode('mid')}
               >
-                中點和 (Midpoint)
-              </button>
+                {c("中點和 (Midpoint)")}</button>
               <button
                 type="button"
                 className={`btn-mode ${sumMode === 'right' ? 'active' : ''}`}
                 onClick={() => setSumMode('right')}
               >
-                右端點和 (Right)
-              </button>
+                {c("右端點和 (Right)")}</button>
             </div>
           </div>
 
           <div className="convergence-card">
-            <h5>🎯 極限逼近診斷：</h5>
+            <h5>{c("🎯 極限逼近診斷：")}</h5>
             <div className="stat-row">
-              <span>當前切片和：</span>
+              <span>{c("當前切片和：")}</span>
               <strong>{riemannSum.toFixed(4)}</strong>
             </div>
             <div className="stat-row">
-              <span>微積分精確定積分：</span>
+              <span>{c("微積分精確定積分：")}</span>
               <strong>{preset.exactIntegral.toFixed(4)}</strong>
             </div>
             <div className="stat-row">
-              <span>誤差百分比：</span>
+              <span>{c("誤差百分比：")}</span>
               <span className={`err-pill ${errorPct < 1 ? 'good' : ''}`}>
                 {errorPct.toFixed(2)}%
               </span>

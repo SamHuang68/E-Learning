@@ -17,7 +17,7 @@ import {
   type ChemistryQuestion,
 } from '../data/curriculum'
 import { CHEMISTRY_MOCK_EXAMS } from '../data/mockExams'
-import { CHEMISTRY_SOLVING_SIGNALS } from '../data/solvingSignals'
+import { findMatchingChemistrySignal } from '../utils/vaultSignal'
 import { MathFormula } from '../../math/components/MathFormula'
 import { exportErrorVaultToAnki } from '../../utils/ankiExporter'
 import { useI18n } from '../../i18n/i18n'
@@ -239,20 +239,6 @@ function resolveChemistryLab(
 /**
  * 取得與化學題目最匹配的 3 秒破題訊號資料
  */
-function findMatchingChemistrySignal(q: ChemistryQuestion) {
-  const text = `${q.title} ${q.question} ${q.solution}`.toLowerCase()
-  return (
-    CHEMISTRY_SOLVING_SIGNALS.find((s) => {
-      const topicLower = s.topic.toLowerCase()
-      const signalLower = s.problemSignal.toLowerCase()
-      return (
-        text.includes(topicLower.slice(0, 4)) ||
-        signalLower.split(' ').some((kw) => kw.length > 2 && text.includes(kw))
-      )
-    }) ||
-    CHEMISTRY_SOLVING_SIGNALS[0]
-  )
-}
 
 /**
  * 化學弱點錯題筆記本元件
@@ -646,7 +632,7 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
                             </p>
                           ) : (
                             <p style={{ margin: 0 }}>
-                              {stemVaultCopy(locale, '鎖定本題化學主軸【{strand}】，精確分析化學反應平衡與物質莫耳關係。', { strand: item.strandName })}
+                              <MathFormula math={q.hint || stemVaultCopy(locale, '鎖定本題主軸【{strand}】，辨認題目條件、物質性質與待求量。', { strand: item.strandName })} />
                             </p>
                           )}
                         </div>
@@ -662,7 +648,7 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
                           {matchedSignal?.firstStepFormula ? (
                             <MathFormula math={`$$${stemVaultCopy(locale, matchedSignal.firstStepFormula)}$$`} block />
                           ) : (
-                            <MathFormula math={stemVaultCopy(locale, "列出平衡化學方程式與計量關係（如 $n = \\frac{W}{M} = C_M \\times V$, $PV = nRT$, $K_c = \\frac{[C]^c[D]^d}{[A]^a[B]^b}$）。")} />
+                            <MathFormula math={stemVaultCopy(locale, '依據本題主軸【{strand}】選擇適用的定義或關係式，逐一對照題目已知條件與單位。', { strand: item.strandName })} />
                           )}
                         </div>
                       </div>
@@ -689,7 +675,7 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
                             <div><strong>{stemVaultCopy(locale, "⚠️ 考點提示：")}</strong>{q.hint}</div>
                           ) : (
                             <div>
-                              <strong>{stemVaultCopy(locale, "⚠️ 常見盲區：")}</strong>{stemVaultCopy(locale, "注意限量試劑判斷（需莫耳數除以係數）、沉澱溶解度例外規則、酸鹼中和當量係數以及有效數字。")}
+                              <strong>{stemVaultCopy(locale, "⚠️ 常見盲區：")}</strong>{stemVaultCopy(locale, "核對本題主軸【{strand}】的適用條件、符號定義與單位，勿直接套用其他情境的結論。", { strand: item.strandName })}
                             </div>
                           )}
                         </div>

@@ -25,5 +25,13 @@ const EN: Record<ToeicCertificate['id'], Pick<ToeicCertificate, 'audience' | 'ma
 }
 
 export function localizeToeicCertificate(cert: ToeicCertificate, locale: UiLocale): ToeicCertificate {
-  return locale === 'en' ? { ...cert, ...EN[cert.id] } : cert
+  if (locale !== 'en') return cert
+  if (!Object.hasOwn(EN, cert.id)) throw new Error('缺少 TOEIC 證書英文翻譯：' + cert.id)
+  const copy = EN[cert.id]
+  for (const value of [copy.audience, copy.mapTitle, copy.mapDesc, cert.nameEn, cert.disclaimerEn]) {
+    if (!value.trim() || /[\u3040-\u30ff\u3400-\u9fff\uf900-\ufaff]/.test(value)) {
+      throw new Error('TOEIC 證書英文翻譯無效：' + cert.id)
+    }
+  }
+  return { ...cert, ...copy }
 }
