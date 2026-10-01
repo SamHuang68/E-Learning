@@ -1,5 +1,5 @@
 import { stemCatalogCopy } from '../../i18n/stemCatalogCopy'
-import { stemVaultCopy } from '../../i18n/stemVaultCopy'
+import { loadStemVaultContentCopy, localizeStemVaultQuestion, stemVaultCopy } from '../../i18n/stemVaultCopy'
 /**
  * 臺灣 108 課綱化學 · 錯題弱點診斷與實驗室直通筆記本 (Chemistry Error Vault & Lab Teleportation)
  *
@@ -10,7 +10,7 @@ import { stemVaultCopy } from '../../i18n/stemVaultCopy'
  * 4. 零溢出與平滑滾動：KaTeX 化學與數學算式具備平滑滾動保護，卡片極致緊湊排版，手機端 0 橫向溢出。
  */
 
-import React, { useState, useMemo } from 'react'
+import React, { use, useState, useMemo } from 'react'
 import {
   getAllChemistryUnits,
   chemistryStrandMessageKey,
@@ -263,6 +263,7 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
   onOpenLab,
 }) => {
   const { t, locale } = useI18n()
+  if (locale === 'en') use(loadStemVaultContentCopy())
   // 狀態：展開步驟診斷的卡片 ID 集合
   const [expandedSteps, setExpandedSteps] = useState<Record<string, boolean>>({})
   // 狀態：領域篩選
@@ -320,7 +321,7 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
         // 容錯備援：若 ID 未能在標準池中找到，動態建構基礎物件避免渲染中斷
         const fallbackQ: ChemistryQuestion = {
           id,
-          title: `化學進階複習題目 (${id})`,
+          title: '化學進階複習題目 ({id})',
           strand: 'reactions',
           type: 'choice',
           difficulty: 3,
@@ -342,7 +343,7 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
   // 3. 依據篩選條件過濾錯題列表
   const filteredQuestions = useMemo(() => {
     return errorQuestions.filter((item) => {
-      const q = item.question
+      const q = localizeStemVaultQuestion(locale, item.question)
 
       // 領域篩選
       if (selectedStrand !== 'all' && q.strand !== selectedStrand) {
@@ -373,7 +374,7 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
 
       return true
     })
-  }, [errorQuestions, selectedStrand, selectedSource, selectedDifficulty, searchQuery])
+  }, [errorQuestions, selectedStrand, selectedSource, selectedDifficulty, searchQuery, locale])
 
   // 展開 / 收起指定題目步驟拆解
   function toggleStep(qId: string) {
@@ -486,7 +487,7 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
             type="button"
             className="vault-chip-btn"
             style={{ background: 'rgba(16, 185, 129, 0.12)', color: '#10b981', borderColor: '#10b981' }}
-            onClick={() => exportErrorVaultToAnki(locale === 'en' ? 'Chemistry' : '化學', filteredQuestions.map((q) => q.question))}
+            onClick={() => exportErrorVaultToAnki(locale === 'en' ? 'Chemistry' : '化學', filteredQuestions.map((item) => localizeStemVaultQuestion(locale, item.question)))}
             title={stemVaultCopy(locale, "一鍵匯出當前篩選化學錯題至 Anki 記憶牌組")}
           >
             {stemVaultCopy(locale, '📑 匯出 Anki 牌組')}
@@ -548,9 +549,9 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
           {filteredQuestions.map((item) => {
-            const q = item.question
+            const q = localizeStemVaultQuestion(locale, item.question)
             const isStepOpen = Boolean(expandedSteps[q.id])
-            const matchedSignal = findMatchingChemistrySignal(q)
+            const matchedSignal = findMatchingChemistrySignal(item.question)
             const lab = item.matchedLab
 
             return (
@@ -640,12 +641,12 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
                         <div className="vault-step-content-text">
                           {matchedSignal ? (
                             <p style={{ margin: 0, color: '#065f46', fontWeight: 600 }}>
-                              【破題特徵】{matchedSignal.problemSignal} ➜{' '}
-                              <span style={{ color: '#059669' }}>{matchedSignal.threeSecondRule}</span>
+                              {stemVaultCopy(locale, '【破題特徵】')}{stemVaultCopy(locale, matchedSignal.problemSignal)} ➜{' '}
+                              <span style={{ color: '#059669' }}>{stemVaultCopy(locale, matchedSignal.threeSecondRule)}</span>
                             </p>
                           ) : (
                             <p style={{ margin: 0 }}>
-                              鎖定本題化學主軸【{item.strandName}】，精確分析化學反應平衡與物質莫耳關係。
+                              {stemVaultCopy(locale, '鎖定本題化學主軸【{strand}】，精確分析化學反應平衡與物質莫耳關係。', { strand: item.strandName })}
                             </p>
                           )}
                         </div>
@@ -659,9 +660,9 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
                         </div>
                         <div className="vault-step-content-text katex-scroll-protection">
                           {matchedSignal?.firstStepFormula ? (
-                            <MathFormula math={`$$${matchedSignal.firstStepFormula}$$`} block />
+                            <MathFormula math={`$$${stemVaultCopy(locale, matchedSignal.firstStepFormula)}$$`} block />
                           ) : (
-                            <MathFormula math="列出平衡化學方程式與計量關係（如 $n = \frac{W}{M} = C_M \times V$, $PV = nRT$, $K_c = \frac{[C]^c[D]^d}{[A]^a[B]^b}$）。" />
+                            <MathFormula math={stemVaultCopy(locale, "列出平衡化學方程式與計量關係（如 $n = \\frac{W}{M} = C_M \\times V$, $PV = nRT$, $K_c = \\frac{[C]^c[D]^d}{[A]^a[B]^b}$）。")} />
                           )}
                         </div>
                       </div>
@@ -688,7 +689,7 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
                             <div><strong>{stemVaultCopy(locale, "⚠️ 考點提示：")}</strong>{q.hint}</div>
                           ) : (
                             <div>
-                              <strong>⚠️ 常見盲區：</strong>注意限量試劑判斷（需莫耳數除以係數）、沉澱溶解度例外規則、酸鹼中和當量係數以及有效數字。
+                              <strong>{stemVaultCopy(locale, "⚠️ 常見盲區：")}</strong>{stemVaultCopy(locale, "注意限量試劑判斷（需莫耳數除以係數）、沉澱溶解度例外規則、酸鹼中和當量係數以及有效數字。")}
                             </div>
                           )}
                         </div>

@@ -1,6 +1,20 @@
 import type { UiLocale } from './locale'
 
-const EN: Record<string, string> = {
+export const STEM_VAULT_EN: Readonly<Record<string, string>> = {
+  "化學進階複習題目 ({id})": "Advanced chemistry review question ({id})",
+  "物理進階複習題目 ({id})": "Advanced physics review question ({id})",
+  "本題為歷次練習之重點錯題，請檢視化學反應式與計量推導並前往實驗室重溫觀念。": "This item was missed in earlier practice. Review chemical equations and stoichiometric reasoning, then revisit the concepts in the lab.",
+  "請回顧化學反應式配平、莫耳數計量守恆與平衡常數定義進行推導。": "Review balanced chemical equations, mole conservation and stoichiometry, and equilibrium-constant definitions to work through the solution.",
+  "本題為歷次練習之重點錯題，請檢視推導公式並前往實驗室重溫觀念。": "This item was missed in earlier practice. Review the formula derivation and revisit the concepts in the lab.",
+  "請回顧牛頓運動定律、能量守恆與電磁基本關係式進行推導。": "Review Newton's laws, energy conservation, and fundamental electromagnetic relationships to work through the solution.",
+  "【破題特徵】": "Problem cues: ",
+  "鎖定本題化學主軸【{strand}】，精確分析化學反應平衡與物質莫耳關係。": "Focus on the chemistry strand [{strand}]. Analyze reaction equilibrium and the mole relationships between substances.",
+  "鎖定本題物理主軸【{strand}】，釐清已知物理量與待求未知量之函數關係。": "Focus on the physics strand [{strand}]. Identify the relationships between known quantities and the unknowns.",
+  "⚠️ 常見盲區：": "⚠️ Common pitfalls: ",
+  "注意限量試劑判斷（需莫耳數除以係數）、沉澱溶解度例外規則、酸鹼中和當量係數以及有效數字。": "Check the limiting reagent (divide moles by stoichiometric coefficients), exceptions to solubility rules, acid-base neutralization equivalents, and significant figures.",
+  "列出平衡化學方程式與計量關係（如 $n = \\frac{W}{M} = C_M \\times V$, $PV = nRT$, $K_c = \\frac{[C]^c[D]^d}{[A]^a[B]^b}$）。": "Write balanced chemical equations and quantitative relationships, such as $n = \\frac{W}{M} = C_M \\times V$, $PV = nRT$, and $K_c = \\frac{[C]^c[D]^d}{[A]^a[B]^b}$.",
+  "依據物理定律列出方程式（如 $F = ma$, $E_k = \\frac{1}{2}mv^2$, $n_1\\sin\\theta_1 = n_2\\sin\\theta_2$, $V = IR$）。": "Write equations using physical laws, such as $F = ma$, $E_k = \\frac{1}{2}mv^2$, $n_1\\sin\\theta_1 = n_2\\sin\\theta_2$, and $V = IR$.",
+  "⚠️ 常見盲區：注意 SI 單位制換算（如 $\\text{cm} \\rightarrow \\text{m}$、$\\text{gw} \\rightarrow \\text{N}$），向量方向性正負號，以及能量守恆中的散熱損失。": "⚠️ Common pitfalls: Check SI unit conversions (such as $\\text{cm} \\rightarrow \\text{m}$ and $\\text{gw} \\rightarrow \\text{N}$), signs for vector directions, and heat loss in energy-conservation calculations.",
   "必修": "Required",
   "國中必修": "Junior high required",
   "選修": "Elective",
@@ -97,8 +111,45 @@ const EN: Record<string, string> = {
   "🔢 九九乘法陣列盤": "🔢 Multiplication array"
 }
 
-export function stemVaultCopy(locale: UiLocale, text: string): string {
-  if (locale !== 'en') return text
-  if (!Object.hasOwn(EN, text)) throw new Error('缺少錯題庫英文介面翻譯：' + text)
-  return EN[text]
+let contentCopy: Readonly<Record<string, string>> = {}
+let contentCopyPromise: Promise<Readonly<Record<string, string>>> | undefined
+
+export function loadStemVaultContentCopy() {
+  return contentCopyPromise ??= import('./stemVaultContentEn').then(({ STEM_VAULT_CONTENT_EN }) => {
+    contentCopy = STEM_VAULT_CONTENT_EN
+    return contentCopy
+  })
+}
+
+export function stemVaultCopy(locale: UiLocale, text: string, vars?: Record<string, string | number>): string {
+  let translated = text
+  if (locale === 'en') {
+    if (Object.hasOwn(STEM_VAULT_EN, text)) translated = STEM_VAULT_EN[text]
+    else if (Object.hasOwn(contentCopy, text)) translated = contentCopy[text]
+    else throw new Error('缺少錯題庫英文介面翻譯：' + text)
+  }
+  if (vars) translated = translated.replace(/\{(\w+)\}/g, (_match, key: string) => {
+    if (!Object.hasOwn(vars, key)) throw new Error('缺少錯題庫插值：' + key)
+    return String(vars[key])
+  })
+  if (locale === 'en' && (!translated.trim() || /[\u3040-\u30ff\u3400-\u9fff\uf900-\ufaff]/.test(translated))) {
+    throw new Error('錯題庫英文翻譯無效：' + text)
+  }
+  return translated
+}
+
+/** 只建立顯示用副本，原始題目仍用於解題訊號與實驗室關鍵字比對。 */
+export function localizeStemVaultQuestion<T extends {
+  id: string; title: string; question: string; solution: string
+  options?: string[]; hint?: string; competency?: string
+}>(locale: UiLocale, question: T): T {
+  return {
+    ...question,
+    title: stemVaultCopy(locale, question.title, { id: question.id }),
+    question: stemVaultCopy(locale, question.question),
+    solution: stemVaultCopy(locale, question.solution),
+    ...(question.options && { options: question.options.map(text => stemVaultCopy(locale, text)) }),
+    ...(question.hint && { hint: stemVaultCopy(locale, question.hint) }),
+    ...(question.competency && { competency: stemVaultCopy(locale, question.competency) }),
+  }
 }
