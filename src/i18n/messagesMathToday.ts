@@ -1,0 +1,33 @@
+export const MATH_TODAY_ZH = {
+  'math.today.classroom': '{name} · 數學素養教室',
+  'math.today.practice': '單元練習 ({title})',
+  'math.today.visual': '幾何圖示',
+  'math.today.lab': '專屬教具',
+  'math.today.mock': '練習卷',
+  'math.today.vault': '錯題本 ({count})',
+  'math.today.units': '課程單元路徑',
+  'math.today.unitCount': '共 {count} 個核心單元',
+  'math.today.unitN': '單元 {n}',
+  'math.today.donePct': '{done}/{total} 題完成 ({pct}%)',
+  'math.today.inProgress': '進行中',
+  'math.today.concepts': '單元 {n} 核心概念與必考重點',
+  'math.today.conceptN': '重點 {n}',
+  'math.today.labs': '互動幾何與算式實驗室',
+} as const
+
+export const MATH_TODAY_EN: { [K in keyof typeof MATH_TODAY_ZH]: string } = {
+  'math.today.classroom': '{name} · math classroom',
+  'math.today.practice': 'Unit practice ({title})',
+  'math.today.visual': 'Geometry figures',
+  'math.today.lab': 'Unit lab',
+  'math.today.mock': 'Practice paper',
+  'math.today.vault': 'Error notebook ({count})',
+  'math.today.units': 'Curriculum units',
+  'math.today.unitCount': '{count} core units',
+  'math.today.unitN': 'Unit {n}',
+  'math.today.donePct': '{done}/{total} items ({pct}%)',
+  'math.today.inProgress': 'In progress',
+  'math.today.concepts': 'Unit {n} concepts',
+  'math.today.conceptN': 'Point {n}',
+  'math.today.labs': 'Geometry and algebra labs',
+}

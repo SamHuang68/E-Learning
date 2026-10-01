@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { translate } from '../i18n/messages'
 
 describe('practice answer field labels', () => {
   it('associates the shared fill-blank input with visible prompt ids', () => {
@@ -32,10 +33,11 @@ describe('SRS grade live region', () => {
     expect(src).toContain('aria-atomic="true"')
     expect(src).toContain('copy.srsGood')
     expect(src).toContain('copy.srsAgain')
-    expect(src).toContain("srsGood: 'SRS Good'")
-    expect(src).toContain("srsAgain: 'SRS Again'")
-    expect(src).toContain('SRS Good（記住）')
-    expect(src).toContain('SRS Again（再排）')
+    expect(src).toContain('const copy = uiCopy(t)')
+    expect(translate('en', 'exercise.srsGood')).toBe('SRS Good')
+    expect(translate('en', 'exercise.srsAgain')).toBe('SRS Again')
+    expect(translate('zh-Hant', 'exercise.srsGood')).toBe('SRS Good（記住）')
+    expect(translate('zh-Hant', 'exercise.srsAgain')).toBe('SRS Again（再排）')
   })
 })
 
@@ -47,9 +49,9 @@ describe('practice error/empty not color-only', () => {
     expect(src).toContain('copy.markCorrect')
     expect(src).toContain('copy.markWrong')
     expect(src).toContain('copy.emptyLead')
-    expect(src).toContain("markCorrect: '正解'")
-    expect(src).toContain("markCorrect: 'Correct choice'")
-    expect(src).toContain("markWrong: '不是這項'")
-    expect(src).toContain("markWrong: 'Not this one'")
+    expect(translate('en', 'exercise.markCorrect')).toBe('Correct')
+    expect(translate('en', 'exercise.markWrong')).toBe('Not this one')
+    expect(translate('zh-Hant', 'exercise.markCorrect')).toBe('正解')
+    expect(translate('zh-Hant', 'exercise.markWrong')).toBe('不是這項')
   })
 })

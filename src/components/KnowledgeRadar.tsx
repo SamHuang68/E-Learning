@@ -1,5 +1,7 @@
 import React, { useMemo } from 'react'
 import type { TrackRadar } from '../engine/radar'
+import { useI18n } from '../i18n/i18n'
+import { localizeTrackRadar } from '../i18n/radarI18n'
 import { buildRadarLayout, RADAR_GRID_LEVELS } from './knowledgeRadarLayout'
 
 type Props = {
@@ -12,14 +14,16 @@ type Props = {
  * 輕量級純 SVG 繪製五邊形蜘蛛網雷達圖，零第三方圖表庫依賴。
  */
 export const KnowledgeRadar = React.memo(function KnowledgeRadar({ radar, size = 320 }: Props) {
-  const layout = useMemo(() => buildRadarLayout(radar, size), [radar, size])
+  const { locale, t } = useI18n()
+  const localized = useMemo(() => localizeTrackRadar(radar, locale), [radar, locale])
+  const layout = useMemo(() => buildRadarLayout(localized, size), [localized, size])
   const { cx, cy, grid, axes, dataPoints, polygonPoints, labels, dimensions } = layout
 
   return (
     <div className="knowledge-radar-card">
       <div className="radar-header">
-        <h3>📊 {radar.trackName} · 練習紀錄雷達</h3>
-        <span className="radar-avg-badge">紀錄指標：{radar.averageScore} / 100</span>
+        <h3>📊 {t('ui.radarTitle', { track: localized.trackName })}</h3>
+        <span className="radar-avg-badge">{t('ui.radarAvg', { score: localized.averageScore })}</span>
       </div>
 
       <div className="radar-svg-container">
@@ -31,9 +35,12 @@ export const KnowledgeRadar = React.memo(function KnowledgeRadar({ radar, size =
           role="img"
           aria-labelledby="knowledge-radar-title knowledge-radar-desc"
         >
-          <title id="knowledge-radar-title">{radar.trackName}練習紀錄雷達</title>
+          <title id="knowledge-radar-title">{t('ui.radarAriaTitle', { track: localized.trackName })}</title>
           <desc id="knowledge-radar-desc">
-            本機紀錄指標 {radar.averageScore}。{dimensions.map((dimension) => `${dimension.label} ${dimension.score}`).join('；')}。此圖不是能力診斷。
+            {t('ui.radarAriaDesc', {
+              score: localized.averageScore,
+              details: dimensions.map((dimension) => `${dimension.label} ${dimension.score}`).join('; '),
+            })}
           </desc>
           {grid.map((points, idx) => {
             const lvl = RADAR_GRID_LEVELS[idx]
@@ -98,18 +105,18 @@ export const KnowledgeRadar = React.memo(function KnowledgeRadar({ radar, size =
 
       <ul className="sr-only">
         {dimensions.map((dimension) => (
-          <li key={dimension.key}>{dimension.label}：{dimension.score} / {dimension.fullMark}</li>
+          <li key={dimension.key}>{t('ui.radarRow', { label: dimension.label, score: dimension.score, total: dimension.fullMark })}</li>
         ))}
       </ul>
 
       <div className="radar-insights-row">
         <div className="insight-badge strong">
-          <span>🌟 目前較多紀錄：</span>
-          <strong>{radar.strongestDimension.label} ({radar.strongestDimension.score}分)</strong>
+          <span>🌟 {t('ui.radarStrong')}</span>
+          <strong>{t('ui.radarPoints', { label: localized.strongestDimension.label, score: localized.strongestDimension.score })}</strong>
         </div>
         <div className="insight-badge weak">
-          <span>🎯 可先探索：</span>
-          <strong>{radar.weakestDimension.label} ({radar.weakestDimension.score}分)</strong>
+          <span>🎯 {t('ui.radarExplore')}</span>
+          <strong>{t('ui.radarPoints', { label: localized.weakestDimension.label, score: localized.weakestDimension.score })}</strong>
         </div>
       </div>
     </div>

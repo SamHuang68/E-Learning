@@ -3,6 +3,8 @@ import type { CsProgress } from '../utils/csStorage'
 import { CS_CURRICULUM, getCsQuestionCount, getNextCsUnit, isCsAdvancedUnit } from '../data/curriculum'
 import { computeCsRadar } from '../../engine/radar'
 import { useI18n } from '../../i18n/i18n'
+import { csUnitTitle } from '../../i18n/csUnitCopy'
+import { localizeTrackRadar } from '../../i18n/radarI18n'
 import type { CsNavSection } from './CsTopNav'
 import { CsBigOCard } from './CsBigOCard'
 import { CsHttpTcpCard } from './CsHttpTcpCard'
@@ -14,7 +16,7 @@ interface Props {
 }
 
 export const CsToday: React.FC<Props> = ({ progress, onNavigate }) => {
-  const { t } = useI18n()
+  const { locale, t } = useI18n()
   const [showProgress, setShowProgress] = useState(false)
   const nextUnit = getNextCsUnit(progress.completedQuestions)
   const unitIndex = CS_CURRICULUM.findIndex((unit) => unit.id === nextUnit.id) + 1
@@ -26,17 +28,20 @@ export const CsToday: React.FC<Props> = ({ progress, onNavigate }) => {
   const labId = nextUnit.suggestedLab as CsNavSection | undefined
   const showAdvancedLab = labId === 'ai-transformer' && isCsAdvancedUnit(nextUnit)
 
-  const radar = computeCsRadar(
-    progress.completedQuestions,
-    progress.examScores,
-    progress.labCompleted,
+  const radar = localizeTrackRadar(
+    computeCsRadar(
+      progress.completedQuestions,
+      progress.examScores,
+      progress.labCompleted,
+    ),
+    locale,
   )
 
   return (
     <div className="cs-today">
       <header className="cs-today-hero">
         <p className="eyebrow">{t('cs.today.unitOf', { n: unitIndex, total: CS_CURRICULUM.length })}</p>
-        <h1>{t('cs.today.next', { title: nextUnit.title.replace(/^單元 \d+：/, '') })}</h1>
+        <h1>{t('cs.today.next', { title: csUnitTitle(locale, nextUnit, false) })}</h1>
         <WhyThisNext kind="unit" />
         <p className="lede">{nextUnit.subtitle}</p>
         <p className="cs-today-progress-line">
@@ -83,7 +88,7 @@ export const CsToday: React.FC<Props> = ({ progress, onNavigate }) => {
         <section className="cs-today-radar" aria-label={t('cs.today.coverage')}>
           <div className="section-header-row">
             <h2>{t('cs.today.coverage')}</h2>
-            <span className="section-subtext">平均 {radar.averageScore}／100</span>
+            <span className="section-subtext">{t('vault.avgLine', { score: radar.averageScore })}</span>
           </div>
           {radar.dimensions.map((dim) => (
             <div key={dim.key} className="cs-radar-row">

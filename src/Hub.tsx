@@ -1,3 +1,5 @@
+import { localizeTrackRadar } from './i18n/radarI18n'
+import { localizeBadge } from './i18n/badgeI18n'
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { AuthPanel } from './auth/AuthPanel'
 import { DataControls } from './components/DataControls'
@@ -278,7 +280,7 @@ export function selectHubDerived(snapshot: HubSnapshot) {
  * 八軌入口：數學、微積分、物理、化學、計算機概論、日語、多益、華語。
  */
 export function Hub({ onChoose, onOpenPrivacy }: Props) {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const [activeRadarTab, setActiveRadarTab] = useState<RadarTab>('math')
   const [tick, setTick] = useState(0)
   const [isMuted, setIsMuted] = useState(() => isAudioMuted())
@@ -335,7 +337,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
     leechCount,
     todaySuggestion,
   } = derived
-  const activeRadar = radarMap[activeRadarTab]
+  const activeRadar = localizeTrackRadar(radarMap[activeRadarTab], locale)
   const calculusRadar = radarMap.calculus
 
   const catalogFirstTitle = catalogFirst ? t('hub.catalogFirst.title') : ''
@@ -392,7 +394,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
     },
     {
       id: 'physics',
-      mark: '物',
+      mark: t('hub.physics.mark'),
       markClass: 'physics-mark',
       extraClass: 'physics-track-card',
       pill: t('hub.physics.pill'),
@@ -406,7 +408,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
     },
     {
       id: 'chemistry',
-      mark: '化',
+      mark: t('hub.chemistry.mark'),
       markClass: 'chemistry-mark',
       extraClass: 'chemistry-track-card',
       pill: t('hub.chemistry.pill'),
@@ -462,7 +464,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
     },
     {
       id: 'zh',
-      mark: '華',
+      mark: t('hub.zh.mark'),
       markClass: 'zh-mark',
       extraClass: 'zh-track-card',
       pill: t('hub.zh.pill'),
@@ -669,7 +671,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
             </div>
           </div>
           <div className="stat-card streak-stat">
-            <span className="stat-icon" aria-hidden="true">日</span>
+            <span className="stat-icon" aria-hidden="true">📅</span>
             <div className="stat-info">
               <span className="stat-label">{t('hub.streak')}</span>
               <strong>{t('hub.streakDays', { count: learningMeta.streak })}</strong>
@@ -677,7 +679,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
             </div>
           </div>
           <div className="stat-card daily-stat">
-            <span className="stat-icon" aria-hidden="true">今</span>
+            <span className="stat-icon" aria-hidden="true">✓</span>
             <div className="stat-info">
               <span className="stat-label">{t('hub.dailyGoal')}</span>
               <strong>
@@ -691,7 +693,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
           </div>
           <div className="stat-card audio-stat">
             <span className="stat-icon" aria-hidden="true">
-              {isMuted ? '靜' : '聲'}
+              {isMuted ? '🔇' : '🔊'}
             </span>
             <div className="stat-info">
               <span className="stat-label">{t('hub.audio')}</span>
@@ -707,7 +709,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
       {hasProgress && scheduledCount > 0 ? (
         <section className="fsrs-memory-dashboard" aria-label={t('hub.review')}>
           <div className="fsrs-copy">
-            <div className="fsrs-icon" aria-hidden="true">記</div>
+            <div className="fsrs-icon" aria-hidden="true">↻</div>
             <div>
               <div className="fsrs-title-row">
                 <strong>{t('hub.srsTitle')}</strong>
@@ -790,7 +792,8 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
               <h2 id="badges-title">{t('hub.badgesTitle')}</h2>
             </div>
             <div className="hub-badges-grid">
-              {BADGE_CATALOG.map((badge) => {
+              {BADGE_CATALOG.map((rawBadge) => {
+                const badge = localizeBadge(rawBadge, locale)
                 const isUnlocked =
                   learningMeta.achievements.includes(badge.id) ||
                   (badge.id === 'badge-first-step' && totalXp > 0) ||
@@ -863,15 +866,15 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
     </main>
     <nav className="hub-bottom-nav" aria-label={t('hub.bottomNav')}>
       <a href="#hub" className="hub-bottom-nav-item is-current" aria-current="page">
-        <span className="hub-bottom-nav-mark" aria-hidden="true">主</span>
+        <span className="hub-bottom-nav-mark" aria-hidden="true">⌂</span>
         {t('hub.bottomNav.home')}
       </a>
       <a href="#tracks-title" className="hub-bottom-nav-item">
-        <span className="hub-bottom-nav-mark" aria-hidden="true">軌</span>
+        <span className="hub-bottom-nav-mark" aria-hidden="true">↗</span>
         {t('hub.bottomNav.tracks')}
       </a>
       <a href="#privacy" className="hub-bottom-nav-item">
-        <span className="hub-bottom-nav-mark" aria-hidden="true">說</span>
+        <span className="hub-bottom-nav-mark" aria-hidden="true">?</span>
         {t('hub.bottomNav.about')}
       </a>
     </nav>

@@ -1,3 +1,4 @@
+import { stemCatalogCopy } from '../../i18n/stemCatalogCopy'
 import { useI18n } from '../../i18n/i18n'
 import { physicsFormulaSheetSections } from '../data/curriculum'
 import { MathFormula } from '../../math/components/MathFormula'
@@ -32,7 +33,7 @@ export function PhysicsFormulaSheet({ onBack }: Props) {
           </h3>
           {section.units.map((unit) => (
             <div key={`${section.gradeId}-${unit.id}`} className="physics-formula-unit">
-              <h4>{t('chrome.unitNColon', { n: unit.id, title: unit.title })}</h4>
+              <h4>{t('chrome.unitNColon', { n: unit.id, title: stemCatalogCopy(locale, unit.title) })}</h4>
               <div className="concept-cards-grid">
                 {unit.concepts.map((concept, idx) => (
                   <div key={idx} className="concept-item-card">

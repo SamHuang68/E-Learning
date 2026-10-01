@@ -1,6 +1,21 @@
 import type { UiLocale } from './locale'
+import { UI_ZH, UI_EN } from './messagesUi'
+import { AUTH_ZH, AUTH_EN } from './messagesAuth'
+import { VAULT_ZH, VAULT_EN } from './messagesVault'
+import { MATH_TODAY_ZH, MATH_TODAY_EN } from './messagesMathToday'
+import { EXERCISE_ZH, EXERCISE_EN } from './messagesExercise'
+import { HUB_MARK_ZH, HUB_MARK_EN } from './messagesHubMarks'
+import { CALCULUS_PRESET_ZH, CALCULUS_PRESET_EN } from './messagesCalculusPreset'
+import { EN_CJK_OVERRIDES } from './messagesEnOverrides'
 
 export const ZH_HANT = {
+  ...UI_ZH,
+  ...AUTH_ZH,
+  ...VAULT_ZH,
+  ...MATH_TODAY_ZH,
+  ...EXERCISE_ZH,
+  ...HUB_MARK_ZH,
+  ...CALCULUS_PRESET_ZH,
   'locale.toggleLabel': '介面語言',
   'locale.zh': '繁中',
   'locale.en': 'EN',
@@ -865,7 +880,7 @@ export const ZH_HANT = {
 
 export type MessageKey = keyof typeof ZH_HANT
 
-export const EN: Record<MessageKey, string> = {
+export const EN: Record<MessageKey, string> = Object.assign({
   'locale.toggleLabel': 'Interface language',
   'locale.zh': '繁中',
   'locale.en': 'EN',
@@ -1726,7 +1741,14 @@ export const EN: Record<MessageKey, string> = {
   'zh.nav.menu': 'Night-market Taiwanese',
   'zh.nav.mock': 'TOCFL mock test',
   'zh.nav.errors': 'Mandarin error vault',
-}
+  ...UI_EN,
+  ...AUTH_EN,
+  ...VAULT_EN,
+  ...MATH_TODAY_EN,
+  ...EXERCISE_EN,
+  ...HUB_MARK_EN,
+  ...CALCULUS_PRESET_EN,
+}, EN_CJK_OVERRIDES)
 
 const TABLES: Record<UiLocale, Record<MessageKey, string>> = {
   'zh-Hant': ZH_HANT,

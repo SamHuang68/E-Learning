@@ -4,6 +4,8 @@ import {
   type Exercise,
   type ExerciseKind,
 } from '../engine/exercises'
+import { useI18n } from '../i18n/i18n'
+import type { MessageKey } from '../i18n/messages'
 import { SpeakButton } from './SpeakButton'
 import { playCorrectSound } from '../engine/audioSynthesizer'
 
@@ -52,7 +54,8 @@ export function ExerciseSession({
     (result): result is ItemResult => Boolean(result),
   )
   const correct = completedResults.filter((result) => result.correct).length
-  const copy = uiCopy(lang)
+  const { t } = useI18n()
+  const copy = uiCopy(t)
 
   useEffect(() => {
     setIndex(0)
@@ -454,66 +457,34 @@ function choiceButtonClass(
   return 'choice-btn'
 }
 
-function uiCopy(lang: 'ja' | 'en') {
-  if (lang === 'ja') {
-    return {
-      check: '確認',
-      completeBody: '點擊完成即可保存本次練習結果。',
-      completeTitle: '練習完成',
-      correct: '答對了！',
-      currentOrder: '目前排序',
-      emptyBody: '本單元尚未產生可練習的題目。',
-      emptyLead: '空：',
-      emptyTitle: '沒有題目',
-      exit: '← 返回',
-      fillPrompt: '填入空格',
-      finish: '完成',
-      listenPrompt: '聽音選答案',
-      markCorrect: '正解',
-      markWrong: '不是這項',
-      next: '下一題 →',
-      orderPrompt: '排出正確句子',
-      passagePrompt: '請選出這段內容的意思。',
-      playAudio: '播放',
-      registerPrompt: '選擇語體',
-      reset: '重排',
-      showScore: '查看成績',
-      speakPrompt: '播放題目',
-      srsAgain: 'SRS Again（再排）',
-      srsGood: 'SRS Good（記住）',
-      tapWords: '點選下方詞塊組句',
-      typeAnswer: '輸入答案',
-      wrong: '再確認一次。正解：',
-    }
-  }
-
+function uiCopy(t: (key: MessageKey) => string) {
   return {
-    check: 'Check',
-    completeBody: 'Finish to save this exercise result.',
-    completeTitle: 'Session complete',
-    correct: 'Correct!',
-    currentOrder: 'Current order',
-    emptyBody: 'No exercises have been generated for this unit yet.',
-    emptyLead: 'Empty: ',
-    emptyTitle: 'No exercises',
-    exit: '← Exit',
-    fillPrompt: 'Fill in the blank',
-    finish: 'Finish',
-    listenPrompt: 'Listen and answer',
-    markCorrect: 'Correct choice',
-    markWrong: 'Not this one',
-    next: 'Next →',
-    orderPrompt: 'Build the sentence',
-    passagePrompt: 'Choose the meaning of this passage.',
-    playAudio: 'Play audio',
-    registerPrompt: 'Choose the register',
-    reset: 'Reset',
-    showScore: 'Show score',
-    speakPrompt: 'Speak prompt',
-    srsAgain: 'SRS Again',
-    srsGood: 'SRS Good',
-    tapWords: 'Tap words below to build your answer',
-    typeAnswer: 'Type your answer',
-    wrong: 'Not quite. Answer:',
+    check: t('exercise.check'),
+    completeBody: t('exercise.completeBody'),
+    completeTitle: t('exercise.completeTitle'),
+    correct: t('exercise.correct'),
+    currentOrder: t('exercise.currentOrder'),
+    emptyBody: t('exercise.emptyBody'),
+    emptyLead: t('exercise.emptyLead'),
+    emptyTitle: t('exercise.emptyTitle'),
+    exit: t('exercise.exit'),
+    fillPrompt: t('exercise.fillPrompt'),
+    finish: t('exercise.finish'),
+    listenPrompt: t('exercise.listenPrompt'),
+    markCorrect: t('exercise.markCorrect'),
+    markWrong: t('exercise.markWrong'),
+    next: t('exercise.next'),
+    orderPrompt: t('exercise.orderPrompt'),
+    passagePrompt: t('exercise.passagePrompt'),
+    playAudio: t('exercise.playAudio'),
+    registerPrompt: t('exercise.registerPrompt'),
+    reset: t('exercise.reset'),
+    showScore: t('exercise.showScore'),
+    speakPrompt: t('exercise.speakPrompt'),
+    srsAgain: t('exercise.srsAgain'),
+    srsGood: t('exercise.srsGood'),
+    tapWords: t('exercise.tapWords'),
+    typeAnswer: t('exercise.typeAnswer'),
+    wrong: t('exercise.wrong'),
   }
 }

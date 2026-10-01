@@ -16,13 +16,13 @@ type Props = {
 }
 
 const PRESET_FORMULAS = [
-  { label: '拋物線二次函數: f(x) = x^2 - 2x + 2', expr: 'x^2 - 2*x + 2', x0: 1.5, deltaX: 0.5 },
-  { label: '三次多項式極值: f(x) = x^3 - 3x', expr: 'x^3 - 3*x', x0: 1.0, deltaX: 0.4 },
-  { label: '正弦週期函數: f(x) = sin(x)', expr: 'sin(x)', x0: 1.57, deltaX: 0.3 },
-  { label: '自然指數函數: f(x) = e^x', expr: 'e^x', x0: 1.0, deltaX: 0.2 },
-  { label: '有理函數: f(x) = 1 / (1 + x^2)', expr: '1 / (1 + x^2)', x0: 0.5, deltaX: 0.3 },
-  { label: '半拋物線定積分: f(x) = 4 - x^2', expr: '4 - x^2', x0: 1.0, deltaX: 0.5, intA: 0, intB: 2 },
-  { label: '高次多項式: f(x) = x^4 - 4x^2', expr: 'x^4 - 4*x^2', x0: 1.414, deltaX: 0.3 },
+  { key: 'calculus.preset.quad' as const, expr: 'x^2 - 2*x + 2', x0: 1.5, deltaX: 0.5 },
+  { key: 'calculus.preset.cubic' as const, expr: 'x^3 - 3*x', x0: 1.0, deltaX: 0.4 },
+  { key: 'calculus.preset.sin' as const, expr: 'sin(x)', x0: 1.57, deltaX: 0.3 },
+  { key: 'calculus.preset.exp' as const, expr: 'e^x', x0: 1.0, deltaX: 0.2 },
+  { key: 'calculus.preset.rational' as const, expr: '1 / (1 + x^2)', x0: 0.5, deltaX: 0.3 },
+  { key: 'calculus.preset.semi' as const, expr: '4 - x^2', x0: 1.0, deltaX: 0.5, intA: 0, intB: 2 },
+  { key: 'calculus.preset.quartic' as const, expr: 'x^4 - 4*x^2', x0: 1.414, deltaX: 0.3 },
 ]
 
 const LazyCalculusLabPanel = lazyWithRetry(
@@ -150,7 +150,7 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
               >
                 {PRESET_FORMULAS.map((f) => (
                   <option key={f.expr} value={f.expr}>
-                    {f.label}
+                    {t(f.key)}
                   </option>
                 ))}
               </select>
@@ -176,7 +176,7 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
           <div className="calculus-badges-gallery-view">
             <div className="section-header-row">
               <div>
-                <h2>🏆 微積分認知微認證成就館</h2>
+                <h2>🏆 {t('calculus.badgesHall')}</h2>
                 <p className="section-subtext">完成 4 階能力挑戰與推導解題，解鎖對應領域微認證勳章</p>
               </div>
             </div>

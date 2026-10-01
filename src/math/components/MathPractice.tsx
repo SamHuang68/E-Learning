@@ -1,3 +1,4 @@
+import { mathTeachingCopy } from '../../i18n/mathTeachingCopy'
 import React, { useState, useEffect } from 'react'
 import type { MathQuestion, MathUnit } from '../data/curriculum'
 import { MathFormula } from './MathFormula'
@@ -17,7 +18,7 @@ type Props = {
  * 提供漸進式題庫作答、KaTeX 數學公式即時渲染、逐步詳解展開、提示系統與錯誤收集。
  */
 export const MathPractice: React.FC<Props> = ({ unit, onBack, onComplete }) => {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
   const [fillInput, setFillInput] = useState('')
@@ -119,7 +120,7 @@ export const MathPractice: React.FC<Props> = ({ unit, onBack, onComplete }) => {
           第 <strong>{currentIndex + 1}</strong> / {questions.length} 題
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-          <div className="practice-unit-tag">{unit.title}</div>
+          <div className="practice-unit-tag">{mathTeachingCopy(locale, unit.title)}</div>
           <button
             type="button"
             className="pill-btn"

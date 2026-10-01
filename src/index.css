@@ -9953,3 +9953,14 @@ html.layout-dense .hub-card:has(.hub-card-hit:focus-visible) {
   font-weight: 700;
 }
 
+dialog.vault-review-dialog {
+  border: 1px solid var(--line);
+  color: var(--text);
+  max-height: 90dvh;
+  max-width: min(600px, calc(100vw - 2rem));
+  overflow: auto;
+}
+
+dialog.vault-review-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}

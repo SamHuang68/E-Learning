@@ -1,5 +1,6 @@
 ﻿import React, { useState } from 'react'
 import { AI_CLOUD_SCENARIOS, type AiCloudScenarioItem } from '../data/aiCloudDialogues'
+import { useI18n } from '../../i18n/i18n'
 import { playCorrectSound, playWrongSound } from '../../engine/audioSynthesizer'
 
 interface Props {
@@ -8,6 +9,8 @@ interface Props {
 }
 
 export const AiCloudLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'zh' }) => {
+  const { locale } = useI18n()
+  const isEn = locale === 'en'
   const isJa = instructionLang === 'ja'
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
@@ -49,10 +52,10 @@ export const AiCloudLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'zh' }
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>🤖</span> {isJa ? 'TOEIC AIトランスフォーメーション＆クラウド特訓' : 'TOEIC 商務 AI 轉型與雲端資料中心聽力實驗室'}
+            <span>🤖</span> {isEn ? 'TOEIC business AI and cloud infrastructure listening lab' : isJa ? 'TOEIC AIトランスフォーメーション＆クラウド特訓' : 'TOEIC 商務 AI 轉型與雲端資料中心聽力實驗室'}
           </h3>
           <p className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            {isJa
+            {isEn ? 'Practice business conversations about on-premise AI inference, GPU accelerators, and cloud service uptime guarantees.' : isJa
               ? '最先端IT・Part 3対話頻出！「オンプレミスAI推論（on-premise）・SLA稼働率保証（99.99% uptime）・フェイルオーバー冗長化」を完全制覇！'
               : '多益高科技商務題型：企業自建本地端 AI 推論集群、GPU 加速器硬體、雲端 99.99% 正常運作保證！'}
           </p>
@@ -71,7 +74,7 @@ export const AiCloudLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'zh' }
               setShowScript(false)
             }}
           >
-            <span>{item.icon}</span> {isJa ? item.titleJa : item.title}
+            <span>{item.icon}</span> {isEn ? item.titleEn : isJa ? item.titleJa : item.title}
           </button>
         ))}
       </div>
@@ -86,7 +89,7 @@ export const AiCloudLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'zh' }
 
           <div>
             <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(168, 85, 247, 0.15)', color: '#9333ea', fontWeight: 700 }}>
-              {activeItem.accentLabel}
+              {isEn ? activeItem.accentLabelEn : activeItem.accentLabel}
             </span>
             <h3 style={{ margin: '0.4rem 0 0.2rem', fontSize: '1.05rem' }}>{activeItem.dialogueRoles.chiefTechnologyOfficer}</h3>
             <span style={{ fontSize: '0.76rem', color: 'var(--muted)' }}>{activeItem.dialogueRoles.infrastructureArchitect}</span>
@@ -103,14 +106,14 @@ export const AiCloudLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'zh' }
               }}
               onClick={() => speakAiCloudAudio(activeItem.audioScript)}
             >
-              {isPlaying ? '再生中...' : '▶ 音声を聴く (Play Audio)'}
+              {isEn ? (isPlaying ? 'Playing...' : '▶ Play audio') : isPlaying ? '再生中...' : '▶ 音声を聴く (Play Audio)'}
             </button>
             <button
               type="button"
               className="pill-btn"
               onClick={() => setShowScript((prev) => !prev)}
             >
-              {showScript ? '隠す' : '📝 スクリプト'}
+              {isEn ? (showScript ? 'Hide script' : '📝 Show script') : showScript ? '隠す' : '📝 スクリプト'}
             </button>
           </div>
 
@@ -121,7 +124,7 @@ export const AiCloudLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'zh' }
           )}
 
           <div style={{ marginTop: 'auto', background: 'var(--surface-soft)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)', fontSize: '0.74rem', color: 'var(--muted)', textAlign: 'left', lineHeight: 1.45 }}>
-            💡 <strong>TOEIC 頻出ポイント：</strong>{activeItem.aiCloudKeywordsTipsJa}
+            💡 <strong>{isEn ? 'TOEIC vocabulary: ' : 'TOEIC 頻出ポイント：'}</strong>{isEn ? activeItem.aiCloudKeywordsTipsEn : activeItem.aiCloudKeywordsTipsJa}
           </div>
         </div>
 
@@ -133,7 +136,7 @@ export const AiCloudLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'zh' }
                 <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(168, 85, 247, 0.15)', color: '#9333ea', fontWeight: 700 }}>
                   Question {qIdx + 1}
                 </span>
-                <h4 style={{ margin: 0, fontSize: '0.9rem' }}>{isJa ? q.questionJa : q.question}</h4>
+                <h4 style={{ margin: 0, fontSize: '0.9rem' }}>{!isEn && isJa ? q.questionJa : q.question}</h4>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '0.35rem', marginTop: '0.6rem' }}>
@@ -173,7 +176,7 @@ export const AiCloudLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'zh' }
                       onClick={() => handleSelectOption(q.id, optIdx, q.correctIndex)}
                     >
                       <span style={{ fontSize: '0.82rem' }}>{opt}</span>
-                      {isDone && isCorrect && <span style={{ color: '#10b981', fontWeight: 700 }}>✓ 正解 (+15 XP)</span>}
+                      {isDone && isCorrect && <span style={{ color: '#10b981', fontWeight: 700 }}>{isEn ? '✓ Correct (+15 XP)' : '✓ 正解 (+15 XP)'}</span>}
                     </button>
                   )
                 })}
@@ -181,7 +184,7 @@ export const AiCloudLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'zh' }
 
               {submitted[q.id] && (
                 <div style={{ marginTop: '0.6rem', padding: '0.6rem', borderRadius: '8px', background: 'var(--surface-soft)', fontSize: '0.76rem', color: 'var(--muted)', lineHeight: 1.45 }}>
-                  💡 <strong>{isJa ? '解説：' : '解析：'}</strong> {isJa ? q.explanationJa : q.explanationZh}
+                  💡 <strong>{isEn ? 'Explanation: ' : isJa ? '解説：' : '解析：'}</strong> {isEn ? q.explanationEn : isJa ? q.explanationJa : q.explanationZh}
                 </div>
               )}
             </div>

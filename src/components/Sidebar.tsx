@@ -1,3 +1,4 @@
+import { jaTeachingCopy } from '../i18n/jaTeachingCopy'
 import type { CSSProperties } from 'react'
 import type { JlptLevel, Unit } from '../data/course'
 import type { LangId } from '../utils/storage'
@@ -58,7 +59,7 @@ export function Sidebar({
   onBackHub,
   onSwitchLang,
 }: Props) {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   return (
     <aside className="sidebar">
       <TrackSwitcher current="ja" onBackHub={onBackHub} onSwitchLang={onSwitchLang} />
@@ -81,7 +82,7 @@ export function Sidebar({
             aria-current={nav === item.id ? 'page' : undefined}
             onClick={() => onNav(item.id)}
           >
-            <span>{item.icon}</span>
+            <span>{locale === 'en' ? ({ today: '📅', grammar: 'Aa', signals: '↗', builder: '⚙', placement: '✓', mock: '?', kanji: 'Aa', scenario: '◇', speaking: '🎙' } as Record<string, string>)[item.id] ?? item.icon : item.icon}</span>
             {t(item.labelKey)}
           </button>
         ))}
@@ -94,7 +95,7 @@ export function Sidebar({
             aria-current={nav === item.id ? 'page' : undefined}
             onClick={() => onNav(item.id)}
           >
-            <span>{item.icon}</span>
+            <span>{locale === 'en' ? ({ today: '📅', grammar: 'Aa', signals: '↗', builder: '⚙', placement: '✓', mock: '?', kanji: 'Aa', scenario: '◇', speaking: '🎙' } as Record<string, string>)[item.id] ?? item.icon : item.icon}</span>
             {t(item.labelKey)}
           </button>
         ))}
@@ -129,7 +130,7 @@ export function Sidebar({
             {level.band}
             <small>{jlptTierLabel(level.tier, t)}</small>
           </strong>
-          <span>{level.scoreHint}</span>
+          <span>{jaTeachingCopy(locale, level.scoreHint)}</span>
         </div>
         <span style={{ display: 'block', marginTop: '0.45rem' }}>
           {t('ja.unitMeta', { words: unit.words, id: unit.id })}

@@ -1,3 +1,4 @@
+import { mathTeachingCopy } from '../i18n/mathTeachingCopy'
 import React, { useState, useEffect, useMemo } from 'react'
 import type { MathGradeId } from './data/curriculum'
 import { ALL_MATH_GRADES, getGradeInfo, getGradeUnit } from './data/gradeStore'
@@ -151,7 +152,7 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
                 setActiveLabId(null)
               }}
             >
-              ← 返回課程
+              {mathTeachingCopy(locale, '← 返回課程')}
             </button>
             <div className="lab-switcher-pills">
               <button
@@ -159,49 +160,49 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
                 className={`pill-btn ${activeLabId === 'blocks' ? 'active' : ''}`}
                 onClick={() => setActiveLabId('blocks')}
               >
-                十進位積木
+                {mathTeachingCopy(locale, '十進位積木')}
               </button>
               <button
                 type="button"
                 className={`pill-btn ${activeLabId === 'multiplication' ? 'active' : ''}`}
                 onClick={() => setActiveLabId('multiplication')}
               >
-                九九乘法
+                {mathTeachingCopy(locale, '九九乘法')}
               </button>
               <button
                 type="button"
                 className={`pill-btn ${activeLabId === 'fraction' ? 'active' : ''}`}
                 onClick={() => setActiveLabId('fraction')}
               >
-                分數圓盤
+                {mathTeachingCopy(locale, '分數圓盤')}
               </button>
               <button
                 type="button"
                 className={`pill-btn ${activeLabId === 'coordinate' ? 'active' : ''}`}
                 onClick={() => setActiveLabId('coordinate')}
               >
-                坐標與函數
+                {mathTeachingCopy(locale, '坐標與函數')}
               </button>
               <button
                 type="button"
                 className={`pill-btn ${activeLabId === 'pythagoras' ? 'active' : ''}`}
                 onClick={() => setActiveLabId('pythagoras')}
               >
-                畢氏定理
+                {mathTeachingCopy(locale, '畢氏定理')}
               </button>
               <button
                 type="button"
                 className={`pill-btn ${activeLabId === 'unitcircle' ? 'active' : ''}`}
                 onClick={() => setActiveLabId('unitcircle')}
               >
-                三角單位圓
+                {mathTeachingCopy(locale, '三角單位圓')}
               </button>
               <button
                 type="button"
                 className={`pill-btn ${activeLabId === 'calculus' ? 'active' : ''}`}
                 onClick={() => setActiveLabId('calculus')}
               >
-                微積分
+                {mathTeachingCopy(locale, '微積分')}
               </button>
             </div>
           </div>
@@ -245,8 +246,8 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         <Breadcrumbs
           items={[
             { label: t('math.brand'), onClick: () => setActiveNav('today') },
-            { label: `${locale === 'en' ? gradeInfo.nameEn : gradeInfo.name} (${gradeInfo.band})`, onClick: () => setActiveNav('today') },
-            { label: t('chrome.unitN', { n: currentUnit.id, title: currentUnit.title }), active: activeNav === 'today' },
+            { label: `${locale === 'en' ? gradeInfo.nameEn : gradeInfo.name} (${mathTeachingCopy(locale, gradeInfo.band)})`, onClick: () => setActiveNav('today') },
+            { label: t('chrome.unitN', { n: currentUnit.id, title: mathTeachingCopy(locale, currentUnit.title) }), active: activeNav === 'today' },
             ...(activeNav !== 'today'
               ? [
                   {
@@ -272,7 +273,7 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         <header className="topbar">
           <div>
             <p className="eyebrow">
-              {t('chrome.curriculum108')} · {gradeInfo.band} · {gradeInfo.nameEn}
+              {t('chrome.curriculum108')} · {mathTeachingCopy(locale, gradeInfo.band)} · {gradeInfo.nameEn}
             </p>
             <h1>{locale === 'en' ? gradeInfo.nameEn : gradeInfo.name}</h1>
           </div>
@@ -288,7 +289,7 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
               >
                 {Object.values(ALL_MATH_GRADES).map((g) => (
                   <option key={g.id} value={g.id}>
-                    {locale === 'en' ? g.nameEn : g.name} ({g.band})
+                    {locale === 'en' ? g.nameEn : g.name} ({mathTeachingCopy(locale, g.band)})
                   </option>
                 ))}
               </select>
@@ -304,7 +305,7 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
               >
                 {gradeInfo.units.map((u) => (
                   <option key={u.id} value={u.id}>
-                    {t('chrome.unitN', { n: u.id, title: u.title })}
+                    {t('chrome.unitN', { n: u.id, title: mathTeachingCopy(locale, u.title) })}
                   </option>
                 ))}
               </select>
@@ -320,8 +321,8 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         {renderMainContent()}
 
         <footer className="math-footer">
-          <span>臺灣 K-12 數學練習 · 十二個年級各有教學題，不是完整課綱，也不是會考或學測分數</span>
-          <span>進度儲存於本機 · 支援離線學習</span>
+          <span>{mathTeachingCopy(locale, '臺灣 K-12 數學練習 · 十二個年級各有教學題，不是完整課綱，也不是會考或學測分數')}</span>
+          <span>{mathTeachingCopy(locale, '進度儲存於本機 · 支援離線學習')}</span>
         </footer>
       </section>
     </main>

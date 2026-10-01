@@ -1,3 +1,4 @@
+import { jaTeachingCopy } from '../i18n/jaTeachingCopy'
 import type { CSSProperties } from 'react'
 import type { JlptLevel, Unit } from '../data/course'
 import { useI18n } from '../i18n/i18n'
@@ -84,7 +85,7 @@ export function TodayView({
             {level.band} · {jlptTierLabel(level.tier, t)} · Unit {unit.id}
           </span>
           <h2>{unit.titleJa}</h2>
-          <p>{level.audience}</p>
+          <p>{jaTeachingCopy(locale, level.audience)}</p>
           <div className="banner-actions">
             <button type="button" onClick={onStartVocab}>
               {t('todayView.start')}
@@ -175,18 +176,18 @@ export function TodayView({
           <b>{t('todayView.go')}</b>
         </button>
         <button type="button" onClick={onStartReading}>
-          <i>読</i>
+          <i>📖</i>
           <span>TASK 02</span>
-          <h3>{unit.title}</h3>
+          <h3>{jaTeachingCopy(locale, unit.title)}</h3>
           <p>
             {t('todayView.answered', { done: progress.readingDone, total: unit.reading })}
           </p>
           <b>{t('todayView.go')}</b>
         </button>
         <button type="button" onClick={onStartGrammar}>
-          <i>文</i>
+          <i>Aa</i>
           <span>TASK 03</span>
-          <h3>場面・敬語｜{unit.grammar}</h3>
+          <h3>{jaTeachingCopy(locale, '場面・敬語')}｜{unit.grammar}</h3>
           <p>
             {progress.grammarStarted
               ? t('todayView.grammarIn')
