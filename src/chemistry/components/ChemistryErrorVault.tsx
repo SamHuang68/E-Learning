@@ -1,3 +1,4 @@
+import { stemCatalogCopy } from '../../i18n/stemCatalogCopy'
 import { stemVaultCopy } from '../../i18n/stemVaultCopy'
 /**
  * 臺灣 108 課綱化學 · 錯題弱點診斷與實驗室直通筆記本 (Chemistry Error Vault & Lab Teleportation)
@@ -285,7 +286,7 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
         map.set(q.id, {
           question: q,
           sourceType: 'unit',
-          sourceLabel: locale === 'en' ? `${stemVaultCopy(locale, unit.band)} · Unit ${unit.id} (${unit.key.split('_')[0].toUpperCase()})` : `${unit.band} · 單元 ${unit.id}: ${unit.title}`,
+          sourceLabel: locale === 'en' ? `${stemVaultCopy(locale, unit.band)} · Unit ${unit.id} : ${stemCatalogCopy(locale, unit.title)}` : `${unit.band} · 單元 ${unit.id}: ${stemCatalogCopy(locale, unit.title)}`,
           strandName: t(chemistryStrandMessageKey(q.strand)),
           matchedLab: labInfo,
         })

@@ -1,3 +1,4 @@
+import { stemCatalogCopy } from '../../i18n/stemCatalogCopy'
 import { useI18n } from '../../i18n/i18n'
 import { stemVaultCopy } from '../../i18n/stemVaultCopy'
 /**
@@ -238,7 +239,7 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
         map.set(q.id, {
           question: q,
           sourceType: 'unit',
-          sourceLabel: locale === 'en' ? `${stemVaultCopy(locale, unit.band)} · Unit ${unit.id} (${unit.key.split('_')[0].toUpperCase()})` : `${unit.band} · 單元 ${unit.id}: ${unit.title}`,
+          sourceLabel: locale === 'en' ? `${stemVaultCopy(locale, unit.band)} · Unit ${unit.id} : ${stemCatalogCopy(locale, unit.title)}` : `${unit.band} · 單元 ${unit.id}: ${stemCatalogCopy(locale, unit.title)}`,
           strandName: stemVaultCopy(locale, PHYSICS_STRAND_NAMES[q.strand]),
           matchedLab: labInfo,
         })

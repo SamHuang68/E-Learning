@@ -1,3 +1,4 @@
+import { stemCatalogCopy } from '../i18n/stemCatalogCopy'
 import { stemVaultCopy } from '../i18n/stemVaultCopy'
 import React, { useState, useEffect } from 'react'
 import {
@@ -126,7 +127,7 @@ export const ChemistryApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
     { label: t('chemistry.brand'), onClick: () => setActiveNav('today') },
     { label: locale === 'en' ? gradeInfo.nameEn : gradeInfo.name, onClick: () => setActiveNav('today') },
     ...(activeNav === 'practice'
-      ? [{ label: t('chrome.unitNColon', { n: currentUnit.id, title: currentUnit.title }) }]
+      ? [{ label: t('chrome.unitNColon', { n: currentUnit.id, title: stemCatalogCopy(locale, currentUnit.title) }) }]
       : activeNav === 'mock'
       ? [{ label: t('chrome.mockCap') }]
       : activeNav === 'vault'
@@ -191,7 +192,7 @@ export const ChemistryApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
               >
                 {gradeInfo.units.map((u) => (
                   <option key={u.id} value={u.id}>
-                    {t('chrome.unitNColon', { n: u.id, title: u.title })}
+                    {t('chrome.unitNColon', { n: u.id, title: stemCatalogCopy(locale, u.title) })}
                   </option>
                 ))}
               </select>

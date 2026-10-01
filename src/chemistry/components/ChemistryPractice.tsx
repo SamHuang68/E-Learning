@@ -1,3 +1,5 @@
+import { stemVaultCopy } from '../../i18n/stemVaultCopy'
+import { stemCatalogCopy } from '../../i18n/stemCatalogCopy'
 import React, { useState } from 'react'
 import type { ChemistryUnit } from '../data/curriculum'
 import { chemistryStrandMessageKey } from '../data/curriculum'
@@ -37,7 +39,7 @@ export const ChemistryPractice: React.FC<Props> = ({
   onAnswerWrong,
   onNextUnit,
 }) => {
-  const { t } = useI18n()
+  const { locale, t } = useI18n()
   const [viewMode, setViewMode] = useState<'textbook' | 'practice'>('textbook')
   const [currentIdx, setCurrentIdx] = useState(0)
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
@@ -106,9 +108,9 @@ export const ChemistryPractice: React.FC<Props> = ({
       {/* 頂部切換與標題 Bar */}
       <div className="practice-top-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ fontWeight: 800 }}>單元 {unit.id}：{unit.title}</span>
+          <span style={{ fontWeight: 800 }}>{t('chrome.unitNColon', { n: unit.id, title: stemCatalogCopy(locale, unit.title) })}</span>
           <span style={{ fontSize: '0.72rem', background: 'rgba(16, 185, 129, 0.15)', color: '#34d399', padding: '0.1rem 0.4rem', borderRadius: '4px' }}>
-            {unit.band} · {unit.targetExam}
+            {stemVaultCopy(locale, unit.band)} · {stemCatalogCopy(locale, unit.targetExam)}
           </span>
         </div>
 
@@ -129,7 +131,7 @@ export const ChemistryPractice: React.FC<Props> = ({
                 fontWeight: viewMode === 'textbook' ? 700 : 500,
               }}
             >
-              📖 教科書觀念導讀
+              {locale === 'en' ? "📖 Textbook concepts" : "📖 教科書觀念導讀"}
             </button>
             <button
               type="button"
@@ -145,7 +147,7 @@ export const ChemistryPractice: React.FC<Props> = ({
                 fontWeight: viewMode === 'practice' ? 700 : 500,
               }}
             >
-              ✍️ 自我評量 ({questions.length}題)
+              ✍️ {locale === 'en' ? `Self-assessment (${questions.length} questions)` : `自我評量 (${questions.length}題)`}
             </button>
           </div>
 
@@ -155,7 +157,7 @@ export const ChemistryPractice: React.FC<Props> = ({
             style={{ fontSize: '0.72rem', padding: '0.15rem 0.45rem' }}
             onClick={() => setShowScratchpad(!showScratchpad)}
           >
-            ✏️ 草稿紙
+            {locale === 'en' ? "✏️ Scratchpad" : "✏️ 草稿紙"}
           </button>
         </div>
       </div>
@@ -181,17 +183,17 @@ export const ChemistryPractice: React.FC<Props> = ({
               CHEMISTRY TEXTBOOK MODULE · {t(chemistryStrandMessageKey(unit.strand))}
             </span>
             <h2 style={{ margin: '0.2rem 0 0.2rem', fontSize: '1.25rem', fontWeight: 800 }}>
-              {unit.title}
+              {stemCatalogCopy(locale, unit.title)}
             </h2>
             <p style={{ margin: 0, color: 'var(--muted)', fontSize: '0.82rem' }}>
-              {unit.subtitle}
+              {stemCatalogCopy(locale, unit.subtitle)}
             </p>
           </div>
 
           {/* 第一性原理與核心觀念清單 */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#34d399', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <span>📐</span> 第一性原理與核心化學機制推導：
+              <span>📐</span> {locale === 'en' ? "First principles and core chemistry mechanisms:" : "第一性原理與核心化學機制推導："}
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
@@ -230,9 +232,9 @@ export const ChemistryPractice: React.FC<Props> = ({
               }}
             >
               <div>
-                <strong style={{ fontSize: '0.82rem', color: '#6ee7b7' }}>🔬 關聯互動動態實驗室：</strong>
+                <strong style={{ fontSize: '0.82rem', color: '#6ee7b7' }}>{locale === 'en' ? "🔬 Related interactive lab:" : "🔬 關聯互動動態實驗室："}</strong>
                 <span style={{ fontSize: '0.8rem', color: '#cbd5e1', marginLeft: '0.25rem' }}>
-                  本單元具備專屬化學虛擬動態實驗室 ({unit.suggestedLab})，可於側邊欄即時開啟探索。
+                  {locale === 'en' ? `This unit has an interactive lab (${unit.suggestedLab}). Open it from the sidebar to explore.` : `本單元具備專屬化學虛擬動態實驗室 (${unit.suggestedLab})，可於側邊欄即時開啟探索。`}
                 </span>
               </div>
             </div>
@@ -258,7 +260,7 @@ export const ChemistryPractice: React.FC<Props> = ({
                 boxShadow: '0 2px 8px rgba(5, 150, 105, 0.3)',
               }}
             >
-              <span>✍️ 觀念已研讀通透，進入題目自我驗證</span>
+              <span>{locale === 'en' ? "✍️ Start self-assessment" : "✍️ 觀念已研讀通透，進入題目自我驗證"}</span>
               <span>➜</span>
             </button>
           </div>
@@ -266,16 +268,16 @@ export const ChemistryPractice: React.FC<Props> = ({
       ) : (
         /* 視圖 2: 題庫自我評量 (Practice View) */
         !q ? (
-          <div className="practice-empty">單元題庫準備中…</div>
+          <div className="practice-empty">{locale === 'en' ? "Questions for this unit are being prepared…" : "單元題庫準備中…"}</div>
         ) : (
           <div className="practice-card">
             <div className="question-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span className="q-badge" style={{ background: '#059669', color: '#fff' }}>
-                {t(chemistryStrandMessageKey(q.strand))} · 難度 {'★'.repeat(q.difficulty)}
+                {t(chemistryStrandMessageKey(q.strand))} · {locale === 'en' ? 'Difficulty' : '難度'} {'★'.repeat(q.difficulty)}
               </span>
               <span style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>
-                第 {currentIdx + 1} / {questions.length} 題
-                {isCompleted && <span className="completed-badge" style={{ marginLeft: '0.5rem' }}>✓ 已掌握</span>}
+                {locale === 'en' ? `Question ${currentIdx + 1} / ${questions.length}` : `第 ${currentIdx + 1} / ${questions.length} 題`}
+                {isCompleted && <span className="completed-badge" style={{ marginLeft: '0.5rem' }}>{locale === 'en' ? "✓ Mastered" : "✓ 已掌握"}</span>}
               </span>
             </div>
 
@@ -324,11 +326,11 @@ export const ChemistryPractice: React.FC<Props> = ({
                   disabled={selectedOption === null}
                   onClick={handleSubmit}
                 >
-                  確認送出 (Enter)
+                  {locale === 'en' ? "Submit answer (Enter)" : "確認送出 (Enter)"}
                 </button>
               ) : (
                 <button type="button" className="btn-primary" onClick={handleNext}>
-                  {currentIdx < questions.length - 1 ? '下一題 (Enter)' : '完成本單元'}
+                  {currentIdx < questions.length - 1 ? (locale === 'en' ? "Next question (Enter)" : '下一題 (Enter)') : (locale === 'en' ? "Finish unit" : '完成本單元')}
                 </button>
               )}
 
@@ -338,7 +340,7 @@ export const ChemistryPractice: React.FC<Props> = ({
                   className="btn-secondary"
                   onClick={() => setShowHint(!showHint)}
                 >
-                  💡 {showHint ? '隱藏提示' : '解題提示'}
+                  💡 {showHint ? (locale === 'en' ? "Hide hint" : '隱藏提示') : (locale === 'en' ? "Show hint" : '解題提示')}
                 </button>
               )}
 
@@ -348,13 +350,13 @@ export const ChemistryPractice: React.FC<Props> = ({
                 onClick={() => setViewMode('textbook')}
                 style={{ marginLeft: 'auto', fontSize: '0.78rem' }}
               >
-                📖 回顧教科書觀念
+                {locale === 'en' ? "📖 Review textbook concepts" : "📖 回顧教科書觀念"}
               </button>
             </div>
 
             {showHint && q.hint && (
               <div className="hint-box" style={{ marginTop: '0.75rem' }}>
-                <strong>提示：</strong>
+                <strong>{locale === 'en' ? "Hint:" : "提示："}</strong>
                 <MathFormula math={q.hint} />
               </div>
             )}
@@ -362,7 +364,7 @@ export const ChemistryPractice: React.FC<Props> = ({
             {isSubmitted && (
               <div className={`solution-box ${isCorrect ? 'sol-correct' : 'sol-wrong'}`} style={{ marginTop: '0.75rem' }}>
                 <div className="sol-header" role="status" aria-live="polite" aria-atomic="true">
-                  {isCorrect ? '🎉 答對了！' : '❌ 答錯了，請研讀解析：'}
+                  {isCorrect ? (locale === 'en' ? "🎉 Correct!" : '🎉 答對了！') : (locale === 'en' ? "❌ Incorrect. Review the explanation:" : '❌ 答錯了，請研讀解析：')}
                 </div>
                 <div className="sol-body">
                   <MathFormula math={q.solution} />

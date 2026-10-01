@@ -1,3 +1,4 @@
+import { stemCatalogCopy } from '../../i18n/stemCatalogCopy'
 import { stemVaultCopy } from '../../i18n/stemVaultCopy'
 import React from 'react'
 import type { PhysicsGradeInfo, PhysicsUnit } from '../data/curriculum'
@@ -44,13 +45,13 @@ export const PhysicsToday: React.FC<Props> = ({
               <span className="exam-target-pill">🎯 {locale === 'en' ? gradeInfo.targetExam.match(/CAP|GSAT|AST/)?.[0] ?? gradeInfo.targetExam : gradeInfo.targetExam}</span>
             )}
           </div>
-          <span className="hero-desc-inline">{gradeInfo.description}</span>
+          <span className="hero-desc-inline">{stemCatalogCopy(locale, gradeInfo.description)}</span>
         </div>
         <WhyThisNext kind="unit" />
 
         <div className="hero-quick-actions">
           <button type="button" className="btn-hero-primary" onClick={onStartPractice}>
-            ▶ {locale === 'en' ? t('math.today.practice', { title: currentUnit.title }) : `單元練習 (${currentUnit.title})`}
+            ▶ {locale === 'en' ? t('math.today.practice', { title: stemCatalogCopy(locale, currentUnit.title) }) : `單元練習 (${currentUnit.title})`}
           </button>
           <button type="button" className="btn-hero-secondary" onClick={onOpenSignals}>
             ⚡ {locale === 'en' ? '3-second problem cues' : '3秒破題訊號'}
@@ -101,8 +102,8 @@ export const PhysicsToday: React.FC<Props> = ({
                   <span className="unit-seq">{t('math.today.unitN', { n: u.id })}</span>
                   <span className="unit-strand">{u.strand}</span>
                 </div>
-                <h4>{u.title}</h4>
-                <p className="unit-sub">{u.subtitle}</p>
+                <h4>{stemCatalogCopy(locale, u.title)}</h4>
+                <p className="unit-sub">{stemCatalogCopy(locale, u.subtitle)}</p>
 
                 <div className="unit-progress-bar-wrap">
                   <div className="unit-progress-bar-fill" style={{ width: `${uPct}%`, background: '#38bdf8' }} />
@@ -145,8 +146,8 @@ export const PhysicsToday: React.FC<Props> = ({
               >
                 <div className="lab-icon" style={{ background: '#e0f2fe' }}>⚛️</div>
                 <div className="lab-info">
-                  <h4>{lab.name}</h4>
-                  <p>{lab.description}</p>
+                  <h4>{stemCatalogCopy(locale, lab.name)}</h4>
+                  <p>{stemCatalogCopy(locale, lab.description)}</p>
                 </div>
                 <button type="button" className="btn-enter-lab" style={{ color: '#0284c7' }}>
                   {locale === 'en' ? 'Open lab →' : '開啟實驗室 →'}
