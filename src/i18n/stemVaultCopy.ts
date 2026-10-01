@@ -1,4 +1,5 @@
 import type { UiLocale } from './locale'
+import { ChunkLoadError } from '../utils/chunkLoadError'
 
 export const STEM_VAULT_EN: Readonly<Record<string, string>> = {
   "化學進階複習題目 ({id})": "Advanced chemistry review question ({id})",
@@ -118,6 +119,9 @@ export function loadStemVaultContentCopy() {
   return contentCopyPromise ??= import('./stemVaultContentEn').then(({ STEM_VAULT_CONTENT_EN }) => {
     contentCopy = STEM_VAULT_CONTENT_EN
     return contentCopy
+  }).catch(cause => {
+    // Keep the promise stable for React.use; recovery reloads the page and its module cache.
+    throw new ChunkLoadError('Unable to load English question content. Reload to retry.', { cause })
   })
 }
 
@@ -145,7 +149,8 @@ export function localizeStemVaultQuestion<T extends {
 }>(locale: UiLocale, question: T): T {
   return {
     ...question,
-    title: stemVaultCopy(locale, question.title, { id: question.id }),
+    // IDs are opaque user data, not translated copy. Validate the template before inserting them.
+    title: stemVaultCopy(locale, question.title).replace(/\{id\}/g, () => question.id),
     question: stemVaultCopy(locale, question.question),
     solution: stemVaultCopy(locale, question.solution),
     ...(question.options && { options: question.options.map(text => stemVaultCopy(locale, text)) }),

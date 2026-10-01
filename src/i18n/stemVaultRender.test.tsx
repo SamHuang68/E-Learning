@@ -75,6 +75,17 @@ for (const [name, Component, units, exams, signals] of [
       expect(html).not.toMatch(CJK)
     })
 
+    it('中文未知題號與已知題目並存，保留原始 ID 而不阻斷英文卡片', async () => {
+      const id = '舊題-1'
+      const html = await renderVault(Component, [units[0].questions[0].id, id])
+      expect(html.match(/class="vault-card-item/g)).toHaveLength(2)
+      expect(html).toContain(`review question (${id})`)
+      expect(html).toContain('Collapse all steps')
+      expect(html.replaceAll(id, '')).not.toMatch(CJK)
+      const chinese = await renderVault(Component, [id], 'zh-Hant')
+      expect(chinese).toContain(`${name}進階複習題目 (${id})`)
+    })
+
     it('無解題訊號時的主軸插值、公式與盲區備援也不含 CJK', async () => {
       const saved = signals.splice(0)
       try {
