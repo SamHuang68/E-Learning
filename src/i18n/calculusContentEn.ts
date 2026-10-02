@@ -391,5 +391,11 @@ export const CALCULUS_CONTENT_EN: Record<string, string> = {
   "積分下限": "Lower bound",
   "積分下限 a": "Lower integration bound a",
   "積分上限": "Upper bound",
-  "積分上限 b": "Upper integration bound b"
+  "積分上限 b": "Upper integration bound b",
+  "未定義 (Δx=0)": "undefined (Δx=0)",
+  "未定義（端點函數值不存在）": "undefined (endpoint value unavailable)",
+  "未定義（數值超出範圍）": "undefined (numeric overflow)",
+  "x={0}，f(x0)=未定義，數值估計 L≈{1}（不代表極限證明）": "x={0}, f(x0)=undefined, estimated L≈{1} (not a proof of the limit)",
+  "x={0}，f(x0)=未定義": "x={0}, f(x0)=undefined",
+  "旋轉切片輪廓": "Rotating slice outlines",
 }

@@ -35,16 +35,16 @@ describe('KnowledgeRadar layout memo helpers', () => {
     expect(layout.polygonPoints.split(' ')).toHaveLength(5)
   })
 
-  it('clamps a zero score to the inner 0.1 ring so the polygon stays visible', () => {
+  it('places a zero score at the center without implying earned progress', () => {
     const size = 340
     const layout = buildRadarLayout(fixture([0, 100]), size)
-    const inner = radarVertex(2, size, 0, 0.1)
+    const inner = radarVertex(2, size, 0, 0)
     const outer = radarVertex(2, size, 1, 1)
     expect(layout.dataPoints[0]?.x).toBeCloseTo(inner.x, 8)
     expect(layout.dataPoints[0]?.y).toBeCloseTo(inner.y, 8)
     expect(layout.dataPoints[1]?.x).toBeCloseTo(outer.x, 8)
     expect(layout.dataPoints[1]?.y).toBeCloseTo(outer.y, 8)
-    expect(layout.dataPoints[0]?.y).not.toBe(size / 2)
+    expect(layout.dataPoints[0]?.y).toBe(size / 2)
   })
 
   it('is stable for the same radar and size', () => {

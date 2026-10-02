@@ -32,7 +32,9 @@ export function buildRadarLayout(radar: TrackRadar, size: number) {
   )
   const axes = Array.from({ length: count }, (_, i) => radarVertex(count, size, i, 1))
   const dataPoints = dimensions.map((d, i) => {
-    const ratio = Math.max(0.1, d.score / d.fullMark)
+    const ratio = d.fullMark > 0 && Number.isFinite(d.score)
+      ? Math.max(0, Math.min(1, d.score / d.fullMark))
+      : 0
     return radarVertex(count, size, i, ratio)
   })
   const polygonPoints = dataPoints.map((p) => `${p.x},${p.y}`).join(' ')

@@ -53,6 +53,14 @@ if (oversizedJs.length > 0) {
 }
 const largestJs = jsSizes.sort((a, b) => b.bytes - a.bytes)[0]
 
+// Stable test-runner runtime markers, not generic function names that minifiers may reuse.
+for (const { file } of jsSizes) {
+  const source = await readFile(path.join(distDir, file.replace(/^\.\//, '')), 'utf8')
+  if (/__vitest_worker__|Vitest failed to access its internal state|@vitest\/runner|@jest\/globals/.test(source)) {
+    throw new Error(`Test-runner runtime leaked into production chunk: ${file}`)
+  }
+}
+
 const katexWoff2 = files.filter((file) => /assets\/KaTeX_.*\.woff2$/.test(file))
 if (katexWoff2.length < 10) {
   throw new Error(`KaTeX formula fonts are not precached for offline physics formulas (${katexWoff2.length} woff2).`)

@@ -4,14 +4,14 @@ import { playCorrectSound, playWrongSound } from '../../engine/audioSynthesizer'
 import { useI18n } from '../../i18n/i18n'
 
 interface Props {
-  completedQuestions: string[]
+  completedQuestions?: string[]
   onCompleteQuestion: (questionId: string, earnedXp: number) => void
   onRecordError: (questionId: string) => void
   initialUnitId?: string
 }
 
 export const CsPractice: React.FC<Props> = ({
-  completedQuestions,
+  completedQuestions = [],
   onCompleteQuestion,
   onRecordError,
   initialUnitId,

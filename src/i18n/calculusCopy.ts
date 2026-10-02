@@ -51,7 +51,6 @@ export function calculusCopy(locale: UiLocale, text: string): string {
       })
       // The template was validated above; opaque input may legitimately contain CJK.
       return text.slice(0, text.indexOf(source)) + translated + text.slice(text.indexOf(source) + source.length)
-      break
     }
   }
   if (!translated?.trim() || CJK.test(translated)) throw new Error('缺少有效微積分英文文案：' + text)

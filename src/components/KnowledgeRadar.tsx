@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useId, useMemo } from 'react'
 import type { TrackRadar } from '../engine/radar'
 import { useI18n } from '../i18n/i18n'
 import { localizeTrackRadar } from '../i18n/radarI18n'
@@ -14,6 +14,7 @@ type Props = {
  * 輕量級純 SVG 繪製五邊形蜘蛛網雷達圖，零第三方圖表庫依賴。
  */
 export const KnowledgeRadar = React.memo(function KnowledgeRadar({ radar, size = 320 }: Props) {
+  const radarId = useId()
   const { locale, t } = useI18n()
   const localized = useMemo(() => localizeTrackRadar(radar, locale), [radar, locale])
   const layout = useMemo(() => buildRadarLayout(localized, size), [localized, size])
@@ -33,10 +34,10 @@ export const KnowledgeRadar = React.memo(function KnowledgeRadar({ radar, size =
           viewBox={`0 0 ${size} ${size}`}
           className="radar-svg"
           role="img"
-          aria-labelledby="knowledge-radar-title knowledge-radar-desc"
+          aria-labelledby={`knowledge-radar-title-${radarId} knowledge-radar-desc-${radarId}`}
         >
-          <title id="knowledge-radar-title">{t('ui.radarAriaTitle', { track: localized.trackName })}</title>
-          <desc id="knowledge-radar-desc">
+          <title id={`knowledge-radar-title-${radarId}`}>{t('ui.radarAriaTitle', { track: localized.trackName })}</title>
+          <desc id={`knowledge-radar-desc-${radarId}`}>
             {t('ui.radarAriaDesc', {
               score: localized.averageScore,
               details: dimensions.map((dimension) => `${dimension.label} ${dimension.score}`).join('; '),

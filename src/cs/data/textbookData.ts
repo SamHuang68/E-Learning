@@ -1,5 +1,4 @@
 import type { CsStrand } from './curriculum'
-
 export interface TextbookChapter {
   id: string
   chapterNumber: number
@@ -47,6 +46,14 @@ export interface TextbookChapter {
   }[]
 }
 
+// Technical corrections verified against primary sources (2026-10-02):
+// https://docs.kernel.org/RCU/Design/Requirements/Requirements.html
+// https://man7.org/linux/man-pages/man7/io_uring_sqpoll.7.html
+// https://www.rfc-editor.org/rfc/rfc9000.html
+// https://www.intel.com/content/www/us/en/docs/dpcpp-cpp-compiler/developer-guide-reference/2025-0/ftz-qftz.html
+// https://docs.nvidia.com/dgx/dgxh100-user-guide/introduction-to-dgxh100.html
+// https://docs.nvidia.com/dgx/dgxb200-user-guide/introduction-to-dgxb200.html
+// https://arxiv.org/html/2402.03300v3
 export const CS_TEXTBOOK_CHAPTERS: TextbookChapter[] = [
   {
     id: 'cs-ch-1',
@@ -153,7 +160,7 @@ export const CS_TEXTBOOK_CHAPTERS: TextbookChapter[] = [
       breakthroughStory: '1945 年馮·紐曼起草《EDVAC 報告書的第一份草案》，奠定了儲存程式型電腦 (Stored-program Computer) 的經典五大單元。然而隨著半導體微處理器主頻飆升，CPU 運算速度每年成長 50%，但 DRAM 記憶體存取延遲每年僅改善 7%，形成了延宕至今的「馮紐曼瓶頸 (Von Neumann Bottleneck / Memory Wall)」。',
     },
     firstPrinciples: {
-      summary: '中央處理器是指令解碼與暫存器狀態機的極速驅動器。透過多級管線化、亂序執行、多級快取階層與分支預測，在嚴格維持循序語義 (Sequential Consistency) 的同時榨乾指令級平行度 (ILP)。',
+      summary: '中央處理器是指令解碼與暫存器狀態機的極速驅動器。透過多級管線化、亂序執行、重排序緩衝區 (ROB) 循序引退、多級快取階層與分支預測，在對程式設計師嚴格維持單執行緒循序架構語意 (Sequential Program Order) 的同時榨乾指令級平行度 (ILP)；跨核心操作可見性則依賴硬體記憶體模型與記憶體屏障。',
       mathematicalDerivations: [
         {
           topic: '阿姆達爾定律 (Amdahl\'s Law)',
@@ -239,7 +246,7 @@ export const CS_TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         {
           topic: '超前進位並行前綴方程式 (CLA Carry Lookahead)',
           formula: 'G_i = A_i B_i, \\quad P_i = A_i \\oplus B_i, \\quad C_{i+1} = G_i + P_i C_i',
-          explanation: '遞歸展開後進位直接成為初始輸入的積之和 (SOP) 形式，進位延遲從 O(n) 驟降至 O(log n) 或多級 CLA 的 O(1)。',
+          explanation: '遞歸展開後進位直接表達為初始輸入的積之和 (SOP) 形式；在固定閘輸入數 (Fan-in) 的物理約束下，階層式 CLA 與平行前綴加法器的邏輯閘延遲從連波進位的 O(n) 驟降至 O(log n)。',
         },
         {
           topic: '二補數數學同餘本質 (Two\'s Complement Congruence)',
@@ -249,7 +256,7 @@ export const CS_TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         {
           topic: 'IEEE 754 浮點數數值表達規範',
           formula: 'V = (-1)^s \\times (1.M) \\times 2^{E - \\text{Bias}} \\quad (\\text{正規化數})',
-          explanation: '隱含前導 1 (Implicit Leading Bit) 節省 1 位尾數，指數偏移碼 (Biased Exponent) 讓硬體直接用整數比較器快速判斷浮點數大小。',
+          explanation: '隱含前導 1 (Implicit Leading Bit) 節省 1 位尾數；指數偏移碼 (Biased Exponent) 保證了非負同號有限浮點數可直接以無號整數比較器判定大小（一般完整浮點比較仍須專門處理符號位元反轉、正負零等價 +0 == -0 與 NaN 無序性）。',
         },
       ],
     },
@@ -268,9 +275,9 @@ export const CS_TEXTBOOK_CHAPTERS: TextbookChapter[] = [
           technicalMechanism: '以多級交叉開關矩陣在 1 個時脈週期內完成 0~63 任意位數的邏輯/算術移位。',
         },
         {
-          name: 'FPU 異常處理與 FTZ 模式單元',
-          role: '浮點極限保護',
-          technicalMechanism: '硬體暫存器開關 Flush-To-Zero，當檢測到指數為 0 的非正規化數時直接截斷為 0，避免觸發 150 週期微碼慢速陷阱。',
+          name: 'FPU 異常處理與 FTZ / DAZ 控制單元',
+          role: '浮點極限與非正規化數保護',
+          technicalMechanism: '在 x86 MXCSR 等架構暫存器中配置 FTZ (Flush-To-Zero) 與 DAZ (Denormals-Are-Zero)：FTZ 於計算輸出下溢時直接截斷為零，DAZ 於指令輸入端將非正規化操作數視為零。兩者可減少部分處理器的非正規化數處理成本，但會改變漸進下溢語意與數值結果，是否適用須依工作負載判斷。',
         },
       ],
     },
@@ -336,7 +343,7 @@ export const CS_TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         {
           name: '讀取-複製-更新 (RCU) 同步原語',
           role: '極致讀多寫少並發',
-          technicalMechanism: '讀取者零等待零鎖直接讀取指針，寫入者複製副本修改並在寬限期 (Grace Period) 後原子切換指針並釋放舊記憶體。',
+          technicalMechanism: '讀取者零等待零鎖直接讀取指標；寫入者複製副本修改後，先以發布原語原子切換指標發布新版，再等待寬限期 (Grace Period) 確保所有持有舊指標的讀取者皆已退出臨界區，最後安全回收釋放舊記憶體。',
         },
         {
           name: 'epoll 核心事件驅動驅動引擎',
@@ -349,7 +356,7 @@ export const CS_TEXTBOOK_CHAPTERS: TextbookChapter[] = [
       {
         companyOrProject: 'Linux Kernel Community',
         systemName: 'io_uring 非同步 I/O 革命',
-        appliedSolution: 'Jens Axboe 設計的 io_uring 透過使用者空間與核心空間共享 Submission Queue (SQ) 與 Completion Queue (CQ) 雙環狀緩衝區，實現了零系統調用 (Zero-syscall) 的極致 NVMe 固態硬碟磁碟與網路吞吐。',
+        appliedSolution: 'Jens Axboe 設計之 io_uring 透過使用者空間與核心空間共享 Submission Queue (SQ) 與 Completion Queue (CQ) 雙環狀緩衝區，在常規批次提交下顯著攤薄每筆 I/O 的系統呼叫次數；當進一步啟用專屬核心輪詢執行緒 (IORING_SETUP_SQPOLL) 且執行緒保持運作時，提交路徑更可免發系統呼叫 (Zero-syscall submission)，發揮極致 NVMe 固態硬碟與高速網路吞吐。',
       },
     ],
     deepThinkingQuestions: [
@@ -407,7 +414,7 @@ export const CS_TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         {
           name: 'QUIC UDP 多串流傳輸架構',
           role: '消滅隊頭阻塞',
-          technicalMechanism: '每個串流獨立分配序號與滑動視窗，單一串流丟包不阻塞其他串流，支援 64 位元 Connection ID 零中斷連線遷移。',
+          technicalMechanism: '每個串流以獨立位元組位移 (Byte Offset) 進行重組與流量控制，封包則在獨立編號空間遞增以精準偵測丟包，消除串流間的線頭阻塞 (HOLB)；QUIC v1 支援 0~20 位元組可變長度 Connection ID；使用非零長度 CID 並通過路徑驗證時可支援連線遷移，零長度 CID 不提供相同的位址變更能力。',
         },
         {
           name: 'Percolator Primary Lock 錨點提交引擎',
@@ -473,7 +480,7 @@ export const CS_TEXTBOOK_CHAPTERS: TextbookChapter[] = [
     },
     architecturalDeepDive: {
       sectionTitle: '現代企業級 AI 伺服器 (DGX/HGX 業界標竿) 微架構與叢集全景',
-      content: '在電腦科學與人工智慧基礎設施領域，現代 AI 伺服器（如 NVIDIA DGX H100 / HGX B200）是支撐大模型千億參數訓練與巨量高併發推論的工業標準面貌。其核心特徵為「雙路伺服器 CPU 配備 2TB (2048GB) 高速 DDR5 ECC 註冊記憶體」、「8 顆 SXM 封裝旗艦 GPU（每顆具備 80GB~141GB HBM3e 顯存與數 TB/s 超高頻寬）」、以及「板載 4 顆專用 NVSwitch 晶片構建 900 GB/s 以上雙向 All-to-All 網格」。伺服器與消費級 PC 存在著截然不同的量級邊界：絕不能將個人 PC 的 96GB 記憶體與缺乏 NVSwitch 的 PCIe 單卡環境誤套為伺服器，伺服器必須完整呈現整個市場的宏觀面貌。',
+      content: '在電腦科學與人工智慧基礎設施領域，現代 AI 伺服器是支撐千億參數大模型訓練與高併發推論的工業標準面貌。業界主要旗艦配置具體分列如下：DGX H100 配備 8 顆 80GB HBM3 GPU（八卡總計 640GB 顯存，單卡 3.35TB/s 頻寬，搭配 900 GB/s NVLink 4 互連）；升級版 HGX H200 配備 8 顆 141GB HBM3e GPU（八卡總計 1,128GB 即 1.1TB 顯存，單卡 4.8TB/s 頻寬）；Blackwell 世代 DGX B200 則配備 8 顆 180GB HBM3e GPU（八卡總計 1,440GB 即 1.44TB 顯存，單卡 8TB/s 頻寬，搭配 1.8 TB/s NVLink 5 全互聯）。伺服器主機並搭配雙路 CPU 與 2TB (2048GB) 高速 DDR5 ECC 註冊記憶體。此工業級叢集規模與消費級個人 PC（如單卡或缺乏 NVSwitch 的一般環境）存在著清晰的量級界線。',
       keySubsystems: [
         {
           name: '雙路伺服器主機子系統 (Dual CPUs + 2TB ECC RAM)',
@@ -483,20 +490,25 @@ export const CS_TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         {
           name: '8x SXM 旗艦 Tensor Core GPU 運算矩陣',
           role: '大規模低精度張量平行計算',
-          technicalMechanism: '8 顆 SXM 封裝 GPU 總計擁有超過 1TB 的 HBM3e 顯存，單節點提供高達 32 PFLOPS 的 FP8/FP4 峰值運算能力。',
+          technicalMechanism: '8 顆旗艦 GPU 依世代提供 640GB (H100 HBM3)、1.1TB (H200 HBM3e) 至 1.44TB (B200 HBM3e) 的極速顯存容量，峰值算力需分別標明 GPU 世代、數值精度及是否使用結構化稀疏，不能把 FP8 與 FP4 混為同一指標。',
         },
         {
-          name: 'NVSwitch 900 GB/s 專用交換網格與 400Gb/s InfiniBand',
+          name: 'NVLink / NVSwitch 交換網格與 400Gb/s InfiniBand',
           role: '消滅多卡平行通訊牆與跨節點 RDMA',
-          technicalMechanism: '以 4 顆板載 NVSwitch 晶片實現 8 卡全互聯雙向全對稱通訊，搭配 8 埠 400Gb/s InfiniBand NIC 實現極低延遲 GPUDirect RDMA。',
+          technicalMechanism: 'DGX H100 使用 4 顆第 3 代 NVSwitch，單卡 NVLink 雙向頻寬 900 GB/s；DGX B200 使用 2 顆第 5 代 NVLink 交換器，整機總互連頻寬 14.4 TB/s。各代系統均可搭配 400Gb/s InfiniBand 網路進行跨節點 GPUDirect RDMA。',
         },
       ],
     },
     industrialCaseStudies: [
       {
         companyOrProject: 'NVIDIA Enterprise',
-        systemName: 'DGX H100 / HGX B200 業界標竿 AI 伺服器',
-        appliedSolution: '標準配置 2TB 系統記憶體與 8 張 SXM 封裝 GPU，透過主機板內嵌之 4 顆 NVSwitch 晶片實現 3.2 Tbps 雙向對等穿透，專供千億參數預訓練。',
+        systemName: 'DGX H100 / HGX H100 業界標竿 AI 伺服器',
+        appliedSolution: '標準配置雙路 CPU 與 2TB 系統記憶體，8 顆 SXM 封裝 H100 GPU 透過 4 顆板載第 3 代 NVSwitch 晶片構建單卡 900 GB/s (雙向)、整機雙向高達 7.2 TB/s 的 NVLink 4 全互聯無阻塞矩陣，專供千億參數大模型張量平行計算。',
+      },
+      {
+        companyOrProject: 'NVIDIA Enterprise',
+        systemName: 'DGX B200 Blackwell 世代旗艦 AI 伺服器',
+        appliedSolution: '搭載 8 顆 Blackwell B200 GPU (各 180GB HBM3e，單卡顯存頻寬 8 TB/s)，升級採用第 5 代 NVLink，單卡雙向互連頻寬翻倍至 1.8 TB/s，整機雙向互連頻寬達 14.4 TB/s，大幅消除跨卡 All-to-All 與張量平行通訊瓶頸。',
       },
       {
         companyOrProject: 'AI 叢集超算中心 (AI SuperPOD)',
@@ -547,8 +559,8 @@ export const CS_TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         },
         {
           topic: 'GRPO 組相對策略優化目標 (Group Relative Policy Optimization)',
-          formula: '\\mathcal{J}_{\\text{GRPO}}(\\theta) = \\mathbb{E}_{q \\sim P, \\{o_i\\} \\sim \\pi_\\theta} \\left[ \\frac{1}{G} \\sum_{i=1}^G \\left( \\min\\left(\\frac{\\pi_\\theta}{\\pi_{\\text{old}}} A_i, \\text{clip}\\left(\\frac{\\pi_\\theta}{\\pi_{\\text{old}}}, 1-\\epsilon, 1+\\epsilon\\right) A_i\\right) - \\beta D_{\\text{KL}}(\\pi_\\theta \\parallel \\pi_{\\text{ref}}) \\right) \\right]',
-          explanation: '徹底剔除單獨的 Critic 模型，對於同一個提示生成 G 個候選回答，直接以組內獎勵的均值與標準差歸一化計算優勢值 A_i，顯存減半並穩定激發長鏈推理。',
+          formula: '\\mathcal{J}_{\\text{GRPO}}(\\theta) = \\mathbb{E}_{q \\sim P(Q), \\{o_i\\}_{i=1}^G \\sim \\pi_{\\text{old}}(O|q)} \\left[ \\frac{1}{G} \\sum_{i=1}^G \\left( \\min\\left(\\frac{\\pi_\\theta(o_i|q)}{\\pi_{\\text{old}}(o_i|q)} A_i, \\text{clip}\\left(\\frac{\\pi_\\theta(o_i|q)}{\\pi_{\\text{old}}(o_i|q)}, 1-\\epsilon, 1+\\epsilon\\right) A_i\\right) - \\beta D_{\\text{KL}}(\\pi_\\theta \\parallel \\pi_{\\text{ref}}) \\right) \\right]',
+          explanation: 'GRPO 不另設 Critic 評價模型，由舊策略針對問題 q 採樣 G 個候選回答，以組內獎勵的均值與標準差估計優勢，並以裁切重要性比例及 KL 懲罰更新策略。此式是回答層級簡寫；原始演算法對回答內各 token 的目標取平均。省去 Critic 可減少記憶體需求，實際節省量依配置而異。',
         },
       ],
     },
