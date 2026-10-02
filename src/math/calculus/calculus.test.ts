@@ -167,11 +167,13 @@ describe('微積分專題 (Calculus Studio) 模組測試', () => {
       expect(concept?.prerequisites).toContain('calc-chain-rule')
     })
 
-    it('微積分專屬勳章庫應具備清晰的解鎖條件與 XP 獎勵', () => {
+    it('微積分專屬勳章庫應具備清晰的解鎖條件與可用狀態', () => {
       expect(CALCULUS_BADGES.length).toBe(4)
       CALCULUS_BADGES.forEach((b) => {
         expect(b.id).toMatch(/^badge-calc-/)
-        expect(b.xpReward).toBeGreaterThan(0)
+        expect(b.condition.length).toBeGreaterThan(0)
+        if (b.id === 'badge-calc-chain-rule-ace') expect(b.targetMode).toBeUndefined()
+        else expect(CALCULUS_PROBLEMS.some((problem) => problem.targetMode === b.targetMode)).toBe(true)
       })
     })
 

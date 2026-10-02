@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useId, useLayoutEffect, useRef, useState } from 'react'
 import { TrackSwitcher } from '../../components/TrackSwitcher'
 import { useI18n } from '../../i18n/i18n'
 import type { MessageKey } from '../../i18n/messages'
 import type { LangId } from '../../utils/storage'
+import './CsNavigation.css'
 
 export type CsNavSection =
   | 'hierarchy'
@@ -54,6 +55,143 @@ const LAB_IDS: CsNavSection[] = LABS.map((item) => item.id)
 const PRACTICE_IDS: CsNavSection[] = PRACTICE.map((item) => item.id)
 const EXAM_IDS: CsNavSection[] = EXAMS.map((item) => item.id)
 
+type MenuId = 'labs' | 'practice' | 'exams'
+
+interface DisclosureProps {
+  label: string
+  active: boolean
+  open: boolean
+  onToggle: (open: boolean) => void
+  onSelect: (section: CsNavSection) => void
+  activeSection: CsNavSection
+  items: Array<{ id: CsNavSection; titleKey: MessageKey; descKey: MessageKey; advanced?: boolean }>
+  errorCount?: number
+}
+
+function CsNavDisclosure({ label, active, open, onToggle, onSelect, activeSection, items, errorCount = 0 }: DisclosureProps) {
+  const { t } = useI18n()
+  const id = useId()
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+  const pendingFocus = useRef<'first' | 'last' | null>(null)
+  const [position, setPosition] = useState<React.CSSProperties>({})
+
+  useLayoutEffect(() => {
+    if (!open) return
+    const place = () => {
+      const trigger = triggerRef.current
+      const dropdown = dropdownRef.current
+      if (!trigger || !dropdown) return
+      const rect = trigger.getBoundingClientRect()
+      const gutter = 12
+      const width = Math.min(300, window.innerWidth - gutter * 2)
+      const below = window.innerHeight - rect.bottom - gutter - 6
+      const above = rect.top - gutter - 6
+      const useAbove = below < Math.min(dropdown.scrollHeight, 180) && above > below
+      setPosition({
+        width,
+        left: Math.max(gutter, Math.min(rect.left, window.innerWidth - width - gutter)),
+        top: useAbove ? 'auto' : rect.bottom + 6,
+        bottom: useAbove ? window.innerHeight - rect.top + 6 : 'auto',
+        maxHeight: Math.max(48, useAbove ? above : below),
+      })
+    }
+    const closeOutside = (event: Event) => {
+      if (event.target instanceof Node && !wrapperRef.current?.contains(event.target)) onToggle(false)
+    }
+    place()
+    const buttons = dropdownRef.current?.querySelectorAll('button')
+    if (pendingFocus.current && buttons?.length) {
+      buttons[pendingFocus.current === 'first' ? 0 : buttons.length - 1].focus()
+      pendingFocus.current = null
+    }
+    window.addEventListener('resize', place)
+    window.addEventListener('scroll', place, true)
+    document.addEventListener('pointerdown', closeOutside)
+    document.addEventListener('focusin', closeOutside)
+    return () => {
+      window.removeEventListener('resize', place)
+      window.removeEventListener('scroll', place, true)
+      document.removeEventListener('pointerdown', closeOutside)
+      document.removeEventListener('focusin', closeOutside)
+    }
+  }, [open, onToggle])
+
+  function focusItem(which: 'first' | 'last') {
+    if (!open) {
+      pendingFocus.current = which
+      onToggle(true)
+      return
+    }
+    const buttons = dropdownRef.current?.querySelectorAll('button')
+    if (buttons?.length) buttons[which === 'first' ? 0 : buttons.length - 1].focus()
+  }
+
+  return (
+    <div ref={wrapperRef} className="cs-nav-menu" onKeyDown={(event) => {
+      if (event.key === 'Escape' && open) {
+        event.preventDefault()
+        event.stopPropagation()
+        onToggle(false)
+        triggerRef.current?.focus()
+      }
+    }}>
+      <button
+        ref={triggerRef}
+        id={`${id}-trigger`}
+        type="button"
+        className={`cs-nav-item${active ? ' is-active' : ''}`}
+        aria-expanded={open}
+        aria-controls={`${id}-options`}
+        onClick={() => onToggle(!open)}
+        onKeyDown={(event) => {
+          if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+            event.preventDefault()
+            focusItem(event.key === 'ArrowDown' ? 'first' : 'last')
+          }
+        }}
+      >
+        {label}
+        {errorCount > 0 ? <span className="cs-nav-badge">{errorCount}</span> : null}
+      </button>
+      {open ? (
+        <div
+          ref={dropdownRef}
+          id={`${id}-options`}
+          className="cs-nav-dropdown"
+          role="group"
+          aria-labelledby={`${id}-trigger`}
+          style={position}
+          onKeyDown={(event) => {
+            if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return
+            const buttons = Array.from(event.currentTarget.querySelectorAll('button'))
+            const index = buttons.indexOf(document.activeElement as HTMLButtonElement)
+            const next = event.key === 'Home' ? 0 : event.key === 'End' ? buttons.length - 1
+              : (index + (event.key === 'ArrowDown' ? 1 : -1) + buttons.length) % buttons.length
+            event.preventDefault()
+            buttons[next]?.focus()
+          }}
+        >
+          {items.map((item) => (
+            <button key={item.id} type="button" aria-current={activeSection === item.id ? 'page' : undefined} onClick={() => {
+              triggerRef.current?.focus()
+              onSelect(item.id)
+            }}>
+              <strong>
+                {t(item.titleKey)}
+                {item.advanced ? <span className="cs-advanced-tag">{t('cs.top.advanced')}</span> : null}
+                {item.id === 'errors' && errorCount > 0 ? ` (${errorCount})` : ''}
+              </strong>
+              <span>{t(item.descKey)}</span>
+            </button>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  )
+}
+
 export const CsTopNav: React.FC<Props> = ({
   activeSection,
   onSelectSection,
@@ -62,7 +200,7 @@ export const CsTopNav: React.FC<Props> = ({
   errorCount = 0,
 }) => {
   const { t } = useI18n()
-  const [openMenu, setOpenMenu] = useState<'labs' | 'practice' | 'exams' | null>(null)
+  const [openMenu, setOpenMenu] = useState<MenuId | null>(null)
 
   function go(section: CsNavSection) {
     onSelectSection(section)
@@ -86,81 +224,30 @@ export const CsTopNav: React.FC<Props> = ({
             key={item.id}
             type="button"
             className={menuClass(activeSection === item.id)}
+            aria-current={activeSection === item.id ? 'page' : undefined}
             onClick={() => go(item.id)}
           >
             {t(item.labelKey)}
           </button>
         ))}
 
-        <div className="cs-nav-menu">
-          <button
-            type="button"
-            className={menuClass(LAB_IDS.includes(activeSection))}
-            aria-expanded={openMenu === 'labs'}
-            onClick={() => setOpenMenu((cur) => (cur === 'labs' ? null : 'labs'))}
-          >
-            {t('cs.top.labs')}
-          </button>
-          {openMenu === 'labs' ? (
-            <div className="cs-nav-dropdown" role="menu">
-              {LABS.map((lab) => (
-                <button key={lab.id} type="button" onClick={() => go(lab.id)}>
-                  <strong>
-                    {t(lab.titleKey)}
-                    {lab.advanced ? <span className="cs-advanced-tag">{t('cs.top.advanced')}</span> : null}
-                  </strong>
-                  <span>{t(lab.descKey)}</span>
-                </button>
-              ))}
-            </div>
-          ) : null}
-        </div>
-
-        <div className="cs-nav-menu">
-          <button
-            type="button"
-            className={menuClass(PRACTICE_IDS.includes(activeSection))}
-            aria-expanded={openMenu === 'practice'}
-            onClick={() => setOpenMenu((cur) => (cur === 'practice' ? null : 'practice'))}
-          >
-            {t('cs.top.practice')}
-          </button>
-          {openMenu === 'practice' ? (
-            <div className="cs-nav-dropdown" role="menu">
-              {PRACTICE.map((item) => (
-                <button key={item.id} type="button" onClick={() => go(item.id)}>
-                  <strong>{t(item.titleKey)}</strong>
-                  <span>{t(item.descKey)}</span>
-                </button>
-              ))}
-            </div>
-          ) : null}
-        </div>
-
-        <div className="cs-nav-menu">
-          <button
-            type="button"
-            className={menuClass(EXAM_IDS.includes(activeSection))}
-            aria-expanded={openMenu === 'exams'}
-            onClick={() => setOpenMenu((cur) => (cur === 'exams' ? null : 'exams'))}
-          >
-            {t('cs.top.exams')}
-            {errorCount > 0 ? <span className="cs-nav-badge">{errorCount}</span> : null}
-          </button>
-          {openMenu === 'exams' ? (
-            <div className="cs-nav-dropdown" role="menu">
-              {EXAMS.map((item) => (
-                <button key={item.id} type="button" onClick={() => go(item.id)}>
-                  <strong>
-                    {t(item.titleKey)}
-                    {item.id === 'errors' && errorCount > 0 ? `（${errorCount}）` : ''}
-                  </strong>
-                  <span>{t(item.descKey)}</span>
-                </button>
-              ))}
-            </div>
-          ) : null}
-        </div>
+        {([
+          { id: 'labs', labelKey: 'cs.top.labs', ids: LAB_IDS, items: LABS },
+          { id: 'practice', labelKey: 'cs.top.practice', ids: PRACTICE_IDS, items: PRACTICE },
+          { id: 'exams', labelKey: 'cs.top.exams', ids: EXAM_IDS, items: EXAMS },
+        ] as const).map((menu) => (
+          <CsNavDisclosure
+            key={menu.id}
+            label={t(menu.labelKey)}
+            active={menu.ids.includes(activeSection)}
+            activeSection={activeSection}
+            open={openMenu === menu.id}
+            onToggle={(open) => setOpenMenu(open ? menu.id : null)}
+            onSelect={go}
+            items={menu.items}
+            errorCount={menu.id === 'exams' ? errorCount : 0}
+          />
+        ))}
       </nav>
 
       <TrackSwitcher current="cs" onBackHub={onBackHub} onSwitchLang={onSwitchLang} />

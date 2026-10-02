@@ -4,7 +4,8 @@ import { Breadcrumbs } from '../components/Breadcrumbs'
 import { CalculusSidebar, type CalculusNavId } from './components/CalculusSidebar'
 import { generateDerivationSteps } from '../math/calculus/engine'
 import { useCalculusLearningCoordinator } from '../math/calculus/hooks/useCalculusLearningCoordinator'
-import { CALCULUS_BADGES } from '../math/calculus/data/calculusBadges'
+import { AVAILABLE_CALCULUS_BADGES, CALCULUS_BADGES } from '../math/calculus/data/calculusBadges'
+import { CalculusBadgeDialog } from '../math/calculus/components/CalculusBadgeDialog'
 import { CalculusPrerequisiteGraph } from '../math/calculus/components/CalculusPrerequisiteGraph'
 import type { CalculusLabMode, RiemannMethod, CalculusProblem } from '../math/calculus/types'
 import type { LangId } from '../utils/storage'
@@ -62,6 +63,7 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
   const [riemannMethod, setRiemannMethod] = useState<RiemannMethod>('midpoint')
   const [taylorOrder, setTaylorOrder] = useState<number>(3)
   const [epsilon, setEpsilon] = useState<number>(0.5)
+  const [newtonSteps, setNewtonSteps] = useState<number>(5)
   const [currentStepIdx, setCurrentStepIdx] = useState<number>(0)
 
   // 認知學習調度與 IRT 狀態
@@ -70,6 +72,7 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
     clearBadgeNotification,
     currentTheta,
     newlyUnlockedBadges,
+    earnedBadges,
   } = useCalculusLearningCoordinator()
 
   // 自動為當前表達式產生推導步驟
@@ -85,6 +88,7 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
     if (p.defaultParams.slicesN !== undefined) setSlicesN(p.defaultParams.slicesN)
     if (p.defaultParams.taylorOrder !== undefined) setTaylorOrder(p.defaultParams.taylorOrder)
     if (p.defaultParams.epsilon !== undefined) setEpsilon(p.defaultParams.epsilon)
+    if (p.defaultParams.newtonSteps !== undefined) setNewtonSteps(p.defaultParams.newtonSteps)
   }
 
   function handleSelectPreset(expr: string) {
@@ -103,8 +107,8 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
     step_solver: t('calculus.solver'),
     adaptive_practice: t('calculus.practiceNav'),
     badges: t('calculus.badges', {
-      unlocked: newlyUnlockedBadges.length,
-      total: CALCULUS_BADGES.length,
+      unlocked: earnedBadges.length,
+      total: AVAILABLE_CALCULUS_BADGES.length,
     }),
   }
 
@@ -117,8 +121,8 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         currentMode={mode}
         onSelectMode={setMode}
         currentTheta={currentTheta}
-        unlockedBadgeCount={newlyUnlockedBadges.length}
-        totalBadgeCount={CALCULUS_BADGES.length}
+        unlockedBadgeCount={earnedBadges.length}
+        totalBadgeCount={AVAILABLE_CALCULUS_BADGES.length}
         onBackHub={onBackHub}
         onSwitchLang={onSwitchLang}
       />
@@ -179,7 +183,7 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
             <div className="section-header-row">
               <div>
                 <h2>🏆 {t('calculus.badgesHall')}</h2>
-                <p className="section-subtext">{c("完成 4 階能力挑戰與推導解題，解鎖對應領域微認證勳章")}</p>
+                <p className="section-subtext">{c("勳章依本機正確作答紀錄保留；每答對一題獲得 15 XP，勳章不另加 XP。")}</p>
               </div>
             </div>
 
@@ -188,7 +192,7 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
                 <div key={b.id} className="badge-card-item">
                   <div className="badge-card-header">
                     <span className="badge-icon-display">{b.icon}</span>
-                    <span className="badge-reward-pill">+{b.xpReward} XP</span>
+                    <span className="badge-reward-pill">{c(!b.targetMode ? "尚未開放" : earnedBadges.some((badge) => badge.id === b.id) ? "已解鎖" : "尚未解鎖")}</span>
                   </div>
                   <h3>{c(b.title)}</h3>
                   <p className="badge-card-desc">{c(b.description)}</p>
@@ -199,9 +203,10 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
                   <button
                     type="button"
                     className="btn-badge-challenge"
+                    disabled={!b.targetMode}
                     onClick={() => setActiveNav('adaptive_practice')}
                   >
-                    {c("前往挑戰 →")}</button>
+                    {c(b.targetMode ? "前往挑戰 →" : "尚未開放")}</button>
                 </div>
               ))}
             </div>
@@ -272,6 +277,7 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
                   riemannMethod={riemannMethod}
                   taylorOrder={taylorOrder}
                   epsilon={epsilon}
+                  newtonSteps={newtonSteps}
                   onParamChange={(p) => {
                     if (p.x0 !== undefined) setX0(p.x0)
                     if (p.deltaX !== undefined) setDeltaX(p.deltaX)
@@ -292,27 +298,8 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         </footer>
       </section>
 
-      {/* 微認證勳章解鎖彈窗 */}
-      {newlyUnlockedBadges.length > 0 && (
-        <div className="calculus-badge-modal-overlay" onClick={clearBadgeNotification}>
-          <div className="calculus-badge-modal-card" onClick={(e) => e.stopPropagation()}>
-            <div className="badge-unlock-animation">🏆</div>
-            <h3>{c("恭喜解鎖微積分微認證！")}</h3>
-            {newlyUnlockedBadges.map((badge) => (
-              <div key={badge.id} className="unlocked-badge-detail">
-                <span className="badge-icon-lg">{badge.icon}</span>
-                <div>
-                  <strong>{c(badge.title)}</strong>
-                  <p>{c(badge.description)}</p>
-                  <span className="reward-tag">+{badge.xpReward} XP</span>
-                </div>
-              </div>
-            ))}
-            <button type="button" className="btn-close-modal" onClick={clearBadgeNotification}>
-              {c("太棒了，繼續挑戰！")}</button>
-          </div>
-        </div>
-      )}
+      <CalculusBadgeDialog badges={newlyUnlockedBadges} onDismiss={clearBadgeNotification} />
+
     </main>
   )
 }
