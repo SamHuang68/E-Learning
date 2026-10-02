@@ -2,7 +2,14 @@ import type { ChemistryQuestion } from '../data/curriculum'
 
 export type ChemistryResponse = number | number[] | string | null
 
-/** Match the existing chemistry mock-exam rules, including its 0.05 fill tolerance. */
+function parseDecimal(value: string): number {
+  // Parse the entire decimal/scientific literal, not a prefix such as "2" in "2+3".
+  if (!/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/.test(value)) return NaN
+  const parsed = Number(value)
+  return Number.isFinite(parsed) ? parsed : NaN
+}
+
+/** Keep the chemistry exam's 0.05 fill tolerance, requiring complete finite numeric input. */
 export function gradeChemistryAnswer(question: ChemistryQuestion, response: ChemistryResponse): boolean {
   if (response === null || response === '' || (typeof response === 'string' && !response.trim())) return false
 
@@ -18,8 +25,8 @@ export function gradeChemistryAnswer(question: ChemistryQuestion, response: Chem
   if (question.type === 'fill') {
     const actual = String(response).trim()
     const expected = String(question.answer).trim()
-    const actualNumber = Number.parseFloat(actual)
-    const expectedNumber = Number.parseFloat(expected)
+    const actualNumber = parseDecimal(actual)
+    const expectedNumber = parseDecimal(expected)
     if (Number.isFinite(actualNumber) && Number.isFinite(expectedNumber)) {
       return Math.abs(actualNumber - expectedNumber) < 0.05
     }

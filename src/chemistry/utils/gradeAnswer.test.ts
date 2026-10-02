@@ -8,15 +8,22 @@ const multipleQuestion = questions.find(question => question.type === 'multi-cho
 
 describe('Chemistry practice grading', () => {
   it('allows numeric fill responses using the chemistry exam tolerance', () => {
-    expect(gradeChemistryAnswer(moleQuestion, '2')).toBe(true)
-    expect(gradeChemistryAnswer(moleQuestion, ' 2.0 ')).toBe(true)
+    for (const response of ['2', ' 2.0 ', '+2.', '2e0', '20E-1', '.2e1']) {
+      expect(gradeChemistryAnswer(moleQuestion, response), response).toBe(true)
+    }
     expect(gradeChemistryAnswer(moleQuestion, '2.04')).toBe(true)
     expect(gradeChemistryAnswer(moleQuestion, '2.06')).toBe(false)
   })
 
   it('rejects empty and invalid fill responses', () => {
-    for (const response of [null, '', '  ', 'not a number', 'Infinity']) {
+    for (const response of [null, '', '  ', 'not a number', 'Infinity', '-Infinity', 'NaN', '1e999']) {
       expect(gradeChemistryAnswer(moleQuestion, response)).toBe(false)
+    }
+  })
+
+  it('rejects numeric prefixes followed by junk or unevaluated expressions', () => {
+    for (const response of ['2oops', '2+3', '2 mol', '2,0', '2e', '2e+', '0x2']) {
+      expect(gradeChemistryAnswer(moleQuestion, response), response).toBe(false)
     }
   })
 
