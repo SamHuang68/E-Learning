@@ -92,8 +92,8 @@ function CsNavDisclosure({ label, active, open, onToggle, onSelect, activeSectio
       setPosition({
         width,
         left: Math.max(gutter, Math.min(rect.left, window.innerWidth - width - gutter)),
-        top: useAbove ? undefined : rect.bottom + 6,
-        bottom: useAbove ? window.innerHeight - rect.top + 6 : undefined,
+        top: useAbove ? 'auto' : rect.bottom + 6,
+        bottom: useAbove ? window.innerHeight - rect.top + 6 : 'auto',
         maxHeight: Math.max(48, useAbove ? above : below),
       })
     }
