@@ -1,5 +1,6 @@
 import { useCalculusCopy } from '../../i18n/calculusCopy'
-import React, { useState, useMemo, useCallback } from 'react'
+import React, { useState, useMemo } from 'react'
+import { CalculusBadgeDialog } from './components/CalculusBadgeDialog'
 import { CalculusCanvas } from './components/CalculusCanvas/CalculusCanvas'
 import { CalculusLabPanel } from './components/CalculusLab/CalculusLabPanel'
 import { StepByStepSolver } from './components/CalculusSolver/StepByStepSolver'
@@ -25,7 +26,6 @@ export const CalculusStudio: React.FC = () => {
   const [epsilon, setEpsilon] = useState<number>(0.5)
   const [newtonSteps, setNewtonSteps] = useState<number>(5)
   const [currentStepIdx, setCurrentStepIdx] = useState<number>(0)
-  const dialogRef = React.useRef<HTMLDialogElement>(null)
 
   // 認知學習調度與 IRT 狀態
   const {
@@ -34,29 +34,6 @@ export const CalculusStudio: React.FC = () => {
     currentTheta,
     newlyUnlockedBadges,
   } = useCalculusLearningCoordinator()
-
-  // 原生 dialog 模態管理：常駐掛載，自動支援頂層焦點 trap、Escape 關閉、背景 inert 與關閉後焦點精確還原
-  const handleCloseBadgeModal = useCallback(() => {
-    const dialog = dialogRef.current
-    if (dialog?.open) {
-      dialog.close()
-      // Answer buttons become disabled after submission, so native focus restoration
-      // can land on body. Resume at the current problem's usable selector instead.
-      if (document.activeElement === document.body || dialog.contains(document.activeElement)) {
-        dialog.closest('.calculus-studio-container')
-          ?.querySelector<HTMLButtonElement>('.btn-tier-pill.active')?.focus()
-      }
-    }
-    clearBadgeNotification()
-  }, [clearBadgeNotification])
-
-  React.useEffect(() => {
-    const dialog = dialogRef.current
-    if (!dialog) return
-    if (newlyUnlockedBadges.length > 0 && !dialog.open) {
-      dialog.showModal()
-    }
-  }, [newlyUnlockedBadges.length])
 
   // 自動為當前表達式產生推導步驟
   const dynamicSteps = useMemo(() => generateDerivationSteps(expression), [expression])
@@ -184,41 +161,8 @@ export const CalculusStudio: React.FC = () => {
         </div>
       </main>
 
-      {/* 微認證勳章解鎖彈窗 (常駐掛載以維持完整焦點還原生命週期) */}
-      <dialog
-        ref={dialogRef}
-        className="calculus-badge-modal-dialog"
-        aria-labelledby="badge-modal-title"
-        onCancel={(e) => {
-          e.preventDefault()
-          handleCloseBadgeModal()
-        }}
-      >
-        {newlyUnlockedBadges.length > 0 && (
-          <div className="calculus-badge-modal-card">
-            <div className="badge-unlock-animation">🏆</div>
-            <h3 id="badge-modal-title">{c("恭喜解鎖微積分微認證！")}</h3>
-            {newlyUnlockedBadges.map((badge) => (
-              <div key={badge.id} className="unlocked-badge-detail">
-                <span className="badge-icon-lg">{badge.icon}</span>
-                <div>
-                  <strong>{c(badge.title)}</strong>
-                  <p>{c(badge.description)}</p>
-                  <span className="reward-tag">+{badge.xpReward} XP</span>
-                </div>
-              </div>
-            ))}
-            <button
-              type="button"
-              className="btn-close-modal"
-              onClick={handleCloseBadgeModal}
-              autoFocus
-            >
-              {c("太棒了，繼續挑戰！")}
-            </button>
-          </div>
-        )}
-      </dialog>
+      <CalculusBadgeDialog badges={newlyUnlockedBadges} onDismiss={clearBadgeNotification} />
+
     </div>
   )
 }

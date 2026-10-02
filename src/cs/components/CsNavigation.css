@@ -1,0 +1,44 @@
+/* Keep secondary navigation reachable outside the horizontal navigation strip. */
+.cs-top-nav .cs-nav-list {
+  flex-wrap: wrap;
+  overflow: visible;
+}
+
+.cs-top-nav .cs-nav-dropdown {
+  position: fixed;
+  right: auto;
+  min-width: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  z-index: 100;
+}
+
+.cs-top-nav .cs-nav-dropdown button {
+  flex-shrink: 0;
+  min-height: var(--touch-min);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.cs-top-nav .cs-nav-dropdown strong {
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+
+.cs-top-nav .cs-nav-dropdown button[aria-current='page'] {
+  background: var(--surface-soft);
+  outline: 1px solid var(--line);
+}
+
+.cs-top-nav .cs-nav-dropdown button:focus-visible,
+.cs-top-nav .cs-nav-item:focus-visible,
+.cs-textbook-reader button:focus-visible {
+  outline: 2px solid var(--navy);
+  outline-offset: 2px;
+}
+
+@media (max-width: 900px) {
+  .cs-top-nav .cs-nav-list {
+    flex-basis: 100%;
+  }
+}

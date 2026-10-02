@@ -221,14 +221,16 @@ export const ChemistryApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
 
         {activeNav === 'practice' && (
           <ChemistryPractice
+            key={`${currentGradeId}-${currentUnit.id}`}
             unit={currentUnit}
             completedQuestions={progress.completedQuestions}
             errorQuestions={progress.errorQuestions}
             onAnswerCorrect={handleAnswerCorrect}
             onAnswerWrong={handleAnswerWrong}
             onNextUnit={() => {
-              if (currentUnitId < gradeInfo.units.length) {
-                persistSelection(currentGradeId, currentUnitId + 1)
+              const nextUnit = gradeInfo.units[gradeInfo.units.findIndex(unit => unit.id === currentUnit.id) + 1]
+              if (nextUnit) {
+                persistSelection(currentGradeId, nextUnit.id)
               } else {
                 setActiveNav('today')
               }

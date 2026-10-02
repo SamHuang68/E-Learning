@@ -70,9 +70,9 @@ function readTopView(): TopView {
 function ModuleFallback() {
   const { t } = useI18n()
   return (
-    <div className="module-fallback" role="status">
-      {t('common.loadingModule')}
-    </div>
+    <main className="module-fallback" aria-busy="true">
+      <div role="status">{t('common.loadingModule')}</div>
+    </main>
   )
 }
 
@@ -112,17 +112,22 @@ function AppShell() {
     applyDocumentLang(view === 'ja' ? 'ja' : locale)
 
     let observer: MutationObserver | null = null
-    let timeoutId = 0
     const prepareMain = () => {
-      const main = document.querySelector<HTMLElement>('main')
+      // Suspense can retain the previous route in a hidden tree while loading.
+      const main = Array.from(document.querySelectorAll<HTMLElement>('main')).find(
+        (candidate) => candidate.getClientRects().length > 0,
+      )
       if (!main) return false
+      for (const previous of document.querySelectorAll<HTMLElement>('main#main-content')) {
+        if (previous !== main) previous.removeAttribute('id')
+      }
       main.id = 'main-content'
       if (focusRoute.current) {
         main.tabIndex = -1
         main.focus({ preventScroll: true })
-        focusRoute.current = false
+        if (main.getAttribute('aria-busy') !== 'true') focusRoute.current = false
       }
-      return true
+      return main.getAttribute('aria-busy') !== 'true'
     }
 
     if (!prepareMain()) {
@@ -132,13 +137,13 @@ function AppShell() {
       observer.observe(document.getElementById('root') ?? document.body, {
         childList: true,
         subtree: true,
+        attributes: true,
+        attributeFilter: ['style', 'hidden', 'aria-busy'],
       })
-      timeoutId = window.setTimeout(() => observer?.disconnect(), 5000)
     }
 
     return () => {
       observer?.disconnect()
-      if (timeoutId) window.clearTimeout(timeoutId)
     }
   }, [view, t, locale])
 
@@ -162,7 +167,7 @@ function AppShell() {
   if (mod) {
     const ModuleApp = mod.App
     return (
-      <ErrorBoundary label={t(mod.labelKey)}>
+      <ErrorBoundary key={view} label={t(mod.labelKey)} asMain>
         <Suspense fallback={<ModuleFallback />}>
           <ModuleApp onBackHub={() => choose('hub')} onSwitchLang={(lang: LangId) => choose(lang)} />
         </Suspense>
@@ -186,7 +191,7 @@ export default function App() {
 function AppChrome() {
   const { t } = useI18n()
   return (
-    <ErrorBoundary label={t('error.appLabel')}>
+    <ErrorBoundary label={t('error.appLabel')} asMain>
       <a
         className="skip-link"
         href="#main-content"

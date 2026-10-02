@@ -1,5 +1,16 @@
 /** English calculus teaching copy. Original content remains the source of truth. */
 export const CALCULUS_CONTENT_EN: Record<string, string> = {
+  "答對割線與切線模式的能力挑戰，記錄你的微分練習成果。": "Answer a secant-and-tangent challenge correctly to record your differentiation practice.",
+  "答對至少一題割線與切線模式的能力挑戰": "Correctly answer at least one challenge in secant-and-tangent mode",
+  "答對黎曼和模式的能力挑戰，記錄你的積分練習成果。": "Answer a Riemann-sum challenge correctly to record your integration practice.",
+  "答對至少一題黎曼和模式的能力挑戰": "Correctly answer at least one challenge in Riemann-sum mode",
+  "答對牛頓法求根模式的能力挑戰，記錄你的迭代求根練習成果。": "Answer a Newton-method challenge correctly to record your root-finding practice.",
+  "答對至少一題牛頓法求根模式的能力挑戰": "Correctly answer at least one challenge in Newton-method mode",
+  "連鎖律勳章尚未開放；目前不計入可解鎖總數。": "The chain-rule badge is not yet available and is excluded from the unlockable total.",
+  "尚未開放": "Not yet available",
+  "已解鎖": "Unlocked",
+  "尚未解鎖": "Locked",
+  "勳章依本機正確作答紀錄保留；每答對一題獲得 15 XP，勳章不另加 XP。": "Badges are kept with your correct answers on this device. Each correct answer earns 15 XP; badges add no extra XP.",
   "Undefined symbol \"{0}\" / 未定義符號「{1}」. Allowed: {2}": "Undefined symbol \"{0}\". Allowed: {2}",
   "📈 黎曼和與定積分切片極限 (Riemann Sum)": "📈 Riemann sums and definite integral limits",
   "定積分不是玄學公式！拖動滑桿將切片數 $N$ 從 4 增加到 100，親眼目睹矩陣和收斂至平滑曲線面積。": "Explore a definite integral directly: increase the number of slices $N$ from 4 to 100 and watch the rectangular sum approach the area under the curve.",

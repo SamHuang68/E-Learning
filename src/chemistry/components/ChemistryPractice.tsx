@@ -9,6 +9,7 @@ import { MathFormula } from '../../math/components/MathFormula'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
 import { Scratchpad } from '../../components/Scratchpad'
 import { useI18n } from '../../i18n/i18n'
+import { gradeChemistryAnswer } from '../utils/gradeAnswer'
 
 type Props = {
   unit: ChemistryUnit
@@ -46,6 +47,8 @@ export const ChemistryPractice: React.FC<Props> = ({
   const [viewMode, setViewMode] = useState<'textbook' | 'practice'>('textbook')
   const [currentIdx, setCurrentIdx] = useState(0)
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
+  const [selectedOptions, setSelectedOptions] = useState<number[]>([])
+  const [fillInput, setFillInput] = useState('')
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [showHint, setShowHint] = useState(false)
   const [showScratchpad, setShowScratchpad] = useState(false)
@@ -54,12 +57,24 @@ export const ChemistryPractice: React.FC<Props> = ({
   const q = questions[currentIdx] || questions[0]
 
   const isCompleted = q ? completedQuestions.includes(q.id) : false
-  const isCorrect = q && isSubmitted && selectedOption !== null && isOptionMatch(selectedOption, q.answer)
+  const isMultiple = q?.type === 'multi-choice' || Array.isArray(q?.answer)
+  const response = q?.type === 'fill' ? fillInput : isMultiple ? selectedOptions : selectedOption
+  const canSubmit = q?.type === 'fill' ? Boolean(fillInput.trim()) : isMultiple ? selectedOptions.length > 0 : selectedOption !== null
+  const isCorrect = q && isSubmitted && gradeChemistryAnswer(q, response)
+
+  function selectOption(index: number) {
+    if (isSubmitted) return
+    if (isMultiple) {
+      setSelectedOptions(previous => previous.includes(index) ? previous.filter(item => item !== index) : [...previous, index])
+    } else {
+      setSelectedOption(index)
+    }
+  }
 
   function handleSubmit() {
-    if (!q || selectedOption === null) return
+    if (!q || !canSubmit || isSubmitted) return
     setIsSubmitted(true)
-    if (isOptionMatch(selectedOption, q.answer)) {
+    if (gradeChemistryAnswer(q, response)) {
       playCorrectSound()
       onAnswerCorrect(q.id, q.difficulty * 10)
     } else {
@@ -69,6 +84,8 @@ export const ChemistryPractice: React.FC<Props> = ({
 
   function handleNext() {
     setSelectedOption(null)
+    setSelectedOptions([])
+    setFillInput('')
     setIsSubmitted(false)
     setShowHint(false)
     if (currentIdx < questions.length - 1) {
@@ -81,19 +98,18 @@ export const ChemistryPractice: React.FC<Props> = ({
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (viewMode !== 'practice') return
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
+      if (e.ctrlKey || e.metaKey || e.altKey || e.isComposing) return
+      // Native controls handle their own keys; bubbling Enter/Space must not
+      // submit twice or turn an option-button activation into a next-question action.
+      if (e.target instanceof Element && e.target.closest('input, textarea, select, button, a, [contenteditable="true"]')) return
       const k = e.key.toLowerCase()
-      if (k === 'a' || k === '1') {
-        if (!isSubmitted && q?.options && q.options.length > 0) setSelectedOption(0)
-      } else if (k === 'b' || k === '2') {
-        if (!isSubmitted && q?.options && q.options.length > 1) setSelectedOption(1)
-      } else if (k === 'c' || k === '3') {
-        if (!isSubmitted && q?.options && q.options.length > 2) setSelectedOption(2)
-      } else if (k === 'd' || k === '4') {
-        if (!isSubmitted && q?.options && q.options.length > 3) setSelectedOption(3)
+      const optionIndex = /^[a-e]$/.test(k) ? k.charCodeAt(0) - 97 : /^[1-5]$/.test(k) ? Number(k) - 1 : -1
+      if (optionIndex >= 0) {
+        if (!e.repeat && q?.options && optionIndex < q.options.length) selectOption(optionIndex)
       } else if (k === 'enter' || k === ' ') {
         e.preventDefault()
-        if (!isSubmitted && selectedOption !== null) {
+        if (e.repeat) return
+        if (!isSubmitted && canSubmit) {
           handleSubmit()
         } else if (isSubmitted) {
           handleNext()
@@ -294,11 +310,12 @@ export const ChemistryPractice: React.FC<Props> = ({
             {q.options && (
               <div className="options-grid">
                 {q.options.map((opt, idx) => {
+                  const isSelected = isMultiple ? selectedOptions.includes(idx) : selectedOption === idx
                   let optCls = 'option-btn'
-                  if (selectedOption === idx) optCls += ' selected'
+                  if (isSelected) optCls += ' selected'
                   if (isSubmitted) {
                     if (isOptionMatch(idx, q.answer)) optCls += ' correct'
-                    else if (selectedOption === idx) optCls += ' wrong'
+                    else if (isSelected) optCls += ' wrong'
                   }
                   return (
                     <button
@@ -306,7 +323,8 @@ export const ChemistryPractice: React.FC<Props> = ({
                       type="button"
                       className={optCls}
                       disabled={isSubmitted}
-                      onClick={() => setSelectedOption(idx)}
+                      aria-pressed={isSelected}
+                      onClick={() => selectOption(idx)}
                     >
                       <span className="opt-marker">
                         {String.fromCharCode(65 + idx)}
@@ -320,13 +338,41 @@ export const ChemistryPractice: React.FC<Props> = ({
               </div>
             )}
 
+            {isMultiple && (
+              <p className="muted">{locale === 'en' ? 'Select all correct answers.' : '請選出所有正確選項。'}</p>
+            )}
+
+            {q.type === 'fill' && (
+              <div className="fill-input-group">
+                <label className="practice-answer-label" htmlFor="chemistry-fill-answer">{locale === 'en' ? 'Your answer' : '你的答案'}</label>
+                <input
+                  id="chemistry-fill-answer"
+                  type="text"
+                  autoComplete="off"
+                  className="fill-text-input"
+                  value={fillInput}
+                  disabled={isSubmitted}
+                  aria-invalid={isSubmitted && !isCorrect}
+                  aria-errormessage={isSubmitted && !isCorrect ? 'chemistry-practice-grade' : undefined}
+                  aria-describedby={isSubmitted ? 'chemistry-practice-grade' : undefined}
+                  onChange={event => setFillInput(event.target.value)}
+                  onKeyDown={event => {
+                    if (event.key === 'Enter' && !event.repeat && !event.nativeEvent.isComposing) {
+                      event.preventDefault()
+                      handleSubmit()
+                    }
+                  }}
+                />
+              </div>
+            )}
+
             {/* 操作按鈕列 */}
             <div className="practice-actions" style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', alignItems: 'center' }}>
               {!isSubmitted ? (
                 <button
                   type="button"
                   className="btn-primary"
-                  disabled={selectedOption === null}
+                  disabled={!canSubmit}
                   onClick={handleSubmit}
                 >
                   {locale === 'en' ? "Submit answer (Enter)" : "確認送出 (Enter)"}
@@ -366,7 +412,7 @@ export const ChemistryPractice: React.FC<Props> = ({
 
             {isSubmitted && (
               <div className={`solution-box ${isCorrect ? 'sol-correct' : 'sol-wrong'}`} style={{ marginTop: '0.75rem' }}>
-                <div className="sol-header" role="status" aria-live="polite" aria-atomic="true">
+                <div id="chemistry-practice-grade" className="sol-header" role="status" aria-live="polite" aria-atomic="true">
                   {isCorrect ? (locale === 'en' ? "🎉 Correct!" : '🎉 答對了！') : (locale === 'en' ? "❌ Incorrect. Review the explanation:" : '❌ 答錯了，請研讀解析：')}
                 </div>
                 <div className="sol-body">

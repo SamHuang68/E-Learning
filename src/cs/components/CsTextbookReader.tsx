@@ -1,15 +1,44 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { CS_TEXTBOOK_CHAPTERS, type TextbookChapter } from '../data/textbookData'
 import { csStrandMessageKey } from '../data/curriculum'
 import { MathFormula } from '../../math/components/MathFormula'
 import { useI18n } from '../../i18n/i18n'
+import './CsTextbookReader.css'
+
+const READER_COPY = {
+  'zh-Hant': {
+    reader: '讀本：', chapters: '讀本章節', read: '已讀', prerequisites: '先備知識：', filter: '閱讀範圍',
+    all: '全文', history: '歷史', principles: '原理', architecture: '架構', philosophy: '思辨',
+    historyHeading: '一、歷史脈絡與科學思想動機', era: '關鍵年代', pioneers: '代表先驅',
+    motivation: '核心科學動機', breakthrough: '突破創舉之由來',
+    principlesHeading: '二、第一性原理與核心數學推導', theorem: '定理',
+    architectureHeading: '三、微架構與工程實現剖析', map: '硬體架構圖',
+    mapDescription: '用架構圖對照本章的區塊、時序與記憶體流。', openMap: '開啟架構圖',
+    casesHeading: '四、工業界標竿工程實例', philosophyHeading: '五、批判性思維與第一性哲學思辨',
+    question: '思辨題', referencesHeading: '六、經典必讀原著與論文典範', author: '作者：',
+  },
+  en: {
+    reader: 'Reader:', chapters: 'Textbook chapters', read: 'Viewed', prerequisites: 'Prerequisites:', filter: 'Reading sections',
+    all: 'Full chapter', history: 'History', principles: 'Principles', architecture: 'Architecture', philosophy: 'Reflection',
+    historyHeading: '1. Historical context and scientific motivation', era: 'Key period', pioneers: 'Pioneers',
+    motivation: 'Scientific motivation', breakthrough: 'The breakthrough',
+    principlesHeading: '2. First principles and mathematical derivations', theorem: 'Theorem',
+    architectureHeading: '3. Architecture and engineering implementation', map: 'Hardware architecture map',
+    mapDescription: 'Explore the blocks, timing, and memory flow discussed in this chapter.', openMap: 'Open architecture map',
+    casesHeading: '4. Engineering case studies', philosophyHeading: '5. Critical thinking and reflection',
+    question: 'Reflection', referencesHeading: '6. Classic books and papers', author: 'Author:',
+  },
+} as const
 
 interface Props {
   onOpenArchMap?: () => void
 }
 
 export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
+  const copy = READER_COPY[locale]
+  const chapterLabel = (number: number) => locale === 'en' ? `Chapter ${number}` : `第 ${number} 章`
+  const contentRef = useRef<HTMLDivElement>(null)
   const [selectedChapterId, setSelectedChapterId] = useState<string>('cs-ch-1')
   const [activeTab, setActiveTab] = useState<'all' | 'history' | 'principles' | 'architecture' | 'philosophy'>('all')
   const [readChapters, setReadChapters] = useState<Set<string>>(new Set(['cs-ch-1']))
@@ -19,6 +48,7 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
 
   const handleSelectChapter = (id: string) => {
     setSelectedChapterId(id)
+    if (contentRef.current) contentRef.current.scrollTop = 0
     if (!readChapters.has(id)) {
       setReadChapters(new Set(readChapters).add(id))
     }
@@ -37,6 +67,9 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
       }}
     >
       <div
+        className="cs-reader-chapters"
+        role="group"
+        aria-label={copy.chapters}
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -50,7 +83,7 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
         }}
       >
         <span style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--navy)', marginRight: '0.25rem' }}>
-          讀本：
+          {copy.reader}
         </span>
         {CS_TEXTBOOK_CHAPTERS.map((ch) => {
           const isSelected = ch.id === selectedChapterId
@@ -60,6 +93,7 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
               key={ch.id}
               type="button"
               onClick={() => handleSelectChapter(ch.id)}
+              aria-current={isSelected ? 'page' : undefined}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -75,27 +109,21 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
               }}
             >
               <span>
-                第 {ch.chapterNumber} 章{isRead ? ' · 已讀' : ''}
+                {chapterLabel(ch.chapterNumber)}{isRead ? ` · ${copy.read}` : ''}
               </span>
             </button>
           )
         })}
       </div>
 
-      <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+      <div className="cs-reader-body">
         <div
-          style={{
-            flex: 1,
-            overflowY: 'auto',
-            padding: '1.5rem 2rem',
-            maxWidth: '1100px',
-            margin: '0 auto',
-            width: '100%',
-          }}
+          ref={contentRef}
+          className="cs-reader-content"
         >
           <div
+            className="cs-reader-heading"
             style={{
-              padding: '1.25rem 1.5rem',
               borderRadius: '12px',
               background: 'var(--surface)',
               border: '1px solid var(--line)',
@@ -103,7 +131,7 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
               marginBottom: '1.5rem',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem', flexWrap: 'wrap' }}>
               <span
                 style={{
                   background: 'var(--accent-soft)',
@@ -115,7 +143,7 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
                   letterSpacing: '0.05em',
                 }}
               >
-                第 {currentChapter.chapterNumber} 章
+                {chapterLabel(currentChapter.chapterNumber)}
               </span>
               <span
                 style={{
@@ -131,19 +159,21 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
                 {t(csStrandMessageKey(currentChapter.strand))}
               </span>
               <span style={{ fontSize: '0.75rem', color: 'var(--muted)', marginLeft: 'auto' }}>
-                約 {currentChapter.readingTimeMinutes} 分鐘
+                {locale === 'en' ? `About ${currentChapter.readingTimeMinutes} minutes` : `約 ${currentChapter.readingTimeMinutes} 分鐘`}
               </span>
             </div>
 
             <h1 style={{ margin: '0.4rem 0 0.2rem', fontSize: '1.6rem', fontWeight: 900, color: 'var(--ink)' }}>
-              {currentChapter.title}
+              {locale === 'en' ? currentChapter.englishTitle : currentChapter.title}
             </h1>
             <div style={{ fontSize: '0.88rem', color: 'var(--muted)', fontStyle: 'italic', marginBottom: '0.75rem' }}>
-              {currentChapter.englishTitle}
+              {locale === 'en' ? currentChapter.title : currentChapter.englishTitle}
             </div>
 
+            {locale === 'en' ? <p className="cs-reader-language-note">Chapter content is currently in Traditional Chinese.</p> : null}
+
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '0.75rem', color: 'var(--muted)', fontWeight: 600 }}>先備知識：</span>
+              <span style={{ fontSize: '0.75rem', color: 'var(--muted)', fontWeight: 600 }}>{copy.prerequisites}</span>
               {currentChapter.prerequisites.map((p, idx) => (
                 <span
                   key={idx}
@@ -163,6 +193,8 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
           </div>
 
           <div
+            role="group"
+            aria-label={copy.filter}
             style={{
               display: 'flex',
               gap: '0.5rem',
@@ -173,16 +205,17 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
             }}
           >
             {[
-              { id: 'all', label: '全文' },
-              { id: 'history', label: '歷史' },
-              { id: 'principles', label: '原理' },
-              { id: 'architecture', label: '架構' },
-              { id: 'philosophy', label: '思辨' },
+              { id: 'all', label: copy.all },
+              { id: 'history', label: copy.history },
+              { id: 'principles', label: copy.principles },
+              { id: 'architecture', label: copy.architecture },
+              { id: 'philosophy', label: copy.philosophy },
             ].map((tab) => (
               <button
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id as typeof activeTab)}
+                aria-pressed={activeTab === tab.id}
                 style={{
                   padding: '0.4rem 0.8rem',
                   borderRadius: '6px',
@@ -202,7 +235,7 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
           {(activeTab === 'all' || activeTab === 'history') && (
             <section style={{ marginBottom: '2rem' }}>
               <h2 style={{ margin: '0 0 0.75rem', fontSize: '1.15rem', fontWeight: 800, color: 'var(--navy)' }}>
-                一、歷史脈絡與科學思想動機
+                {copy.historyHeading}
               </h2>
               <div
                 style={{
@@ -218,19 +251,19 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
                 <div
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(min(220px, 100%), 1fr))',
                     gap: '0.75rem',
                     marginBottom: '1rem',
                   }}
                 >
                   <div style={{ background: 'var(--surface-soft)', padding: '0.6rem 0.8rem', borderRadius: '6px' }}>
-                    <span style={{ color: 'var(--muted)', fontSize: '0.75rem' }}>關鍵年代</span>
+                    <span style={{ color: 'var(--muted)', fontSize: '0.75rem' }}>{copy.era}</span>
                     <div style={{ fontWeight: 700, color: 'var(--ink)', marginTop: '0.15rem' }}>
                       {currentChapter.historicalContext.era}
                     </div>
                   </div>
                   <div style={{ background: 'var(--surface-soft)', padding: '0.6rem 0.8rem', borderRadius: '6px' }}>
-                    <span style={{ color: 'var(--muted)', fontSize: '0.75rem' }}>代表先驅</span>
+                    <span style={{ color: 'var(--muted)', fontSize: '0.75rem' }}>{copy.pioneers}</span>
                     <div style={{ fontWeight: 700, color: 'var(--ink)', marginTop: '0.15rem' }}>
                       {currentChapter.historicalContext.keyFigures.join('、')}
                     </div>
@@ -238,14 +271,14 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
                 </div>
 
                 <div style={{ marginBottom: '0.75rem' }}>
-                  <strong style={{ color: 'var(--ink)' }}>核心科學動機</strong>
+                  <strong style={{ color: 'var(--ink)' }}>{copy.motivation}</strong>
                   <p style={{ margin: '0.25rem 0', color: 'var(--ink)' }}>
                     {currentChapter.historicalContext.coreMotivation}
                   </p>
                 </div>
 
                 <div>
-                  <strong style={{ color: 'var(--ink)' }}>突破創舉之由來</strong>
+                  <strong style={{ color: 'var(--ink)' }}>{copy.breakthrough}</strong>
                   <p style={{ margin: '0.25rem 0', color: 'var(--ink)' }}>
                     {currentChapter.historicalContext.breakthroughStory}
                   </p>
@@ -257,7 +290,7 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
           {(activeTab === 'all' || activeTab === 'principles') && (
             <section style={{ marginBottom: '2rem' }}>
               <h2 style={{ margin: '0 0 0.75rem', fontSize: '1.15rem', fontWeight: 800, color: 'var(--navy)' }}>
-                二、第一性原理與核心數學推導
+                {copy.principlesHeading}
               </h2>
               <div
                 style={{
@@ -284,7 +317,7 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
                       }}
                     >
                       <div style={{ fontWeight: 800, fontSize: '0.88rem', color: 'var(--navy)', marginBottom: '0.4rem' }}>
-                        定理 {idx + 1}：{item.topic}
+                        {copy.theorem} {idx + 1}: {item.topic}
                       </div>
                       <div
                         style={{
@@ -310,7 +343,7 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
           {(activeTab === 'all' || activeTab === 'architecture') && (
             <section style={{ marginBottom: '2rem' }}>
               <h2 style={{ margin: '0 0 0.75rem', fontSize: '1.15rem', fontWeight: 800, color: 'var(--navy)' }}>
-                三、微架構與工程實現剖析
+                {copy.architectureHeading}
               </h2>
               <div
                 style={{
@@ -331,7 +364,7 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
                 <div
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))',
                     gap: '0.75rem',
                   }}
                 >
@@ -345,7 +378,7 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
                         borderRadius: '8px',
                       }}
                     >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                         <span style={{ fontWeight: 800, fontSize: '0.88rem', color: 'var(--ink)' }}>{sub.name}</span>
                         <span
                           style={{
@@ -382,9 +415,9 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
                     }}
                   >
                     <div>
-                      <strong style={{ color: 'var(--navy)', fontSize: '0.85rem' }}>硬體架構圖</strong>
+                      <strong style={{ color: 'var(--navy)', fontSize: '0.85rem' }}>{copy.map}</strong>
                       <div style={{ color: 'var(--muted)', fontSize: '0.78rem' }}>
-                        用架構圖對照本章的區塊、時序與記憶體流。
+                        {copy.mapDescription}
                       </div>
                     </div>
                     <button
@@ -401,7 +434,7 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
                         cursor: 'pointer',
                       }}
                     >
-                      開啟架構圖
+                      {copy.openMap}
                     </button>
                   </div>
                 ) : null}
@@ -412,12 +445,12 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
           {activeTab === 'all' && (
             <section style={{ marginBottom: '2rem' }}>
               <h2 style={{ margin: '0 0 0.75rem', fontSize: '1.15rem', fontWeight: 800, color: 'var(--navy)' }}>
-                四、工業界標竿工程實例
+                {copy.casesHeading}
               </h2>
               <div
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(min(300px, 100%), 1fr))',
                   gap: '0.75rem',
                 }}
               >
@@ -459,7 +492,7 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
           {(activeTab === 'all' || activeTab === 'philosophy') && (
             <section style={{ marginBottom: '2rem' }}>
               <h2 style={{ margin: '0 0 0.75rem', fontSize: '1.15rem', fontWeight: 800, color: 'var(--navy)' }}>
-                五、批判性思維與第一性哲學思辨
+                {copy.philosophyHeading}
               </h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 {currentChapter.deepThinkingQuestions.map((q, idx) => (
@@ -473,7 +506,7 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
                     }}
                   >
                     <div style={{ fontWeight: 800, fontSize: '0.9rem', color: 'var(--ink)', marginBottom: '0.4rem' }}>
-                      思辨題 {idx + 1}：{q.question}
+                      {copy.question} {idx + 1}: {q.question}
                     </div>
                     <p style={{ margin: 0, fontSize: '0.84rem', color: 'var(--muted)', lineHeight: 1.7 }}>
                       {q.philosophicalAnalysis}
@@ -487,7 +520,7 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
           {activeTab === 'all' && (
             <section style={{ marginBottom: '1rem' }}>
               <h2 style={{ margin: '0 0 0.75rem', fontSize: '1.15rem', fontWeight: 800, color: 'var(--navy)' }}>
-                六、經典必讀原著與論文典範
+                {copy.referencesHeading}
               </h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                 {currentChapter.classicReferences.map((ref, idx) => (
@@ -507,7 +540,7 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
                   >
                     <div>
                       <strong style={{ fontSize: '0.88rem', color: 'var(--ink)' }}>{ref.title}</strong>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--navy)' }}>作者：{ref.author}</div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--navy)' }}>{copy.author} {ref.author}</div>
                     </div>
                     <div style={{ fontSize: '0.78rem', color: 'var(--muted)', fontStyle: 'italic' }}>
                       {ref.significance}

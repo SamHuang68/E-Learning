@@ -9,7 +9,7 @@ import { type UserResponse } from '../../../engine/adaptive'
 import { type TelemetryEvent } from '../../../engine/stealthAssessment'
 import { type GamificationState, defaultGamificationState } from '../../../engine/gamification'
 import { loadMathProgress, recordMathAnswer, saveMathProgress } from '../../utils/mathStorage'
-import { CALCULUS_BADGES, type CalculusBadge } from '../data/calculusBadges'
+import { getEarnedCalculusBadges, type CalculusBadge } from '../data/calculusBadges'
 import type { CalculusProblem } from '../types'
 
 const RESPONSE_LIMIT = 200
@@ -40,6 +40,9 @@ export function useCalculusLearningCoordinator() {
   const [gameState, setGameState] = useState<GamificationState>(() => defaultGamificationState())
   const [lastPipelineResult, setLastPipelineResult] = useState<CognitivePipelineResponse | null>(null)
   const [newlyUnlockedBadges, setNewlyUnlockedBadges] = useState<CalculusBadge[]>([])
+  const [earnedBadges, setEarnedBadges] = useState<CalculusBadge[]>(
+    () => getEarnedCalculusBadges(persisted.completedQuestions),
+  )
   const [currentTheta, setCurrentTheta] = useState<number>(() => persisted.calculusTheta ?? 0)
 
   const handleSolveProblem = useCallback(
@@ -67,7 +70,8 @@ export function useCalculusLearningCoordinator() {
         gameState,
       )
 
-      recordMathAnswer(problem.id, isCorrect, isCorrect ? 15 : 2)
+      const previouslyEarned = new Set(getEarnedCalculusBadges(loadMathProgress().completedQuestions).map((badge) => badge.id))
+      const nextProgress = recordMathAnswer(problem.id, isCorrect, isCorrect ? 15 : 2)
 
       const nextFsrs = { ...fsrsMap, [problem.id]: result.fsrsState }
       const nextResponses: UserResponse[] = [
@@ -93,21 +97,9 @@ export function useCalculusLearningCoordinator() {
         responses: nextResponses,
       })
 
-      const unlocked: CalculusBadge[] = []
-      if (isCorrect) {
-        if (problem.targetMode === 'tangent_secant') {
-          const b = CALCULUS_BADGES.find((x) => x.id === 'badge-calc-tangent-seeker')
-          if (b) unlocked.push(b)
-        }
-        if (problem.targetMode === 'riemann_sum') {
-          const b = CALCULUS_BADGES.find((x) => x.id === 'badge-calc-riemann-master')
-          if (b) unlocked.push(b)
-        }
-        if (problem.targetMode === 'newton_slope_field') {
-          const b = CALCULUS_BADGES.find((x) => x.id === 'badge-calc-newton-hunter')
-          if (b) unlocked.push(b)
-        }
-      }
+      const earned = getEarnedCalculusBadges(nextProgress.completedQuestions)
+      setEarnedBadges(earned)
+      const unlocked = earned.filter((badge) => !previouslyEarned.has(badge.id))
 
       if (unlocked.length > 0) {
         setNewlyUnlockedBadges(unlocked)
@@ -129,5 +121,6 @@ export function useCalculusLearningCoordinator() {
     gameState,
     lastPipelineResult,
     newlyUnlockedBadges,
+    earnedBadges,
   }
 }

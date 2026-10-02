@@ -86,7 +86,7 @@ export const G12_CHEMISTRY_UNITS: ChemistryUnit[] = [
     concepts: [
       '緩衝溶液 (Buffer Solution) 組成：弱酸及其共軛鹼鹽 (如 $\\text{CH}_3\\text{COOH} / \\text{CH}_3\\text{COONa}$) 或 弱鹼及其共軛酸鹽 (如 $\\text{NH}_3 / \\text{NH}_4\\text{Cl}$)。',
       'Henderson-Hasselbalch 方程式：\n  - 酸性緩衝液：$\\text{pH} = \\text{p}K_a + \\log\\frac{[\\text{A}^-]}{[\\text{HA}]}$\n  - 當 $[\\text{A}^-] = [\\text{HA}]$（半當量點）時，$\\text{pH} = \\text{p}K_a$，此時具備最大緩衝容量 (Buffer Capacity)。',
-      '酸鹼滴定曲線特點：\n  - 強酸滴定強鹼：當量點 $\\text{pH} = 7.0$，突變範圍大 ($\text{pH } 4\\sim 10$)，酚酞或甲基橙皆可。\n  - 強鹼滴定弱酸：當量點 $\\text{pH} > 7.0$ (生成弱酸鹽呈鹼性)，滴定突變在鹼性區，必須選用「酚酞」 (變色範圍 $8.2\\sim 10.0$)。\n  - 強酸滴定弱鹼：當量點 $\\text{pH} < 7.0$ (生成弱鹼鹽呈酸性)，必須選用「甲基紅」或「甲基橙」 (酸性區變色)。',
+      '酸鹼滴定曲線特點：\n  - 強酸滴定強鹼：當量點 $\\text{pH} = 7.0$，突變範圍大 ($\\text{pH } 4\\sim 10$)，酚酞或甲基橙皆可。\n  - 強鹼滴定弱酸：當量點 $\\text{pH} > 7.0$ (生成弱酸鹽呈鹼性)，滴定突變在鹼性區，必須選用「酚酞」 (變色範圍 $8.2\\sim 10.0$)。\n  - 強酸滴定弱鹼：當量點 $\\text{pH} < 7.0$ (生成弱鹼鹽呈酸性)，必須選用「甲基紅」或「甲基橙」 (酸性區變色)。',
     ],
     suggestedLab: '酸鹼滴定實驗：利用 pH 計與電位滴定儀繪製食醋中醋酸含量之滴定曲線',
     totalPoints: 100,

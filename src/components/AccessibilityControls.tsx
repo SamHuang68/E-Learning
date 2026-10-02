@@ -265,18 +265,18 @@ export const AccessibilityControls: React.FC = () => {
                 <button
                   type="button"
                   className="btn-show-shortcuts"
+                  aria-expanded={showShortcuts}
+                  aria-controls="a11y-shortcuts-list"
                   onClick={() => setShowShortcuts((prev) => !prev)}
                 >
                   {t('a11y.shortcuts')} {showShortcuts ? '▲' : '▼'}
                 </button>
-                {showShortcuts && (
-                  <ul className="shortcuts-list">
+                  <ul id="a11y-shortcuts-list" className="shortcuts-list" hidden={!showShortcuts}>
                     <li>{t('a11y.sc.1')}</li>
                     <li>{t('a11y.sc.2')}</li>
                     <li>{t('a11y.sc.3')}</li>
                     <li>{t('a11y.sc.4')}</li>
                   </ul>
-                )}
               </div>
             </div>
       </dialog>

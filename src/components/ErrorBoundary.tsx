@@ -8,6 +8,7 @@ import { isChunkLoadError } from '../utils/chunkLoadError'
 type Props = {
   children: ReactNode
   label?: string
+  asMain?: boolean
 }
 
 type State = {
@@ -43,43 +44,46 @@ export class ErrorBoundary extends Component<Props, State> {
       const t = (key: Parameters<typeof translate>[1], vars?: Record<string, string | number>) =>
         translate(this.state.locale, key, vars)
       const isChunkError = isChunkLoadError(this.state.error)
+      const Container = this.props.asMain ? 'main' : 'div'
 
       return (
-        <div className="error-boundary" role="alert">
-          <div className="error-boundary-toolbar">
-            <p className="eyebrow">{t('error.eyebrow')}</p>
-            <LocaleToggle compact />
+        <Container className="error-boundary">
+          <div role="alert">
+            <div className="error-boundary-toolbar">
+              <p className="eyebrow">{t('error.eyebrow')}</p>
+              <LocaleToggle compact />
+            </div>
+            <h1>{isChunkError ? t('error.chunkTitle') : t('error.failTitle')}</h1>
+            <p className="lede">
+              {isChunkError
+                ? t('error.chunkBody')
+                : this.props.label
+                  ? t('error.moduleBody', { label: this.props.label })
+                  : t('error.genericBody')}
+            </p>
+            <p className="error-boundary-detail">
+              {sanitizeClientError(this.state.error.message, t('error.safeDetail'))}
+            </p>
+            <div className="error-boundary-actions">
+              <button
+                type="button"
+                className="auth-btn"
+                onClick={() => {
+                  if (isChunkError) {
+                    window.location.reload()
+                  } else {
+                    this.setState({ error: null })
+                  }
+                }}
+              >
+                {isChunkError ? t('error.reload') : t('common.retry')}
+              </button>
+              <a className="auth-btn ghost" href="#hub" onClick={() => this.setState({ error: null })}>
+                {t('error.backHub')}
+              </a>
+            </div>
           </div>
-          <h1>{isChunkError ? t('error.chunkTitle') : t('error.failTitle')}</h1>
-          <p className="lede">
-            {isChunkError
-              ? t('error.chunkBody')
-              : this.props.label
-                ? t('error.moduleBody', { label: this.props.label })
-                : t('error.genericBody')}
-          </p>
-          <p className="error-boundary-detail">
-            {sanitizeClientError(this.state.error.message, t('error.safeDetail'))}
-          </p>
-          <div className="error-boundary-actions">
-            <button
-              type="button"
-              className="auth-btn"
-              onClick={() => {
-                if (isChunkError) {
-                  window.location.reload()
-                } else {
-                  this.setState({ error: null })
-                }
-              }}
-            >
-              {isChunkError ? t('error.reload') : t('common.retry')}
-            </button>
-            <a className="auth-btn ghost" href="#hub" onClick={() => this.setState({ error: null })}>
-              {t('error.backHub')}
-            </a>
-          </div>
-        </div>
+        </Container>
       )
     }
     return this.props.children
