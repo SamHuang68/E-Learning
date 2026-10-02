@@ -64,6 +64,18 @@ afterEach(() => {
 })
 
 describe('微積分實際畫面英文與繁中回歸', () => {
+  it('translates undefined secants and numeric limit estimates without hiding invalid input', async () => {
+    for (const props of [
+      { expression: '(x^2-1)/(x-1)', x0: 1, mode: 'limit_epsilon' as const },
+      { expression: 'x^2', x0: 1, deltaX: 0, mode: 'tangent_secant' as const },
+      { expression: '1/x', x0: 0, mode: 'limit_epsilon' as const },
+      { expression: '1/x', x0: 0, deltaX: 0.5, mode: 'tangent_secant' as const },
+    ]) {
+      const html = await render(<CalculusCanvas {...props} />)
+      expect(html).not.toMatch(CJK)
+      expect(html).toContain('undefined')
+    }
+  })
   for (const nav of ['canvas_lab', 'step_solver', 'adaptive_practice', 'badges']) {
     for (const locale of ['en', 'zh-Hant'] as const) {
       it(`${locale === 'en' ? '英文無 CJK' : '繁中基準'}：獨立路由 ${nav}`, async () => {

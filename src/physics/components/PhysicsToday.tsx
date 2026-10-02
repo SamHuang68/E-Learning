@@ -98,8 +98,16 @@ export const PhysicsToday: React.FC<Props> = ({
             return (
               <div
                 key={u.id}
+                role="button"
+                tabIndex={0}
                 className={`unit-map-card ${isCurrent ? 'active' : ''}`}
                 onClick={() => onSelectUnit(u.id)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault()
+                    onSelectUnit(u.id)
+                  }
+                }}
               >
                 <div className="unit-card-header">
                   <span className="unit-seq">{t('math.today.unitN', { n: u.id })}</span>

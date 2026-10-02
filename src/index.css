@@ -7801,6 +7801,27 @@ html.layout-dense .hub-card:has(.hub-card-hit:focus-visible) {
 }
 
 /* 微認證彈窗 */
+.calculus-badge-modal-dialog {
+  padding: 0;
+  border: 0;
+  border-radius: var(--card-radius);
+  background: transparent;
+  color: var(--ink);
+  width: min(440px, calc(100vw - 2rem));
+  max-height: calc(100dvh - 2rem);
+  overflow: auto;
+}
+
+.calculus-badge-modal-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+}
+
+.calculus-badge-modal-dialog .calculus-badge-modal-card {
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .calculus-badge-modal-overlay {
   position: fixed;
   inset: 0;

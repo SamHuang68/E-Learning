@@ -58,7 +58,7 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
   const { user, syncStatus } = useAuth()
   const { t, locale } = useI18n()
   const [nav, setNav] = useState<NavId>(() => {
-    if (window.location.hash.includes('builder')) return 'builder'
+    if (typeof window !== 'undefined' && window.location.hash.includes('builder')) return 'builder'
     return 'today'
   })
   const [progress, setProgress] = useState<ProgressState>(() => loadProgress())

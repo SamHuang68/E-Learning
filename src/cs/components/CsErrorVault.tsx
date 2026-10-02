@@ -5,11 +5,11 @@ import { playCorrectSound } from '../../engine/audioSynthesizer'
 import { useI18n } from '../../i18n/i18n'
 
 interface Props {
-  errorQuestionIds: string[]
+  errorQuestionIds?: string[]
   onRemoveError: (questionId: string) => void
 }
 
-export const CsErrorVault: React.FC<Props> = ({ errorQuestionIds, onRemoveError }) => {
+export const CsErrorVault: React.FC<Props> = ({ errorQuestionIds = [], onRemoveError }) => {
   const { t } = useI18n()
   // 匯總所有題目池
   const allQuestionsMap: Record<string, CsQuestion> = {}
