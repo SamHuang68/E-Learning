@@ -6910,10 +6910,11 @@ button:active:not(:disabled),
 }
 .segmented-btn-group {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.35rem;
 }
 .seg-btn {
-  flex: 1;
+  flex: 1 1 5rem;
   background: #ffffff;
   border: 1px solid #cbd5e1;
   padding: 0.45rem;
