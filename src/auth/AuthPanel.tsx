@@ -32,7 +32,7 @@ export function AuthPanel({ variant = 'full' }: Props) {
     if (compact) return null
     return (
       <section className="auth-panel" aria-label={t('auth.account')}>
-        <p className="auth-sync">{t('auth.checking')}</p>
+        <p className="auth-sync" role="status">{t('auth.checking')}</p>
       </section>
     )
   }
@@ -47,7 +47,12 @@ export function AuthPanel({ variant = 'full' }: Props) {
         : await signUp(email.trim(), password)
     setBusy(false)
     if (err) {
-      setMessage(sanitizeClientError(err, t('auth.genericError')))
+      const localMessage = isLocal && err === 'Email 或密碼不正確。'
+        ? t('auth.invalidCredentials')
+        : isLocal && err === '此 Email 已註冊，請直接登入。'
+          ? t('auth.emailRegistered')
+          : sanitizeClientError(err, t('auth.genericError'))
+      setMessage(localMessage)
       return
     }
     if (mode === 'signup') {
@@ -74,6 +79,7 @@ export function AuthPanel({ variant = 'full' }: Props) {
         <button
           type="button"
           className={mode === 'signin' ? 'active' : undefined}
+          aria-pressed={mode === 'signin'}
           onClick={() => {
             setMode('signin')
             setMessage(null)
@@ -84,6 +90,7 @@ export function AuthPanel({ variant = 'full' }: Props) {
         <button
           type="button"
           className={mode === 'signup' ? 'active' : undefined}
+          aria-pressed={mode === 'signup'}
           onClick={() => {
             setMode('signup')
             setMessage(null)
@@ -128,7 +135,9 @@ export function AuthPanel({ variant = 'full' }: Props) {
           {busy ? t('auth.wait') : mode === 'signin' ? t('auth.signin') : t('auth.create')}
         </button>
       </form>
-      {message ? <p className="auth-message">{message}</p> : null}
+      <div role="status" aria-live="polite" aria-atomic="true">
+        {busy ? <p className="auth-message">{t('auth.wait')}</p> : message ? <p className="auth-message">{message}</p> : null}
+      </div>
     </>
   )
 
@@ -155,6 +164,9 @@ export function AuthPanel({ variant = 'full' }: Props) {
               {t('auth.deleteLocal')}
             </button>
           ) : null}
+        </div>
+        <div role="status" aria-live="polite" aria-atomic="true">
+          {message ? <p className="auth-message">{message}</p> : null}
         </div>
       </section>
     )

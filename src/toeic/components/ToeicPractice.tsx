@@ -118,6 +118,7 @@ export function ToeicPractice({
       <button
         type="button"
         className={activeMode === 'learn' ? 'active' : ''}
+        aria-pressed={activeMode === 'learn'}
         onClick={() => setActiveMode('learn')}
       >
         Flash cards
@@ -125,6 +126,7 @@ export function ToeicPractice({
       <button
         type="button"
         className={activeMode === 'quiz' ? 'active' : ''}
+        aria-pressed={activeMode === 'quiz'}
         onClick={() => setActiveMode('quiz')}
       >
         Practice quiz
@@ -205,16 +207,16 @@ export function ToeicPractice({
         )}
 
         {card ? (
-          <div className="flash-face">
-            <strong>{card.head}</strong>
+          <div className="flash-face" role="status" aria-live="polite" aria-atomic="true">
+            <strong lang="en">{card.head}</strong>
             {(card.reading || card.meaning) && (
-              <span className="flash-meaning">
+              <span className="flash-meaning" lang="zh-Hant">
                 {[card.reading, card.meaning].filter(Boolean).join(' · ')}
               </span>
             )}
-            <p>{card.sentence}</p>
+            <p lang="en">{card.sentence}</p>
             {card.sentenceZh && (
-              <span className="flash-sentence-zh">{card.sentenceZh}</span>
+              <span className="flash-sentence-zh" lang="zh-Hant">{card.sentenceZh}</span>
             )}
             <div className="flash-meta">
               <span className="scenario-chip">{card.scenario}</span>
@@ -266,6 +268,7 @@ export function ToeicPractice({
           <button
             type="button"
             className="primary-btn inline"
+            disabled={!card}
             onClick={() => onProgress()}
           >
             {isReview ? 'Mark review +XP' : meta.action}

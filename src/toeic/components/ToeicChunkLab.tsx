@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { TOEIC_CHUNK_WEEKS, type BusinessChunk } from '../data/chunks'
+import './ToeicChunkLab.css'
 
 type Props = {
   onBack: () => void
@@ -18,62 +19,74 @@ export const ToeicChunkLab: React.FC<Props> = ({ onBack, onOpenStoryReview, inst
   const [selectedAccent, setSelectedAccent] = useState<string>('en-US')
   const [shadowStep, setShadowStep] = useState<1 | 2 | 3>(1)
   const [isSpeaking, setIsSpeaking] = useState(false)
+  const [playbackError, setPlaybackError] = useState(false)
+  const playback = useRef({ run: 0, timer: 0, utterance: null as SpeechSynthesisUtterance | null })
+  const speechSupported = typeof window !== 'undefined' && 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window
+
+  function cancelPlayback() {
+    const active = playback.current
+    active.run += 1
+    window.clearTimeout(active.timer)
+    active.timer = 0
+    if (active.utterance) {
+      active.utterance.onend = null
+      active.utterance.onerror = null
+      active.utterance = null
+      window.speechSynthesis.cancel()
+    }
+  }
+
+  useEffect(() => () => cancelPlayback(), [])
+
+  function stopPlayback() {
+    cancelPlayback()
+    setIsSpeaking(false)
+  }
 
   const isJa = instructionLang === 'ja'
   const activeChunk: BusinessChunk =
     currentWeek.chunks.find((c) => c.id === selectedChunkId) ?? currentWeek.chunks[0]
 
-  // Web Speech API 語音朗讀輔助
-  function speakSentence(text: string, rateMultiplier = 1.0) {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
+  // Keep every delayed round in one cancellable run, including the silent gaps.
+  function playLines(lines: Array<{ text: string; rate: number }>) {
+    if (!speechSupported) return
+    cancelPlayback()
     window.speechSynthesis.cancel()
-    const utterance = new SpeechSynthesisUtterance(text)
-    utterance.lang = selectedAccent
-    utterance.rate = speechRate * rateMultiplier
-    utterance.onstart = () => setIsSpeaking(true)
-    utterance.onend = () => setIsSpeaking(false)
-    utterance.onerror = () => setIsSpeaking(false)
-    window.speechSynthesis.speak(utterance)
+    setPlaybackError(false)
+    setIsSpeaking(true)
+    const run = playback.current.run
+    function play(index: number) {
+      if (run !== playback.current.run) return
+      const utterance = new SpeechSynthesisUtterance(lines[index].text)
+      playback.current.utterance = utterance
+      utterance.lang = selectedAccent
+      utterance.rate = lines[index].rate
+      utterance.onend = () => {
+        if (run !== playback.current.run) return
+        playback.current.utterance = null
+        if (index + 1 < lines.length) {
+          playback.current.timer = window.setTimeout(() => play(index + 1), index === 0 ? 500 : 600)
+        } else {
+          setIsSpeaking(false)
+        }
+      }
+      utterance.onerror = () => {
+        if (run !== playback.current.run) return
+        playback.current.utterance = null
+        setIsSpeaking(false)
+        setPlaybackError(true)
+      }
+      window.speechSynthesis.speak(utterance)
+    }
+    play(0)
+  }
+
+  function speakSentence(text: string) {
+    playLines([{ text, rate: speechRate }])
   }
 
   function handlePlayThreeTimes() {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
-    window.speechSynthesis.cancel()
-    setIsSpeaking(true)
-
-    // 第一遍：抓重音 (0.8x 慢速)
-    const u1 = new SpeechSynthesisUtterance(activeChunk.chunk)
-    u1.lang = selectedAccent
-    u1.rate = 0.8
-
-    // 第二遍：正常跟讀 (1.0x)
-    const u2 = new SpeechSynthesisUtterance(activeChunk.chunk)
-    u2.lang = selectedAccent
-    u2.rate = 1.0
-
-    // 第三遍：沉浸朗讀 (1.0x)
-    const u3 = new SpeechSynthesisUtterance(activeChunk.chunk)
-    u3.lang = selectedAccent
-    u3.rate = 1.0
-
-    u1.onend = () => {
-      setTimeout(() => {
-        if ('speechSynthesis' in window) window.speechSynthesis.speak(u2)
-      }, 500)
-    }
-    u1.onerror = () => setIsSpeaking(false)
-
-    u2.onend = () => {
-      setTimeout(() => {
-        if ('speechSynthesis' in window) window.speechSynthesis.speak(u3)
-      }, 600)
-    }
-    u2.onerror = () => setIsSpeaking(false)
-
-    u3.onend = () => setIsSpeaking(false)
-    u3.onerror = () => setIsSpeaking(false)
-
-    window.speechSynthesis.speak(u1)
+    playLines([0.8, 1, 1].map((rate) => ({ text: activeChunk.chunk, rate })))
   }
 
   return (
@@ -105,7 +118,11 @@ export const ToeicChunkLab: React.FC<Props> = ({ onBack, onOpenStoryReview, inst
                 key={item.id}
                 type="button"
                 className={`chunk-tab-card ${isSelected ? 'active' : ''}`}
-                onClick={() => setSelectedChunkId(item.id)}
+                aria-pressed={isSelected}
+                onClick={() => {
+                  stopPlayback()
+                  setSelectedChunkId(item.id)
+                }}
               >
                 <span className="chunk-num">Lesson 0{idx + 1}</span>
                 <strong className="chunk-en">{item.chunk}</strong>
@@ -148,32 +165,36 @@ export const ToeicChunkLab: React.FC<Props> = ({ onBack, onOpenStoryReview, inst
                 <button
                   type="button"
                   className={`btn-speed ${selectedAccent === 'en-US' ? 'active' : ''}`}
+                  aria-pressed={selectedAccent === 'en-US'}
                   style={{ fontSize: '0.7rem', padding: '0.15rem 0.35rem' }}
-                  onClick={() => setSelectedAccent('en-US')}
+                  onClick={() => { stopPlayback(); setSelectedAccent('en-US') }}
                 >
                   🇺🇸 美
                 </button>
                 <button
                   type="button"
                   className={`btn-speed ${selectedAccent === 'en-GB' ? 'active' : ''}`}
+                  aria-pressed={selectedAccent === 'en-GB'}
                   style={{ fontSize: '0.7rem', padding: '0.15rem 0.35rem' }}
-                  onClick={() => setSelectedAccent('en-GB')}
+                  onClick={() => { stopPlayback(); setSelectedAccent('en-GB') }}
                 >
                   🇬🇧 英
                 </button>
                 <button
                   type="button"
                   className={`btn-speed ${selectedAccent === 'en-AU' ? 'active' : ''}`}
+                  aria-pressed={selectedAccent === 'en-AU'}
                   style={{ fontSize: '0.7rem', padding: '0.15rem 0.35rem' }}
-                  onClick={() => setSelectedAccent('en-AU')}
+                  onClick={() => { stopPlayback(); setSelectedAccent('en-AU') }}
                 >
                   🇦🇺 澳
                 </button>
                 <button
                   type="button"
                   className={`btn-speed ${selectedAccent === 'en-CA' ? 'active' : ''}`}
+                  aria-pressed={selectedAccent === 'en-CA'}
                   style={{ fontSize: '0.7rem', padding: '0.15rem 0.35rem' }}
-                  onClick={() => setSelectedAccent('en-CA')}
+                  onClick={() => { stopPlayback(); setSelectedAccent('en-CA') }}
                 >
                   🇨🇦 加
                 </button>
@@ -182,14 +203,16 @@ export const ToeicChunkLab: React.FC<Props> = ({ onBack, onOpenStoryReview, inst
                 <button
                   type="button"
                   className={`btn-speed ${speechRate === 0.8 ? 'active' : ''}`}
-                  onClick={() => setSpeechRate(0.8)}
+                  aria-pressed={speechRate === 0.8}
+                  onClick={() => { stopPlayback(); setSpeechRate(0.8) }}
                 >
                   0.8× 慢速
                 </button>
                 <button
                   type="button"
                   className={`btn-speed ${speechRate === 1.0 ? 'active' : ''}`}
-                  onClick={() => setSpeechRate(1.0)}
+                  aria-pressed={speechRate === 1.0}
+                  onClick={() => { stopPlayback(); setSpeechRate(1.0) }}
                 >
                   1.0× 原速
                 </button>
@@ -198,30 +221,36 @@ export const ToeicChunkLab: React.FC<Props> = ({ onBack, onOpenStoryReview, inst
           </div>
 
           <div className="steps-cards-row">
-            <div
+            <button
+              type="button"
               className={`step-card ${shadowStep === 1 ? 'active' : ''}`}
+              aria-pressed={shadowStep === 1}
               onClick={() => setShadowStep(1)}
             >
               <span className="step-num">1</span>
-              <h4>先聽抓重音</h4>
-              <p>不急著說，先聽出哪裡重讀、哪裡弱讀。</p>
-            </div>
-            <div
+              <span className="step-title">先聽抓重音</span>
+              <span className="step-description">不急著說，先聽出哪裡重讀、哪裡弱讀。</span>
+            </button>
+            <button
+              type="button"
               className={`step-card ${shadowStep === 2 ? 'active' : ''}`}
+              aria-pressed={shadowStep === 2}
               onClick={() => setShadowStep(2)}
             >
               <span className="step-num">2</span>
-              <h4>看著貼聲跟</h4>
-              <p>看著英文算式，盡量貼著聲音節奏跟讀。</p>
-            </div>
-            <div
+              <span className="step-title">看著貼聲跟</span>
+              <span className="step-description">看著英文算式，盡量貼著聲音節奏跟讀。</span>
+            </button>
+            <button
+              type="button"
               className={`step-card ${shadowStep === 3 ? 'active' : ''}`}
+              aria-pressed={shadowStep === 3}
               onClick={() => setShadowStep(3)}
             >
               <span className="step-num">3</span>
-              <h4>留白自己說</h4>
-              <p>利用音訊結束後的空白，自己大聲說一次。</p>
-            </div>
+              <span className="step-title">留白自己說</span>
+              <span className="step-description">利用音訊結束後的空白，自己大聲說一次。</span>
+            </button>
           </div>
 
           <div className="audio-action-row">
@@ -229,11 +258,18 @@ export const ToeicChunkLab: React.FC<Props> = ({ onBack, onOpenStoryReview, inst
               type="button"
               className="btn-primary btn-play-chunk"
               onClick={handlePlayThreeTimes}
-              disabled={isSpeaking}
+              disabled={isSpeaking || !speechSupported}
             >
               {isSpeaking ? '語音朗讀中...' : '▶ 播放三遍跟讀 (慢速 ➜ 原速 ➜ 留白)'}
             </button>
-            <span className="action-hint">點擊按鈕啟動智慧語音三輪跟讀引導</span>
+            <button type="button" className="ghost" disabled={!isSpeaking} onClick={stopPlayback}>
+              {isJa ? '停止' : '停止播放'}
+            </button>
+            <span className="action-hint" role="status" aria-live="polite">
+              {!speechSupported ? '此瀏覽器無法播放語音，仍可閱讀例句練習。'
+                : playbackError ? '語音無法播放，請重試或改用其他系統語音。'
+                  : isSpeaking ? '語音朗讀中，可隨時停止。' : '點擊按鈕啟動智慧語音三輪跟讀引導'}
+            </span>
           </div>
         </div>
 
@@ -254,6 +290,8 @@ export const ToeicChunkLab: React.FC<Props> = ({ onBack, onOpenStoryReview, inst
                   className="btn-play-ex"
                   onClick={() => speakSentence(ex.en)}
                   title="點擊跟讀"
+                  aria-label={`跟讀：${ex.en}`}
+                  disabled={!speechSupported}
                 >
                   🔊 跟讀
                 </button>
@@ -274,6 +312,8 @@ export const ToeicChunkLab: React.FC<Props> = ({ onBack, onOpenStoryReview, inst
                   <button
                     type="button"
                     className="btn-play-mini"
+                    aria-label={`跟讀：${v.en}`}
+                    disabled={!speechSupported}
                     onClick={() => speakSentence(v.en)}
                   >
                     🔊

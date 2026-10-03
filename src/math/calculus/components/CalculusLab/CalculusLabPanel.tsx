@@ -64,42 +64,49 @@ export const CalculusLabPanel: React.FC<Props> = ({
         <button
           type="button"
           className={`btn-mode-tab ${mode === 'limit_epsilon' ? 'active' : ''}`}
+          aria-pressed={mode === 'limit_epsilon'}
           onClick={() => onModeSelect('limit_epsilon')}
         >
           {c("🔍 極限 ε-δ")}</button>
         <button
           type="button"
           className={`btn-mode-tab ${mode === 'tangent_secant' ? 'active' : ''}`}
+          aria-pressed={mode === 'tangent_secant'}
           onClick={() => onModeSelect('tangent_secant')}
         >
           {c("📈 割線切線")}</button>
         <button
           type="button"
           className={`btn-mode-tab ${mode === 'optimization_mvt' ? 'active' : ''}`}
+          aria-pressed={mode === 'optimization_mvt'}
           onClick={() => onModeSelect('optimization_mvt')}
         >
           {c("🎯 均值極值")}</button>
         <button
           type="button"
           className={`btn-mode-tab ${mode === 'riemann_sum' ? 'active' : ''}`}
+          aria-pressed={mode === 'riemann_sum'}
           onClick={() => onModeSelect('riemann_sum')}
         >
           {c("📊 黎曼和")}</button>
         <button
           type="button"
           className={`btn-mode-tab ${mode === 'ftc_accumulation' ? 'active' : ''}`}
+          aria-pressed={mode === 'ftc_accumulation'}
           onClick={() => onModeSelect('ftc_accumulation')}
         >
           {c("🔄 FTC 基本定理")}</button>
         <button
           type="button"
           className={`btn-mode-tab ${mode === 'taylor_series' ? 'active' : ''}`}
+          aria-pressed={mode === 'taylor_series'}
           onClick={() => onModeSelect('taylor_series')}
         >
           {c("〰️ 泰勒級數")}</button>
         <button
           type="button"
           className={`btn-mode-tab ${mode === 'newton_slope_field' ? 'active' : ''}`}
+          aria-pressed={mode === 'newton_slope_field'}
           onClick={() => onModeSelect('newton_slope_field')}
         >
           {c("⚡ 牛頓法求根")}</button>
@@ -261,18 +268,21 @@ export const CalculusLabPanel: React.FC<Props> = ({
                 <button
                   type="button"
                   className={`seg-btn ${riemannMethod === 'left' ? 'active' : ''}`}
+                  aria-pressed={riemannMethod === 'left'}
                   onClick={() => onParamChange({ riemannMethod: 'left' })}
                 >
                   {c("左端點")}</button>
                 <button
                   type="button"
                   className={`seg-btn ${riemannMethod === 'midpoint' ? 'active' : ''}`}
+                  aria-pressed={riemannMethod === 'midpoint'}
                   onClick={() => onParamChange({ riemannMethod: 'midpoint' })}
                 >
                   {c("中點")}</button>
                 <button
                   type="button"
                   className={`seg-btn ${riemannMethod === 'right' ? 'active' : ''}`}
+                  aria-pressed={riemannMethod === 'right'}
                   onClick={() => onParamChange({ riemannMethod: 'right' })}
                 >
                   {c("右端點")}</button>

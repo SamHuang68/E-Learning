@@ -57,6 +57,7 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
   return (
     <div
       className="cs-textbook-reader"
+      lang={locale}
       style={{
         display: 'flex',
         flexDirection: 'column',
@@ -83,7 +84,7 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
         }}
       >
         <span style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--navy)', marginRight: '0.25rem' }}>
-          {copy.reader}
+          <span lang={locale}>{copy.reader}</span>
         </span>
         {CS_TEXTBOOK_CHAPTERS.map((ch) => {
           const isSelected = ch.id === selectedChapterId
@@ -156,7 +157,7 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
                   border: '1px solid var(--line)',
                 }}
               >
-                {t(csStrandMessageKey(currentChapter.strand))}
+                <span lang={locale}>{t(csStrandMessageKey(currentChapter.strand))}</span>
               </span>
               <span style={{ fontSize: '0.75rem', color: 'var(--muted)', marginLeft: 'auto' }}>
                 {locale === 'en' ? `About ${currentChapter.readingTimeMinutes} minutes` : `約 ${currentChapter.readingTimeMinutes} 分鐘`}
@@ -166,16 +167,17 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
             <h1 style={{ margin: '0.4rem 0 0.2rem', fontSize: '1.6rem', fontWeight: 900, color: 'var(--ink)' }}>
               {locale === 'en' ? currentChapter.englishTitle : currentChapter.title}
             </h1>
-            <div style={{ fontSize: '0.88rem', color: 'var(--muted)', fontStyle: 'italic', marginBottom: '0.75rem' }}>
+            <div lang={locale === 'en' ? 'zh-Hant' : 'en'} style={{ fontSize: '0.88rem', color: 'var(--muted)', fontStyle: 'italic', marginBottom: '0.75rem' }}>
               {locale === 'en' ? currentChapter.title : currentChapter.englishTitle}
             </div>
 
             {locale === 'en' ? <p className="cs-reader-language-note">Chapter content is currently in Traditional Chinese.</p> : null}
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '0.75rem', color: 'var(--muted)', fontWeight: 600 }}>{copy.prerequisites}</span>
+              <span style={{ fontSize: '0.75rem', color: 'var(--muted)', fontWeight: 600 }}><span lang={locale}>{copy.prerequisites}</span></span>
               {currentChapter.prerequisites.map((p, idx) => (
                 <span
+                  lang="zh-Hant"
                   key={idx}
                   style={{
                     fontSize: '0.72rem',
@@ -233,9 +235,9 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
           </div>
 
           {(activeTab === 'all' || activeTab === 'history') && (
-            <section style={{ marginBottom: '2rem' }}>
+            <section lang="zh-Hant" style={{ marginBottom: '2rem' }}>
               <h2 style={{ margin: '0 0 0.75rem', fontSize: '1.15rem', fontWeight: 800, color: 'var(--navy)' }}>
-                {copy.historyHeading}
+                <span lang={locale}>{copy.historyHeading}</span>
               </h2>
               <div
                 style={{
@@ -257,13 +259,13 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
                   }}
                 >
                   <div style={{ background: 'var(--surface-soft)', padding: '0.6rem 0.8rem', borderRadius: '6px' }}>
-                    <span style={{ color: 'var(--muted)', fontSize: '0.75rem' }}>{copy.era}</span>
+                    <span style={{ color: 'var(--muted)', fontSize: '0.75rem' }}><span lang={locale}>{copy.era}</span></span>
                     <div style={{ fontWeight: 700, color: 'var(--ink)', marginTop: '0.15rem' }}>
                       {currentChapter.historicalContext.era}
                     </div>
                   </div>
                   <div style={{ background: 'var(--surface-soft)', padding: '0.6rem 0.8rem', borderRadius: '6px' }}>
-                    <span style={{ color: 'var(--muted)', fontSize: '0.75rem' }}>{copy.pioneers}</span>
+                    <span style={{ color: 'var(--muted)', fontSize: '0.75rem' }}><span lang={locale}>{copy.pioneers}</span></span>
                     <div style={{ fontWeight: 700, color: 'var(--ink)', marginTop: '0.15rem' }}>
                       {currentChapter.historicalContext.keyFigures.join('、')}
                     </div>
@@ -271,14 +273,14 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
                 </div>
 
                 <div style={{ marginBottom: '0.75rem' }}>
-                  <strong style={{ color: 'var(--ink)' }}>{copy.motivation}</strong>
+                  <strong style={{ color: 'var(--ink)' }}><span lang={locale}>{copy.motivation}</span></strong>
                   <p style={{ margin: '0.25rem 0', color: 'var(--ink)' }}>
                     {currentChapter.historicalContext.coreMotivation}
                   </p>
                 </div>
 
                 <div>
-                  <strong style={{ color: 'var(--ink)' }}>{copy.breakthrough}</strong>
+                  <strong style={{ color: 'var(--ink)' }}><span lang={locale}>{copy.breakthrough}</span></strong>
                   <p style={{ margin: '0.25rem 0', color: 'var(--ink)' }}>
                     {currentChapter.historicalContext.breakthroughStory}
                   </p>
@@ -288,9 +290,9 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
           )}
 
           {(activeTab === 'all' || activeTab === 'principles') && (
-            <section style={{ marginBottom: '2rem' }}>
+            <section lang="zh-Hant" style={{ marginBottom: '2rem' }}>
               <h2 style={{ margin: '0 0 0.75rem', fontSize: '1.15rem', fontWeight: 800, color: 'var(--navy)' }}>
-                {copy.principlesHeading}
+                <span lang={locale}>{copy.principlesHeading}</span>
               </h2>
               <div
                 style={{
@@ -317,7 +319,7 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
                       }}
                     >
                       <div style={{ fontWeight: 800, fontSize: '0.88rem', color: 'var(--navy)', marginBottom: '0.4rem' }}>
-                        {copy.theorem} {idx + 1}: {item.topic}
+                        <span lang={locale}>{copy.theorem}</span> {idx + 1}: {item.topic}
                       </div>
                       <div
                         style={{
@@ -341,9 +343,9 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
           )}
 
           {(activeTab === 'all' || activeTab === 'architecture') && (
-            <section style={{ marginBottom: '2rem' }}>
+            <section lang="zh-Hant" style={{ marginBottom: '2rem' }}>
               <h2 style={{ margin: '0 0 0.75rem', fontSize: '1.15rem', fontWeight: 800, color: 'var(--navy)' }}>
-                {copy.architectureHeading}
+                <span lang={locale}>{copy.architectureHeading}</span>
               </h2>
               <div
                 style={{
@@ -415,9 +417,9 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
                     }}
                   >
                     <div>
-                      <strong style={{ color: 'var(--navy)', fontSize: '0.85rem' }}>{copy.map}</strong>
+                      <strong style={{ color: 'var(--navy)', fontSize: '0.85rem' }}><span lang={locale}>{copy.map}</span></strong>
                       <div style={{ color: 'var(--muted)', fontSize: '0.78rem' }}>
-                        {copy.mapDescription}
+                        <span lang={locale}>{copy.mapDescription}</span>
                       </div>
                     </div>
                     <button
@@ -434,7 +436,7 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
                         cursor: 'pointer',
                       }}
                     >
-                      {copy.openMap}
+                      <span lang={locale}>{copy.openMap}</span>
                     </button>
                   </div>
                 ) : null}
@@ -443,9 +445,9 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
           )}
 
           {activeTab === 'all' && (
-            <section style={{ marginBottom: '2rem' }}>
+            <section lang="zh-Hant" style={{ marginBottom: '2rem' }}>
               <h2 style={{ margin: '0 0 0.75rem', fontSize: '1.15rem', fontWeight: 800, color: 'var(--navy)' }}>
-                {copy.casesHeading}
+                <span lang={locale}>{copy.casesHeading}</span>
               </h2>
               <div
                 style={{
@@ -490,9 +492,9 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
           )}
 
           {(activeTab === 'all' || activeTab === 'philosophy') && (
-            <section style={{ marginBottom: '2rem' }}>
+            <section lang="zh-Hant" style={{ marginBottom: '2rem' }}>
               <h2 style={{ margin: '0 0 0.75rem', fontSize: '1.15rem', fontWeight: 800, color: 'var(--navy)' }}>
-                {copy.philosophyHeading}
+                <span lang={locale}>{copy.philosophyHeading}</span>
               </h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 {currentChapter.deepThinkingQuestions.map((q, idx) => (
@@ -506,7 +508,7 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
                     }}
                   >
                     <div style={{ fontWeight: 800, fontSize: '0.9rem', color: 'var(--ink)', marginBottom: '0.4rem' }}>
-                      {copy.question} {idx + 1}: {q.question}
+                      <span lang={locale}>{copy.question}</span> {idx + 1}: {q.question}
                     </div>
                     <p style={{ margin: 0, fontSize: '0.84rem', color: 'var(--muted)', lineHeight: 1.7 }}>
                       {q.philosophicalAnalysis}
@@ -518,9 +520,9 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
           )}
 
           {activeTab === 'all' && (
-            <section style={{ marginBottom: '1rem' }}>
+            <section lang="zh-Hant" style={{ marginBottom: '1rem' }}>
               <h2 style={{ margin: '0 0 0.75rem', fontSize: '1.15rem', fontWeight: 800, color: 'var(--navy)' }}>
-                {copy.referencesHeading}
+                <span lang={locale}>{copy.referencesHeading}</span>
               </h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                 {currentChapter.classicReferences.map((ref, idx) => (
@@ -540,7 +542,7 @@ export function CsTextbookReader({ onOpenArchMap }: Props = {}) {
                   >
                     <div>
                       <strong style={{ fontSize: '0.88rem', color: 'var(--ink)' }}>{ref.title}</strong>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--navy)' }}>{copy.author} {ref.author}</div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--navy)' }}><span lang={locale}>{copy.author}</span> {ref.author}</div>
                     </div>
                     <div style={{ fontSize: '0.78rem', color: 'var(--muted)', fontStyle: 'italic' }}>
                       {ref.significance}

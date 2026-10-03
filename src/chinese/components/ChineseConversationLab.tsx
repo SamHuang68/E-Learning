@@ -59,9 +59,9 @@ export const ChineseConversationLab: React.FC<Props> = ({ onEarnXp }) => {
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>💬</span> 台湾華語・実用シチュエーション会話 (Real-life Taiwanese Mandarin Dialogues)
-          </h3>
-          <p className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+            <span>💬</span> <span lang="ja">台湾華語・実用シチュエーション会話 (Real-life Taiwanese Mandarin Dialogues)
+          </span></h3>
+          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
             台湾旅行や出張ですぐに使えるリアルな会話表現。音声再生とピンイン・注音対照でシャドーイング！
           </p>
         </div>
@@ -70,7 +70,7 @@ export const ChineseConversationLab: React.FC<Props> = ({ onEarnXp }) => {
       {/* 場景切換選單 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
         {CONVERSATION_SCENES.map((scene) => (
-          <button
+          <button aria-pressed={activeScene.id === scene.id}
             key={scene.id}
             type="button"
             className={`pill-btn ${activeScene.id === scene.id ? 'active' : ''}`}
@@ -104,8 +104,8 @@ export const ChineseConversationLab: React.FC<Props> = ({ onEarnXp }) => {
           <span style={{ fontSize: '0.7rem', color: '#f59e0b', fontWeight: 700 }}>
             {activeScene.sceneCategory} · {activeScene.titleZh}
           </span>
-          <h4 style={{ margin: '0.2rem 0', fontSize: '0.95rem' }}>{activeScene.titleJa}</h4>
-          <p style={{ margin: 0, fontSize: '0.76rem', color: 'var(--muted)' }}>{activeScene.descriptionJa}</p>
+          <h4 lang="ja" style={{ margin: '0.2rem 0', fontSize: '0.95rem' }}>{activeScene.titleJa}</h4>
+          <p lang="ja" style={{ margin: 0, fontSize: '0.76rem', color: 'var(--muted)' }}>{activeScene.descriptionJa}</p>
         </div>
         <button
           type="button"
@@ -157,9 +157,9 @@ export const ChineseConversationLab: React.FC<Props> = ({ onEarnXp }) => {
                   <strong style={{ fontSize: '0.95rem' }}>{line.zh}</strong>
                 </div>
                 <div style={{ fontSize: '0.74rem', color: '#f59e0b' }}>
-                  {line.pinyin} · {line.bopomofo}
+                  <span lang="zh-Latn">{line.pinyin}</span> · {line.bopomofo}
                 </div>
-                <div style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.15rem' }}>
+                <div lang="ja" style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.15rem' }}>
                   {line.ja}
                 </div>
               </div>
@@ -182,10 +182,10 @@ export const ChineseConversationLab: React.FC<Props> = ({ onEarnXp }) => {
 
       {/* 台灣在地文化小貼士 */}
       <div style={{ background: 'var(--surface-soft)', border: '1px solid var(--line)', borderRadius: '10px', padding: '0.75rem' }}>
-        <span style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
+        <span lang="ja" style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
           💡 台湾ローカル豆知識 (Taiwan Culture Tip)：
         </span>
-        <p style={{ margin: '0.2rem 0 0', fontSize: '0.76rem', color: 'var(--muted)', lineHeight: 1.45 }}>
+        <p lang="ja" style={{ margin: '0.2rem 0 0', fontSize: '0.76rem', color: 'var(--muted)', lineHeight: 1.45 }}>
           {activeScene.cultureTipJa}
         </p>
       </div>

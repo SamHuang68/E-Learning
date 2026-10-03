@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useId, useState } from 'react'
 import { CS_CURRICULUM, isCsAdvancedUnit } from '../data/curriculum'
 import type { CsNavSection } from './CsTopNav'
 
@@ -8,6 +8,7 @@ interface Props {
 }
 
 export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigate }) => {
+  const treeId = useId()
   const [viewMode, setViewMode] = useState<'tree' | 'matrix'>('tree')
   const [expandedUnitId, setExpandedUnitId] = useState<string | null>(CS_CURRICULUM[0].id)
 
@@ -77,7 +78,7 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
           </div>
 
           <div style={{ display: 'flex', background: 'var(--surface-soft)', padding: '2px', borderRadius: '6px', border: '1px solid var(--line)' }}>
-            <button
+            <button aria-pressed={viewMode === 'tree'}
               type="button"
               onClick={() => setViewMode('tree')}
               style={{
@@ -93,7 +94,7 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
             >
               樹狀
             </button>
-            <button
+            <button aria-pressed={viewMode === 'matrix'}
               type="button"
               onClick={() => setViewMode('matrix')}
               style={{
@@ -162,16 +163,22 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
                 >
                   {/* 分支 Header */}
                   <div
-                    onClick={() => setExpandedUnitId(isExpanded ? null : unit.id)}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
-                      cursor: 'pointer',
+                      flexWrap: 'wrap',
+                      gap: '0.5rem',
                       userSelect: 'none',
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                    <button
+                      type="button"
+                      aria-expanded={isExpanded}
+                      aria-controls={`${treeId}-${unit.id}`}
+                      onClick={() => setExpandedUnitId(isExpanded ? null : unit.id)}
+                      style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flex: 1, minWidth: 0, textAlign: 'left', background: 'transparent', border: 0, padding: '0.25rem 0', color: 'inherit', font: 'inherit', cursor: 'pointer' }}
+                    >
                       <span
                         style={{
                           display: 'inline-block',
@@ -200,7 +207,7 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
                         {unit.title}
                       </span>
                       {isCsAdvancedUnit(unit) ? <span className="cs-advanced-tag">進階</span> : null}
-                    </div>
+                    </button>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                       <span style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
@@ -250,6 +257,7 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
                   {/* 展開之概念葉節點 (Leaves) 與快捷入口 */}
                   {isExpanded && (
                     <div
+                      id={`${treeId}-${unit.id}`}
                       style={{
                         marginTop: '0.75rem',
                         paddingTop: '0.65rem',
@@ -260,7 +268,7 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
                       }}
                     >
                       <div style={{ fontSize: '0.76rem', color: 'var(--ink)', lineHeight: 1.5 }}>
-                        <strong>單元副標：</strong> {unit.subtitle}
+                        <strong>單元副標：</strong> <span lang="en">{unit.subtitle}</span>
                       </div>
 
                       {/* 概念葉節點清單 */}

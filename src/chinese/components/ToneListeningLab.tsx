@@ -57,7 +57,7 @@ export const ToneListeningLab: React.FC<Props> = ({ onEarnXp }) => {
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <span>🎧</span> 四聲聲調辨音聽力實驗室 (Tone Listening Lab)
           </h3>
-          <p className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
             日本人学習者が最も聞き取りにくい「最小対立体（Minimal Pairs）」をブラインドで聴き分け、耳を鍛えよう！
           </p>
         </div>
@@ -82,12 +82,12 @@ export const ToneListeningLab: React.FC<Props> = ({ onEarnXp }) => {
           <span style={{ fontSize: '0.74rem', padding: '0.15rem 0.5rem', borderRadius: '999px', background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', fontWeight: 700 }}>
             問題 #{drillIdx + 1} / {TONE_DRILLS.length}
           </span>
-          <span style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>{currentDrill.titleJa}</span>
+          <span lang="ja" style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>{currentDrill.titleJa}</span>
         </div>
 
         {/* 播放按鈕 */}
         <div style={{ textAlign: 'center', margin: '0.6rem 0' }}>
-          <button
+          <button lang="ja"
             type="button"
             className="btn-primary"
             style={{
@@ -101,7 +101,7 @@ export const ToneListeningLab: React.FC<Props> = ({ onEarnXp }) => {
           >
             🔊 音声を聴く (Play Audio)
           </button>
-          <span style={{ fontSize: '0.74rem', color: 'var(--muted)', display: 'block', marginTop: '0.4rem' }}>
+          <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--muted)', display: 'block', marginTop: '0.4rem' }}>
             ボタンを押して発音を聞き、どちらの単語か判定してください
           </span>
         </div>
@@ -111,6 +111,8 @@ export const ToneListeningLab: React.FC<Props> = ({ onEarnXp }) => {
           <button
             type="button"
             className="practice-card"
+            aria-pressed={selectedAnswer === 'A'}
+            aria-disabled={hasSubmitted}
             style={{
               padding: '1rem 0.8rem',
               textAlign: 'center',
@@ -133,8 +135,8 @@ export const ToneListeningLab: React.FC<Props> = ({ onEarnXp }) => {
             onClick={() => handlePick('A')}
           >
             <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.4rem' }}>{currentDrill.pairA.zh}</h3>
-            <div style={{ fontSize: '0.82rem', color: '#f59e0b' }}>{currentDrill.pairA.pinyin}</div>
-            <span style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block', marginTop: '0.2rem' }}>
+            <div lang="zh-Latn" style={{ fontSize: '0.82rem', color: '#f59e0b' }}>{currentDrill.pairA.pinyin}</div>
+            <span lang="ja" style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block', marginTop: '0.2rem' }}>
               {currentDrill.pairA.meaningJa}
             </span>
           </button>
@@ -142,6 +144,8 @@ export const ToneListeningLab: React.FC<Props> = ({ onEarnXp }) => {
           <button
             type="button"
             className="practice-card"
+            aria-pressed={selectedAnswer === 'B'}
+            aria-disabled={hasSubmitted}
             style={{
               padding: '1rem 0.8rem',
               textAlign: 'center',
@@ -164,8 +168,8 @@ export const ToneListeningLab: React.FC<Props> = ({ onEarnXp }) => {
             onClick={() => handlePick('B')}
           >
             <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.4rem' }}>{currentDrill.pairB.zh}</h3>
-            <div style={{ fontSize: '0.82rem', color: '#f59e0b' }}>{currentDrill.pairB.pinyin}</div>
-            <span style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block', marginTop: '0.2rem' }}>
+            <div lang="zh-Latn" style={{ fontSize: '0.82rem', color: '#f59e0b' }}>{currentDrill.pairB.pinyin}</div>
+            <span lang="ja" style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block', marginTop: '0.2rem' }}>
               {currentDrill.pairB.meaningJa}
             </span>
           </button>
@@ -178,14 +182,14 @@ export const ToneListeningLab: React.FC<Props> = ({ onEarnXp }) => {
               {selectedAnswer === isPlayingTarget ? '🎉 正解！(+10 XP)' : '⚠️ 不正解。もう一度音を聞き比べてみましょう。'}
             </div>
             <p style={{ margin: '0 0 0.4rem', color: 'var(--muted)' }}>
-              💡 <strong>聞き分けのコツ：</strong>{currentDrill.confusionPointJa}
+              💡 <strong lang="ja">聞き分けのコツ：</strong><span lang="ja">{currentDrill.confusionPointJa}</span>
             </p>
             <div style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
               例文：{currentDrill.exampleContextZh}
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.6rem' }}>
-              <button type="button" className="btn-primary" onClick={handleNext}>
+              <button lang="ja" type="button" className="btn-primary" onClick={handleNext}>
                 次の問題へ →
               </button>
             </div>

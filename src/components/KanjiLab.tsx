@@ -70,7 +70,7 @@ export function KanjiLab({ entries = n5Kanji, mastered, onMaster }: Props) {
   }
 
   return (
-    <section className="kana-lab kanji-lab">
+    <section className="kana-lab kanji-lab" lang="zh-Hant">
       <header className="kana-hero">
         <div>
           <p className="eyebrow">KANJI · N5</p>
@@ -116,6 +116,7 @@ export function KanjiLab({ entries = n5Kanji, mastered, onMaster }: Props) {
                 key={k.id}
                 type="button"
                 className="pill-btn"
+                lang="ja"
                 style={{
                   fontSize: '0.72rem',
                   padding: '0.15rem 0.35rem',
@@ -140,11 +141,11 @@ export function KanjiLab({ entries = n5Kanji, mastered, onMaster }: Props) {
           {entries.map((entry) => (
             <article key={entry.id} className="practice-card">
               <div className="flash-face">
-                <strong className="detail-char">{entry.char}</strong>
+                <strong className="detail-char" lang="ja">{entry.char}</strong>
                 <span className="flash-meaning">
-                  {entry.readings.join(' / ')} · {entry.meaning}
+                  <span lang="ja">{entry.readings.join(' / ')}</span> · {entry.meaning}
                 </span>
-                <p>{entry.words.join('、')}</p>
+                <p lang="ja">{entry.words.join('、')}</p>
               </div>
               <div className="flash-actions">
                 <SpeakButton lang="ja" text={entry.readings.join('、')} label="讀音" />
@@ -158,13 +159,13 @@ export function KanjiLab({ entries = n5Kanji, mastered, onMaster }: Props) {
       {mode === 'flash' && active ? (
         <div className="practice-card">
           <div className="flash-face">
-            <strong className="detail-char">{active.char}</strong>
+            <strong className="detail-char" lang="ja">{active.char}</strong>
             {revealed ? (
               <>
                 <span className="flash-meaning">
-                  {active.readings.join(' / ')} · {active.meaning}
+                  <span lang="ja">{active.readings.join(' / ')}</span> · {active.meaning}
                 </span>
-                <p>{active.words.join('、')}</p>
+                <p lang="ja">{active.words.join('、')}</p>
               </>
             ) : (
               <p>先說出讀音與意思，再翻面確認。</p>
@@ -194,7 +195,7 @@ export function KanjiLab({ entries = n5Kanji, mastered, onMaster }: Props) {
         <div className="practice-card">
           <div className="flash-face">
             <p className="eyebrow">QUIZ</p>
-            <strong className="detail-char">{quiz.answer.char}</strong>
+            <strong className="detail-char" lang="ja">{quiz.answer.char}</strong>
             <p>選出正確意思。</p>
           </div>
           <div className="choice-grid">
@@ -227,7 +228,7 @@ export function KanjiLab({ entries = n5Kanji, mastered, onMaster }: Props) {
           {quiz.picked ? (
             <p className="status-line">
               {quiz.picked === quiz.answer.id ? '正確！' : `答案：${quiz.answer.meaning}`} ·{' '}
-              {quiz.answer.readings.join(' / ')}
+              <span lang="ja">{quiz.answer.readings.join(' / ')}</span>
             </p>
           ) : null}
           <div className="flash-actions">

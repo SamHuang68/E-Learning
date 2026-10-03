@@ -7,7 +7,7 @@ import { playCorrectSound } from '../../engine/audioSynthesizer'
 import { useI18n } from '../../i18n/i18n'
 
 export const CsSignalsView: React.FC = () => {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const [viewMode, setViewMode] = useState<'cards' | 'drill'>('cards')
   const [activeIdx, setActiveIdx] = useState(0)
   const [isRevealed, setIsRevealed] = useState(false)
@@ -62,14 +62,14 @@ export const CsSignalsView: React.FC = () => {
         </div>
 
         <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-          <button
+          <button aria-pressed={viewMode === 'cards'}
             type="button"
             className={`pill-btn ${viewMode === 'cards' ? 'active' : ''}`}
             onClick={() => setViewMode('cards')}
           >
             🗂️ 學習卡片模式
           </button>
-          <button
+          <button aria-pressed={viewMode === 'drill'}
             type="button"
             className={`pill-btn ${viewMode === 'drill' ? 'active' : ''}`}
             onClick={() => {
@@ -84,7 +84,7 @@ export const CsSignalsView: React.FC = () => {
 
       {/* 領域切換膠囊 */}
       <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
-        <button
+        <button aria-pressed={selectedStrand === 'all'}
           type="button"
           className={`pill-btn ${selectedStrand === 'all' ? 'active' : ''}`}
           onClick={() => {
@@ -95,7 +95,7 @@ export const CsSignalsView: React.FC = () => {
           全部領域 ({CS_SOLVING_SIGNALS.length})
         </button>
         {CS_STRAND_IDS.map((strand) => (
-          <button
+          <button aria-pressed={selectedStrand === strand}
             key={strand}
             type="button"
             className={`pill-btn ${selectedStrand === strand ? 'active' : ''}`}
@@ -104,7 +104,7 @@ export const CsSignalsView: React.FC = () => {
               setActiveIdx(0)
             }}
           >
-            {t(csStrandMessageKey(strand))}
+            <span lang={locale}>{t(csStrandMessageKey(strand))}</span>
           </button>
         ))}
       </div>
@@ -129,10 +129,11 @@ export const CsSignalsView: React.FC = () => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(37, 99, 235, 0.15)', color: '#2563eb', fontWeight: 700 }}>
-                    {t(csStrandMessageKey(sig.strand))}
+                    <span lang={locale}>{t(csStrandMessageKey(sig.strand))}</span>
                   </span>
                   <button
                     type="button"
+                    aria-pressed={isMastered}
                     style={{
                       border: 'none',
                       background: isMastered ? 'rgba(16, 185, 129, 0.2)' : 'var(--surface-soft)',
@@ -187,7 +188,7 @@ export const CsSignalsView: React.FC = () => {
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1.4rem', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '1rem', maxWidth: '680px', margin: '0 auto', width: '100%' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
             <span style={{ fontSize: '0.74rem', padding: '0.15rem 0.5rem', borderRadius: '999px', background: 'rgba(37, 99, 235, 0.15)', color: '#2563eb', fontWeight: 700 }}>
-              {t(csStrandMessageKey(currentSignal.strand))} · 第 {activeIdx + 1} / {filteredSignals.length} 卡
+              <span lang={locale}>{t(csStrandMessageKey(currentSignal.strand))}</span> · 第 {activeIdx + 1} / {filteredSignals.length} 卡
             </span>
             <span style={{ fontSize: '0.76rem', color: 'var(--muted)' }}>
               主題：{currentSignal.topic}

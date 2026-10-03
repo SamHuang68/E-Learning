@@ -1,8 +1,10 @@
 ﻿import React, { useRef, useState, useEffect } from 'react'
 import { useI18n } from '../i18n/i18n'
 import type { MessageKey } from '../i18n/messages'
+import './scratchpad.css'
 
 interface Props {
+  id?: string
   isOpen: boolean
   onClose: () => void
 }
@@ -18,13 +20,26 @@ const PEN_COLORS: { hex: string; labelKey: MessageKey }[] = [
  * 手寫幾何與算式推導草稿紙 (Interactive Scratchpad)
  * 提供純前端 HTML5 Canvas 塗鴉推導板，支援高對比暗色網格、多色筆刷、橡皮擦與一鍵清空。
  */
-export const Scratchpad: React.FC<Props> = ({ isOpen, onClose }) => {
-  const { t } = useI18n()
+export const Scratchpad: React.FC<Props> = ({ id = 'hub-scratchpad', isOpen, onClose }) => {
+  const { t, locale } = useI18n()
+  const dialogRef = useRef<HTMLDialogElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const [isDrawing, setIsDrawing] = useState(false)
   const [color, setColor] = useState('#38bdf8')
   const [lineWidth] = useState(2.5)
   const [isEraser, setIsEraser] = useState(false)
+
+  useEffect(() => {
+    const dialog = dialogRef.current
+    if (!isOpen || !dialog) return
+    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    dialog.showModal()
+    dialog.querySelector<HTMLButtonElement>('.scratchpad-close')?.focus()
+    return () => {
+      if (dialog.open) dialog.close()
+      if (opener?.isConnected) opener?.focus()
+    }
+  }, [isOpen])
 
   useEffect(() => {
     if (!isOpen || !canvasRef.current) return
@@ -65,23 +80,29 @@ export const Scratchpad: React.FC<Props> = ({ isOpen, onClose }) => {
     const canvas = canvasRef.current
     const ctx = canvas.getContext('2d')
     if (!ctx) return
-    const rect = canvas.getBoundingClientRect()
-    drawGrid(ctx, rect.width || 400, rect.height || 240)
+    const transform = ctx.getTransform()
+    drawGrid(ctx, canvas.width / transform.a, canvas.height / transform.d)
   }
 
   function getPos(e: React.MouseEvent | React.TouchEvent) {
     if (!canvasRef.current) return { x: 0, y: 0 }
-    const rect = canvasRef.current.getBoundingClientRect()
+    const canvas = canvasRef.current
+    const rect = canvas.getBoundingClientRect()
+    const transform = canvas.getContext('2d')?.getTransform()
+    // Retain the existing drawing when the viewport changes, while keeping
+    // pointer coordinates aligned with the resized on-screen canvas.
+    const scaleX = canvas.width / (rect.width || 1) / (transform?.a || 1)
+    const scaleY = canvas.height / (rect.height || 1) / (transform?.d || 1)
     if ('touches' in e && e.touches.length > 0) {
       return {
-        x: e.touches[0].clientX - rect.left,
-        y: e.touches[0].clientY - rect.top,
+        x: (e.touches[0].clientX - rect.left) * scaleX,
+        y: (e.touches[0].clientY - rect.top) * scaleY,
       }
     }
     const me = e as React.MouseEvent
     return {
-      x: me.clientX - rect.left,
-      y: me.clientY - rect.top,
+      x: (me.clientX - rect.left) * scaleX,
+      y: (me.clientY - rect.top) * scaleY,
     }
   }
 
@@ -114,89 +135,66 @@ export const Scratchpad: React.FC<Props> = ({ isOpen, onClose }) => {
   if (!isOpen) return null
 
   return (
-    <div
-      id="hub-scratchpad"
+    <dialog
+      ref={dialogRef}
+      id={id}
       className="scratchpad-overlay"
-      role="dialog"
       aria-modal="true"
-      aria-label="幾何草稿紙"
-      style={{
-        position: 'fixed',
-        bottom: '1rem',
-        right: '1rem',
-        width: 'min(420px, 94vw)',
-        background: '#0f172a',
-        border: '1px solid #334155',
-        borderRadius: '12px',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
-        zIndex: 9999,
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
+      aria-labelledby={`${id}-title`}
+      aria-describedby={`${id}-instructions`}
+      lang={locale}
+      onCancel={(event) => {
+        event.preventDefault()
+        onClose()
       }}
+      onKeyDown={(event) => event.stopPropagation()}
     >
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '0.4rem 0.65rem',
-          background: '#1e293b',
-          borderBottom: '1px solid #334155',
-        }}
-      >
-        <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-          ✏️ 幾何草稿紙
-        </span>
-        <div style={{ display: 'flex', gap: '0.3rem', alignItems: 'center' }}>
+      <div className="scratchpad-header">
+        <h2 id={`${id}-title`}><span aria-hidden="true">✏️ </span>{t('scratch.title')}</h2>
+        <button
+          type="button"
+          className="scratchpad-close"
+          onClick={onClose}
+          aria-label={t('scratch.close')}
+          title={t('scratch.close')}
+        >
+          <span aria-hidden="true">✕</span>
+        </button>
+        <div className="scratchpad-tools" role="group" aria-label={t('scratch.tools')}>
           {PEN_COLORS.map((pen) => (
             <button
               key={pen.hex}
               type="button"
+              className="scratchpad-color"
               onClick={() => { setColor(pen.hex); setIsEraser(false); }}
-              style={{
-                width: '18px',
-                height: '18px',
-                borderRadius: '50%',
-                background: pen.hex,
-                border: !isEraser && color === pen.hex ? '2px solid #fff' : '1px solid rgba(255,255,255,0.3)',
-                cursor: 'pointer',
-                padding: 0,
-              }}
+              aria-pressed={!isEraser && color === pen.hex}
               aria-label={t(pen.labelKey)}
               title={t(pen.labelKey)}
-            />
+            >
+              <span aria-hidden="true" style={{ background: pen.hex }} />
+            </button>
           ))}
           <button
             type="button"
-            className="pill-btn"
-            style={{ fontSize: '0.68rem', padding: '0.15rem 0.4rem', background: isEraser ? 'rgba(239, 68, 68, 0.3)' : undefined }}
+            aria-pressed={isEraser}
             onClick={() => setIsEraser(!isEraser)}
           >
-            {isEraser ? '橡皮擦中' : '橡皮擦'}
+            {t('scratch.eraser')}
           </button>
           <button
             type="button"
-            className="pill-btn"
-            style={{ fontSize: '0.68rem', padding: '0.15rem 0.4rem' }}
             onClick={handleClear}
           >
-            清空
-          </button>
-          <button
-            type="button"
-            onClick={onClose}
-            style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '1rem', cursor: 'pointer', marginLeft: '0.2rem' }}
-            aria-label={t('scratch.close')}
-            title={t('scratch.close')}
-          >
-            ✕
+            {t('scratch.clear')}
           </button>
         </div>
       </div>
+      <p id={`${id}-instructions`} className="scratchpad-instructions">{t('scratch.instructions')}</p>
 
       <canvas
         ref={canvasRef}
+        aria-label={t('scratch.canvas')}
+        role="img"
         onMouseDown={startDraw}
         onMouseMove={draw}
         onMouseUp={stopDraw}
@@ -204,15 +202,11 @@ export const Scratchpad: React.FC<Props> = ({ isOpen, onClose }) => {
         onTouchStart={startDraw}
         onTouchMove={draw}
         onTouchEnd={stopDraw}
+        onTouchCancel={stopDraw}
         style={{
-          width: '100%',
-          height: '240px',
-          background: '#0b1329',
           cursor: isEraser ? 'cell' : 'crosshair',
-          touchAction: 'none',
-          display: 'block',
         }}
       />
-    </div>
+    </dialog>
   )
 }

@@ -155,9 +155,9 @@ describe('i18n dictionary', () => {
     expect(toDocumentLang('ja')).toBe('ja')
     expect(toDocumentLang('ja-JP')).toBe('ja')
     const app = readFileSync(join(process.cwd(), 'src/App.tsx'), 'utf8')
-    expect(app).toContain("applyDocumentLang(view === 'ja' ? 'ja' : locale)")
+    expect(app).toContain('applyDocumentLang(locale)')
     const aoba = readFileSync(join(process.cwd(), 'src/aoba/AobaApp.tsx'), 'utf8')
-    expect(aoba).toContain('lang="ja"')
+    expect(aoba).toContain('lang={locale}')
   })
 
   it('translates primary chrome holes Codex flagged', () => {

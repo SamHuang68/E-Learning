@@ -18,6 +18,8 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
   const [timeLeft, setTimeLeft] = useState<number>(80 * 60)
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(true)
   const timerRef = useRef<number | null>(null)
+  const examHeadingRef = useRef<HTMLHeadingElement>(null)
+  const resultHeadingRef = useRef<HTMLHeadingElement>(null)
   const [scoreResult, setScoreResult] = useState<{
     correctCount: number
     totalCount: number
@@ -28,6 +30,12 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
   const [flagged, setFlagged] = useState<Record<number, boolean>>({})
 
   const exam = MOCK_EXAMS[examType]
+
+  useEffect(() => {
+    if (!isStarted) return
+    if (isFinished) resultHeadingRef.current?.focus()
+    else examHeadingRef.current?.focus()
+  }, [isStarted, isFinished])
 
   // 初始化時長
   const defaultMinutes = examType === 'cap' ? 80 : examType === 'gsat' ? 100 : 40
@@ -142,6 +150,7 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
             <button
               type="button"
               className={`mock-tab ${examType === 'elementary' ? 'active' : ''}`}
+              aria-pressed={examType === 'elementary'}
               onClick={() => setExamType('elementary')}
             >
               國小練習卷
@@ -149,6 +158,7 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
             <button
               type="button"
               className={`mock-tab ${examType === 'cap' ? 'active' : ''}`}
+              aria-pressed={examType === 'cap'}
               onClick={() => setExamType('cap')}
             >
               國中練習卷
@@ -156,6 +166,7 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
             <button
               type="button"
               className={`mock-tab ${examType === 'gsat' ? 'active' : ''}`}
+              aria-pressed={examType === 'gsat'}
               onClick={() => setExamType('gsat')}
             >
               高中練習卷
@@ -192,7 +203,7 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
       ) : !isFinished ? (
         <div className="mock-exam-body">
           <div className="exam-header-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.75rem' }}>
-            <h3 style={{ margin: 0 }}>{exam.title}</h3>
+            <h3 ref={examHeadingRef} tabIndex={-1} style={{ margin: 0 }}>{exam.title}</h3>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
               <span
                 className="exam-timer-pill"
@@ -257,8 +268,13 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
                   }}
                   onClick={() => {
                     const el = document.getElementById(`math-mock-q-${idx}`)
-                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                    if (el) {
+                      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+                      el.scrollIntoView({ behavior: reducedMotion ? 'instant' : 'smooth', block: 'center' })
+                      el.focus({ preventScroll: true })
+                    }
                   }}
+                  aria-label={`第 ${idx + 1} 題，${isAnswered ? '已作答' : '未作答'}${isFlagged ? '，已標記' : ''}`}
                 >
                   {idx + 1}
                   {isFlagged && ' 🚩'}
@@ -269,12 +285,13 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
 
           <div className="mock-questions-list">
             {exam.questions.map((q, idx) => (
-              <div key={q.id} id={`math-mock-q-${idx}`} className="mock-q-item">
+              <div key={q.id} id={`math-mock-q-${idx}`} className="mock-q-item" role="group" tabIndex={-1} aria-labelledby={`math-mock-number-${idx}`}>
                 <div className="mock-q-num" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span>第 {idx + 1} 題（難度 ★{q.difficulty}）</span>
+                  <span id={`math-mock-number-${idx}`}>第 {idx + 1} 題（難度 ★{q.difficulty}）</span>
                   <button
                     type="button"
                     onClick={() => setFlagged((prev) => ({ ...prev, [idx]: !prev[idx] }))}
+                    aria-pressed={Boolean(flagged[idx])}
                     style={{
                       border: flagged[idx] ? '1px solid #f59e0b' : '1px solid var(--line)',
                       background: flagged[idx] ? '#fef3c7' : 'transparent',
@@ -291,7 +308,7 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
                     {flagged[idx] ? '🚩 已標記' : '🏳️ 標記'}
                   </button>
                 </div>
-                <div className="mock-q-text">
+                <div id={`math-mock-prompt-${idx}`} className="mock-q-text">
                   <MathFormula math={q.question} />
                 </div>
 
@@ -303,6 +320,7 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
                         type="button"
                         className={`mock-opt-btn ${answers[idx] === oIdx ? 'selected' : ''}`}
                         onClick={() => handleSelectOption(idx, oIdx)}
+                        aria-pressed={answers[idx] === oIdx}
                       >
                         <span className="opt-char">{String.fromCharCode(65 + oIdx)}</span>
                         <MathFormula math={opt} />
@@ -315,6 +333,7 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
                   <div className="mock-fill">
                     <input
                       type="text"
+                      aria-labelledby={`math-mock-number-${idx} math-mock-prompt-${idx}`}
                       placeholder="請輸入答案"
                       value={answers[idx] || ''}
                       onChange={(e) => handleFillAnswer(idx, e.target.value)}
@@ -338,7 +357,7 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
       ) : (
         <div className="mock-result-card">
           <div className="result-header">
-            <h3>{exam.title} · 答對紀錄</h3>
+            <h3 ref={resultHeadingRef} tabIndex={-1}>{exam.title} · 答對紀錄</h3>
           </div>
 
           <div className="score-hero">

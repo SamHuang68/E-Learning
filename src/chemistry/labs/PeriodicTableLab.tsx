@@ -192,6 +192,7 @@ export const PeriodicTableLab: React.FC = () => {
           type="button"
           className={`pill-btn ${filterType === 'all' ? 'active' : ''}`}
           style={{ padding: '0.15rem 0.4rem', fontSize: '0.68rem' }}
+          aria-pressed={filterType === 'all'}
           onClick={() => setFilterType('all')}
         >
           全部 (1~36)
@@ -202,6 +203,7 @@ export const PeriodicTableLab: React.FC = () => {
             type="button"
             className={`pill-btn ${filterType === key ? 'active' : ''}`}
             style={{ padding: '0.15rem 0.4rem', fontSize: '0.68rem' }}
+            aria-pressed={filterType === key}
             onClick={() => setFilterType(key)}
           >
             {meta.label}
@@ -243,6 +245,7 @@ export const PeriodicTableLab: React.FC = () => {
               <button
                 key={el.z}
                 type="button"
+                aria-pressed={isSel}
                 onClick={() => setSelectedZ(el.z)}
                 style={{
                   background: isSel ? '#2563eb' : typeMeta.bg,

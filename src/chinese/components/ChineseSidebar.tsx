@@ -67,7 +67,7 @@ export const ChineseSidebar: React.FC<Props> = ({
   xp,
   errorCount = 0,
 }) => {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const NAV_ITEMS: Array<{ id: ChineseNavSection; icon: string; titleKey: MessageKey; subtitle: string; badge?: string }> = [
     { id: 'today', icon: '🌸', titleKey: 'zh.nav.today', subtitle: '今日の学習ダッシュボード' },
     { id: 'pinyin', icon: '🗣️', titleKey: 'zh.nav.pinyin', subtitle: 'ピンイン・注音・声調' },
@@ -138,8 +138,8 @@ export const ChineseSidebar: React.FC<Props> = ({
             華
           </div>
           <div>
-            <strong style={{ fontSize: '0.92rem', display: 'block' }}>{t('zh.brand')}</strong>
-            <span style={{ fontSize: '0.68rem', color: 'var(--muted)' }}>{t('zh.brandSub')}</span>
+            <strong lang="ja" style={{ fontSize: '0.92rem', display: 'block' }}>{t('zh.brand')}</strong>
+            <span lang="ja" style={{ fontSize: '0.68rem', color: 'var(--muted)' }}>{t('zh.brandSub')}</span>
           </div>
         </div>
 
@@ -150,7 +150,7 @@ export const ChineseSidebar: React.FC<Props> = ({
       </div>
 
       {/* 導航項目清單 */}
-      <nav className="chinese-nav">
+      <nav className="chinese-nav" aria-label={locale === 'en' ? 'Mandarin navigation' : '華語導覽'}>
         {NAV_ITEMS.map((item) => {
           const isActive = activeSection === item.id
           return (
@@ -158,6 +158,7 @@ export const ChineseSidebar: React.FC<Props> = ({
               key={item.id}
               type="button"
               className={`sidebar-nav-btn ${isActive ? 'active' : ''}`}
+              aria-current={isActive ? 'page' : undefined}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -178,7 +179,7 @@ export const ChineseSidebar: React.FC<Props> = ({
                 <span style={{ fontSize: '1.05rem' }}>{item.icon}</span>
                 <div>
                   <div className="zh-nav-title">{t(item.titleKey)}</div>
-                  <div className="zh-nav-sub">{item.subtitle}</div>
+                  <div className="zh-nav-sub" lang={['today', 'pinyin', 'tones-lab', 'stroke', 'false-friends', 'conversations'].includes(item.id) ? 'ja' : 'zh-Hant'}>{item.subtitle}</div>
                 </div>
               </div>
               {item.badge && (

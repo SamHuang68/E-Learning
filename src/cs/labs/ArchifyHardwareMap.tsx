@@ -21,7 +21,7 @@ type DiagramKind =
 export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
   const [selectedDiagram, setSelectedDiagram] = useState<DiagramKind>('ai-server')
   const [explored, setExplored] = useState(false)
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
 
   const handleInteract = () => {
     if (!explored && onEarnXp) {
@@ -275,7 +275,7 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
                 fontWeight: selectedDiagram === 'git-mental-model' ? 700 : 500,
               }}
             >
-              {t('cs.archify.git.pill')}
+              <span lang={locale}>{t('cs.archify.git.pill')}</span>
             </button>
           </div>
 

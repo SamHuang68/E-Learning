@@ -41,6 +41,7 @@ export function DataControls() {
 
   function onImportFile(file: File | undefined) {
     if (!file) return
+    setNote(null)
     const reader = new FileReader()
     reader.onload = () => {
       try {
@@ -144,7 +145,9 @@ export function DataControls() {
           e.target.value = ''
         }}
       />
-      {note ? <p className="auth-message">{note}</p> : null}
+      <div role="status" aria-live="polite" aria-atomic="true">
+        {note ? <p className="auth-message">{note}</p> : null}
+      </div>
       <AnalyticsPanel meta={meta} />
       <button
         type="button"

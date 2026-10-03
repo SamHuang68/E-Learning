@@ -1,5 +1,6 @@
 ﻿import React, { useEffect, useRef, useState } from 'react'
 import { Scratchpad } from './Scratchpad'
+import { useI18n } from '../i18n/i18n'
 
 interface Props {
   className?: string
@@ -18,37 +19,33 @@ function isTypingTarget(target: EventTarget | null): boolean {
  * Esc 關閉並把焦點交回開啟處。
  */
 export const ScratchpadButton: React.FC<Props> = ({ className, style }) => {
+  const { t } = useI18n()
   const [isOpen, setIsOpen] = useState(false)
   const triggerRef = useRef<HTMLButtonElement>(null)
-  const openerRef = useRef<HTMLElement | null>(null)
 
   function openPad() {
-    openerRef.current =
-      document.activeElement instanceof HTMLElement ? document.activeElement : triggerRef.current
     setIsOpen(true)
   }
 
   function closePad() {
     setIsOpen(false)
-    const opener = openerRef.current ?? triggerRef.current
-    openerRef.current = null
-    queueMicrotask(() => opener?.focus())
   }
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape' && isOpen) {
-        e.preventDefault()
-        closePad()
-        return
-      }
+      if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.isComposing || e.repeat) return
+      const otherModal = Array.from(document.querySelectorAll('dialog:modal, [role="dialog"][aria-modal="true"]'))
+        .some((dialog) => dialog.id !== 'hub-scratchpad')
+      if (otherModal) return
       if (e.key.toLowerCase() === 's' && !isTypingTarget(e.target)) {
+        e.preventDefault()
         if (isOpen) closePad()
         else openPad()
       }
     }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
+    // Capture the launcher's own S toggle before the dialog isolates its keys.
+    window.addEventListener('keydown', handleKeyDown, true)
+    return () => window.removeEventListener('keydown', handleKeyDown, true)
   }, [isOpen])
 
   return (
@@ -57,12 +54,16 @@ export const ScratchpadButton: React.FC<Props> = ({ className, style }) => {
         ref={triggerRef}
         type="button"
         className={`floating-scratchpad-btn ${className || ''}`}
-        onClick={() => {
+        onClick={(event) => {
+          // WebKit does not focus buttons on pointer activation.
+          event.currentTarget.focus()
           if (isOpen) closePad()
           else openPad()
         }}
         aria-expanded={isOpen}
-        aria-controls="hub-scratchpad"
+        aria-controls={isOpen ? 'hub-scratchpad' : undefined}
+        aria-haspopup="dialog"
+        aria-keyshortcuts="S"
         style={{
           position: 'fixed',
           bottom: '1.2rem',
@@ -83,10 +84,10 @@ export const ScratchpadButton: React.FC<Props> = ({ className, style }) => {
           transition: 'all 0.2s ease',
           ...style,
         }}
-        title="開啟推導草稿紙 (快捷鍵: S)"
+        title={t('scratch.open')}
       >
-        <span>✏️</span>
-        <span>草稿紙 [S]</span>
+        <span aria-hidden="true">✏️</span>
+        <span>{t('scratch.launcher')}</span>
       </button>
 
       <Scratchpad isOpen={isOpen} onClose={closePad} />

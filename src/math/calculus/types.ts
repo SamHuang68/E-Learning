@@ -80,6 +80,8 @@ export interface CalculusCanvasProps {
   epsilon?: number
   solidMethod?: 'disk' | 'shell'
   rotationAngle?: number
+  /** Show a native keyboard alternative when the separate lab controls are absent. */
+  showFocusControl?: boolean
   onParamChange?: (params: {
     x0?: number
     deltaX?: number

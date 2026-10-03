@@ -172,7 +172,8 @@ export const ChemistryMockExam: React.FC<Props> = ({
   function scrollToQuestion(qId: string) {
     const el = document.getElementById(`chemistry-q-${qId}`)
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      el.focus({ preventScroll: true })
+      el.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' })
     }
   }
 
@@ -453,6 +454,7 @@ export const ChemistryMockExam: React.FC<Props> = ({
               color: selectedExamId === ex.id ? '#ffffff' : 'var(--ink)',
               transition: 'all 0.2s ease',
             }}
+            aria-pressed={selectedExamId === ex.id}
             onClick={() => setSelectedExamId(ex.id)}
           >
             {ex.title}
@@ -523,6 +525,7 @@ export const ChemistryMockExam: React.FC<Props> = ({
             <>
               <button
                 type="button"
+                aria-pressed={isPaused}
                 onClick={handleTogglePause}
                 title={isPaused ? '繼續計時' : '暫停計時'}
                 style={{
@@ -579,7 +582,7 @@ export const ChemistryMockExam: React.FC<Props> = ({
           <span>
             📌 題號導覽 (已答 {answeredCount} / {exam.questions.length} 題)
           </span>
-          <span style={{ fontWeight: 600 }}>
+          <span role="status" aria-atomic="true" style={{ fontWeight: 600 }}>
             {isSubmitted
               ? '考卷已批改完成'
               : isPaused
@@ -628,6 +631,8 @@ export const ChemistryMockExam: React.FC<Props> = ({
               <button
                 key={q.id}
                 type="button"
+                aria-controls={`chemistry-q-${q.id}`}
+                aria-label={`第 ${idx + 1} 題，${isSubmitted ? (isCorrect ? '答對' : '答錯') : (isAnswered ? '已作答' : '尚未作答')}${flaggedQuestions[q.id] ? '，已標記' : ''}`}
                 onClick={() => scrollToQuestion(q.id)}
                 style={{
                   minWidth: '34px',
@@ -944,6 +949,9 @@ export const ChemistryMockExam: React.FC<Props> = ({
               key={q.id}
               id={`chemistry-q-${q.id}`}
               className="practice-card mock-question-item"
+              tabIndex={-1}
+              role="group"
+              aria-labelledby={`chemistry-question-${q.id}`}
               style={{
                 background: 'var(--surface)',
                 border: isSubmitted
@@ -1011,6 +1019,7 @@ export const ChemistryMockExam: React.FC<Props> = ({
                 {!isSubmitted && (
                   <button
                     type="button"
+                    aria-pressed={Boolean(flaggedQuestions[q.id])}
                     onClick={() => setFlaggedQuestions((prev) => ({ ...prev, [q.id]: !prev[q.id] }))}
                     style={{
                       border: flaggedQuestions[q.id] ? '1px solid #f59e0b' : '1px solid var(--line)',
@@ -1032,6 +1041,7 @@ export const ChemistryMockExam: React.FC<Props> = ({
 
               {/* 題目內文 */}
               <div
+                id={`chemistry-question-${q.id}`}
                 className="question-body"
                 style={{
                   fontSize: '0.92rem',
@@ -1089,6 +1099,7 @@ export const ChemistryMockExam: React.FC<Props> = ({
                         key={oIdx}
                         type="button"
                         className="option-btn"
+                        aria-pressed={isSelected}
                         style={{
                           display: 'flex',
                           alignItems: 'center',
@@ -1202,6 +1213,7 @@ export const ChemistryMockExam: React.FC<Props> = ({
                           key={oIdx}
                           type="button"
                           className="option-btn"
+                          aria-pressed={isSelected}
                           style={{
                             display: 'flex',
                             alignItems: 'center',
@@ -1256,6 +1268,7 @@ export const ChemistryMockExam: React.FC<Props> = ({
               {q.type === 'fill' && (
                 <div style={{ marginTop: '0.5rem' }}>
                   <label
+                    htmlFor={`chemistry-answer-${q.id}`}
                     style={{
                       display: 'block',
                       fontSize: '0.8rem',
@@ -1267,7 +1280,11 @@ export const ChemistryMockExam: React.FC<Props> = ({
                     請填入數值或精確答案：
                   </label>
                   <input
+                    id={`chemistry-answer-${q.id}`}
                     type="text"
+                    aria-invalid={isSubmitted && !isCorrect}
+                    aria-errormessage={isSubmitted && !isCorrect ? `chemistry-answer-result-${q.id}` : undefined}
+                    aria-describedby={`chemistry-question-${q.id}${isSubmitted ? ` chemistry-answer-result-${q.id}` : ''}`}
                     disabled={isSubmitted}
                     placeholder="請輸入數值 (例如: 4.48)"
                     value={userAns ?? ''}
@@ -1288,6 +1305,7 @@ export const ChemistryMockExam: React.FC<Props> = ({
                   />
                   {isSubmitted && (
                     <div
+                      id={`chemistry-answer-result-${q.id}`}
                       style={{
                         marginTop: '0.35rem',
                         fontSize: '0.8rem',

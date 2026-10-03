@@ -1,37 +1,37 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`微積分實際畫面英文與繁中回歸 > 繁中基準：參數、SVG、圖形描述 ftc_accumulation 1`] = `"89ff4100a0e1f4fbbbfa8fc8fad1865deaf83f670989eacc3fa09f7da58f55ae"`;
+exports[`微積分實際畫面英文與繁中回歸 > 繁中基準：參數、SVG、圖形描述 ftc_accumulation 1`] = `"9e67d05d81d7ab19c59c9a5a4b84d862c05f5c8c28c1e9ae135958af8022015f"`;
 
-exports[`微積分實際畫面英文與繁中回歸 > 繁中基準：參數、SVG、圖形描述 limit_epsilon 1`] = `"21ad59b48446d8bc18da395c3d6e856ccb69a44645977c99a3d0482f8e381384"`;
+exports[`微積分實際畫面英文與繁中回歸 > 繁中基準：參數、SVG、圖形描述 limit_epsilon 1`] = `"2c142096a7f977cbefcfa89c926ffab32de924b4774569d21120a7ae549815df"`;
 
-exports[`微積分實際畫面英文與繁中回歸 > 繁中基準：參數、SVG、圖形描述 newton_slope_field 1`] = `"e117693d12ada91e93d3824ade238be22c3c9078cc4817920d5d8d9eae6b89f3"`;
+exports[`微積分實際畫面英文與繁中回歸 > 繁中基準：參數、SVG、圖形描述 newton_slope_field 1`] = `"b9bc34d71db093e3934c64cfc700da403cfab9d198234dfeccb675b4a065ae98"`;
 
-exports[`微積分實際畫面英文與繁中回歸 > 繁中基準：參數、SVG、圖形描述 optimization_mvt 1`] = `"6920ac8644ff071f26920ae0c6d33ee56ab8145e7aed8a0f012875bac419c15f"`;
+exports[`微積分實際畫面英文與繁中回歸 > 繁中基準：參數、SVG、圖形描述 optimization_mvt 1`] = `"e6626a25300d9fbdaca20896141d2a002c7c96ed22597e69a0ba00ee29898136"`;
 
-exports[`微積分實際畫面英文與繁中回歸 > 繁中基準：參數、SVG、圖形描述 riemann_sum 1`] = `"047269f1091814128ff7ab0e9b62120bba1c2faeda192bb97974686592c6c7c7"`;
+exports[`微積分實際畫面英文與繁中回歸 > 繁中基準：參數、SVG、圖形描述 riemann_sum 1`] = `"10ebd5dc960328ecea9ee7f04195817d3587cfb4562849bbeceb104ef932ff2d"`;
 
-exports[`微積分實際畫面英文與繁中回歸 > 繁中基準：參數、SVG、圖形描述 solids_revolution 1`] = `"23139153b38dbb5530c9c027f4c5daff4ea7a48e4d16b1d608b475ba80922f60"`;
+exports[`微積分實際畫面英文與繁中回歸 > 繁中基準：參數、SVG、圖形描述 solids_revolution 1`] = `"7adcdc92e0a605fed3f1ac90cf19a8cb19d42003718a6546e43af9c147e7f82e"`;
 
-exports[`微積分實際畫面英文與繁中回歸 > 繁中基準：參數、SVG、圖形描述 tangent_secant 1`] = `"038d7806c2f06190e23e90a46f396c9954482789aef19cb2ded13667d7ab5ea9"`;
+exports[`微積分實際畫面英文與繁中回歸 > 繁中基準：參數、SVG、圖形描述 tangent_secant 1`] = `"c3ba832d1d3401cee6206f5ceeeab11cf379e12a479b9c90b4e75fab4c144a66"`;
 
-exports[`微積分實際畫面英文與繁中回歸 > 繁中基準：參數、SVG、圖形描述 taylor_series 1`] = `"c56f42ac7540c3975455aede2184dce2c5bbfd03a2f09f3bceab6ee0d7c8de7b"`;
+exports[`微積分實際畫面英文與繁中回歸 > 繁中基準：參數、SVG、圖形描述 taylor_series 1`] = `"e12f032c290206d5e6418f6acc7f0a2381e0dca3df8cb73d90ca2a50dc5ee03f"`;
 
 exports[`微積分實際畫面英文與繁中回歸 > 繁中基準：微積分教具 derivative 1`] = `"9aea73d0a658905ede29c0516c5ef2adb95d0d0c85e77b399389ea957a1e216f"`;
 
 exports[`微積分實際畫面英文與繁中回歸 > 繁中基準：微積分教具 integral 1`] = `"f79870cc8c6258b1069c1a550bad8c45ad15d5164f0dd09caa2d1dd38fb6659b"`;
 
-exports[`微積分實際畫面英文與繁中回歸 > 繁中基準：數學工作台 adaptive_practice 1`] = `"757c363887b2e9e3449b60524fcdbfa3872b1c1546474eb551cd8053785156fb"`;
+exports[`微積分實際畫面英文與繁中回歸 > 繁中基準：數學工作台 adaptive_practice 1`] = `"e5ff09b45ad73a2be36c899b9aa82f4df92edbb1d5f87ed7c9ab4a2e955b35de"`;
 
-exports[`微積分實際畫面英文與繁中回歸 > 繁中基準：數學工作台 canvas_lab 1`] = `"26faa0ea6c9efb558620d19ce330d88aa2e3d1bf04e54bb6de426dd22d38b4b9"`;
+exports[`微積分實際畫面英文與繁中回歸 > 繁中基準：數學工作台 canvas_lab 1`] = `"0f815a82a2a5d9395a7edbc68db56b63cd465a5a7489a95578564a32b90a259e"`;
 
-exports[`微積分實際畫面英文與繁中回歸 > 繁中基準：數學工作台 step_solver 1`] = `"47ad3aff3e547e7454f2c323d7b9202e47f0cee47fddbf249a350b1127544bfa"`;
+exports[`微積分實際畫面英文與繁中回歸 > 繁中基準：數學工作台 step_solver 1`] = `"833dc1343c108671ee1713d131aefb5aa00204973f61dfeac4ba4aa40179019a"`;
 
-exports[`微積分實際畫面英文與繁中回歸 > 繁中基準：獨立路由 adaptive_practice 1`] = `"789885d12ad51237dcae218aceeb7455523a7cad9e57572d9e352c8bc91684f1"`;
+exports[`微積分實際畫面英文與繁中回歸 > 繁中基準：獨立路由 adaptive_practice 1`] = `"560e7f05c5ba3e35cdf5ffeeb5c05687df45d38efbde5ae683fc30e5fdc7a36c"`;
 
 exports[`微積分實際畫面英文與繁中回歸 > 繁中基準：獨立路由 badges 1`] = `"ec891eca2a831cbb02b5f602eff65da463ae42ca365b38acc9166362e3a4c7d3"`;
 
-exports[`微積分實際畫面英文與繁中回歸 > 繁中基準：獨立路由 canvas_lab 1`] = `"daab15fe1260ac9ace53415b3d03ca520ca71babfb506a469a008e5c037a08fd"`;
+exports[`微積分實際畫面英文與繁中回歸 > 繁中基準：獨立路由 canvas_lab 1`] = `"e99c983b03889d00c5e53b8f7a43809ac083f259e3a23a5f04a5677c023eb7f1"`;
 
-exports[`微積分實際畫面英文與繁中回歸 > 繁中基準：獨立路由 step_solver 1`] = `"17dd30678fb72deeb868f44e1ae665dba6a0ec9b7044445d1b6d79ce01bc7a91"`;
+exports[`微積分實際畫面英文與繁中回歸 > 繁中基準：獨立路由 step_solver 1`] = `"53e0fdc9b6057171004a360c2f26c5a0fec242efa0ec3158a0ee34bd9d46d1fb"`;
 
 exports[`微積分實際畫面英文與繁中回歸 > 繁中基準：黎曼和教具 1`] = `"8ef19f3dd5e809b3c815a4d9eaec34542d2a1b8a5e7fd2a54e8527f1886ff4a2"`;

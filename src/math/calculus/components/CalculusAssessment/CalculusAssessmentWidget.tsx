@@ -52,6 +52,8 @@ export const CalculusAssessmentWidget: React.FC<Props> = ({
               key={prob.id}
               type="button"
               className={`btn-tier-pill ${prob.id === activeProblemId ? 'active' : ''}`}
+              aria-label={`${prob.tier} ${c(prob.tierLabel)} — ${c(prob.title)}`}
+              aria-pressed={prob.id === activeProblemId}
               onClick={() => handleSelectProblem(prob)}
             >
               <span className="tier-badge">{prob.tier}</span>
@@ -88,6 +90,7 @@ export const CalculusAssessmentWidget: React.FC<Props> = ({
                   className={btnCls}
                   onClick={() => handleAnswer(idx)}
                   disabled={isAnswered}
+                  aria-pressed={isSelected}
                 >
                   <span className="opt-letter">{String.fromCharCode(65 + idx)}</span>
                   <span>{c(opt)}</span>
@@ -98,7 +101,7 @@ export const CalculusAssessmentWidget: React.FC<Props> = ({
         )}
 
         {isAnswered && (
-          <div className={`answer-feedback-box ${selectedOpt === activeProblem.correctIndex ? 'success' : 'warn'}`}>
+          <div className={`answer-feedback-box ${selectedOpt === activeProblem.correctIndex ? 'success' : 'warn'}`} role="status" aria-atomic="true">
             <div className="feedback-icon">{selectedOpt === activeProblem.correctIndex ? '🎉' : '💡'}</div>
             <div>
               <strong>{selectedOpt === activeProblem.correctIndex ? c('回答正確！') : c('解析與幾何破題引導：')}</strong>

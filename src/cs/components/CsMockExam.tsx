@@ -98,14 +98,14 @@ export const CsMockExam: React.FC<Props> = ({ onRecordExamScore, onEarnXp }) => 
         }}
       >
         <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-          <button
+          <button aria-pressed={selectedExamKey === 'midterm'}
             type="button"
             className={`pill-btn ${selectedExamKey === 'midterm' ? 'active' : ''}`}
             onClick={() => setSelectedExamKey('midterm')}
           >
             期中模擬評量 (30分鐘)
           </button>
-          <button
+          <button aria-pressed={selectedExamKey === 'final'}
             type="button"
             className={`pill-btn ${selectedExamKey === 'final' ? 'active' : ''}`}
             onClick={() => setSelectedExamKey('final')}
@@ -256,6 +256,8 @@ export const CsMockExam: React.FC<Props> = ({ onRecordExamScore, onEarnXp }) => 
                     key={optIdx}
                     type="button"
                     className="practice-card"
+                    aria-pressed={isSelected}
+                    aria-disabled={isSubmitted}
                     style={{
                       padding: '0.6rem 0.85rem',
                       borderRadius: '8px',

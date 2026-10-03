@@ -4437,6 +4437,7 @@ footer {
 
 .mock-nav-tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
   margin-bottom: 1.5rem;
   border-bottom: 2px solid var(--line);
@@ -4444,6 +4445,7 @@ footer {
 }
 
 .mock-tab {
+  max-width: 100%;
   padding: 0.6rem 1.25rem;
   font-weight: 700;
   font-size: 0.95rem;
@@ -9995,4 +9997,16 @@ dialog.vault-review-dialog {
 
 dialog.vault-review-dialog::backdrop {
   background: rgba(0, 0, 0, 0.6);
+}
+
+.unit-card-select,
+button.step-card-header {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
 }

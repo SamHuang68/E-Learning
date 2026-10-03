@@ -16,6 +16,7 @@ let voicesReady = false
  */
 let needsUtterancePad = true
 const SPEAK_AFTER_CANCEL_MS = 60
+let speechRun = 0
 
 function pickVoice(voices: SpeechSynthesisVoice[], langPrefix: string) {
   const matched = voices.filter((v) =>
@@ -54,6 +55,13 @@ function refreshVoicesSync() {
   if (list.length) assignVoices(list)
 }
 
+function voiceForLanguage(lang: string) {
+  if (lang.startsWith('ja')) return jaVoice
+  const matching = pickVoice(window.speechSynthesis.getVoices(), lang.toLowerCase())
+  // Let the platform resolve an unavailable requested accent instead of forcing a US voice.
+  return matching ?? (lang === 'en-US' ? enVoice : null)
+}
+
 export function warmVoices(): Promise<SpeechSynthesisVoice[]> {
   if (typeof window === 'undefined' || !window.speechSynthesis) {
     return Promise.resolve([])
@@ -85,6 +93,7 @@ export function isSpeechSupported() {
 }
 
 export function stopSpeaking() {
+  speechRun += 1
   if (!isSpeechSupported()) return
   window.speechSynthesis.cancel()
   // After cancel, Chrome may drop the next real utterance again.
@@ -117,7 +126,7 @@ function buildUtterance(
   utter.lang = lang
   utter.rate = options.rate ?? (lang.startsWith('ja') ? 0.85 : 0.92)
   utter.pitch = options.pitch ?? 1
-  const voice = lang.startsWith('ja') ? jaVoice : enVoice
+  const voice = voiceForLanguage(lang)
   if (voice) utter.voice = voice
   return utter
 }
@@ -129,7 +138,7 @@ function queuePad(synth: SpeechSynthesis, lang: string) {
   pad.rate = 2
   pad.pitch = 1
   pad.lang = lang
-  const voice = lang.startsWith('ja') ? jaVoice : enVoice
+  const voice = voiceForLanguage(lang)
   if (voice) pad.voice = voice
   synth.speak(pad)
 }
@@ -144,6 +153,8 @@ function speak(text: string, options: SpeakOptions = {}) {
     return
   }
 
+  const run = ++speechRun
+
   refreshVoicesSync()
   if (!voicesReady) void warmVoices()
 
@@ -156,6 +167,7 @@ function speak(text: string, options: SpeakOptions = {}) {
   utter.onerror = () => options.onError?.()
 
   const kick = () => {
+    if (run !== speechRun) return
     if (synth.paused) synth.resume()
     if (needsUtterancePad) {
       needsUtterancePad = false
@@ -179,7 +191,7 @@ export function speakJapanese(text: string, options: SpeakOptions = {}) {
 }
 
 export function speakEnglish(text: string, options: SpeakOptions = {}) {
-  speak(text, { ...options, lang: 'en-US' })
+  speak(text, { ...options, lang: options.lang ?? 'en-US' })
 }
 
 export async function speakSequence(

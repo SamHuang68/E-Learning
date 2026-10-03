@@ -35,6 +35,7 @@ export const SolvingSignalCards: React.FC<Props> = ({ initialStage = 'junior' })
           <button
             type="button"
             className={`pill-btn ${selectedStage === 'elementary' ? 'active' : ''}`}
+            aria-pressed={selectedStage === 'elementary'}
             onClick={() => setSelectedStage('elementary')}
           >
             {text('國小訊號 (G1~G6)')}
@@ -42,6 +43,7 @@ export const SolvingSignalCards: React.FC<Props> = ({ initialStage = 'junior' })
           <button
             type="button"
             className={`pill-btn ${selectedStage === 'junior' ? 'active' : ''}`}
+            aria-pressed={selectedStage === 'junior'}
             onClick={() => setSelectedStage('junior')}
           >
             {text('國中訊號 (G7~G9)')}
@@ -49,6 +51,7 @@ export const SolvingSignalCards: React.FC<Props> = ({ initialStage = 'junior' })
           <button
             type="button"
             className={`pill-btn ${selectedStage === 'senior' ? 'active' : ''}`}
+            aria-pressed={selectedStage === 'senior'}
             onClick={() => setSelectedStage('senior')}
           >
             {text('高中訊號 (G10~G12)')}

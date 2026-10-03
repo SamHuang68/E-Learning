@@ -197,6 +197,7 @@ export const MathErrorVault: React.FC<Props> = ({ onBack }) => {
                     type="button"
                     disabled={feedback === 'correct'}
                     className={`modal-opt-btn ${testInput === String(idx) ? 'active' : ''}`}
+                    aria-pressed={testInput === String(idx)}
                     onClick={() => setTestInput(String(idx))}
                   >
                     {String.fromCharCode(65 + idx)}. <MathFormula math={opt} />

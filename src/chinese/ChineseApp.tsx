@@ -4,6 +4,7 @@ import { ChineseToday } from './components/ChineseToday'
 import { loadChineseProgress, saveChineseProgress } from './utils/chineseStorage'
 import type { LangId } from '../utils/storage'
 import { useI18n } from '../i18n/i18n'
+import './chineseAccessibility.css'
 
 const PinyinLab = React.lazy(() =>
   import('./components/PinyinLab').then((m) => ({ default: m.PinyinLab })),
@@ -141,7 +142,7 @@ interface Props {
 }
 
 export const ChineseApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const [section, setSection] = useState<ChineseNavSection>('today')
   const [progress, setProgress] = useState(() => loadChineseProgress())
 
@@ -186,9 +187,9 @@ export const ChineseApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
       />
 
       {/* 右側主要內容區 */}
-      <main id="main-content" tabIndex={-1} className="content chinese-main-content">
+      <main id="main-content" tabIndex={-1} className="content chinese-main-content" lang="zh-Hant">
         {/* 頂部語言學習方向切換膠囊 */}
-        <div className="chinese-lang-toolbar">
+        <div className="chinese-lang-toolbar" lang={locale}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <span style={{ fontSize: '0.74rem', color: 'var(--muted)', fontWeight: 600 }}>{t('zh.learnDir')}</span>
             <span style={{ fontSize: '0.74rem', padding: '0.15rem 0.5rem', borderRadius: '999px', background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', fontWeight: 700 }}>
@@ -218,7 +219,7 @@ export const ChineseApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         </div>
 
         {section === 'today' && <ChineseToday xp={progress.xp} onNavigate={setSection} />}
-        <Suspense fallback={<div className="module-fallback" role="status">{t('common.loadingModule')}</div>}>
+        <Suspense fallback={<div className="module-fallback" role="status" lang={locale}>{t('common.loadingModule')}</div>}>
           {section === 'pinyin' && <PinyinLab onEarnXp={earnXp} />}
           {section === 'tones-lab' && <ToneListeningLab onEarnXp={earnXp} />}
           {section === 'stroke' && <BopomofoStrokeLab onEarnXp={earnXp} />}

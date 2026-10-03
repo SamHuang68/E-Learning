@@ -280,6 +280,7 @@ export const ChemistryApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
             <div className="mock-nav-tabs">
               <button
                 type="button"
+                aria-pressed={Boolean(labKey.includes('periodic'))}
                 className={`mock-tab ${labKey.includes('periodic') ? 'active' : ''}`}
                 onClick={() => setActiveLabId('periodic')}
               >
@@ -287,6 +288,7 @@ export const ChemistryApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
               </button>
               <button
                 type="button"
+                aria-pressed={Boolean(labKey.includes('vsepr') || labKey.includes('geometry'))}
                 className={`mock-tab ${labKey.includes('vsepr') || labKey.includes('geometry') ? 'active' : ''}`}
                 onClick={() => setActiveLabId('vsepr')}
               >
@@ -294,6 +296,7 @@ export const ChemistryApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
               </button>
               <button
                 type="button"
+                aria-pressed={Boolean(labKey.includes('titration') || labKey.includes('acid'))}
                 className={`mock-tab ${labKey.includes('titration') || labKey.includes('acid') ? 'active' : ''}`}
                 onClick={() => setActiveLabId('titration')}
               >
@@ -301,6 +304,7 @@ export const ChemistryApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
               </button>
               <button
                 type="button"
+                aria-pressed={Boolean(labKey.includes('gas'))}
                 className={`mock-tab ${labKey.includes('gas') ? 'active' : ''}`}
                 onClick={() => setActiveLabId('gas')}
               >
@@ -308,6 +312,7 @@ export const ChemistryApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
               </button>
               <button
                 type="button"
+                aria-pressed={Boolean(labKey.includes('solubility') || labKey.includes('solution'))}
                 className={`mock-tab ${labKey.includes('solubility') || labKey.includes('solution') ? 'active' : ''}`}
                 onClick={() => setActiveLabId('solubility')}
               >

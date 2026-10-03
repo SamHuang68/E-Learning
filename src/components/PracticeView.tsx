@@ -119,6 +119,7 @@ export function PracticeView({
       <button
         type="button"
         className={activeMode === 'learn' ? 'active' : ''}
+        aria-pressed={activeMode === 'learn'}
         onClick={() => setActiveMode('learn')}
       >
         {text('認識閃卡')}
@@ -126,6 +127,7 @@ export function PracticeView({
       <button
         type="button"
         className={activeMode === 'quiz' ? 'active' : ''}
+        aria-pressed={activeMode === 'quiz'}
         onClick={() => setActiveMode('quiz')}
       >
         {text('答題練習')}
@@ -206,16 +208,18 @@ export function PracticeView({
         )}
 
         {card ? (
-          <div className="flash-face">
-            <strong>{card.head}</strong>
+          <div className="flash-face" role="status" aria-live="polite" aria-atomic="true">
+            <strong lang="ja">{card.head}</strong>
             {(card.reading || card.meaning) && (
               <span className="flash-meaning">
-                {[card.reading, card.meaning].filter(Boolean).join(' · ')}
+                {card.reading && <span lang="ja">{card.reading}</span>}
+                {card.reading && card.meaning ? ' · ' : null}
+                {card.meaning && <span lang={locale}>{card.meaning}</span>}
               </span>
             )}
-            <p>{card.sentence}</p>
+            <p lang="ja">{card.sentence}</p>
             {card.sentenceZh && (
-              <span className="flash-sentence-zh">{card.sentenceZh}</span>
+              <span className="flash-sentence-zh" lang={locale}>{card.sentenceZh}</span>
             )}
             <div className="flash-meta">
               <span className="scenario-chip">{card.scenario}</span>
@@ -254,6 +258,7 @@ export function PracticeView({
           <button
             type="button"
             className="primary-btn inline"
+            disabled={!card}
             onClick={() => onProgress()}
           >
             {isReview ? text('標記複習 +1') : meta.action}

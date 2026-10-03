@@ -219,7 +219,7 @@ export function KanaLab({ onXp, onProgressChange }: Props) {
   }, [mode])
 
   return (
-    <section className="kana-lab">
+    <section className="kana-lab" lang="zh-Hant">
       <header className="kana-hero">
         <div>
           <p className="eyebrow">FOUNDATION · 五十音</p>
@@ -326,7 +326,7 @@ export function KanaLab({ onXp, onProgressChange }: Props) {
           {rows.map((row) => (
             <div key={row.id} className="kana-chart-row">
               <div className="row-label">
-                <strong>{row.label}</strong>
+                <strong lang="ja">{row.label}</strong>
                 <small>{row.labelZh}</small>
               </div>
               {row.cells.map((cell, idx) =>
@@ -346,6 +346,7 @@ export function KanaLab({ onXp, onProgressChange }: Props) {
                       speak(cell)
                       markMastered(cell.char)
                     }}
+                    lang="ja"
                     aria-label={`${cell.char} ${cell.romaji}`}
                   >
                     <b>{cell.char}</b>
@@ -372,6 +373,7 @@ export function KanaLab({ onXp, onProgressChange }: Props) {
             <button
               type="button"
               className="flash-kana"
+              lang="ja"
               onClick={() => {
                 const cell = activeCells[flashIndex]
                 if (cell) {
@@ -461,6 +463,7 @@ export function KanaLab({ onXp, onProgressChange }: Props) {
                   key={opt.char}
                   type="button"
                   className={classes.join(' ')}
+                  lang="ja"
                   disabled={!quiz || quiz.feedback !== 'idle'}
                   onClick={() => {
                     setSelected(opt)
@@ -510,7 +513,7 @@ export function KanaLab({ onXp, onProgressChange }: Props) {
                   .join(' ')}
                 onClick={() => speak(cell)}
               >
-                <b>{cell.char}</b>
+                <b lang="ja">{cell.char}</b>
                 <span>{cell.romaji}</span>
               </button>
             ))}
@@ -543,7 +546,7 @@ export function KanaLab({ onXp, onProgressChange }: Props) {
       {selected && (
         <aside className="kana-detail" aria-live="polite">
           <div>
-            <strong className="detail-char">{selected.char}</strong>
+            <strong className="detail-char" lang="ja">{selected.char}</strong>
             <div>
               <b>{selected.romaji}</b>
               <p>{selected.tip ?? '點擊可重複導讀'}</p>

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   isSpeechSupported,
   speakEnglish,
@@ -44,10 +44,11 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
     answer: PhonicsItem
     options: PhonicsItem[]
     feedback: 'idle' | 'correct' | 'wrong'
+    selectedId?: string
   } | null>(null)
   const [accentQuiz, setAccentQuiz] = useState<AccentQuiz | null>(null)
   const [guideIndex, setGuideIndex] = useState(-1)
-  const [cancel, setCancel] = useState({ cancelled: false })
+  const cancel = useRef({ cancelled: false })
 
   const pool = mode === 'words' || mode === 'listen' ? starterWords : alphabet
   const masteredSet = useMemo(() => new Set(mastered), [mastered])
@@ -65,12 +66,14 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
       )
     })
     return () => {
-      setCancel({ cancelled: true })
+      cancel.current.cancelled = true
       stopSpeaking()
     }
   }, [])
 
   function speak(item: PhonicsItem) {
+    cancel.current.cancelled = true
+    stopSpeaking()
     setSelected(item)
     setSpeaking(true)
     speakEnglish(item.speak, {
@@ -107,7 +110,7 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
   function answerQuiz(choice: PhonicsItem) {
     if (!quiz || quiz.feedback !== 'idle') return
     const correct = choice.id === quiz.answer.id
-    setQuiz({ ...quiz, feedback: correct ? 'correct' : 'wrong' })
+    setQuiz({ ...quiz, selectedId: choice.id, feedback: correct ? 'correct' : 'wrong' })
     setSelected(choice)
     if (correct) {
       mark(choice)
@@ -146,7 +149,9 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
 
   async function runGuide() {
     const signal = { cancelled: false }
-    setCancel(signal)
+    cancel.current.cancelled = true
+    stopSpeaking()
+    cancel.current = signal
     setSpeaking(true)
     setMode('guide')
     await speakSequence(
@@ -159,12 +164,14 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
       signal,
       'en-US',
     )
-    setSpeaking(false)
-    setGuideIndex(-1)
+    if (!signal.cancelled) {
+      setSpeaking(false)
+      setGuideIndex(-1)
+    }
   }
 
   return (
-    <section className="kana-lab phonics-lab">
+    <section className="kana-lab phonics-lab" lang="zh-Hant">
       <header className="kana-hero">
         <div>
           <p className="eyebrow">ORANGE · PHONICS</p>
@@ -202,8 +209,12 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
               key={id}
               type="button"
               className={mode === id ? 'active' : ''}
+              aria-pressed={mode === id}
               onClick={() => {
+                cancel.current.cancelled = true
                 stopSpeaking()
+                setSpeaking(false)
+                setGuideIndex(-1)
                 setMode(id)
                 setFlashIndex(0)
                 if (id === 'listen') startListen()
@@ -235,7 +246,7 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
                 mark(item)
               }}
             >
-              <b>{item.label}</b>
+              <b lang="en">{item.label}</b>
               <span>{item.tip}</span>
             </button>
           ))}
@@ -300,7 +311,7 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
               }
               if (
                 quiz?.feedback === 'wrong' &&
-                selected?.id === opt.id &&
+                quiz.selectedId === opt.id &&
                 opt.id !== quiz.answer.id
               ) {
                 classes.push('wrong')
@@ -309,8 +320,11 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
                 <button
                   key={opt.id}
                   type="button"
+                  lang="en"
                   className={classes.join(' ')}
-                  disabled={!quiz || quiz.feedback !== 'idle'}
+                  aria-disabled={!quiz || quiz.feedback !== 'idle'}
+                  tabIndex={quiz?.feedback !== 'idle' ? -1 : undefined}
+                  aria-pressed={quiz?.selectedId === opt.id}
                   onClick={() => answerQuiz(opt)}
                 >
                   {opt.label}
@@ -318,6 +332,11 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
               )
             })}
           </div>
+          <p role="status" aria-live="polite" aria-atomic="true">
+            {quiz && quiz.feedback !== 'idle'
+              ? `${quiz.feedback === 'correct' ? '答對了！' : '答錯了。'} 正確單字：${quiz.answer.label}`
+              : ''}
+          </p>
           <button
             type="button"
             className="primary-btn"
@@ -408,7 +427,9 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
                   key={acc.code}
                   type="button"
                   onClick={() => answerAccentQuiz(acc.code)}
-                  disabled={!accentQuiz || accentQuiz.feedback !== 'idle'}
+                  aria-disabled={!accentQuiz || accentQuiz.feedback !== 'idle'}
+                  tabIndex={accentQuiz?.feedback !== 'idle' ? -1 : undefined}
+                  aria-pressed={isSelected}
                   style={{
                     padding: '0.65rem 0.5rem',
                     borderRadius: '8px',
@@ -432,6 +453,7 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
             })}
           </div>
 
+          <div role="status" aria-live="polite" aria-atomic="true">
           {accentQuiz && accentQuiz.feedback !== 'idle' && (
             <div
               style={{
@@ -455,6 +477,7 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
               </div>
             </div>
           )}
+          </div>
 
           <button
             type="button"
@@ -501,9 +524,10 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
               type="button"
               className="ghost"
               onClick={() => {
-                cancel.cancelled = true
+                cancel.current.cancelled = true
                 stopSpeaking()
                 setSpeaking(false)
+                setGuideIndex(-1)
               }}
             >
               停止

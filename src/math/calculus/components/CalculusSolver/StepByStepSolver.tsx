@@ -1,5 +1,5 @@
 import { useCalculusCopy } from '../../../../i18n/calculusCopy'
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { FormulaStepCard } from './FormulaStepCard'
 import type { DerivationStep } from '../../types'
 import { playCorrectSound, playBadgeUnlockedSound } from '../../../../engine/audioSynthesizer'
@@ -23,6 +23,13 @@ export const StepByStepSolver: React.FC<Props> = ({
 }) => {
   const c = useCalculusCopy()
   const [revealedCount, setRevealedCount] = useState<number>(1)
+  const streamRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (revealedCount > 1) {
+      streamRef.current?.querySelector<HTMLButtonElement>('.formula-step-card:last-child .step-card-header')?.focus()
+    }
+  }, [revealedCount])
 
   const handleRevealNext = () => {
     if (revealedCount < steps.length) {
@@ -42,11 +49,11 @@ export const StepByStepSolver: React.FC<Props> = ({
           <h4>{c("📝 步驟式代數推導與解題器")}</h4>
           <p className="problem-title-display">{problemTitle}</p>
         </div>
-        <span className="step-progress-indicator">
+        <span className="step-progress-indicator" role="status" aria-atomic="true">
           {c("進度：")}{revealedCount} / {steps.length}{c(" 步驟")}</span>
       </div>
 
-      <div className="steps-stream-list">
+      <div className="steps-stream-list" ref={streamRef}>
         {steps.slice(0, revealedCount).map((step, idx) => (
           <FormulaStepCard
             key={step.id}

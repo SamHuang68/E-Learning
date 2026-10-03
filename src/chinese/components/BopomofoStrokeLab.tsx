@@ -87,14 +87,14 @@ export const BopomofoStrokeLab: React.FC<Props> = ({ onEarnXp }) => {
     const rect = canvasRef.current.getBoundingClientRect()
     if ('touches' in e && e.touches.length > 0) {
       return {
-        x: e.touches[0].clientX - rect.left,
-        y: e.touches[0].clientY - rect.top,
+        x: (e.touches[0].clientX - rect.left) * 260 / rect.width,
+        y: (e.touches[0].clientY - rect.top) * 260 / rect.height,
       }
     }
     const me = e as React.MouseEvent
     return {
-      x: me.clientX - rect.left,
-      y: me.clientY - rect.top,
+      x: (me.clientX - rect.left) * 260 / rect.width,
+      y: (me.clientY - rect.top) * 260 / rect.height,
     }
   }
 
@@ -128,22 +128,22 @@ export const BopomofoStrokeLab: React.FC<Props> = ({ onEarnXp }) => {
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <span>🖌️</span> 繁體漢字筆順與注音符號實驗室 (Bopomofo & Stroke Lab)
           </h3>
-          <p className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
             台湾で実際に使われる正体字（繁体字）の書き順ルールと、注音符号（ボポモフォ 37音）の発音を攻略！
           </p>
         </div>
       </div>
 
       {/* 子分頁切換 */}
-      <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem' }}>
-        <button
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginBottom: '0.8rem' }}>
+        <button aria-pressed={activeSubTab === 'stroke'}
           type="button"
           className={`pill-btn ${activeSubTab === 'stroke' ? 'active' : ''}`}
           onClick={() => setActiveSubTab('stroke')}
         >
           ✍️ 繁體漢字筆順臨摹 (Stroke Order)
         </button>
-        <button
+        <button aria-pressed={activeSubTab === 'bopomofo'}
           type="button"
           className={`pill-btn ${activeSubTab === 'bopomofo' ? 'active' : ''}`}
           onClick={() => setActiveSubTab('bopomofo')}
@@ -153,12 +153,12 @@ export const BopomofoStrokeLab: React.FC<Props> = ({ onEarnXp }) => {
       </div>
 
       {activeSubTab === 'stroke' ? (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.8rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))', gap: '0.8rem' }}>
           {/* 左側：字元選擇與臨摹畫布 */}
           <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.8rem' }}>
             <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap', justifyContent: 'center' }}>
               {STROKE_CHARACTERS.map((item) => (
-                <button
+                <button aria-pressed={selectedChar.id === item.id}
                   key={item.id}
                   type="button"
                   className={`pill-btn ${selectedChar.id === item.id ? 'active' : ''}`}
@@ -167,14 +167,16 @@ export const BopomofoStrokeLab: React.FC<Props> = ({ onEarnXp }) => {
                     speakChinese(item.char)
                   }}
                 >
-                  {item.char} ({item.pinyin})
+                  {item.char} (<span lang="zh-Latn">{item.pinyin}</span>)
                 </button>
               ))}
             </div>
 
-            <div style={{ position: 'relative', width: '260px', height: '260px' }}>
+            <div style={{ position: 'relative', width: '100%', maxWidth: '260px', aspectRatio: '1' }}>
               <canvas
                 ref={canvasRef}
+                role="img"
+                aria-label={`漢字「${selectedChar.char}」臨摹畫布；筆順說明列於下方`}
                 onMouseDown={startDraw}
                 onMouseMove={draw}
                 onMouseUp={() => setIsDrawing(false)}
@@ -183,8 +185,8 @@ export const BopomofoStrokeLab: React.FC<Props> = ({ onEarnXp }) => {
                 onTouchMove={draw}
                 onTouchEnd={() => setIsDrawing(false)}
                 style={{
-                  width: '260px',
-                  height: '260px',
+                  width: '100%',
+                  height: '100%',
                   borderRadius: '8px',
                   background: '#0f172a',
                   cursor: 'crosshair',
@@ -217,19 +219,19 @@ export const BopomofoStrokeLab: React.FC<Props> = ({ onEarnXp }) => {
               <div>
                 <h3 style={{ margin: 0, fontSize: '1.8rem', color: '#f59e0b' }}>{selectedChar.char}</h3>
                 <div style={{ fontSize: '0.8rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
-                  {selectedChar.pinyin} · {selectedChar.bopomofo} · 部首：<strong>{selectedChar.radical}</strong> · {selectedChar.strokeCount} 畫
+                  <span lang="zh-Latn">{selectedChar.pinyin}</span> · {selectedChar.bopomofo} · 部首：<strong>{selectedChar.radical}</strong> · {selectedChar.strokeCount} 畫
                 </div>
               </div>
             </div>
 
             <div style={{ background: 'var(--surface-soft)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
-              <span style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block' }}>🇯🇵 日本語の意味：</span>
-              <strong style={{ fontSize: '0.88rem' }}>{selectedChar.meaningJa}</strong>
+              <span lang="ja" style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block' }}>🇯🇵 日本語の意味：</span>
+              <strong lang="ja" style={{ fontSize: '0.88rem' }}>{selectedChar.meaningJa}</strong>
             </div>
 
             <div style={{ background: 'rgba(245, 158, 11, 0.08)', padding: '0.6rem', borderRadius: '8px', border: '1px solid rgba(245, 158, 11, 0.3)' }}>
               <span style={{ fontSize: '0.72rem', color: '#f59e0b', fontWeight: 700, display: 'block' }}>✍️ Stroke Order Tip / 筆順教學提示 (zh-Hant / en)</span>
-              <p style={{ margin: '0.2rem 0 0', fontSize: '0.78rem', lineHeight: 1.45 }}>{selectedChar.strokeRuleJa}</p>
+              <p lang="ja" style={{ margin: '0.2rem 0 0', fontSize: '0.78rem', lineHeight: 1.45 }}>{selectedChar.strokeRuleJa}</p>
               <div style={{ marginTop: '0.4rem', fontSize: '0.72rem', color: 'var(--muted)' }}>
                 <strong>Stroke Sequence (筆順步驟):</strong> {selectedChar.strokeSequence.map((s, i) => `${i+1}.${s}`).join(' → ')}
               </div>
@@ -241,20 +243,20 @@ export const BopomofoStrokeLab: React.FC<Props> = ({ onEarnXp }) => {
             <div style={{ background: 'var(--surface-soft)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
               <span style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block' }}>例文 (Example)：</span>
               <strong style={{ fontSize: '0.86rem', display: 'block', margin: '0.15rem 0' }}>{selectedChar.exampleSentenceZh}</strong>
-              <span style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>{selectedChar.exampleSentenceJa}</span>
+              <span lang="ja" style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>{selectedChar.exampleSentenceJa}</span>
             </div>
           </div>
         </div>
       ) : (
         /* 注音 37 符號矩陣 */
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.8rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))', gap: '0.8rem' }}>
           <div>
             <span style={{ fontSize: '0.76rem', fontWeight: 700, color: 'var(--muted)', display: 'block', marginBottom: '0.4rem' }}>
               【聲母 21 音】
             </span>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(48px, 1fr))', gap: '0.3rem' }}>
               {INITIALS_DATA.map((item) => (
-                <button
+                <button aria-pressed={selectedBopomofo === item.bopomofo}
                   key={item.bopomofo}
                   type="button"
                   className="practice-card"
@@ -272,7 +274,7 @@ export const BopomofoStrokeLab: React.FC<Props> = ({ onEarnXp }) => {
                   }}
                 >
                   <strong style={{ fontSize: '1.1rem', display: 'block' }}>{item.bopomofo}</strong>
-                  <span style={{ fontSize: '0.65rem', color: '#f59e0b' }}>{item.pinyin}</span>
+                  <span lang="zh-Latn" style={{ fontSize: '0.65rem', color: '#f59e0b' }}>{item.pinyin}</span>
                 </button>
               ))}
             </div>
@@ -282,7 +284,7 @@ export const BopomofoStrokeLab: React.FC<Props> = ({ onEarnXp }) => {
             </span>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(48px, 1fr))', gap: '0.3rem' }}>
               {FINALS_DATA.map((item) => (
-                <button
+                <button aria-pressed={selectedBopomofo === item.bopomofo}
                   key={item.bopomofo}
                   type="button"
                   className="practice-card"
@@ -300,7 +302,7 @@ export const BopomofoStrokeLab: React.FC<Props> = ({ onEarnXp }) => {
                   }}
                 >
                   <strong style={{ fontSize: '1.1rem', display: 'block' }}>{item.bopomofo}</strong>
-                  <span style={{ fontSize: '0.65rem', color: '#f59e0b' }}>{item.pinyin}</span>
+                  <span lang="zh-Latn" style={{ fontSize: '0.65rem', color: '#f59e0b' }}>{item.pinyin}</span>
                 </button>
               ))}
             </div>
@@ -310,10 +312,10 @@ export const BopomofoStrokeLab: React.FC<Props> = ({ onEarnXp }) => {
           <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
             <span style={{ fontSize: '0.8rem', color: 'var(--muted)' }}>注音符號 (Bopomofo)</span>
             <h2 style={{ fontSize: '4rem', margin: '0.4rem 0', color: '#f59e0b' }}>{selectedBopomofo}</h2>
-            <p style={{ margin: '0 0 1rem', fontSize: '0.82rem', color: 'var(--muted)' }}>
+            <p lang="ja" style={{ margin: '0 0 1rem', fontSize: '0.82rem', color: 'var(--muted)' }}>
               台湾の小学校で最初に習う発音記号。クリックするとネイティブ発音を再生します。
             </p>
-            <button
+            <button lang="ja"
               type="button"
               className="btn-primary"
               onClick={() => {

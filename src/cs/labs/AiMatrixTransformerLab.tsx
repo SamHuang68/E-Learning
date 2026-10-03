@@ -133,7 +133,7 @@ export const AiMatrixTransformerLab: React.FC<Props> = ({ onEarnXp }) => {
             </span>
             <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
               {TOKENS.map((token, idx) => (
-                <button
+                <button aria-pressed={selectedTokenIdx === idx}
                   key={token}
                   type="button"
                   className={`pill-btn ${selectedTokenIdx === idx ? 'active' : ''}`}

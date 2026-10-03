@@ -144,7 +144,7 @@ export const ChineseMockExam: React.FC<Props> = ({ onEarnXp, onRecordError }) =>
               const isAnswered = userAnswers[idx] !== undefined
               const isCurrent = currentIndex === idx
               return (
-                <button
+                <button aria-pressed={isCurrent}
                   key={idx}
                   type="button"
                   className={`pill-btn ${isCurrent ? 'active' : ''}`}
@@ -186,15 +186,15 @@ export const ChineseMockExam: React.FC<Props> = ({ onEarnXp, onRecordError }) =>
             </div>
 
             <h3 style={{ margin: '0.4rem 0 0.2rem', fontSize: '1.05rem', lineHeight: 1.4 }}>{currentQ.promptZh}</h3>
-            <div style={{ fontSize: '0.76rem', color: '#f59e0b', marginBottom: '0.2rem' }}>{currentQ.promptPinyin}</div>
-            <div style={{ fontSize: '0.76rem', color: 'var(--muted)', marginBottom: '0.8rem' }}>💡 {currentQ.promptJa}</div>
+            <div lang="zh-Latn" style={{ fontSize: '0.76rem', color: '#f59e0b', marginBottom: '0.2rem' }}>{currentQ.promptPinyin}</div>
+            <div style={{ fontSize: '0.76rem', color: 'var(--muted)', marginBottom: '0.8rem' }}>💡 <span lang="ja">{currentQ.promptJa}</span></div>
 
             {/* 選項清單 */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
               {currentQ.options.map((opt, optIdx) => {
                 const isSelected = userAnswers[currentIndex] === optIdx
                 return (
-                  <button
+                  <button aria-pressed={isSelected}
                     key={optIdx}
                     type="button"
                     className="practice-card"
@@ -213,7 +213,7 @@ export const ChineseMockExam: React.FC<Props> = ({ onEarnXp, onRecordError }) =>
                   >
                     <div>
                       <strong style={{ fontSize: '0.9rem' }}>{opt.zh}</strong>
-                      <span style={{ fontSize: '0.74rem', color: 'var(--muted)', marginLeft: '0.5rem' }}>{opt.pinyin} · {opt.ja}</span>
+                      <span style={{ fontSize: '0.74rem', color: 'var(--muted)', marginLeft: '0.5rem' }}><span lang="zh-Latn">{opt.pinyin}</span> · <span lang="ja">{opt.ja}</span></span>
                     </div>
                     {isSelected && <span style={{ color: '#f59e0b', fontWeight: 700 }}>● 選擇</span>}
                   </button>
@@ -295,7 +295,7 @@ export const ChineseMockExam: React.FC<Props> = ({ onEarnXp, onRecordError }) =>
                     你的作答：{userAns !== undefined ? q.options[userAns]?.zh : '未作答'} ｜ 正確答案：<strong>{q.options[q.correctIndex]?.zh}</strong>
                   </div>
                   <div style={{ fontSize: '0.74rem', color: '#38bdf8', marginTop: '0.3rem', lineHeight: 1.4 }}>
-                    💡 <strong>解說：</strong>{q.explanationJa}
+                    💡 <strong>解說：</strong><span lang="ja">{q.explanationJa}</span>
                   </div>
                 </div>
               )

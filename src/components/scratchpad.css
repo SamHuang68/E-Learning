@@ -1,0 +1,65 @@
+.scratchpad-overlay {
+  position: fixed;
+  inset: auto 1rem 1rem auto;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  width: min(420px, calc(100vw - 2rem));
+  max-width: calc(100vw - 2rem);
+  max-height: calc(100dvh - 2rem);
+  overflow: auto;
+  background: #0f172a;
+  color: #f8fafc;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgb(0 0 0 / 50%);
+}
+
+.scratchpad-overlay::backdrop { background: rgb(0 0 0 / 18%); }
+.scratchpad-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.65rem;
+  background: #1e293b;
+  border-bottom: 1px solid #334155;
+}
+.scratchpad-header h2 {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  color: #f8fafc;
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+.scratchpad-overlay button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0.35rem 0.6rem;
+  font: inherit;
+  color: #f8fafc;
+  border: 1px solid #64748b;
+  border-radius: 6px;
+  background: #1e293b;
+  cursor: pointer;
+}
+.scratchpad-overlay button[aria-pressed="true"] {
+  border-color: #f8fafc;
+  box-shadow: inset 0 0 0 2px #f8fafc;
+}
+.scratchpad-overlay button:focus-visible {
+  outline: 3px solid #facc15;
+  outline-offset: 2px;
+}
+.scratchpad-tools { display: flex; flex-wrap: wrap; gap: 0.35rem; width: 100%; }
+.scratchpad-overlay .scratchpad-color { padding: 9px; }
+.scratchpad-color span { display: block; width: 24px; height: 24px; border-radius: 50%; }
+.scratchpad-instructions { margin: 0; padding: 0.5rem 0.65rem; font-size: 0.8rem; color: #cbd5e1; }
+.scratchpad-overlay canvas {
+  display: block;
+  width: 100%;
+  height: clamp(100px, 40vh, 240px);
+  background: #0b1329;
+  touch-action: none;
+}

@@ -28,6 +28,7 @@ export const CalculusCanvas: React.FC<CalculusCanvasProps> = ({
   newtonSteps = 5,
   solidMethod = 'disk',
   rotationAngle = Math.PI * 2,
+  showFocusControl = false,
   onParamChange,
   onCanvasTelemetry,
   className = '',
@@ -396,6 +397,29 @@ export const CalculusCanvas: React.FC<CalculusCanvasProps> = ({
           X: [{transform.minX.toFixed(1)}, {transform.maxX.toFixed(1)}] · Y: [{transform.minY.toFixed(1)}, {transform.maxY.toFixed(1)}]
         </span>
       </div>
+      {showFocusControl && onParamChange && (
+        <div className="slider-item">
+          <label className="slider-label-row" htmlFor={`calculus-canvas-x0-${canvasId}`}>
+            <span>{c('探索焦點 / 切點 x₀:')}</span>
+            <strong>{x0.toFixed(2)}</strong>
+          </label>
+          <input
+            id={`calculus-canvas-x0-${canvasId}`}
+            className="calculus-canvas-focus"
+            type="range"
+            min={transform.minX}
+            max={transform.maxX}
+            step={0.01}
+            value={x0}
+            aria-valuetext={c(`${x0.toFixed(2)} x 座標`)}
+            onChange={(event) => {
+              const nextX = Number(event.target.value)
+              onParamChange({ x0: nextX })
+              onCanvasTelemetry?.({ action: 'select_x0', value: nextX })
+            }}
+          />
+        </div>
+      )}
       <p
         className={`canvas-probe-readout ${parsed.ok ? '' : 'canvas-probe-error'}`}
         data-testid="calculus-probe"

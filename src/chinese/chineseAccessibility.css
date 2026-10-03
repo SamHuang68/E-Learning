@@ -1,0 +1,17 @@
+.chinese-main-content .pill-btn {
+  white-space: normal;
+  max-width: 100%;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.chinese-main-content .math-lab select,
+.chinese-main-content .math-lab input {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.chinese-main-content .math-lab,
+.chinese-main-content .signal-decision-view {
+  overflow-wrap: anywhere;
+}
