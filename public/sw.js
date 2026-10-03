@@ -1,5 +1,6 @@
 const CACHE_NAME = 'e-learning-__PRECACHE_VERSION__'
 const PRECACHE_MANIFEST = './precache-manifest.json'
+const PRECACHE_CONCURRENCY = 8
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -34,56 +35,88 @@ function canStore(url, response) {
 }
 
 async function precacheUrl(cache, url) {
-  try {
-    const response = await fetch(url, { cache: 'no-store' })
-    if (!canStore(url, response)) return
-    await cache.put(url, response)
-  } catch {
-    // One missing file must not fail install and leave the previous worker in control.
+  const response = await fetch(url, { cache: 'no-store' })
+  if (!canStore(url, response)) throw new Error(`Required precache resource unavailable: ${url}`)
+  await cache.put(url, response)
+}
+
+async function precacheUrls(cache, urls) {
+  for (let offset = 0; offset < urls.length; offset += PRECACHE_CONCURRENCY) {
+    // Finish the current writes before cleaning up a failed candidate cache.
+    const results = await Promise.allSettled(
+      urls.slice(offset, offset + PRECACHE_CONCURRENCY).map((url) => precacheUrl(cache, url)),
+    )
+    const failure = results.find((result) => result.status === 'rejected')
+    if (failure) throw failure.reason
   }
 }
+
+// Runtime caching is optional: a storage failure must not discard a good response.
+async function cacheRuntimeResponse(request, response) {
+  try {
+    const cache = await caches.open(CACHE_NAME)
+    await cache.put(request, response)
+  } catch {
+    // The network response remains available even when storage is unavailable.
+  }
+}
+
 self.addEventListener('install', (event) => {
   event.waitUntil(
     (async () => {
-      const cache = await caches.open(CACHE_NAME)
-      const response = await fetch(PRECACHE_MANIFEST, { cache: 'no-store' })
-      if (!response.ok) throw new Error(`Precache manifest unavailable: ${response.status}`)
-      const manifest = await response.json()
-      const generatedAssets = Array.isArray(manifest.files) ? manifest.files : []
-      const urls = [...new Set([...STATIC_ASSETS, PRECACHE_MANIFEST, ...generatedAssets])]
-      await Promise.all(urls.map((url) => precacheUrl(cache, url)))
+      try {
+        const cache = await caches.open(CACHE_NAME)
+        const response = await fetch(PRECACHE_MANIFEST, { cache: 'no-store' })
+        if (!response.ok) throw new Error(`Precache manifest unavailable: ${response.status}`)
+        const manifest = await response.clone().json()
+        if (
+          manifest.version !== 1 ||
+          CACHE_NAME !== `e-learning-${manifest.buildId}` ||
+          !Array.isArray(manifest.files) ||
+          manifest.files.length === 0 ||
+          manifest.files.some((file) => typeof file !== 'string' || file.length === 0)
+        ) {
+          throw new Error('Invalid precache manifest')
+        }
+        // Cache the exact manifest used for this install, not a second network copy.
+        await cache.put(PRECACHE_MANIFEST, response)
+        const urls = [...new Set([...STATIC_ASSETS, ...manifest.files])]
+        await precacheUrls(cache, urls)
+        await self.skipWaiting()
+      } catch (error) {
+        // A failed install leaves the previous worker and its complete cache intact.
+        await caches.delete(CACHE_NAME).catch(() => undefined)
+        throw error
+      }
     })(),
   )
-  self.skipWaiting()
 })
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches
-      .keys()
-      .then((keys) =>
-        Promise.all(
-          keys
-            .filter((key) => key.startsWith('e-learning-') && key !== CACHE_NAME)
-            .map((key) => caches.delete(key)),
-        ),
-      ),
+    (async () => {
+      const keys = await caches.keys()
+      await Promise.all(
+        keys
+          .filter((key) => key.startsWith('e-learning-') && key !== CACHE_NAME)
+          .map((key) => caches.delete(key)),
+      )
+      await self.clients.claim()
+    })(),
   )
-  self.clients.claim()
 })
 
 self.addEventListener('fetch', (event) => {
   const request = event.request
   if (request.method !== 'GET') return
 
-  // 1. Navigation 頁面跳轉請求：優先從網路獲取最新 HTML，離線時回退至快取 index.html
+  // Navigation remains network-first, with the previous offline shell as fallback.
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request)
         .then((response) => {
           if (response.ok) {
-            const copy = response.clone()
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, copy))
+            event.waitUntil(cacheRuntimeResponse(request, response.clone()))
           }
           return response
         })
@@ -92,19 +125,21 @@ self.addEventListener('fetch', (event) => {
     return
   }
 
-  // 2. 靜態資源：快取優先。JS/CSS 若被回成 HTML（自訂網域的 200 後備頁），不存也不拿來執行。
+  // Never serve or store an HTML fallback as executable JavaScript or CSS.
   event.respondWith(
-    caches.match(request, { ignoreVary: true }).then(async (cached) => {
+    caches.match(request, { ignoreVary: true }).catch(() => undefined).then(async (cached) => {
       if (cached && canStore(request.url, cached)) return cached
       if (cached) {
-        const stale = await caches.open(CACHE_NAME)
-        await stale.delete(request)
+        try {
+          const stale = await caches.open(CACHE_NAME)
+          await stale.delete(request)
+        } catch {
+          // A stale-cache cleanup failure must not block the network request.
+        }
       }
       const response = await fetch(request)
       if (canStore(request.url, response) && new URL(request.url).origin === self.location.origin) {
-        const copy = response.clone()
-        const cache = await caches.open(CACHE_NAME)
-        await cache.put(request, copy)
+        await cacheRuntimeResponse(request, response.clone())
       }
       if (isCodeAsset(request.url) && isHtmlBody(response)) {
         return new Response('', { status: 404, headers: { 'content-type': 'text/plain' } })
