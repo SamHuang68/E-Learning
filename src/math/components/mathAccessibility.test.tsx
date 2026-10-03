@@ -2,6 +2,7 @@ import { renderToString } from 'react-dom/server'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { MathToday } from './MathToday'
 import { MathPractice } from './MathPractice'
+import { MathMockExam } from './MathMockExam'
 import { G1_DATA } from '../data/elementary/g1_to_g3'
 import { defaultMathProgress } from '../utils/mathStorage'
 import { CalculusAssessmentWidget } from '../calculus/components/CalculusAssessment/CalculusAssessmentWidget'
@@ -15,6 +16,14 @@ const noop = () => {}
 afterEach(() => vi.unstubAllGlobals())
 
 describe('math controls expose their current action and selection', () => {
+  for (const locale of ['en', 'zh-Hant']) {
+    it(`identifies the untranslated practice exam as Traditional Chinese inside a ${locale} page`, () => {
+      const html = renderToString(<main lang={locale}><MathMockExam onExit={noop} /></main>)
+      expect(html).toContain(`<main lang="${locale}"><div class="math-mock-shell" lang="zh-Hant">`)
+      expect(html).toContain('開始練習卷')
+    })
+  }
+
   it('gives every selectable unit a native button while retaining the current unit', () => {
     const html = renderToString(<MathToday gradeInfo={G1_DATA} currentUnit={G1_DATA.units[1]} progress={defaultMathProgress()} onSelectUnit={noop} onStartPractice={noop} onOpenLab={noop} onOpenMock={noop} onOpenVault={noop} onOpenVisual={noop} />)
     const buttons = [...html.matchAll(/<button[^>]+class="unit-card-select"[^>]*aria-pressed="(true|false)"[^>]*>(.*?)<\/button>/g)]

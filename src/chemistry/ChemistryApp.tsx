@@ -256,9 +256,10 @@ export const ChemistryApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         {activeNav === 'signals' && <ChemistrySignalsView />}
 
         {activeNav === 'labs' && (
-          <div className="chemistry-labs-showcase" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div className="chemistry-labs-showcase" lang="zh-Hant" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div
               className="chemistry-safety-banner"
+              lang={locale}
               role="alert"
               aria-live="polite"
               style={{

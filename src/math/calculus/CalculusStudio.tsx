@@ -91,7 +91,7 @@ export const CalculusStudio: React.FC = () => {
       <GradientIntuitionCard />
 
       {/* 主雙欄工作台 */}
-      <main className="calculus-studio-workspace">
+      <div className="calculus-studio-workspace">
         {/* 左側互動操作區 */}
         <div className="studio-left-pane">
           {activeTab === 'canvas_lab' && (
@@ -163,7 +163,7 @@ export const CalculusStudio: React.FC = () => {
             }}
           />
         </div>
-      </main>
+      </div>
 
       <CalculusBadgeDialog badges={newlyUnlockedBadges} onDismiss={clearBadgeNotification} />
 

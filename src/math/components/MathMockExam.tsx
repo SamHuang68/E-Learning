@@ -143,7 +143,7 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
   }
 
   return (
-    <div className="math-mock-shell">
+    <div className="math-mock-shell" lang="zh-Hant">
       {!isStarted ? (
         <div className="mock-intro-card">
           <div className="mock-nav-tabs">

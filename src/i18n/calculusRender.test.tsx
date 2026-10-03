@@ -4,6 +4,7 @@ import { createElement, type ReactElement } from 'react'
 import { renderToPipeableStream } from 'react-dom/server'
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 import { CalculusApp } from '../calculus/CalculusApp'
+import { MathApp } from '../math/MathApp'
 import { CalculusStudio } from '../math/calculus/CalculusStudio'
 import { CalculusLab } from '../math/labs/CalculusLab'
 import { RiemannCalculusLab } from '../math/diagrams/RiemannCalculusLab'
@@ -84,12 +85,21 @@ describe('微積分實際畫面英文與繁中回歸', () => {
         injected.answered = true
         injected.badges = CALCULUS_BADGES
         const html = await render(createElement(CalculusApp, { onBackHub: noop, onSwitchLang: noop }), locale)
+        expect(html.match(/<main\b/g)).toHaveLength(1)
         if (locale === 'en') expect(html).not.toMatch(CJK)
         else expect(digest(html)).toMatchSnapshot()
       })
     }
   }
   for (const tab of ['canvas_lab', 'step_solver', 'adaptive_practice']) {
+    it(`keeps the host MathApp as the only main landmark for embedded ${tab}`, async () => {
+      injected.strings = { today: 'calculus', canvas_lab: tab }
+      const html = await render(createElement(MathApp, { onBackHub: noop, onSwitchLang: noop }), 'zh-Hant')
+      expect(html.match(/<main\b/g)).toHaveLength(1)
+      expect(html).toContain('<main id="main-content"')
+      expect(html).toContain('<div class="calculus-studio-workspace">')
+      expect(html).not.toContain('role="main"')
+    })
     for (const locale of ['en', 'zh-Hant'] as const) {
       it(`${locale === 'en' ? '英文無 CJK' : '繁中基準'}：數學工作台 ${tab}`, async () => {
         injected.strings = { canvas_lab: tab }
