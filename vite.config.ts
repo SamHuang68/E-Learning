@@ -8,6 +8,16 @@ export default defineConfig(({ mode }) => ({
   base,
   plugins: [react()],
   build: {
+    modulePreload: {
+      resolveDependencies(filename, dependencies, { hostType }) {
+        // Windows WebKit can retain a failed modulepreload across page reloads.
+        // Let this click-time import fetch its own graph so explicit reload
+        // recovery works; service-worker precaching remains unchanged.
+        return hostType === 'js' && /(?:^|\/)ankiExporter-[^/]+\.js$/.test(filename)
+          ? []
+          : dependencies
+      },
+    },
     rolldownOptions: {
       output: {
         codeSplitting: {

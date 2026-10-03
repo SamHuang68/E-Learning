@@ -81,3 +81,63 @@ Validation and limitations:
   Publication authorization: none. Browser exceptions above remain release
   blockers. Final full commit/tree SHA and evidence hashes are mapped in the
   handoff.json cited above; this revision history does not claim release status.
+
+## capacity-resilience.2 — 2026-10-03 — WebKit follow-up local candidate
+
+This entry supersedes the two unresolved browser classifications in checkpoint 2;
+that earlier evidence and history are retained. Only vite.config.ts changes runtime
+build behavior in this follow-up. The existing content-derived version strategy
+continues: final buildId is 288ac4f6200a958b. The full final commit/tree mapping is
+in the same external handoff.json, with the previous candidate archived separately.
+
+### Anki recovery: scoped preload correction
+
+- Trace confirms reload creates a new document and resets the export controls.
+  The previous Vite-generated preload path still returns the failed import without
+  a second request in Windows WebKit. An isolated page using the actual unchanged
+  Vite helper reproduces this with only the export target in its preload list;
+  the same helper with an empty list recovers after reload. A new tab also recovers.
+  This establishes the affected generated loading path, not a general Safari claim.
+- Disable modulepreload only for the Anki export dynamic-import boundary. Normal
+  dynamic import loads its dependency graph, while other boundaries retain their
+  original preload lists. Keep rejected-module state, the explicit reload action,
+  bilingual real-error feedback, and the existing complete service-worker precache.
+  Do not use query-string retries, suppress errors or loosen browser assertions.
+- Final Windows WebKit acceptance passes both exporter HTTP 503 and dependency
+  HTTP 503: no download on failure, three export buttons disabled, bilingual error
+  and reload controls, a new document after user reload, a fresh successful request
+  and exactly one valid CSV download. The final CSV hash matches prior successful
+  outputs. The base commit used static Anki imports, so it has no equivalent lazy
+  export-failure boundary; do not claim this is an unchanged-base Anki test.
+
+### Offline navigation: separate tool emulation from origin outage
+
+- Before disconnection, the worker is activated, controls the document under the
+  correct /E-Learning/ scope, and the target is present among 301 cache entries.
+- Playwright's Windows WebKit offline switch fails even with an independent worker
+  that responds to every navigation entirely in memory, without fetch or caches.
+  Its online control succeeds. Keep this emulation mode classified BLOCKED.
+- Real localhost TCP connection termination passes the same product navigation,
+  diagram/theme and Anki cases with both the candidate worker and the unchanged
+  base worker (only its buildId placeholder is substituted for the same manifest).
+  Server logs prove connections fail; response events prove the diagrams and
+  exporter are served by the worker. The final candidate passes this path again.
+  No service-worker product change is needed. This is origin-outage acceptance,
+  not a claim about a physical network adapter or actual Safari.
+
+Validation and state:
+
+- This follow-up runs only the affected Windows WebKit cases and the two Anki
+  unit files: 8/8 tests passed, Vitest 4.1.10. No other engine or full suite rerun.
+  vite.config.ts lint and this follow-up's staged whitespace check pass.
+- Exactly one necessary production build in this follow-up, plus verify:dist,
+  passed (three builds total across both implementation rounds). Entry JS is
+  416,165 bytes; largest JS remains 451,594 bytes; the unchanged exclusive limit
+  is 500,000 bytes. Precache: 299 files / 7,683,658 bytes.
+- The two hash-pinned upstream assets and their whitespace notices remain
+  unchanged. No further content, schema, translation or catalog changes.
+- Browser traces, server/console diagnostics, minimal controls and final acceptance
+  are retained under the existing external evidence directory and indexed by the
+  updated handoff. Product cases above pass; tool offline emulation remains blocked.
+- Local candidate only: push=false, PR=false, CI=false, merge=false, deploy=false.
+  No publication authorization; no actual Safari/mobile/remote deployment checks.
