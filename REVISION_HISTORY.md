@@ -141,3 +141,31 @@ Validation and state:
   updated handoff. Product cases above pass; tool offline emulation remains blocked.
 - Local candidate only: push=false, PR=false, CI=false, merge=false, deploy=false.
   No publication authorization; no actual Safari/mobile/remote deployment checks.
+
+## capacity-resilience.3 — 2026-10-03 — production redirect correction
+
+- The approved candidate was published through PR #136 at main commit
+  260c681c5619f053f53d7e08d07b834e00a848cd. Its tree exactly matches candidate
+  2170c4f83c6242a2f422bb2b0f8dd17c10a3220c. Existing CI run 37157350642 passed
+  1,423 tests in 319 files, schema checks, build, capacity verification and deployment.
+- GitHub Pages production acceptance passed. Cloudflare production acceptance
+  exposed a separate offline failure for a precached HTML page never visited online:
+  Cloudflare redirects .html to an extensionless URL and the cached final response
+  retains redirected=true. Navigation with redirect=manual rejects that response.
+  In a fresh isolated browser, changing only the cached response's redirect metadata
+  restored the same offline SRS page, with its diagram renderer intact.
+- Normalize only redirected responses returned by the offline navigation fallback.
+  Preserve the original body, status, status text and headers. Online handling,
+  complete precaching, cache-write failure behavior, the Anki fix and size gate stay
+  unchanged. No hosting configuration or learning data is changed.
+- Add exact-page and app-shell regression cases: both failed against the previous
+  worker and both pass with the fix; all 23 targeted worker tests pass. Two-file
+  scoped lint passes. No extra local build or full local suite was run; the existing
+  preview/CI builds provide the release artifact and final buildId.
+- This is the minimal correction required by formal offline acceptance within the
+  approved release. It is prepared on a separate repair branch/PR; final SHA,
+  deployment fingerprints, checks and production readback are recorded in the same
+  external handoff.json referenced above. Earlier failed evidence is retained.
+- The Windows WebKit offline emulation limitation and the two unchanged upstream
+  whitespace notices remain classified as before. No new feature or other-project
+  change is included.
