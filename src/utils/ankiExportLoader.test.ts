@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { createAnkiExportLoader } from './ankiExportLoader'
+import { ChunkLoadError } from './chunkLoadError'
 
 const makeExporter = () => ({
   exportToeicChunksToAnki: vi.fn(),
@@ -53,17 +54,19 @@ describe('click-time Anki exports', () => {
     for (const download of Object.values(exporter)) expect(download).toHaveBeenCalledTimes(1)
   })
 
-  it('clears a rejected load so the next click can retry without a download from the failed attempt', async () => {
-    const exporter = makeExporter()
+  it('classifies a failed import with its cause and releases the pending operation without pretending to reload the module', async () => {
     const failure = new Error('Module request failed')
-    const load = vi.fn().mockRejectedValueOnce(failure).mockResolvedValueOnce(exporter)
+    const load = vi.fn().mockRejectedValue(failure)
     const exportDeck = createAnkiExportLoader(load)
 
-    await expect(exportDeck('math')).rejects.toBe(failure)
-    for (const download of Object.values(exporter)) expect(download).not.toHaveBeenCalled()
-    await exportDeck('math')
-    expect(load).toHaveBeenCalledTimes(2)
-    expect(exporter.exportMathSignalsToAnki).toHaveBeenCalledTimes(1)
+    const first = exportDeck('math')
+    const error = await first.catch(error => error)
+    expect(error).toBeInstanceOf(ChunkLoadError)
+    expect(error.cause).toBe(failure)
+    const next = exportDeck('math')
+    expect(next).not.toBe(first)
+    await expect(next).rejects.toBe(error)
+    expect(load).toHaveBeenCalledTimes(1)
   })
 
   it('releases a failed download operation so the loaded exporter can be retried', async () => {

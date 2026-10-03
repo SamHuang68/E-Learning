@@ -1,3 +1,5 @@
+import { ChunkLoadError } from './chunkLoadError'
+
 export type AnkiDeck = 'toeic' | 'ja' | 'math'
 
 type AnkiExporter = Pick<typeof import('./ankiExporter'),
@@ -19,9 +21,9 @@ export function createAnkiExportLoader(
   return (deck: AnkiDeck): Promise<void> => {
     if (pending) return pending
     pending = Promise.resolve()
-      .then(() => loaded ??= loadExporter().catch(error => {
-        loaded = undefined
-        throw error
+      .then(() => loaded ??= loadExporter().catch(cause => {
+        // Browsers retain failed imports in the module map until the page reloads.
+        throw new ChunkLoadError('Unable to load Anki exports. Reload to retry.', { cause })
       }))
       .then(exporter => exporter[exportMethods[deck]]())
       .finally(() => { pending = undefined })

@@ -41,12 +41,27 @@ if (missingApps.length > 0) {
   throw new Error(`Lazy route chunks missing from precache (offline Hub): ${missingApps.join(', ')}`)
 }
 
+// Include public shared runtimes as well as bundled assets in the existing budget.
 const maxJsBytes = 500_000
-const jsFiles = files.filter((file) => /^.\/assets\/.*\.js$/.test(file))
-const jsSizes = await Promise.all(jsFiles.map(async (file) => ({
+const assetSizes = await Promise.all(files.map(async (file) => ({
   file,
-  bytes: (await stat(path.join(distDir, file.replace(/^.\//, '')))).size,
+  bytes: (await stat(path.join(distDir, file.replace(/^\.\//, '')))).size,
 })))
+const jsSizes = assetSizes.filter(({ file }) => /\.(?:js|mjs)$/.test(file))
+const byExtension = {}
+for (const { file, bytes } of assetSizes) {
+  const extension = path.extname(file) || '(none)'
+  const group = byExtension[extension] ??= { files: 0, bytes: 0 }
+  group.files += 1
+  group.bytes += bytes
+}
+const capacity = {
+  precacheBytes: assetSizes.reduce((sum, { bytes }) => sum + bytes, 0),
+  byExtension,
+  largestAsset: [...assetSizes].sort((a, b) => b.bytes - a.bytes)[0],
+  largestBundledJs: jsSizes.filter(({ file }) => file.startsWith('./assets/'))
+    .sort((a, b) => b.bytes - a.bytes)[0],
+}
 const oversizedJs = jsSizes.filter(({ bytes }) => bytes >= maxJsBytes)
 if (oversizedJs.length > 0) {
   throw new Error(`JavaScript chunks must stay below ${maxJsBytes} bytes: ${JSON.stringify(oversizedJs)}`)
@@ -85,4 +100,5 @@ console.log(JSON.stringify({
   requiredPublic: requiredPublic.length,
   lazyRouteChunks: REQUIRED_ROUTE_APPS.length,
   largestJs,
+  capacity,
 }))
