@@ -2,11 +2,8 @@ import { useRef, useState } from 'react'
 import { useAuth } from '../auth/AuthContext'
 import { AnalyticsPanel } from './AnalyticsPanel'
 import { resetCloudProgress } from '../utils/cloudProgress'
-import {
-  exportToeicChunksToAnki,
-  exportJapaneseSignalsToAnki,
-  exportMathSignalsToAnki,
-} from '../utils/ankiExporter'
+import { exportAnkiDeck, type AnkiDeck } from '../utils/ankiExportLoader'
+import { ChunkLoadError } from '../utils/chunkLoadError'
 import {
   clearLocalProgressCache,
   exportProgressBundle,
@@ -15,15 +12,40 @@ import {
 } from '../utils/storage'
 import { useI18n } from '../i18n/i18n'
 
+const ankiStatusKeys = {
+  pending: 'data.ankiPreparing',
+  success: 'data.ankiExported',
+  error: 'data.ankiError',
+  'load-error': 'data.ankiLoadError',
+} as const
+
 export function DataControls() {
   const { t } = useI18n()
   const { user, backendKind } = useAuth()
   const isLocal = backendKind === 'local'
   const fileRef = useRef<HTMLInputElement>(null)
   const [note, setNote] = useState<string | null>(null)
+  const [ankiStatus, setAnkiStatus] = useState<'idle' | keyof typeof ankiStatusKeys>('idle')
+  const ankiInFlight = useRef(false)
+  const ankiPending = ankiStatus === 'pending'
+  const ankiNeedsReload = ankiStatus === 'load-error'
   const [metaTick, setMetaTick] = useState(0)
   const meta = loadLearningMeta()
   void metaTick
+
+  async function downloadAnki(deck: AnkiDeck) {
+    if (ankiInFlight.current || ankiNeedsReload) return
+    ankiInFlight.current = true
+    setAnkiStatus('pending')
+    try {
+      await exportAnkiDeck(deck)
+      setAnkiStatus('success')
+    } catch (error) {
+      setAnkiStatus(error instanceof ChunkLoadError ? 'load-error' : 'error')
+    } finally {
+      ankiInFlight.current = false
+    }
+  }
 
   function downloadExport() {
     const bundle = exportProgressBundle()
@@ -111,29 +133,40 @@ export function DataControls() {
 
       <div style={{ marginTop: '1.25rem' }}>
         <p className="eyebrow">{t('data.anki')}</p>
-        <div className="data-controls-actions" style={{ marginTop: '0.4rem' }}>
+        <div className="data-controls-actions" style={{ marginTop: '0.4rem' }} aria-busy={ankiPending}>
           <button
             type="button"
             className="auth-btn ghost"
-            onClick={exportToeicChunksToAnki}
+            disabled={ankiPending || ankiNeedsReload}
+            onClick={() => void downloadAnki('toeic')}
           >
             {t('data.ankiToeic')}
           </button>
           <button
             type="button"
             className="auth-btn ghost"
-            onClick={exportJapaneseSignalsToAnki}
+            disabled={ankiPending || ankiNeedsReload}
+            onClick={() => void downloadAnki('ja')}
           >
             {t('data.ankiJa')}
           </button>
           <button
             type="button"
             className="auth-btn ghost"
-            onClick={exportMathSignalsToAnki}
+            disabled={ankiPending || ankiNeedsReload}
+            onClick={() => void downloadAnki('math')}
           >
             {t('data.ankiMath')}
           </button>
         </div>
+        <div role="status" aria-live="polite" aria-atomic="true">
+          {ankiStatus !== 'idle' ? <p className="auth-message">{t(ankiStatusKeys[ankiStatus])}</p> : null}
+        </div>
+        {ankiNeedsReload ? (
+          <button type="button" className="auth-btn ghost" onClick={() => window.location.reload()}>
+            {t('data.ankiReload')}
+          </button>
+        ) : null}
       </div>
       <input
         ref={fileRef}
