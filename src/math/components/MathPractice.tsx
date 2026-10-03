@@ -1,5 +1,5 @@
 import { mathTeachingCopy } from '../../i18n/mathTeachingCopy'
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import type { MathQuestion, MathUnit } from '../data/curriculum'
 import { MathFormula } from './MathFormula'
 import { recordMathAnswer } from '../utils/mathStorage'
@@ -34,6 +34,8 @@ export const MathPractice: React.FC<Props> = ({ unit, onBack, onComplete }) => {
 
   function handleCheckAnswer() {
     if (!currentQ || submitted) return
+    if (currentQ.type === 'choice' && selectedOption === null) return
+    if (currentQ.type === 'fill' && !fillInput.trim()) return
 
     let correct = false
     if (currentQ.type === 'choice') {
@@ -70,32 +72,30 @@ export const MathPractice: React.FC<Props> = ({ unit, onBack, onComplete }) => {
     }
   }
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
-      const k = e.key.toLowerCase()
-      if (k === 'a' || k === '1') {
-        if (!submitted && currentQ?.options && currentQ.options.length > 0) setSelectedOption(0)
-      } else if (k === 'b' || k === '2') {
-        if (!submitted && currentQ?.options && currentQ.options.length > 1) setSelectedOption(1)
-      } else if (k === 'c' || k === '3') {
-        if (!submitted && currentQ?.options && currentQ.options.length > 2) setSelectedOption(2)
-      } else if (k === 'd' || k === '4') {
-        if (!submitted && currentQ?.options && currentQ.options.length > 3) setSelectedOption(3)
-      } else if (k === 'enter' || k === ' ') {
-        e.preventDefault()
-        if (!submitted) {
-          handleCheckAnswer()
-        } else {
-          handleNext()
-        }
-      } else if (k === 'h') {
-        setShowHint((prev) => !prev)
+  function handlePracticeKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
+    // Character shortcuts only apply while the practice region itself has focus.
+    // Native controls, editable fields and global/modal controls keep their own keys.
+    if (e.target !== e.currentTarget || e.altKey || e.ctrlKey || e.metaKey || e.nativeEvent.isComposing || e.repeat) return
+    const k = e.key.toLowerCase()
+    if (k === 'a' || k === '1') {
+      if (!submitted && currentQ?.options && currentQ.options.length > 0) setSelectedOption(0)
+    } else if (k === 'b' || k === '2') {
+      if (!submitted && currentQ?.options && currentQ.options.length > 1) setSelectedOption(1)
+    } else if (k === 'c' || k === '3') {
+      if (!submitted && currentQ?.options && currentQ.options.length > 2) setSelectedOption(2)
+    } else if (k === 'd' || k === '4') {
+      if (!submitted && currentQ?.options && currentQ.options.length > 3) setSelectedOption(3)
+    } else if (k === 'enter' || k === ' ') {
+      e.preventDefault()
+      if (!submitted) {
+        handleCheckAnswer()
+      } else {
+        handleNext()
       }
+    } else if (k === 'h') {
+      setShowHint((prev) => !prev)
     }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  })
+  }
 
   if (!currentQ) {
     return (
@@ -111,7 +111,14 @@ export const MathPractice: React.FC<Props> = ({ unit, onBack, onComplete }) => {
   const isLastQuestion = currentIndex + 1 >= questions.length
 
   return (
-    <div className="math-practice-shell">
+    <div
+      className="math-practice-shell"
+      role="region"
+      aria-label={mathTeachingCopy(locale, unit.title)}
+      aria-keyshortcuts="A B C D 1 2 3 4 Enter Space H"
+      tabIndex={0}
+      onKeyDown={handlePracticeKeyDown}
+    >
       <div className="practice-top-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <button type="button" className="btn-back" onClick={onBack}>
           ← 返回單元
@@ -125,14 +132,17 @@ export const MathPractice: React.FC<Props> = ({ unit, onBack, onComplete }) => {
             type="button"
             className="pill-btn"
             style={{ fontSize: '0.72rem', padding: '0.15rem 0.45rem' }}
-            onClick={() => setShowScratchpad(!showScratchpad)}
+            onClick={(event) => { event.currentTarget.focus(); setShowScratchpad(!showScratchpad) }}
+            aria-expanded={showScratchpad}
+            aria-haspopup="dialog"
+            aria-controls={showScratchpad ? 'math-practice-scratchpad' : undefined}
           >
-            ✏️ 草稿紙
+            {locale === 'en' ? '✏️ Scratchpad' : '✏️ 草稿紙'}
           </button>
         </div>
       </div>
 
-      <Scratchpad isOpen={showScratchpad} onClose={() => setShowScratchpad(false)} />
+      <Scratchpad id="math-practice-scratchpad" isOpen={showScratchpad} onClose={() => setShowScratchpad(false)} />
 
       <div className="practice-card">
         <div className="question-header">
@@ -163,6 +173,7 @@ export const MathPractice: React.FC<Props> = ({ unit, onBack, onComplete }) => {
                     type="button"
                     className={optClass}
                     onClick={() => !submitted && setSelectedOption(idx)}
+                    aria-pressed={isSelected}
                     disabled={submitted}
                   >
                     <span className="opt-letter">{String.fromCharCode(65 + idx)}</span>
@@ -206,6 +217,8 @@ export const MathPractice: React.FC<Props> = ({ unit, onBack, onComplete }) => {
               type="button"
               className="btn-hint-toggle"
               onClick={() => setShowHint(!showHint)}
+              aria-expanded={showHint}
+              aria-controls={showHint ? 'math-practice-hint' : undefined}
             >
               {showHint ? '隱藏提示' : '💡 提示'}
             </button>
@@ -237,7 +250,7 @@ export const MathPractice: React.FC<Props> = ({ unit, onBack, onComplete }) => {
 
         {/* 提示面板 */}
         {showHint && currentQ.hint && !submitted && (
-          <div className="hint-card">
+          <div id="math-practice-hint" className="hint-card">
             <strong>解題靈感：</strong>
             <MathFormula math={currentQ.hint} />
           </div>

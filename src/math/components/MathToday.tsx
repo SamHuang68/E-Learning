@@ -105,7 +105,16 @@ export const MathToday: React.FC<Props> = ({
                   <span className="unit-seq">{t('math.today.unitN', { n: u.id })}</span>
                   <span className="unit-strand">{u.strand}</span>
                 </div>
-                <h4>{mathTeachingCopy(locale, u.title)}</h4>
+                <h4>
+                  <button
+                    type="button"
+                    className="unit-card-select"
+                    aria-pressed={isCurrent}
+                    onClick={(event) => { event.stopPropagation(); onSelectUnit(u.id) }}
+                  >
+                    {mathTeachingCopy(locale, u.title)}
+                  </button>
+                </h4>
                 <p className="unit-sub">{mathTeachingCopy(locale, u.subtitle)}</p>
 
                 <div className="unit-progress-bar-wrap">
@@ -155,7 +164,11 @@ export const MathToday: React.FC<Props> = ({
                   <h4>{mathTeachingCopy(locale, lab.name)}</h4>
                   <p>{mathTeachingCopy(locale, lab.description)}</p>
                 </div>
-                <button type="button" className="btn-enter-lab">
+                <button
+                  type="button"
+                  className="btn-enter-lab"
+                  aria-label={`${mathTeachingCopy(locale, '開啟教具 →')} ${mathTeachingCopy(locale, lab.name)}`}
+                >
                   {mathTeachingCopy(locale, '開啟教具 →')}
                 </button>
               </div>

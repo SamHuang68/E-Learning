@@ -59,7 +59,8 @@ export function calculusCopy(locale: UiLocale, text: string): string {
 
 export function useCalculusCopy() {
   const { locale } = useI18n()
-  const copy = useCallback((text: string) => calculusCopy(locale, text), [locale])
-  if (locale === 'en' && !content) use(loadCalculusCopy())
-  return copy
+  // Keep the client promise read stable across Suspense retries. Preloaded server
+  // renders stay synchronous: React has not necessarily observed the resolved promise.
+  if (locale === 'en' && (typeof window !== 'undefined' || !content)) use(loadCalculusCopy())
+  return useCallback((text: string) => calculusCopy(locale, text), [locale])
 }

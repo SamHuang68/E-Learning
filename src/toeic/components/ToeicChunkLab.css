@@ -1,0 +1,33 @@
+.toeic-chunk-lab button.step-card {
+  text-align: left;
+  color: inherit;
+  font: inherit;
+}
+
+.toeic-chunk-lab .step-title {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.toeic-chunk-lab .step-description {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.toeic-chunk-lab .audio-action-row {
+  flex-wrap: wrap;
+}
+
+.toeic-chunk-lab .audio-action-row > .ghost {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .toeic-chunk-lab .audio-action-row > .action-hint {
+    flex-basis: 100%;
+  }
+}

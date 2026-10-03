@@ -101,7 +101,7 @@ export const ChemistryPractice: React.FC<Props> = ({
       if (e.ctrlKey || e.metaKey || e.altKey || e.isComposing) return
       // Native controls handle their own keys; bubbling Enter/Space must not
       // submit twice or turn an option-button activation into a next-question action.
-      if (e.target instanceof Element && e.target.closest('input, textarea, select, button, a, [contenteditable="true"]')) return
+      if (e.target instanceof Element && e.target.closest('dialog, [role="dialog"], input, textarea, select, button, a, [contenteditable="true"]')) return
       const k = e.key.toLowerCase()
       const optionIndex = /^[a-e]$/.test(k) ? k.charCodeAt(0) - 97 : /^[1-5]$/.test(k) ? Number(k) - 1 : -1
       if (optionIndex >= 0) {
@@ -139,6 +139,7 @@ export const ChemistryPractice: React.FC<Props> = ({
             <button
               type="button"
               onClick={() => setViewMode('textbook')}
+              aria-pressed={viewMode === 'textbook'}
               style={{
                 padding: '0.25rem 0.6rem',
                 fontSize: '0.74rem',
@@ -155,6 +156,7 @@ export const ChemistryPractice: React.FC<Props> = ({
             <button
               type="button"
               onClick={() => setViewMode('practice')}
+              aria-pressed={viewMode === 'practice'}
               style={{
                 padding: '0.25rem 0.6rem',
                 fontSize: '0.74rem',
@@ -174,14 +176,20 @@ export const ChemistryPractice: React.FC<Props> = ({
             type="button"
             className="pill-btn"
             style={{ fontSize: '0.72rem', padding: '0.15rem 0.45rem' }}
-            onClick={() => setShowScratchpad(!showScratchpad)}
+            onClick={(event) => {
+              event.currentTarget.focus()
+              setShowScratchpad(!showScratchpad)
+            }}
+            aria-haspopup="dialog"
+            aria-controls="chemistry-practice-scratchpad"
+            aria-expanded={showScratchpad}
           >
             {locale === 'en' ? "✏️ Scratchpad" : "✏️ 草稿紙"}
           </button>
         </div>
       </div>
 
-      <Scratchpad isOpen={showScratchpad} onClose={() => setShowScratchpad(false)} />
+      <Scratchpad id="chemistry-practice-scratchpad" isOpen={showScratchpad} onClose={() => setShowScratchpad(false)} />
 
       {/* 視圖 1: 教科書深度觀念版面 (Textbook Knowledge Panel) */}
       {viewMode === 'textbook' ? (
@@ -388,6 +396,8 @@ export const ChemistryPractice: React.FC<Props> = ({
                   type="button"
                   className="btn-secondary"
                   onClick={() => setShowHint(!showHint)}
+                  aria-expanded={showHint}
+                  aria-controls="chemistry-practice-hint"
                 >
                   💡 {showHint ? (locale === 'en' ? "Hide hint" : '隱藏提示') : (locale === 'en' ? "Show hint" : '解題提示')}
                 </button>
@@ -403,8 +413,8 @@ export const ChemistryPractice: React.FC<Props> = ({
               </button>
             </div>
 
-            {showHint && q.hint && (
-              <div className="hint-box" style={{ marginTop: '0.75rem' }}>
+            {q.hint && (
+              <div id="chemistry-practice-hint" hidden={!showHint} className="hint-box" style={{ marginTop: '0.75rem' }}>
                 <strong>{locale === 'en' ? "Hint:" : "提示："}</strong>
                 <MathFormula math={q.hint} />
               </div>

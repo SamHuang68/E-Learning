@@ -48,6 +48,7 @@ export const MathVisualHub: React.FC<Props> = ({ initialTab = 'balance', onBack 
             <button
               key={tab.id}
               type="button"
+              aria-pressed={isActive}
               className={`visual-tab-card ${isActive ? 'active' : ''}`}
               onClick={() => setActiveTab(tab.id)}
             >

@@ -84,7 +84,7 @@ export function TodayView({
           <span className="unit-pill">
             {level.band} · {jlptTierLabel(level.tier, t)} · Unit {unit.id}
           </span>
-          <h2>{unit.titleJa}</h2>
+          <h2 lang="ja">{unit.titleJa}</h2>
           <p>{jaTeachingCopy(locale, level.audience)}</p>
           <div className="banner-actions">
             <button type="button" onClick={onStartVocab}>
@@ -187,7 +187,7 @@ export function TodayView({
         <button type="button" onClick={onStartGrammar}>
           <i>Aa</i>
           <span>TASK 03</span>
-          <h3>{jaTeachingCopy(locale, '場面・敬語')}｜{unit.grammar}</h3>
+          <h3>{jaTeachingCopy(locale, '場面・敬語')}｜<span lang="ja">{unit.grammar}</span></h3>
           <p>
             {progress.grammarStarted
               ? t('todayView.grammarIn')

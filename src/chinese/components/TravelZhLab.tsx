@@ -38,7 +38,7 @@ export const TravelZhLab: React.FC<Props> = ({ onEarnXp }) => {
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <span>🚅</span> 台灣高鐵與名勝鐵道觀光實驗室 (Tourism & Railway Lab)
           </h3>
-          <p className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
             台湾新幹線（高鐵 THSR）での「対号座（指定席）・早割（早鳥票）・阿里山森林鉄道・日出雲海」など旅の中国語を完全網羅！
           </p>
         </div>
@@ -70,7 +70,7 @@ export const TravelZhLab: React.FC<Props> = ({ onEarnXp }) => {
         </div>
 
         <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-          <select
+          <select aria-label="高鐵目的地"
             value={destination}
             onChange={(e) => setDestination(e.target.value)}
             style={{
@@ -104,7 +104,7 @@ export const TravelZhLab: React.FC<Props> = ({ onEarnXp }) => {
       {/* 場景切換膠囊 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
         {RAILWAY_DIALOGUES.map((item, idx) => (
-          <button
+          <button aria-pressed={selectedIdx === idx}
             key={item.id}
             type="button"
             className={`pill-btn ${selectedIdx === idx ? 'active' : ''}`}
@@ -116,12 +116,12 @@ export const TravelZhLab: React.FC<Props> = ({ onEarnXp }) => {
       </div>
 
       {/* 雙欄佈局 */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.8rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))', gap: '0.8rem' }}>
         {/* 左側：對話實況 */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(249, 115, 22, 0.15)', color: '#f97316', fontWeight: 700 }}>
-              {activeItem.locationZh} ({activeItem.locationJa})
+              {activeItem.locationZh} (<span lang="ja">{activeItem.locationJa}</span>)
             </span>
           </div>
 
@@ -141,9 +141,9 @@ export const TravelZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#38bdf8' }}>
-                    {line.speakerJa}：
+                    <span lang="ja">{line.speakerJa}</span>：
                   </span>
-                  <button
+                  <button aria-label={`朗讀：${line.zh}`}
                     type="button"
                     style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
                     onClick={() => speakChinese(line.zh)}
@@ -152,8 +152,8 @@ export const TravelZhLab: React.FC<Props> = ({ onEarnXp }) => {
                   </button>
                 </div>
                 <strong style={{ fontSize: '0.86rem', color: 'var(--text)' }}>{line.zh}</strong>
-                <span style={{ fontSize: '0.72rem', color: '#f59e0b' }}>{line.pinyin}</span>
-                <span style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
+                <span lang="zh-Latn" style={{ fontSize: '0.72rem', color: '#f59e0b' }}>{line.pinyin}</span>
+                <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
                   {line.ja}
                 </span>
               </div>
@@ -180,9 +180,9 @@ export const TravelZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <strong style={{ fontSize: '0.88rem', color: '#f59e0b' }}>{vocab.termZh}</strong>
-                  <span style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
+                  <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
                 </div>
-                <p style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+                <p lang="ja" style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
                   {vocab.tipJa}
                 </p>
               </div>

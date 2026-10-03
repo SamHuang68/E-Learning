@@ -51,7 +51,9 @@ describe('TOEIC 實際頁面語言', () => {
       expect(checked).not.toMatch(CJK)
       expect(html).toContain(`>${source.disclaimerEn}</p>`)
       expect(html).not.toContain(source.disclaimer)
-      for (const icon of ['≡', '↗', '✎', '◎', '♫']) expect(html).toContain(`<span>${icon}</span>`)
+      for (const icon of ['≡', '↗', '✎', '◎', '♫']) expect(html).toContain(`<span aria-hidden="true">${icon}</span>`)
+      expect(html).toContain('class="pill-btn active" aria-pressed="true"')
+      expect(html).toContain('class="pill-btn " aria-pressed="false"')
     })
 
     for (const [unitIndex, unit] of source.units.entries()) {
@@ -76,14 +78,14 @@ describe('TOEIC 實際頁面語言', () => {
     }
   })
 
-  it('繁中與日文解說側欄、繁中今日頁與課程工具的完整輸出保持原樣', () => {
+  it('繁中與日文解說側欄、繁中今日頁與課程工具保留內容及可及狀態', () => {
     const html = toeicCertificates.flatMap((_, index) => [
       renderSidebar(index, 'zh-Hant'), renderSidebar(index, 'zh-Hant', 'ja'),
       ...toeicCertificates[index].units.map((_, unitIndex) => renderToday(index, unitIndex, 'zh-Hant')),
     ])
     selectLocale('zh-Hant')
     html.push(renderToStaticMarkup(createElement(ToeicBuilder)))
-    // 修改前的真實 HTML 基準，涵蓋四個證書、24 個單元及日文解說側欄。
-    expect(createHash('sha256').update(html.join('\n')).digest('hex')).toBe('a5f80cbda3d6e7102d399a29b79e2b8d70f7a805db1532f58348432067585373')
+    // 四個證書、24 個單元及日文側欄；新增解說語言 pressed 與導覽裝飾 icon aria-hidden。
+    expect(createHash('sha256').update(html.join('\n')).digest('hex')).toBe('e9442f10c3da85d1a879fea76fdd56332e4a3d9c2885c56a4fda210c63b217c6')
   })
 })

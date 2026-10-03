@@ -20,19 +20,19 @@ export const ChineseToday: React.FC<Props> = ({ xp, onNavigate }) => {
           marginBottom: '1rem',
         }}
       >
-        <span className="signal-badge" style={{ background: '#f59e0b', color: '#000', fontWeight: 800 }}>
+        <span lang="ja" className="signal-badge" style={{ background: '#f59e0b', color: '#000', fontWeight: 800 }}>
           🌸 台湾華語・繁体字中国語スタジオ
         </span>
         <h2 style={{ margin: '0.4rem 0 0.2rem', fontSize: '1.4rem' }}>
           歡迎來到台湾華語學習空間！
         </h2>
-        <p className="hero-desc" style={{ margin: 0, fontSize: '0.85rem', color: 'var(--muted)', lineHeight: 1.5 }}>
+        <p lang="ja" className="hero-desc" style={{ margin: 0, fontSize: '0.85rem', color: 'var(--muted)', lineHeight: 1.5 }}>
           日本語母語者の視点に立ち、四声の音高カーブ・日中漢字の落とし穴・3秒文法直感判断・リアル台湾会話を最短ルートで完全攻略。
         </p>
       </div>
 
       {/* 4 大核心模組快速直通卡 */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.8rem', marginBottom: '1rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(240px, 100%), 1fr))', gap: '0.8rem', marginBottom: '1rem' }}>
         <button
           type="button"
           className="practice-card"
@@ -41,7 +41,7 @@ export const ChineseToday: React.FC<Props> = ({ xp, onNavigate }) => {
         >
           <div style={{ fontSize: '1.6rem', marginBottom: '0.3rem' }}>🗣️</div>
           <strong style={{ fontSize: '0.95rem', display: 'block' }}>拼音・注音與四聲聲調</strong>
-          <p style={{ margin: '0.2rem 0 0', fontSize: '0.74rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+          <p lang="ja" style={{ margin: '0.2rem 0 0', fontSize: '0.74rem', color: 'var(--muted)', lineHeight: 1.4 }}>
             五度標記法による四声の高さの可視化と有気音・そり舌音のカタカナ発音ガイド。
           </p>
           <span style={{ fontSize: '0.72rem', color: '#f59e0b', fontWeight: 700, marginTop: '0.5rem', display: 'inline-block' }}>
@@ -57,7 +57,7 @@ export const ChineseToday: React.FC<Props> = ({ xp, onNavigate }) => {
         >
           <div style={{ fontSize: '1.6rem', marginBottom: '0.3rem' }}>⛩️</div>
           <strong style={{ fontSize: '0.95rem', display: 'block' }}>日中同形異義語 (偽友詞)</strong>
-          <p style={{ margin: '0.2rem 0 0', fontSize: '0.74rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+          <p lang="ja" style={{ margin: '0.2rem 0 0', fontSize: '0.74rem', color: 'var(--muted)', lineHeight: 1.4 }}>
             「手紙＝トイレットペーパー」「汽車＝乗用車」など日本人が必ず陥る落とし穴を撃退。
           </p>
           <span style={{ fontSize: '0.72rem', color: '#f59e0b', fontWeight: 700, marginTop: '0.5rem', display: 'inline-block' }}>
@@ -73,7 +73,7 @@ export const ChineseToday: React.FC<Props> = ({ xp, onNavigate }) => {
         >
           <div style={{ fontSize: '1.6rem', marginBottom: '0.3rem' }}>⚡</div>
           <strong style={{ fontSize: '0.95rem', display: 'block' }}>3秒文法動作決策樹</strong>
-          <p style={{ margin: '0.2rem 0 0', fontSize: '0.74rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+          <p lang="ja" style={{ margin: '0.2rem 0 0', fontSize: '0.74rem', color: 'var(--muted)', lineHeight: 1.4 }}>
             把字句・被字句・了1/了2・是…的・過など、文法シグナルからの直感秒殺ルール。
           </p>
           <span style={{ fontSize: '0.72rem', color: '#f59e0b', fontWeight: 700, marginTop: '0.5rem', display: 'inline-block' }}>
@@ -89,7 +89,7 @@ export const ChineseToday: React.FC<Props> = ({ xp, onNavigate }) => {
         >
           <div style={{ fontSize: '1.6rem', marginBottom: '0.3rem' }}>💬</div>
           <strong style={{ fontSize: '0.95rem', display: 'block' }}>實用情境會話</strong>
-          <p style={{ margin: '0.2rem 0 0', fontSize: '0.74rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+          <p lang="ja" style={{ margin: '0.2rem 0 0', fontSize: '0.74rem', color: 'var(--muted)', lineHeight: 1.4 }}>
             ドリンクスタンドの甘さ・氷指定から夜市小吃、台北MRT乗車まで生きた台湾華語。
           </p>
           <span style={{ fontSize: '0.72rem', color: '#f59e0b', fontWeight: 700, marginTop: '0.5rem', display: 'inline-block' }}>

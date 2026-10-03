@@ -267,6 +267,7 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
               {/* 右側 60 FPS 幾何反應式畫布 */}
               <div className="studio-right-pane">
                 <LazyCalculusCanvas
+                  showFocusControl={activeNav !== 'canvas_lab'}
                   expression={expression}
                   mode={mode}
                   x0={x0}

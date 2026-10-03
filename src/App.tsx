@@ -109,7 +109,7 @@ function AppShell() {
     }
     document.title = titles[view]
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
-    applyDocumentLang(view === 'ja' ? 'ja' : locale)
+    applyDocumentLang(locale)
 
     let observer: MutationObserver | null = null
     const prepareMain = () => {

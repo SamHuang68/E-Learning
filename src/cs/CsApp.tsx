@@ -145,6 +145,7 @@ export const CsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
       {/* 核心主視窗 (零拉頁，單屏適配) */}
       <main
         id="main-content"
+        lang="zh-Hant"
         tabIndex={-1}
         className="content cs-main-viewport"
         style={{

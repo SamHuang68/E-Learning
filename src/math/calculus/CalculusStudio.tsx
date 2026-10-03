@@ -65,18 +65,21 @@ export const CalculusStudio: React.FC = () => {
           <button
             type="button"
             className={`studio-tab-btn ${activeTab === 'canvas_lab' ? 'active' : ''}`}
+            aria-pressed={activeTab === 'canvas_lab'}
             onClick={() => setActiveTab('canvas_lab')}
           >
             {c("🎨 幾何動態實驗室 (Canvas Lab)")}</button>
           <button
             type="button"
             className={`studio-tab-btn ${activeTab === 'step_solver' ? 'active' : ''}`}
+            aria-pressed={activeTab === 'step_solver'}
             onClick={() => setActiveTab('step_solver')}
           >
             {c("📝 步驟式推導解題器 (Step Solver)")}</button>
           <button
             type="button"
             className={`studio-tab-btn ${activeTab === 'adaptive_practice' ? 'active' : ''}`}
+            aria-pressed={activeTab === 'adaptive_practice'}
             onClick={() => setActiveTab('adaptive_practice')}
           >
             {c("🎯 4 階認知能力挑戰 (IRT θ: ")}{currentTheta >= 0 ? `+${currentTheta.toFixed(2)}` : currentTheta.toFixed(2)})
@@ -139,6 +142,7 @@ export const CalculusStudio: React.FC = () => {
         {/* 右側 60 FPS 幾何反應式畫布 */}
         <div className="studio-right-pane">
           <CalculusCanvas
+            showFocusControl={activeTab !== 'canvas_lab'}
             expression={expression}
             mode={mode}
             x0={x0}

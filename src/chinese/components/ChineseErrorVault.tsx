@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useLayoutEffect, useRef, useState } from 'react'
 import { TOCFL_MOCK_QUESTIONS, type TocflQuestion } from '../data/tocflExam'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
 
@@ -9,9 +9,22 @@ interface Props {
 }
 
 export const ChineseErrorVault: React.FC<Props> = ({ errorQuestionIds, onRemoveError, onEarnXp }) => {
+  const rootRef = useRef<HTMLDivElement>(null)
+  const headingRef = useRef<HTMLHeadingElement>(null)
+  const pendingFocusIndex = useRef<number | null>(null)
+  const [removalMessage, setRemovalMessage] = useState('')
   const errorList: TocflQuestion[] = TOCFL_MOCK_QUESTIONS.filter((q) =>
     errorQuestionIds.includes(q.id),
   )
+
+  useLayoutEffect(() => {
+    if (pendingFocusIndex.current === null) return
+    const buttons = rootRef.current?.querySelectorAll<HTMLButtonElement>('[data-vault-remove]')
+    const nextButton = buttons?.[Math.min(pendingFocusIndex.current, buttons.length - 1)]
+    const focusTarget = nextButton ?? headingRef.current
+    focusTarget?.focus()
+    pendingFocusIndex.current = null
+  }, [errorList.length])
 
   function speakChinese(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -22,18 +35,21 @@ export const ChineseErrorVault: React.FC<Props> = ({ errorQuestionIds, onRemoveE
     window.speechSynthesis.speak(utterance)
   }
 
-  function handleMaster(qId: string) {
+  function handleMaster(qId: string, index: number) {
+    pendingFocusIndex.current = index
+    setRemovalMessage(`已移除錯題，剩餘 ${errorList.length - 1} 題。`)
     onRemoveError(qId)
     onEarnXp(15)
     playCorrectSound()
   }
 
   return (
-    <div className="math-lab chinese-error-vault" style={{ width: '100%', maxWidth: '100%', minWidth: 0 }}>
+    <div ref={rootRef} className="math-lab chinese-error-vault" style={{ width: '100%', maxWidth: '100%', minWidth: 0 }}>
+      <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">{removalMessage}</p>
       {/* 標頭 */}
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
-          <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+          <h3 ref={headingRef} tabIndex={-1} style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <span>📕</span> 華語錯題本與盲點弱點分析 (Chinese Error Notebook)
           </h3>
           <p className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
@@ -82,8 +98,9 @@ export const ChineseErrorVault: React.FC<Props> = ({ errorQuestionIds, onRemoveE
                   <button
                     type="button"
                     className="btn-primary"
+                    data-vault-remove
                     style={{ fontSize: '0.72rem', padding: '0.15rem 0.55rem', background: '#10b981' }}
-                    onClick={() => handleMaster(q.id)}
+                    onClick={() => handleMaster(q.id, idx)}
                   >
                     ✓ 我已掌握 (+15 XP)
                   </button>
@@ -91,11 +108,11 @@ export const ChineseErrorVault: React.FC<Props> = ({ errorQuestionIds, onRemoveE
               </div>
 
               <h4 style={{ margin: '0.3rem 0 0.2rem', fontSize: '0.95rem' }}>{q.promptZh}</h4>
-              <div style={{ fontSize: '0.74rem', color: '#f59e0b', marginBottom: '0.4rem' }}>{q.promptPinyin}</div>
+              <div lang="zh-Latn" style={{ fontSize: '0.74rem', color: '#f59e0b', marginBottom: '0.4rem' }}>{q.promptPinyin}</div>
 
               <div style={{ background: 'var(--surface-soft)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)', fontSize: '0.76rem', color: 'var(--muted)' }}>
-                <div>正解：<strong style={{ color: '#10b981' }}>{q.options[q.correctIndex]?.zh}</strong> ({q.options[q.correctIndex]?.ja})</div>
-                <div style={{ marginTop: '0.2rem', color: '#38bdf8' }}>💡 <strong>解說：</strong>{q.explanationJa}</div>
+                <div>正解：<strong style={{ color: '#10b981' }}>{q.options[q.correctIndex]?.zh}</strong> (<span lang="ja">{q.options[q.correctIndex]?.ja}</span>)</div>
+                <div style={{ marginTop: '0.2rem', color: '#38bdf8' }}>💡 <strong>解說：</strong><span lang="ja">{q.explanationJa}</span></div>
               </div>
             </div>
           ))}

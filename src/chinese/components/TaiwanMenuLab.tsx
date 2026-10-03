@@ -102,22 +102,22 @@ export const TaiwanMenuLab: React.FC<Props> = ({ onEarnXp }) => {
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <span>🏮</span> 台灣夜市美食菜單圖鑑與生活文化實驗室 (Taiwan Food & Culture Lab)
           </h3>
-          <p className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
             夜市でそのまま使える台湾ローカルフードの注文フレーズ＆台湾人が日常で使う定番台湾語（閩南語）借用語を攻略！
           </p>
         </div>
       </div>
 
       {/* 分頁切換 */}
-      <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem' }}>
-        <button
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginBottom: '0.8rem' }}>
+        <button aria-pressed={activeTab === 'food'}
           type="button"
           className={`pill-btn ${activeTab === 'food' ? 'active' : ''}`}
           onClick={() => setActiveTab('food')}
         >
           🍜 經典美食菜單圖鑑 (Food Menu)
         </button>
-        <button
+        <button aria-pressed={activeTab === 'loanwords'}
           type="button"
           className={`pill-btn ${activeTab === 'loanwords' ? 'active' : ''}`}
           onClick={() => setActiveTab('loanwords')}
@@ -127,11 +127,11 @@ export const TaiwanMenuLab: React.FC<Props> = ({ onEarnXp }) => {
       </div>
 
       {activeTab === 'food' ? (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.8rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))', gap: '0.8rem' }}>
           {/* 左側：美食卡片網格 */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '0.4rem' }}>
             {TAIWAN_FOODS.map((food, idx) => (
-              <button
+              <button aria-pressed={selectedFood.nameZh === food.nameZh}
                 key={idx}
                 type="button"
                 className="practice-card"
@@ -154,7 +154,7 @@ export const TaiwanMenuLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <span style={{ fontSize: '1.8rem' }}>{food.emoji}</span>
                 <strong style={{ fontSize: '0.9rem' }}>{food.nameZh}</strong>
-                <span style={{ fontSize: '0.68rem', color: '#f59e0b' }}>{food.pinyin}</span>
+                <span lang="zh-Latn" style={{ fontSize: '0.68rem', color: '#f59e0b' }}>{food.pinyin}</span>
               </button>
             ))}
           </div>
@@ -166,7 +166,7 @@ export const TaiwanMenuLab: React.FC<Props> = ({ onEarnXp }) => {
                 <span style={{ fontSize: '2rem' }}>{selectedFood.emoji}</span>
                 <div>
                   <h3 style={{ margin: 0, fontSize: '1.2rem' }}>{selectedFood.nameZh}</h3>
-                  <div style={{ fontSize: '0.76rem', color: '#f59e0b' }}>{selectedFood.pinyin} · {selectedFood.bopomofo}</div>
+                  <div style={{ fontSize: '0.76rem', color: '#f59e0b' }}><span lang="zh-Latn">{selectedFood.pinyin}</span> · {selectedFood.bopomofo}</div>
                 </div>
               </div>
               <button
@@ -184,23 +184,23 @@ export const TaiwanMenuLab: React.FC<Props> = ({ onEarnXp }) => {
             </div>
 
             <div style={{ background: 'var(--surface-soft)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
-              <span style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block' }}>🇯🇵 日本語名・料理の特徴：</span>
-              <strong style={{ fontSize: '0.86rem', display: 'block', margin: '0.15rem 0 0.3rem' }}>{selectedFood.nameJa}</strong>
-              <p style={{ margin: 0, fontSize: '0.78rem', lineHeight: 1.45, color: 'var(--muted)' }}>{selectedFood.descriptionJa}</p>
+              <span lang="ja" style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block' }}>🇯🇵 日本語名・料理の特徴：</span>
+              <strong lang="ja" style={{ fontSize: '0.86rem', display: 'block', margin: '0.15rem 0 0.3rem' }}>{selectedFood.nameJa}</strong>
+              <p lang="ja" style={{ margin: 0, fontSize: '0.78rem', lineHeight: 1.45, color: 'var(--muted)' }}>{selectedFood.descriptionJa}</p>
             </div>
 
             <div style={{ background: 'rgba(245, 158, 11, 0.08)', padding: '0.6rem', borderRadius: '8px', border: '1px solid rgba(245, 158, 11, 0.3)' }}>
-              <span style={{ fontSize: '0.72rem', color: '#f59e0b', fontWeight: 700, display: 'block' }}>💡 屋台・店頭での注文カスタムのコツ：</span>
-              <p style={{ margin: '0.2rem 0 0', fontSize: '0.78rem', lineHeight: 1.45 }}>{selectedFood.orderCustomizationJa}</p>
+              <span lang="ja" style={{ fontSize: '0.72rem', color: '#f59e0b', fontWeight: 700, display: 'block' }}>💡 屋台・店頭での注文カスタムのコツ：</span>
+              <p lang="ja" style={{ margin: '0.2rem 0 0', fontSize: '0.78rem', lineHeight: 1.45 }}>{selectedFood.orderCustomizationJa}</p>
             </div>
           </div>
         </div>
       ) : (
         /* 生活台灣語借詞 */
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.8rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))', gap: '0.8rem' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
             {TAIWANESE_LOANWORDS.map((item) => (
-              <button
+              <button aria-pressed={selectedLoanword.id === item.id}
                 key={item.id}
                 type="button"
                 className="practice-card"
@@ -219,7 +219,7 @@ export const TaiwanMenuLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div>
                   <strong style={{ fontSize: '1rem' }}>{item.wordZh}</strong>
-                  <div style={{ fontSize: '0.74rem', color: '#10b981' }}>{item.taiwanesePinyin}</div>
+                  <div lang="zh-Latn" style={{ fontSize: '0.74rem', color: '#10b981' }}>{item.taiwanesePinyin}</div>
                 </div>
                 <span style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>{item.meaningJa.split('・')[0]}</span>
               </button>
@@ -230,25 +230,25 @@ export const TaiwanMenuLab: React.FC<Props> = ({ onEarnXp }) => {
             <div>
               <h3 style={{ margin: 0, fontSize: '1.3rem', color: '#10b981' }}>{selectedLoanword.wordZh}</h3>
               <div style={{ fontSize: '0.8rem', color: 'var(--muted)', marginTop: '0.15rem' }}>
-                台湾語読み：<strong>{selectedLoanword.taiwanesePinyin}</strong>
+                <span lang="ja">台湾語読み：</span><strong lang="zh-Latn">{selectedLoanword.taiwanesePinyin}</strong>
               </div>
             </div>
 
             <div style={{ background: 'var(--surface-soft)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
               <span style={{ fontSize: '0.72rem', color: 'var(--muted)' }}>意味：</span>
-              <strong style={{ fontSize: '0.88rem', display: 'block', margin: '0.2rem 0' }}>{selectedLoanword.meaningJa}</strong>
+              <strong lang="ja" style={{ fontSize: '0.88rem', display: 'block', margin: '0.2rem 0' }}>{selectedLoanword.meaningJa}</strong>
               <div style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>華語同義語：{selectedLoanword.meaningZh}</div>
             </div>
 
             <div style={{ background: 'var(--surface-soft)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
-              <span style={{ fontSize: '0.72rem', color: 'var(--muted)' }}>どんな場面で使う？：</span>
-              <p style={{ margin: '0.2rem 0 0', fontSize: '0.78rem', lineHeight: 1.45 }}>{selectedLoanword.usageSituationJa}</p>
+              <span lang="ja" style={{ fontSize: '0.72rem', color: 'var(--muted)' }}>どんな場面で使う？：</span>
+              <p lang="ja" style={{ margin: '0.2rem 0 0', fontSize: '0.78rem', lineHeight: 1.45 }}>{selectedLoanword.usageSituationJa}</p>
             </div>
 
             <div style={{ background: 'rgba(16, 185, 129, 0.08)', padding: '0.6rem', borderRadius: '8px', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
               <span style={{ fontSize: '0.72rem', color: '#10b981', fontWeight: 700 }}>例文：</span>
               <div style={{ fontSize: '0.86rem', fontWeight: 700, margin: '0.2rem 0' }}>{selectedLoanword.exampleZh}</div>
-              <div style={{ fontSize: '0.76rem', color: 'var(--muted)' }}>{selectedLoanword.exampleJa}</div>
+              <div lang="ja" style={{ fontSize: '0.76rem', color: 'var(--muted)' }}>{selectedLoanword.exampleJa}</div>
             </div>
           </div>
         </div>

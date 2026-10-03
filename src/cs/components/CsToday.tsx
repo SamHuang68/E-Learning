@@ -38,12 +38,12 @@ export const CsToday: React.FC<Props> = ({ progress, onNavigate }) => {
   )
 
   return (
-    <div className="cs-today">
+    <div className="cs-today" lang={locale}>
       <header className="cs-today-hero">
         <p className="eyebrow">{t('cs.today.unitOf', { n: unitIndex, total: CS_CURRICULUM.length })}</p>
         <h1>{t('cs.today.next', { title: csUnitTitle(locale, nextUnit, false) })}</h1>
         <WhyThisNext kind="unit" />
-        <p className="lede">{nextUnit.subtitle}</p>
+        <p className="lede" lang="en">{nextUnit.subtitle}</p>
         <p className="cs-today-progress-line">
           {t('cs.today.unitItems', { done: doneInUnit, total: nextUnit.questions.length })}
           {hasProgress ? ` · ${completedCount}/${totalQuestions}` : ''}

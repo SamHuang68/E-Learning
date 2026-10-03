@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { JAPANESE_SIGNAL_GROUPS, type GrammarSignalGroup, type JapaneseGrammarSignal } from '../data/grammarSignals'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
 
@@ -16,6 +16,7 @@ export const SignalDecisionView: React.FC<Props> = ({ onBack }) => {
   const [quizAnswers, setQuizAnswers] = useState<Record<string, number>>({})
   const [showSolutions, setShowSolutions] = useState<Record<string, boolean>>({})
   const [searchTerm, setSearchTerm] = useState<string>('')
+  const searchRef = useRef<HTMLInputElement>(null)
 
   const currentGroup: GrammarSignalGroup =
     JAPANESE_SIGNAL_GROUPS.find((g) => g.id === selectedGroupId) ?? JAPANESE_SIGNAL_GROUPS[0]
@@ -41,7 +42,7 @@ export const SignalDecisionView: React.FC<Props> = ({ onBack }) => {
   }
 
   return (
-    <div className="signal-decision-view">
+    <div className="signal-decision-view" lang="zh-Hant">
       <div className="signal-top-bar">
         <button type="button" className="btn-back" onClick={onBack}>
           ← 返回今日學習
@@ -52,6 +53,7 @@ export const SignalDecisionView: React.FC<Props> = ({ onBack }) => {
               key={g.id}
               type="button"
               className={`pill-btn ${g.id === currentGroup.id ? 'active' : ''}`}
+              aria-pressed={g.id === currentGroup.id}
               onClick={() => setSelectedGroupId(g.id)}
             >
               {g.title.split('：')[0]}
@@ -63,7 +65,9 @@ export const SignalDecisionView: React.FC<Props> = ({ onBack }) => {
       {/* 搜尋過濾列 */}
       <div style={{ margin: '0.6rem 0', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
         <input
+          ref={searchRef}
           type="text"
+          aria-label="搜尋文法訊號"
           placeholder="🔍 搜尋文法訊號（如：〜ておく、準備、授受、完了…）"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -82,12 +86,21 @@ export const SignalDecisionView: React.FC<Props> = ({ onBack }) => {
             type="button"
             className="pill-btn"
             style={{ fontSize: '0.75rem', padding: '0.35rem 0.6rem' }}
-            onClick={() => setSearchTerm('')}
+            onClick={() => {
+              setSearchTerm('')
+              searchRef.current?.focus()
+            }}
           >
             ✕ 清除
           </button>
         )}
       </div>
+
+      <p role="status" aria-live="polite" aria-atomic="true">
+        {filteredSignals.length === 0
+          ? '找不到符合的文法訊號，請更換搜尋詞或清除搜尋。'
+          : `找到 ${filteredSignals.length} 組文法訊號。`}
+      </p>
 
       {/* 標頭卡片 */}
       <div className="signal-hero-card">
@@ -113,7 +126,7 @@ export const SignalDecisionView: React.FC<Props> = ({ onBack }) => {
               {filteredSignals.map((sig) => (
                 <tr key={sig.id}>
                   <th scope="row" className="pattern-cell">
-                    <strong>{sig.pattern}</strong>
+                    <strong lang="ja">{sig.pattern}</strong>
                     <span className="cat-tag">{sig.category}</span>
                   </th>
                   <td className="signal-trigger-cell">{sig.signalTrigger}</td>
@@ -138,15 +151,15 @@ export const SignalDecisionView: React.FC<Props> = ({ onBack }) => {
           return (
             <div key={sig.id} className="signal-item-card">
               <div className="item-header">
-                <div className="pattern-badge">{sig.pattern}</div>
+                <div className="pattern-badge" lang="ja">{sig.pattern}</div>
                 <div className="meaning-tag">{sig.meaningZh}</div>
               </div>
 
               {/* 經典例句 */}
               <div className="contrast-box">
                 <span className="box-title">經典對比例句：</span>
-                <p className="ja-sent">{sig.contrastExample.ja}</p>
-                <p className="kana-sent">{sig.contrastExample.kana}</p>
+                <p className="ja-sent" lang="ja">{sig.contrastExample.ja}</p>
+                <p className="kana-sent" lang="ja">{sig.contrastExample.kana}</p>
                 <p className="zh-sent">{sig.contrastExample.zh}</p>
                 <div className="note-pill">💡 {sig.contrastExample.note}</div>
               </div>
@@ -176,7 +189,9 @@ export const SignalDecisionView: React.FC<Props> = ({ onBack }) => {
                       <button
                         key={optIdx}
                         type="button"
+                        lang="ja"
                         className={btnClass}
+                        aria-pressed={isSubmitted && userAnswer === optIdx}
                         onClick={() => handleSelectOption(sig.id, optIdx)}
                       >
                         {String.fromCharCode(65 + optIdx)}. {opt}
@@ -185,14 +200,14 @@ export const SignalDecisionView: React.FC<Props> = ({ onBack }) => {
                   })}
                 </div>
 
-                {isSubmitted && (
-                  <div className={`quiz-feedback ${isCorrect ? 'correct' : 'wrong'}`}>
+                  <div role="status" aria-live="polite" aria-atomic="true" className={isSubmitted ? `quiz-feedback ${isCorrect ? 'correct' : 'wrong'}` : undefined}>
+                    {isSubmitted && <>
                     <p>
                       {isCorrect ? '🎉 答對了！精準命中動作訊號！' : '❌ 選錯囉！再看一次解析：'}
                     </p>
                     <p className="expl-text">{sig.quiz.explanation}</p>
+                    </>}
                   </div>
-                )}
               </div>
             </div>
           )

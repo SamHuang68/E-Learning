@@ -9,7 +9,7 @@ type Props = {
 
 /** Mount Archify HTML only when the slot is near the viewport. Keep it once shown. */
 export const DeferredArchifyIframe: React.FC<Props> = ({ src, title }) => {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const slotRef = useRef<HTMLDivElement | null>(null)
   const [inView, setInView] = useState(false)
 
@@ -52,7 +52,7 @@ export const DeferredArchifyIframe: React.FC<Props> = ({ src, title }) => {
           }}
         >
           <strong>{title}</strong>
-          <span>{t('cs.archify.iframe.pending')}</span>
+          <span><span lang={locale}>{t('cs.archify.iframe.pending')}</span></span>
         </p>
       )}
     </div>

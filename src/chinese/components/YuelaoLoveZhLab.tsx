@@ -63,7 +63,7 @@ export const YuelaoLoveZhLab: React.FC<Props> = ({ onEarnXp }) => {
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <span>🏮</span> 台灣七夕霞海城隍廟月老求紅線實驗室 (Yuelao Love Lab)
           </h3>
-          <p className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
             台湾のロマンチックな伝統信仰「七夕・月下老人」！「迪化街霞海城隍廟・求紅線鉛錢過香爐・擲筊聖筊求良緣」を徹底マスター！
           </p>
         </div>
@@ -133,7 +133,7 @@ export const YuelaoLoveZhLab: React.FC<Props> = ({ onEarnXp }) => {
         {YUELAO_OFFERINGS.map((off) => {
           const isSelected = off.id === activeOffId
           return (
-            <button
+            <button aria-pressed={isSelected}
               key={off.id}
               type="button"
               className={`practice-card ${isSelected ? 'active' : ''}`}
@@ -161,7 +161,7 @@ export const YuelaoLoveZhLab: React.FC<Props> = ({ onEarnXp }) => {
       {/* 場景切換膠囊 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
         {YUELAO_LOVE_DIALOGUES.map((item, idx) => (
-          <button
+          <button aria-pressed={selectedIdx === idx}
             key={item.id}
             type="button"
             className={`pill-btn ${selectedIdx === idx ? 'active' : ''}`}
@@ -173,12 +173,12 @@ export const YuelaoLoveZhLab: React.FC<Props> = ({ onEarnXp }) => {
       </div>
 
       {/* 雙欄佈局 */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.8rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))', gap: '0.8rem' }}>
         {/* 左側：對話實況 */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(236, 72, 153, 0.15)', color: '#ec4899', fontWeight: 700 }}>
-              {activeItem.locationZh} ({activeItem.locationJa})
+              {activeItem.locationZh} (<span lang="ja">{activeItem.locationJa}</span>)
             </span>
           </div>
 
@@ -198,9 +198,9 @@ export const YuelaoLoveZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#ec4899' }}>
-                    {line.speakerJa}：
+                    <span lang="ja">{line.speakerJa}</span>：
                   </span>
-                  <button
+                  <button aria-label={`朗讀：${line.zh}`}
                     type="button"
                     style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
                     onClick={() => speakChinese(line.zh)}
@@ -209,8 +209,8 @@ export const YuelaoLoveZhLab: React.FC<Props> = ({ onEarnXp }) => {
                   </button>
                 </div>
                 <strong style={{ fontSize: '0.86rem', color: 'var(--text)' }}>{line.zh}</strong>
-                <span style={{ fontSize: '0.72rem', color: '#d97706' }}>{line.pinyin}</span>
-                <span style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
+                <span lang="zh-Latn" style={{ fontSize: '0.72rem', color: '#d97706' }}>{line.pinyin}</span>
+                <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
                   {line.ja}
                 </span>
               </div>
@@ -220,7 +220,7 @@ export const YuelaoLoveZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
         {/* 右側：月老民俗名詞 */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          <span style={{ fontSize: '0.74rem', color: '#ec4899', fontWeight: 700, display: 'block' }}>
+          <span lang="ja" style={{ fontSize: '0.74rem', color: '#ec4899', fontWeight: 700, display: 'block' }}>
             💡 台湾月下老人・縁結び豆知識（Yuelao Tips）
           </span>
 
@@ -237,9 +237,9 @@ export const YuelaoLoveZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <strong style={{ fontSize: '0.88rem', color: '#ec4899' }}>{vocab.termZh}</strong>
-                  <span style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
+                  <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
                 </div>
-                <p style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+                <p lang="ja" style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
                   {vocab.tipJa}
                 </p>
               </div>

@@ -71,7 +71,7 @@ export const CsSidebar: React.FC<Props> = ({
         {NAV_ITEMS.map((item) => {
           const isActive = activeSection === item.id
           return (
-            <button
+            <button aria-pressed={isActive}
               key={item.id}
               type="button"
               className={`practice-card ${isActive ? 'active' : ''}`}

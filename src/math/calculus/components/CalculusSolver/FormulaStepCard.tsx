@@ -39,11 +39,16 @@ export const FormulaStepCard: React.FC<Props> = ({
       className={`formula-step-card ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}`}
       onClick={onSelect}
     >
-      <div className="step-card-header">
+      <button
+        type="button"
+        className="step-card-header"
+        aria-current={isActive ? 'step' : undefined}
+        onClick={(event) => { event.stopPropagation(); onSelect() }}
+      >
         <span className="step-number-badge">Step {step.stepNumber}</span>
         <strong className="step-rule-name">{c(step.ruleName)}</strong>
         {isCompleted && <span className="step-check-icon">✓</span>}
-      </div>
+      </button>
 
       <div className="step-card-body">
         <div className="step-formula-box">
@@ -85,6 +90,7 @@ export const FormulaStepCard: React.FC<Props> = ({
                     className={btnCls}
                     onClick={() => handleChooseOption(idx)}
                     disabled={hasAnswered}
+                    aria-pressed={isSelected}
                   >
                     {c(opt)}
                   </button>
@@ -92,7 +98,7 @@ export const FormulaStepCard: React.FC<Props> = ({
               })}
             </div>
             {hasAnswered && (
-              <p className="checkpoint-hint">
+              <p className="checkpoint-hint" role="status" aria-atomic="true">
                 {selectedOption === step.checkpoint.correctIndex
                   ? c('🎉 正確！概念掌握清晰！')
                   : `⚠️ ${c(step.checkpoint.hint)}`}

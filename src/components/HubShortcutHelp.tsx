@@ -29,7 +29,7 @@ export function HubShortcutHelp() {
     const dialog = dialogRef.current
     if (!dialog) return
     if (open) {
-      openerRef.current =
+      openerRef.current ??=
         document.activeElement instanceof HTMLElement ? document.activeElement : triggerRef.current
       if (!dialog.open) dialog.showModal()
       dialog.querySelector<HTMLElement>('button')?.focus()
@@ -43,13 +43,16 @@ export function HubShortcutHelp() {
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
-      if (isTypingTarget(event.target)) return
+      if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey || isTypingTarget(event.target)) return
+      const activeDialog = document.querySelector('dialog[open]')
+      if (activeDialog && activeDialog !== dialogRef.current) return
       if (event.key === '?' || (event.key === '/' && event.shiftKey)) {
         event.preventDefault()
         setOpen((prev) => !prev)
         return
       }
       if (event.key === '/' && !event.shiftKey) {
+        if (open) return
         event.preventDefault()
         document.getElementById('hub-track-search')?.focus()
         return
@@ -69,7 +72,10 @@ export function HubShortcutHelp() {
         ref={triggerRef}
         type="button"
         className="hub-shortcut-trigger"
-        onClick={() => setOpen(true)}
+        onClick={(event) => {
+          openerRef.current = event.currentTarget
+          setOpen(true)
+        }}
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-controls="hub-shortcut-dialog"

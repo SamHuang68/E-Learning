@@ -44,7 +44,7 @@ export const IdiomsLab: React.FC<Props> = ({ onEarnXp }) => {
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <span>📜</span> 成語故事與台灣生活諺語實驗室 (Idioms & Proverbs Lab)
           </h3>
-          <p className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
             台湾人の日常会話やニュースで頻出する「四字熟語」と、台湾の生活感あふれる「諺（ことわざ）」の由来・使い方をマスター！
           </p>
         </div>
@@ -53,7 +53,7 @@ export const IdiomsLab: React.FC<Props> = ({ onEarnXp }) => {
       {/* 膠囊選擇列 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
         {CHINESE_IDIOMS.map((item) => (
-          <button
+          <button aria-pressed={activeIdiom.id === item.id}
             key={item.id}
             type="button"
             className={`pill-btn ${activeIdiom.id === item.id ? 'active' : ''}`}
@@ -65,7 +65,7 @@ export const IdiomsLab: React.FC<Props> = ({ onEarnXp }) => {
       </div>
 
       {/* 內容分欄佈局 */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.8rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))', gap: '0.8rem' }}>
         {/* 左側：成語由來與文化解析 */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.4rem' }}>
@@ -77,7 +77,7 @@ export const IdiomsLab: React.FC<Props> = ({ onEarnXp }) => {
                 {activeIdiom.idiomZh}
               </h2>
               <div style={{ fontSize: '0.76rem', color: 'var(--muted)' }}>
-                {activeIdiom.pinyin} · {activeIdiom.bopomofo}
+                <span lang="zh-Latn">{activeIdiom.pinyin}</span> · {activeIdiom.bopomofo}
               </div>
             </div>
 
@@ -92,24 +92,24 @@ export const IdiomsLab: React.FC<Props> = ({ onEarnXp }) => {
           </div>
 
           <div style={{ background: 'var(--surface-soft)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
-            <span style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block' }}>🇯🇵 日本語の意味：</span>
-            <strong style={{ fontSize: '0.88rem' }}>{activeIdiom.meaningJa}</strong>
+            <span lang="ja" style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block' }}>🇯🇵 日本語の意味：</span>
+            <strong lang="ja" style={{ fontSize: '0.88rem' }}>{activeIdiom.meaningJa}</strong>
           </div>
 
           <div style={{ background: 'rgba(245, 158, 11, 0.08)', padding: '0.6rem', borderRadius: '8px', border: '1px solid rgba(245, 158, 11, 0.3)' }}>
-            <span style={{ fontSize: '0.72rem', color: '#f59e0b', fontWeight: 700, display: 'block' }}>📖 由来・背景ストーリー：</span>
-            <p style={{ margin: '0.2rem 0 0', fontSize: '0.78rem', lineHeight: 1.45 }}>{activeIdiom.originStoryJa}</p>
+            <span lang="ja" style={{ fontSize: '0.72rem', color: '#f59e0b', fontWeight: 700, display: 'block' }}>📖 由来・背景ストーリー：</span>
+            <p lang="ja" style={{ margin: '0.2rem 0 0', fontSize: '0.78rem', lineHeight: 1.45 }}>{activeIdiom.originStoryJa}</p>
           </div>
 
           <div style={{ background: 'var(--surface-soft)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
-            <span style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block' }}>どんな場面で使う？：</span>
-            <p style={{ margin: '0.2rem 0 0', fontSize: '0.78rem', lineHeight: 1.45 }}>{activeIdiom.usageSituationJa}</p>
+            <span lang="ja" style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block' }}>どんな場面で使う？：</span>
+            <p lang="ja" style={{ margin: '0.2rem 0 0', fontSize: '0.78rem', lineHeight: 1.45 }}>{activeIdiom.usageSituationJa}</p>
           </div>
 
           <div style={{ background: 'var(--surface-soft)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
             <span style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block' }}>実用会話例文：</span>
             <div style={{ fontSize: '0.86rem', fontWeight: 700, margin: '0.15rem 0' }}>{activeIdiom.exampleSentenceZh}</div>
-            <div style={{ fontSize: '0.76rem', color: 'var(--muted)' }}>{activeIdiom.exampleSentenceJa}</div>
+            <div lang="ja" style={{ fontSize: '0.76rem', color: 'var(--muted)' }}>{activeIdiom.exampleSentenceJa}</div>
           </div>
         </div>
 
@@ -169,7 +169,7 @@ export const IdiomsLab: React.FC<Props> = ({ onEarnXp }) => {
 
           {showQuizResult[activeIdiom.id] && (
             <div style={{ background: 'var(--surface-soft)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)', fontSize: '0.76rem', color: 'var(--muted)', lineHeight: 1.45 }}>
-              💡 <strong>解説：</strong>{activeIdiom.quiz.explanationJa}
+              💡 <strong>解説：</strong><span lang="ja">{activeIdiom.quiz.explanationJa}</span>
             </div>
           )}
         </div>

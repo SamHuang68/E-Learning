@@ -31,7 +31,7 @@ export const FalseFriendsLab: React.FC<Props> = ({ onEarnXp }) => {
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <span>⛩️</span> 日中同形異義語・偽友詞實驗室 (False Friends & Kanji Pitfalls)
           </h3>
-          <p className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
             同じ漢字でも日中で意味がまったく異なる要注意単語！「手紙・汽車・勉強・愛人・大丈夫」などの大誤解を完全防止。
           </p>
         </div>
@@ -40,7 +40,7 @@ export const FalseFriendsLab: React.FC<Props> = ({ onEarnXp }) => {
       {/* 類別篩選 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
         {['all', '日常生活', '交通飲食', '職場商務', '感情社交'].map((tag) => (
-          <button
+          <button aria-pressed={selectedTag === tag}
             key={tag}
             type="button"
             className={`pill-btn ${selectedTag === tag ? 'active' : ''}`}
@@ -51,13 +51,13 @@ export const FalseFriendsLab: React.FC<Props> = ({ onEarnXp }) => {
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.8rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))', gap: '0.8rem' }}>
         {/* 左側：單字選單清單 */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', maxHeight: '420px', overflowY: 'auto' }}>
           {filteredItems.map((item) => {
             const isSelected = selectedItem.id === item.id
             return (
-              <button
+              <button aria-pressed={isSelected}
                 key={item.id}
                 type="button"
                 className="practice-card"
@@ -81,7 +81,7 @@ export const FalseFriendsLab: React.FC<Props> = ({ onEarnXp }) => {
                   <strong style={{ fontSize: '1.05rem', color: isSelected ? '#f59e0b' : 'var(--text-main)' }}>
                     {item.wordZh}
                   </strong>
-                  <span style={{ fontSize: '0.74rem', color: 'var(--muted)', marginLeft: '0.4rem' }}>
+                  <span lang="zh-Latn" style={{ fontSize: '0.74rem', color: 'var(--muted)', marginLeft: '0.4rem' }}>
                     {item.pinyin}
                   </span>
                   <span style={{ fontSize: '0.65rem', color: '#10b981', marginLeft: '0.3rem' }}>
@@ -116,7 +116,7 @@ export const FalseFriendsLab: React.FC<Props> = ({ onEarnXp }) => {
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <h2 style={{ margin: 0, fontSize: '1.4rem' }}>{selectedItem.wordZh}</h2>
                 <span style={{ fontSize: '0.85rem', color: '#f59e0b', fontFamily: 'monospace' }}>
-                  {selectedItem.pinyin} ({selectedItem.bopomofo})
+                  <span lang="zh-Latn">{selectedItem.pinyin}</span> ({selectedItem.bopomofo})
                 </span>
                 <span style={{ fontSize: '0.75rem', color: '#10b981', background: 'rgba(16,185,129,0.1)', padding: '0.1rem 0.4rem', borderRadius: '4px' }}>
                   HSK {selectedItem.hskLevel} 等級 / Level
@@ -138,27 +138,27 @@ export const FalseFriendsLab: React.FC<Props> = ({ onEarnXp }) => {
           {/* 日中對比矩陣 */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
             <div style={{ background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.25)', padding: '0.6rem', borderRadius: '8px' }}>
-              <span style={{ fontSize: '0.7rem', color: '#ef4444', fontWeight: 700, display: 'block' }}>🇹🇼 中国語の意味</span>
-              <strong style={{ fontSize: '0.85rem', color: '#ef4444' }}>{selectedItem.meaningZhInJa}</strong>
+              <span lang="ja" style={{ fontSize: '0.7rem', color: '#ef4444', fontWeight: 700, display: 'block' }}>🇹🇼 中国語の意味</span>
+              <strong lang="ja" style={{ fontSize: '0.85rem', color: '#ef4444' }}>{selectedItem.meaningZhInJa}</strong>
             </div>
             <div style={{ background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.25)', padding: '0.6rem', borderRadius: '8px' }}>
-              <span style={{ fontSize: '0.7rem', color: '#3b82f6', fontWeight: 700, display: 'block' }}>🇯🇵 日本語の「{selectedItem.wordJa}」</span>
-              <strong style={{ fontSize: '0.85rem', color: '#3b82f6' }}>{selectedItem.meaningJaInJa}</strong>
+              <span style={{ fontSize: '0.7rem', color: '#3b82f6', fontWeight: 700, display: 'block' }}><span lang="ja">🇯🇵 日本語の「</span><span lang="ja">{selectedItem.wordJa}</span>」</span>
+              <strong lang="ja" style={{ fontSize: '0.85rem', color: '#3b82f6' }}>{selectedItem.meaningJaInJa}</strong>
             </div>
           </div>
 
           {/* 避坑地雷警示 */}
           <div style={{ background: 'var(--surface-soft)', padding: '0.65rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
-            <span style={{ fontSize: '0.74rem', color: '#f59e0b', fontWeight: 700, display: 'block' }}>
+            <span lang="ja" style={{ fontSize: '0.74rem', color: '#f59e0b', fontWeight: 700, display: 'block' }}>
               ⚠️ ネイティブの避坑アドバイス：
             </span>
-            <p style={{ margin: '0.2rem 0 0', fontSize: '0.78rem', lineHeight: 1.45 }}>{selectedItem.pitfallAlertJa}</p>
+            <p lang="ja" style={{ margin: '0.2rem 0 0', fontSize: '0.78rem', lineHeight: 1.45 }}>{selectedItem.pitfallAlertJa}</p>
           </div>
 
           {/* 情境例句與發音跟讀 */}
           <div style={{ background: 'var(--surface-soft)', padding: '0.65rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.3rem' }}>
-              <span style={{ fontSize: '0.72rem', color: 'var(--muted)', fontWeight: 600 }}>📝 リアル例文：</span>
+              <span lang="ja" style={{ fontSize: '0.72rem', color: 'var(--muted)', fontWeight: 600 }}>📝 リアル例文：</span>
               <button
                 type="button"
                 className="pill-btn"
@@ -169,8 +169,8 @@ export const FalseFriendsLab: React.FC<Props> = ({ onEarnXp }) => {
               </button>
             </div>
             <strong style={{ fontSize: '0.9rem', display: 'block' }}>{selectedItem.exampleSentenceZh}</strong>
-            <div style={{ fontSize: '0.72rem', color: '#f59e0b' }}>{selectedItem.examplePinyin}</div>
-            <div style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.2rem' }}>
+            <div lang="zh-Latn" style={{ fontSize: '0.72rem', color: '#f59e0b' }}>{selectedItem.examplePinyin}</div>
+            <div lang="ja" style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.2rem' }}>
               {selectedItem.exampleTranslationJa}
             </div>
           </div>

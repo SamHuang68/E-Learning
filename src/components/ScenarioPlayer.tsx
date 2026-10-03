@@ -60,7 +60,7 @@ export function ScenarioPlayer({ track, scenarios, onComplete, onExit }: Props) 
 
   if (!scenario || !beat) {
     return (
-      <section className="practice-view scenario-player">
+      <section className="practice-view scenario-player" lang="zh-Hant">
         <p className="eyebrow">SCENARIO</p>
         <div className="practice-card">
           <div className="flash-face">
@@ -73,7 +73,7 @@ export function ScenarioPlayer({ track, scenarios, onComplete, onExit }: Props) 
   }
 
   return (
-    <section className="practice-view scenario-player">
+    <section className="practice-view scenario-player" lang="zh-Hant">
       {onExit ? (
         <button type="button" className="ghost back" onClick={onExit}>
           ← 返回
@@ -124,7 +124,7 @@ export function ScenarioPlayer({ track, scenarios, onComplete, onExit }: Props) 
                 disabled={done}
                 onClick={() => choose(option)}
               >
-                {option.text}
+                <span lang={track}>{option.text}</span>
                 <span className="flash-meaning">{option.register}</span>
               </button>
             )

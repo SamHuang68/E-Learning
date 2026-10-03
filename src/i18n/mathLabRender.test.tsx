@@ -134,12 +134,12 @@ describe('數學教具實際畫面', () => {
 })
 import { MathVisualHub, type DiagramTabId } from '../math/components/MathVisualHub'
 const hubBaselines: Record<string, string> = {
-  "balance": "27dd500e691df3a480ff90ae2ff8a2e41b9c476d5a88eb0d6afbfac6b46fefb4",
-  "bar": "39b5aa90ad69f96e7e05c70708b9336ab08975c0289abe6f138b851c0db4d581",
-  "tiles": "5dbc8303fb6927d3f4ddf52ea69d8bb5a54a7365cd6b31a6744f5a9564f401b5",
-  "matrix": "f71e608836a86fdd0d493a00efcc21b531afd4daacd5edc8aedc1721844126eb",
-  "riemann": "565655002a69eaac48c8490ca74432387c4741e01ff2d4bb776505304fb2b243",
-  "proofs": "fb55d7fdc0551ce9dcb32dffd1f88b2e11a2ae681548b1d153bc31b464901e9f"
+  "balance": "7e2f4d95b2f613c080473cda983c44fadc28369ed9383186f03ef4f776620379",
+  "bar": "fcbdad54ba1767a06c2f796fe56483d40a69eb858891ac05c37606cb2a6394bc",
+  "tiles": "959c8250ab62ff4b0ceddf71a24aa9189bd40f90acd7ec0ae15e366421a4bb25",
+  "matrix": "e50bc54e163199a5362fcfdb03943cb8bb7d6a5fd0b36836a85d8fdac675513b",
+  "riemann": "d098e6c6958ea7d17567c2d0f65af1eb9000cfd91cabe12f14b38af24b36f01e",
+  "proofs": "ebc952b493130bb5c111d3ea9bc81cb63bf99ac7aefa289ecabb3d395b50d1e8"
 }
 for (const tab of ['balance', 'bar', 'tiles', 'matrix', 'riemann', 'proofs'] as DiagramTabId[]) {
   for (const locale of ['en', 'zh-Hant'] as const) it('圖解中心 ' + tab + ' ' + locale, () => {

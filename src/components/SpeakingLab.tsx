@@ -87,7 +87,7 @@ export function SpeakingLab({ prompts, lang = 'ja', onComplete }: Props) {
 
   if (!prompt) {
     return (
-      <section className="practice-view speaking-lab">
+      <section className="practice-view speaking-lab" lang="zh-Hant">
         <p className="eyebrow">SPEAKING</p>
         <div className="practice-card">
           <div className="flash-face">
@@ -100,7 +100,7 @@ export function SpeakingLab({ prompts, lang = 'ja', onComplete }: Props) {
   }
 
   return (
-    <section className="practice-view speaking-lab">
+    <section className="practice-view speaking-lab" lang="zh-Hant">
       <p className="eyebrow">SPEAKING · SHADOWING</p>
       <h1>
         跟讀實驗室
@@ -110,8 +110,8 @@ export function SpeakingLab({ prompts, lang = 'ja', onComplete }: Props) {
       </h1>
       <div className="practice-card">
         <div className="flash-face">
-          <strong>{promptTitle(prompt)}</strong>
-          <p>{promptText(prompt)}</p>
+          <strong lang={promptLang(prompt, lang)}>{promptTitle(prompt)}</strong>
+          <p lang={promptLang(prompt, lang)}>{promptText(prompt)}</p>
           {'meaning' in prompt ? (
             <span className="flash-meaning">{prompt.meaning}</span>
           ) : null}
@@ -179,7 +179,7 @@ export function SpeakingLab({ prompts, lang = 'ja', onComplete }: Props) {
             style={{ width: '100%', marginTop: '0.4rem' }}
           />
         ) : null}
-        {message ? <p className="status-line warn">{message}</p> : null}
+        <p className={message ? 'status-line warn' : undefined} role="status" aria-live="polite">{message}</p>
         <div className="flash-actions">
           <button
             type="button"

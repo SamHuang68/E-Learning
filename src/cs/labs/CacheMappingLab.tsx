@@ -103,7 +103,7 @@ export const CacheMappingLab: React.FC<Props> = ({ onEarnXp }) => {
           </label>
           <div style={{ display: 'flex', gap: '0.3rem' }}>
             {[16, 32, 64].map((sz) => (
-              <button
+              <button aria-pressed={cacheSizeKB === sz}
                 key={sz}
                 type="button"
                 onClick={() => setCacheSizeKB(sz)}
@@ -131,7 +131,7 @@ export const CacheMappingLab: React.FC<Props> = ({ onEarnXp }) => {
           </label>
           <div style={{ display: 'flex', gap: '0.3rem' }}>
             {[1, 2, 4, 8].map((w) => (
-              <button
+              <button aria-pressed={ways === w}
                 key={w}
                 type="button"
                 onClick={() => setWays(w)}
@@ -159,7 +159,7 @@ export const CacheMappingLab: React.FC<Props> = ({ onEarnXp }) => {
           </label>
           <div style={{ display: 'flex', gap: '0.3rem' }}>
             {[32, 64].map((ls) => (
-              <button
+              <button aria-pressed={lineSizeBytes === ls}
                 key={ls}
                 type="button"
                 onClick={() => setLineSizeBytes(ls)}
@@ -185,7 +185,7 @@ export const CacheMappingLab: React.FC<Props> = ({ onEarnXp }) => {
           <label style={{ fontSize: '0.76rem', color: 'var(--muted)', display: 'block', marginBottom: '0.3rem' }}>
             32-bit 十六進位位址 (0x):
           </label>
-          <input
+          <input aria-label="32位元記憶體位址（十六進位）"
             type="text"
             value={hexAddress}
             onChange={(e) => setHexAddress(e.target.value.toUpperCase())}

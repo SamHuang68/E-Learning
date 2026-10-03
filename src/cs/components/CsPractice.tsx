@@ -16,7 +16,7 @@ export const CsPractice: React.FC<Props> = ({
   onRecordError,
   initialUnitId,
 }) => {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const [activeUnitId, setActiveUnitId] = useState<string>(
     initialUnitId && CS_CURRICULUM.some((u) => u.id === initialUnitId)
       ? initialUnitId
@@ -51,7 +51,7 @@ export const CsPractice: React.FC<Props> = ({
           const isActive = u.id === activeUnitId
           const unitCompleted = u.questions.every((q) => completedQuestions.includes(q.id))
           return (
-            <button
+            <button aria-pressed={isActive}
               key={u.id}
               type="button"
               className={`pill-btn ${isActive ? 'active' : ''}`}
@@ -76,7 +76,7 @@ export const CsPractice: React.FC<Props> = ({
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
           <div>
             <span style={{ fontSize: '0.7rem', padding: '0.1rem 0.4rem', borderRadius: '999px', background: 'rgba(37, 99, 235, 0.15)', color: '#2563eb', fontWeight: 700 }}>
-              {t(csStrandMessageKey(currentUnit.strand))} · {currentUnit.band}
+              <span lang={locale}>{t(csStrandMessageKey(currentUnit.strand))}</span> · {currentUnit.band}
             </span>
             <h3 style={{ margin: '0.3rem 0 0.1rem', fontSize: '1.05rem' }}>{currentUnit.title}</h3>
             <span style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>{currentUnit.subtitle}</span>
@@ -154,6 +154,8 @@ export const CsPractice: React.FC<Props> = ({
                         key={optIdx}
                         type="button"
                         className="practice-card"
+                        aria-pressed={isChosen}
+                        aria-disabled={Boolean(isSubmitted)}
                         style={{
                           padding: '0.5rem 0.8rem',
                           borderRadius: '8px',

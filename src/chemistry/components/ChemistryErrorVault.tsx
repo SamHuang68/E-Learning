@@ -10,7 +10,7 @@ import { loadStemVaultContentCopy, localizeStemVaultQuestion, stemVaultCopy } fr
  * 4. 零溢出與平滑滾動：KaTeX 化學與數學算式具備平滑滾動保護，卡片極致緊湊排版，手機端 0 橫向溢出。
  */
 
-import React, { use, useState, useMemo } from 'react'
+import React, { use, useState, useMemo, useEffect, useRef, useId } from 'react'
 import {
   getAllChemistryUnits,
   chemistryStrandMessageKey,
@@ -260,6 +260,33 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
   const [searchQuery, setSearchQuery] = useState<string>('')
   // 狀態：難度篩選
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all')
+  const searchRef = useRef<HTMLInputElement>(null)
+  const emptyTitleRef = useRef<HTMLHeadingElement>(null)
+  const pendingRemoval = useRef<{ id: string; title: string } | null>(null)
+  const [removedQuestion, setRemovedQuestion] = useState<{ id: string; title: string } | null>(null)
+  const stepsIdPrefix = useId()
+
+  useEffect(() => {
+    const pending = pendingRemoval.current
+    if (!pending || errorQuestionIds.includes(pending.id)) return
+    pendingRemoval.current = null
+    setRemovedQuestion(pending)
+    // Only announce and restore focus once the parent confirms the removal.
+    const focusTarget = searchRef.current ?? emptyTitleRef.current
+    focusTarget?.focus()
+  }, [errorQuestionIds])
+
+  function removeQuestion(question: { id: string; title: string }) {
+    pendingRemoval.current = { id: question.id, title: question.title }
+    onRemoveError(question.id)
+  }
+
+  const removedTitle = removedQuestion === null ? ''
+    : stemVaultCopy(locale, removedQuestion.title).replace(/\{id\}/g, () => removedQuestion.id)
+  const removalNotice = removedQuestion === null ? '' : locale === 'en'
+    ? `Removed “${removedTitle}” from the error notebook. ${errorQuestionIds.length} items remain.`
+    : `已將「${removedTitle}」移出錯題本，還有 ${errorQuestionIds.length} 題待複習。`
+  const removalStatus = <div className="vault-removal-status" role="status" aria-atomic="true" style={{ overflowWrap: 'anywhere' }}>{removalNotice}</div>
 
   // 1. 建立全域雙軌題庫檢索池 (單元題庫 + 模擬考題庫)
   const allEnrichedQuestionsMap = useMemo(() => {
@@ -383,8 +410,9 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
   if (errorQuestions.length === 0) {
     return (
       <div className="practice-card compact-vault-card" style={{ textAlign: 'center', padding: '2.5rem 1.5rem' }}>
+        {removalStatus}
         <div style={{ fontSize: '2.8rem', marginBottom: '0.6rem' }}>🎉</div>
-        <h3 style={{ margin: '0 0 0.4rem', color: '#059669' }}>{stemVaultCopy(locale, "太棒了！化學錯題本目前空空如也")}</h3>
+        <h3 ref={emptyTitleRef} tabIndex={-1} style={{ margin: '0 0 0.4rem', color: '#059669' }}>{stemVaultCopy(locale, "太棒了！化學錯題本目前空空如也")}</h3>
         <p style={{ color: 'var(--muted)', fontSize: '0.86rem', maxWidth: '460px', margin: '0 auto' }}>{stemVaultCopy(locale, "你在單元基礎練習與大考模擬試卷中答錯的化學考題都會自動歸納在此。隨時歡迎透過模擬考或單元練習挑戰自我！")}</p>
       </div>
     )
@@ -394,6 +422,7 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
 
   return (
     <div className="error-vault-container chemistry-error-vault">
+      {removalStatus}
       {/* 頂部弱點統計數據看板 */}
       <div className="vault-stats-grid">
         <div className="vault-stat-card">
@@ -425,6 +454,7 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
       <div className="vault-toolbar">
         <div className="vault-toolbar-row">
           <input
+            ref={searchRef}
             type="search"
             className="vault-search-input"
             aria-label={stemVaultCopy(locale, "搜尋化學錯題")}
@@ -485,6 +515,7 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
           <button
             type="button"
             className={`vault-chip-btn ${selectedStrand === 'all' ? 'chemistry-active' : ''}`}
+            aria-pressed={selectedStrand === 'all'}
             onClick={() => setSelectedStrand('all')}
           >
             {stemVaultCopy(locale, '全部主軸')} ({errorQuestions.length})
@@ -492,6 +523,7 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
           <button
             type="button"
             className={`vault-chip-btn ${selectedStrand === 'matter_structure' ? 'chemistry-active' : ''}`}
+            aria-pressed={selectedStrand === 'matter_structure'}
             onClick={() => setSelectedStrand('matter_structure')}
           >
             🔬 {t(chemistryStrandMessageKey('matter_structure'))} ({errorQuestions.filter((q) => q.question.strand === 'matter_structure').length})
@@ -499,6 +531,7 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
           <button
             type="button"
             className={`vault-chip-btn ${selectedStrand === 'reactions' ? 'chemistry-active' : ''}`}
+            aria-pressed={selectedStrand === 'reactions'}
             onClick={() => setSelectedStrand('reactions')}
           >
             🔥 {t(chemistryStrandMessageKey('reactions'))} ({errorQuestions.filter((q) => q.question.strand === 'reactions').length})
@@ -506,6 +539,7 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
           <button
             type="button"
             className={`vault-chip-btn ${selectedStrand === 'equilibrium_kinetics' ? 'chemistry-active' : ''}`}
+            aria-pressed={selectedStrand === 'equilibrium_kinetics'}
             onClick={() => setSelectedStrand('equilibrium_kinetics')}
           >
             ⚖️ {t(chemistryStrandMessageKey('equilibrium_kinetics'))} ({errorQuestions.filter((q) => q.question.strand === 'equilibrium_kinetics').length})
@@ -513,6 +547,7 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
           <button
             type="button"
             className={`vault-chip-btn ${selectedStrand === 'electrochemistry' ? 'chemistry-active' : ''}`}
+            aria-pressed={selectedStrand === 'electrochemistry'}
             onClick={() => setSelectedStrand('electrochemistry')}
           >
             ⚡ {t(chemistryStrandMessageKey('electrochemistry'))} ({errorQuestions.filter((q) => q.question.strand === 'electrochemistry').length})
@@ -520,6 +555,7 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
           <button
             type="button"
             className={`vault-chip-btn ${selectedStrand === 'organic' ? 'chemistry-active' : ''}`}
+            aria-pressed={selectedStrand === 'organic'}
             onClick={() => setSelectedStrand('organic')}
           >
             🌿 {t(chemistryStrandMessageKey('organic'))} ({errorQuestions.filter((q) => q.question.strand === 'organic').length})
@@ -534,9 +570,10 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-          {filteredQuestions.map((item) => {
+          {filteredQuestions.map((item, index) => {
             const q = localizeStemVaultQuestion(locale, item.question)
             const isStepOpen = Boolean(expandedSteps[q.id])
+            const stepsId = `${stepsIdPrefix}-${index}`
             const matchedSignal = findMatchingChemistrySignal(item.question)
             const lab = item.matchedLab
 
@@ -554,7 +591,7 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
                     type="button"
                     className="vault-btn-mastered"
                     title={stemVaultCopy(locale, "移出錯題筆記本")}
-                    onClick={() => onRemoveError(q.id)}
+                    onClick={() => removeQuestion(item.question)}
                   >
                     {stemVaultCopy(locale, '✓ 我已掌握 (移出)')}
                   </button>
@@ -605,6 +642,8 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
                     <button
                       type="button"
                       className="vault-toggle-steps-btn"
+                      aria-expanded={isStepOpen}
+                      aria-controls={isStepOpen ? stepsId : undefined}
                       onClick={() => toggleStep(q.id)}
                     >
                       {isStepOpen ? stemVaultCopy(locale, "🔼 收起深度拆解") : stemVaultCopy(locale, "📖 展開 5 步深度拆解與盲點診斷 ▾")}
@@ -617,7 +656,7 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
 
                   {/* 5 步驟深度拆解面板 (展開時可視) */}
                   {isStepOpen && (
-                    <div className="vault-steps-accordion">
+                    <div id={stepsId} className="vault-steps-accordion">
                       {/* Step 1: 核心破題訊號 */}
                       <div className="vault-step-card">
                         <div className="vault-step-title-line chemistry">

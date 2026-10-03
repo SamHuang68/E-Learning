@@ -43,7 +43,7 @@ export const SynonymsLab: React.FC<Props> = ({ onEarnXp }) => {
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <span>⚖️</span> 華語近義詞辨析與語法搭配實驗室 (Synonyms Distinction Lab)
           </h3>
-          <p className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
             日本人学習者が最も混同しやすい近義詞の「品詞・語順・使われる文脈」の違いをクリアに攻略！
           </p>
         </div>
@@ -52,7 +52,7 @@ export const SynonymsLab: React.FC<Props> = ({ onEarnXp }) => {
       {/* 膠囊選擇列 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
         {SYNONYM_ITEMS.map((item, idx) => (
-          <button
+          <button aria-pressed={selectedIdx === idx}
             key={item.id}
             type="button"
             className={`pill-btn ${selectedIdx === idx ? 'active' : ''}`}
@@ -64,33 +64,33 @@ export const SynonymsLab: React.FC<Props> = ({ onEarnXp }) => {
       </div>
 
       {/* 雙欄對比佈局 */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.8rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))', gap: '0.8rem' }}>
         {/* Word A */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <h3 style={{ margin: 0, fontSize: '1.5rem', color: '#38bdf8' }}>{activeItem.wordA.zh}</h3>
-              <span style={{ fontSize: '0.76rem', color: 'var(--muted)' }}>{activeItem.wordA.pinyin}</span>
+              <span lang="zh-Latn" style={{ fontSize: '0.76rem', color: 'var(--muted)' }}>{activeItem.wordA.pinyin}</span>
             </div>
-            <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', fontWeight: 700 }}>
+            <span lang="ja" style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', fontWeight: 700 }}>
               {activeItem.wordA.posJa}
             </span>
           </div>
 
           <div style={{ background: 'var(--surface-soft)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
-            <span style={{ fontSize: '0.7rem', color: 'var(--muted)', display: 'block' }}>意味と特徴：</span>
-            <div style={{ fontSize: '0.8rem', lineHeight: 1.45 }}>{activeItem.wordA.definitionJa}</div>
+            <span lang="ja" style={{ fontSize: '0.7rem', color: 'var(--muted)', display: 'block' }}>意味と特徴：</span>
+            <div lang="ja" style={{ fontSize: '0.8rem', lineHeight: 1.45 }}>{activeItem.wordA.definitionJa}</div>
           </div>
 
           <div style={{ background: 'rgba(56, 189, 248, 0.08)', padding: '0.6rem', borderRadius: '8px', border: '1px solid rgba(56, 189, 248, 0.25)' }}>
-            <span style={{ fontSize: '0.7rem', color: '#38bdf8', fontWeight: 700, display: 'block' }}>文法パターン：</span>
+            <span lang="ja" style={{ fontSize: '0.7rem', color: '#38bdf8', fontWeight: 700, display: 'block' }}>文法パターン：</span>
             <code style={{ fontSize: '0.8rem', color: '#38bdf8', fontWeight: 700 }}>{activeItem.wordA.patternZh}</code>
           </div>
 
           <div style={{ background: 'var(--surface-soft)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontSize: '0.7rem', color: 'var(--muted)' }}>例文 (Example)：</span>
-              <button
+              <button aria-label={`朗讀：${activeItem.wordA.exampleZh}`}
                 type="button"
                 style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
                 onClick={() => speakChinese(activeItem.wordA.exampleZh)}
@@ -99,7 +99,7 @@ export const SynonymsLab: React.FC<Props> = ({ onEarnXp }) => {
               </button>
             </div>
             <div style={{ fontSize: '0.84rem', fontWeight: 700, margin: '0.2rem 0' }}>{activeItem.wordA.exampleZh}</div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>{activeItem.wordA.exampleJa}</div>
+            <div lang="ja" style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>{activeItem.wordA.exampleJa}</div>
           </div>
         </div>
 
@@ -108,27 +108,27 @@ export const SynonymsLab: React.FC<Props> = ({ onEarnXp }) => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <h3 style={{ margin: 0, fontSize: '1.5rem', color: '#f59e0b' }}>{activeItem.wordB.zh}</h3>
-              <span style={{ fontSize: '0.76rem', color: 'var(--muted)' }}>{activeItem.wordB.pinyin}</span>
+              <span lang="zh-Latn" style={{ fontSize: '0.76rem', color: 'var(--muted)' }}>{activeItem.wordB.pinyin}</span>
             </div>
-            <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', fontWeight: 700 }}>
+            <span lang="ja" style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', fontWeight: 700 }}>
               {activeItem.wordB.posJa}
             </span>
           </div>
 
           <div style={{ background: 'var(--surface-soft)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
-            <span style={{ fontSize: '0.7rem', color: 'var(--muted)', display: 'block' }}>意味と特徴：</span>
-            <div style={{ fontSize: '0.8rem', lineHeight: 1.45 }}>{activeItem.wordB.definitionJa}</div>
+            <span lang="ja" style={{ fontSize: '0.7rem', color: 'var(--muted)', display: 'block' }}>意味と特徴：</span>
+            <div lang="ja" style={{ fontSize: '0.8rem', lineHeight: 1.45 }}>{activeItem.wordB.definitionJa}</div>
           </div>
 
           <div style={{ background: 'rgba(245, 158, 11, 0.08)', padding: '0.6rem', borderRadius: '8px', border: '1px solid rgba(245, 158, 11, 0.25)' }}>
-            <span style={{ fontSize: '0.7rem', color: '#f59e0b', fontWeight: 700, display: 'block' }}>文法パターン：</span>
+            <span lang="ja" style={{ fontSize: '0.7rem', color: '#f59e0b', fontWeight: 700, display: 'block' }}>文法パターン：</span>
             <code style={{ fontSize: '0.8rem', color: '#f59e0b', fontWeight: 700 }}>{activeItem.wordB.patternZh}</code>
           </div>
 
           <div style={{ background: 'var(--surface-soft)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontSize: '0.7rem', color: 'var(--muted)' }}>例文 (Example)：</span>
-              <button
+              <button aria-label={`朗讀：${activeItem.wordB.exampleZh}`}
                 type="button"
                 style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
                 onClick={() => speakChinese(activeItem.wordB.exampleZh)}
@@ -137,7 +137,7 @@ export const SynonymsLab: React.FC<Props> = ({ onEarnXp }) => {
               </button>
             </div>
             <div style={{ fontSize: '0.84rem', fontWeight: 700, margin: '0.2rem 0' }}>{activeItem.wordB.exampleZh}</div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>{activeItem.wordB.exampleJa}</div>
+            <div lang="ja" style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>{activeItem.wordB.exampleJa}</div>
           </div>
         </div>
       </div>
@@ -145,10 +145,10 @@ export const SynonymsLab: React.FC<Props> = ({ onEarnXp }) => {
       {/* 核心差異總結與實戰測驗 */}
       <div style={{ marginTop: '0.8rem', background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem' }}>
         <div style={{ background: 'rgba(16, 185, 129, 0.08)', padding: '0.6rem 0.8rem', borderRadius: '8px', border: '1px solid rgba(16, 185, 129, 0.3)', marginBottom: '0.8rem' }}>
-          <span style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
+          <span lang="ja" style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
             💡 決定的な使い分けのポイント：
           </span>
-          <p style={{ margin: '0.2rem 0 0', fontSize: '0.8rem', lineHeight: 1.45 }}>{activeItem.coreDifferenceJa}</p>
+          <p lang="ja" style={{ margin: '0.2rem 0 0', fontSize: '0.8rem', lineHeight: 1.45 }}>{activeItem.coreDifferenceJa}</p>
         </div>
 
         <div>
@@ -198,7 +198,7 @@ export const SynonymsLab: React.FC<Props> = ({ onEarnXp }) => {
 
           {submitted[activeItem.id] && (
             <div style={{ marginTop: '0.6rem', padding: '0.6rem', borderRadius: '8px', background: 'var(--surface-soft)', fontSize: '0.76rem', color: 'var(--muted)', lineHeight: 1.45 }}>
-              💡 <strong>解説：</strong>{activeItem.quiz.explanationJa}
+              💡 <strong>解説：</strong><span lang="ja">{activeItem.quiz.explanationJa}</span>
             </div>
           )}
         </div>

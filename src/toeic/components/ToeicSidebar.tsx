@@ -167,6 +167,7 @@ export function ToeicSidebar({
           <button
             type="button"
             className={`pill-btn ${!isJa ? 'active' : ''}`}
+            aria-pressed={!isJa}
             style={{ fontSize: '0.68rem', padding: '0.2rem 0.3rem', textAlign: 'center' }}
             onClick={() => onToggleInstructionLang?.('zh')}
           >
@@ -175,6 +176,7 @@ export function ToeicSidebar({
           <button
             type="button"
             className={`pill-btn ${isJa ? 'active' : ''}`}
+            aria-pressed={isJa}
             style={{ fontSize: '0.68rem', padding: '0.2rem 0.3rem', textAlign: 'center' }}
             onClick={() => onToggleInstructionLang?.('ja')}
           >
@@ -192,7 +194,7 @@ export function ToeicSidebar({
             aria-current={nav === item.id ? 'page' : undefined}
             onClick={() => onNav(item.id)}
           >
-            <span>{item.icon}</span>
+            <span aria-hidden="true">{item.icon}</span>
             {item.label}
           </button>
         ))}
