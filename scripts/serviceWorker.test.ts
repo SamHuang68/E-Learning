@@ -250,6 +250,41 @@ describe('service worker storage resilience', () => {
     expect(await response?.text()).toBe(exact ? 'saved page' : 'previous offline shell')
   })
 
+  it.each([true, false])('replays redirected HTML as a usable offline navigation (exact page: %s)', async (exact) => {
+    let offline = false
+    const redirectedHtml = (body: string): Response => {
+      const response = new Response(body, {
+        headers: { 'content-type': 'text/html; charset=utf-8', 'x-original-header': 'preserved' },
+      })
+      // Model a followed hosting redirect, including CacheStorage response clones.
+      Object.defineProperties(response, {
+        redirected: { value: true },
+        url: { value: scope + 'srs-review' },
+        clone: { value: () => redirectedHtml(body) },
+      })
+      return response
+    }
+    const worker = createWorker({
+      files: ['./srs-review.html'],
+      network: (url) => {
+        if (offline) throw new TypeError('Offline')
+        if (url.endsWith('/srs-review.html')) return redirectedHtml('<html>Review diagram</html>')
+        if (url.endsWith('/index.html')) return redirectedHtml('<html>App shell</html>')
+        return undefined
+      },
+    })
+    await worker.install()
+    await worker.activate()
+    offline = true
+    const response = await worker.request(exact ? './srs-review.html' : './uncached-route', 'navigate')
+    // Navigation requests use redirect=manual; a redirected response is rejected.
+    expect(response?.redirected).toBe(false)
+    expect(response?.status).toBe(200)
+    expect(response?.headers.get('content-type')).toBe('text/html; charset=utf-8')
+    expect(response?.headers.get('x-original-header')).toBe('preserved')
+    expect(await response?.text()).toBe(exact ? '<html>Review diagram</html>' : '<html>App shell</html>')
+  })
+
   it.each(['js', 'mjs', 'css'])('rejects network HTML masquerading as a %s asset', async (extension) => {
     const worker = createWorker({
       network: () => new Response('<html>Fallback</html>', { headers: { 'content-type': 'text/html' } }),

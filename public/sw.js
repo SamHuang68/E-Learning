@@ -61,6 +61,18 @@ async function cacheRuntimeResponse(request, response) {
   }
 }
 
+// Static hosts may redirect .html URLs before precaching the final HTML body.
+// Offline navigation uses redirect=manual and cannot replay a redirected response.
+async function cachedNavigationResponse(request) {
+  const cached = (await caches.match(request)) || (await caches.match('./index.html'))
+  if (!cached || !cached.redirected) return cached
+  return new Response(cached.body, {
+    status: cached.status,
+    statusText: cached.statusText,
+    headers: cached.headers,
+  })
+}
+
 self.addEventListener('install', (event) => {
   event.waitUntil(
     (async () => {
@@ -120,7 +132,7 @@ self.addEventListener('fetch', (event) => {
           }
           return response
         })
-        .catch(async () => (await caches.match(request)) || caches.match('./index.html')),
+        .catch(() => cachedNavigationResponse(request)),
     )
     return
   }
