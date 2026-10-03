@@ -257,7 +257,7 @@ export const PhysicsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         )}
 
         {activeNav === 'labs' && (
-          <div className="physics-labs-showcase" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div className="physics-labs-showcase" lang="zh-Hant" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div className="mock-nav-tabs">
               <button
                 type="button"

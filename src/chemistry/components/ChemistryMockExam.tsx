@@ -136,7 +136,7 @@ export const ChemistryMockExam: React.FC<Props> = ({
   onSaveScore,
   onNavigateVault,
 }) => {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const exams = Object.values(CHEMISTRY_MOCK_EXAMS)
   const [selectedExamId, setSelectedExamId] = useState<string>(
     exams[0]?.id || 'exam_cap_chemistry',
@@ -418,6 +418,7 @@ export const ChemistryMockExam: React.FC<Props> = ({
   return (
     <div
       className="math-mock-shell chemistry-mock-shell"
+      lang="zh-Hant"
       style={{
         maxWidth: '920px',
         margin: '0 auto',
@@ -842,7 +843,7 @@ export const ChemistryMockExam: React.FC<Props> = ({
                     marginBottom: '0.3rem',
                   }}
                 >
-                  <span style={{ fontSize: '0.85rem', fontWeight: 700 }}>
+                  <span lang={locale} style={{ fontSize: '0.85rem', fontWeight: 700 }}>
                     {st.icon} {st.name}
                   </span>
                   <span
@@ -992,6 +993,7 @@ export const ChemistryMockExam: React.FC<Props> = ({
                   第 {idx + 1} 題
                 </span>
                 <span
+                  lang={locale}
                   style={{
                     background: 'var(--surface-subtle)',
                     color: 'var(--muted)',

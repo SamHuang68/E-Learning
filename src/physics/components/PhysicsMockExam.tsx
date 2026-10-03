@@ -422,6 +422,7 @@ export const PhysicsMockExam: React.FC<Props> = ({
   return (
     <div
       className="math-mock-shell physics-mock-shell"
+      lang="zh-Hant"
       style={{
         maxWidth: '920px',
         margin: '0 auto',
