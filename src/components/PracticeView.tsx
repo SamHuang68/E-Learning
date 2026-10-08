@@ -20,6 +20,8 @@ import {
 } from '../engine/sessionResults'
 import { ExerciseSession } from './ExerciseSession'
 import { SpeakButton } from './SpeakButton'
+import { AudioLesson } from './AudioLesson'
+import type { AudioLessonSegment } from '../utils/audioLessonTypes'
 
 type Props = {
   kind: 'vocab' | 'grammar' | 'reading'
@@ -110,6 +112,13 @@ export function PracticeView({
   const card = cards[index]
   const total = cards.length
   const fallbackSpeak = unit.titleJa
+  const explanationLang = locale === 'en' ? 'en-US' : 'zh-TW'
+  const audioSegments: AudioLessonSegment[] = card ? [
+    { id: 'sentence', text: card.speakText ?? card.sentence, lang: 'ja-JP', kind: 'example', audioSrc: card.audio?.src },
+    { id: 'meaning', text: card.meaning, lang: explanationLang, kind: 'explanation' },
+    ...(card.sentenceZh ? [{ id: 'translation', text: card.sentenceZh, lang: explanationLang, kind: 'explanation' } as AudioLessonSegment] : []),
+    { id: 'scenario', text: card.scenario, lang: explanationLang, kind: 'explanation' },
+  ] : []
   const exercises = isReview
     ? cardsToExercises(cards, 'ja', allCards(pack))
     : sessionFromUnitPractice(filteredPack, kind as UnitPracticeKind, 'ja')
@@ -239,6 +248,14 @@ export function PracticeView({
               {locale === 'en' ? `Cards for ${unit.titleJa} are not ready yet. Practice pronunciation with the unit title.` : `「${unit.titleJa}」的練習卡尚未就緒，仍可先用單元標題練習發音。`}
             </p>
           </div>
+        )}
+
+        {card && (
+          <AudioLesson
+            lessonId={`ja:${levelId}:${unit.id}:${kind}:${isReview ? 'review' : 'learn'}:${card.id}:${locale}`}
+            title={locale === 'en' ? 'Audio lesson' : '語音教學'}
+            segments={audioSegments}
+          />
         )}
 
         <div className="flash-actions">

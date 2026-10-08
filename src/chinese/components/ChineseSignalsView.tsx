@@ -1,8 +1,11 @@
-﻿import React, { useState } from 'react'
+﻿import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { CHINESE_GRAMMAR_SIGNALS, CHINESE_SUPPORT_EN, type ChineseGrammarSignal } from '../data/grammarSignals'
 import { playCorrectSound, playWrongSound } from '../../engine/audioSynthesizer'
 import { useI18n } from '../../i18n/i18n'
 import { localizeChineseData } from '../teachingCopy'
+import { AudioLesson } from '../../components/AudioLesson'
+import { speakChinese as speakChineseText } from '../../utils/speech'
+import type { AudioLessonSegment } from '../../utils/audioLessonTypes'
 
 interface Props {
   onEarnXp: (amount: number) => void
@@ -16,6 +19,7 @@ export const ChineseSignalsView: React.FC<Props> = ({ onEarnXp }) => {
   const [showSolutions, setShowSolutions] = useState<Record<string, boolean>>({})
   const [isFlipped, setIsFlipped] = useState(false)
   const [drillIdx, setDrillIdx] = useState(0)
+  const stopSpeechRef = useRef<(() => void) | null>(null)
 
   const activeSignal: ChineseGrammarSignal =
     CHINESE_GRAMMAR_SIGNALS.find((s) => s.id === selectedSignalId) ?? CHINESE_GRAMMAR_SIGNALS[0]
@@ -23,15 +27,35 @@ export const ChineseSignalsView: React.FC<Props> = ({ onEarnXp }) => {
   const drillSignal = CHINESE_GRAMMAR_SIGNALS[drillIdx % CHINESE_GRAMMAR_SIGNALS.length]
   const localizedSignal = localizeChineseData(activeSignal, locale, CHINESE_SUPPORT_EN)
   const localizedDrillSignal = localizeChineseData(drillSignal, locale, CHINESE_SUPPORT_EN)
+  const audioSegments = useMemo<AudioLessonSegment[]>(() => {
+    const signal = localizeChineseData(activeSignal, locale, CHINESE_SUPPORT_EN)
+    const lang = locale === 'en' ? 'en-US' : 'ja-JP'
+    return [
+      { id: 'signal-example', text: activeSignal.contrastExample.zh, lang: 'zh-TW', kind: 'example' },
+      { id: 'signal-meaning', text: signal.contrastExample.ja, lang, kind: 'explanation' },
+      { id: 'signal-rule', text: signal.threeSecondRuleJa, lang, kind: 'explanation' },
+      { id: 'signal-trap', text: signal.pitfall.reasonJa, lang, kind: 'explanation' },
+    ]
+  }, [activeSignal, locale])
 
   function speakChinese(text: string) {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
-    window.speechSynthesis.cancel()
-    const utterance = new SpeechSynthesisUtterance(text)
-    utterance.lang = 'zh-TW'
-    utterance.rate = 0.9
-    window.speechSynthesis.speak(utterance)
+    stopSpeechRef.current = speakChineseText(text, { rate: 0.9 })
   }
+
+  useEffect(() => {
+    const stop = () => {
+      stopSpeechRef.current?.()
+      stopSpeechRef.current = null
+    }
+    const handleHidden = () => {
+      if (document.hidden) stop()
+    }
+    document.addEventListener('visibilitychange', handleHidden)
+    return () => {
+      document.removeEventListener('visibilitychange', handleHidden)
+      stop()
+    }
+  }, [selectedSignalId, viewMode, locale])
 
   function handleSelectOption(signalId: string, optIdx: number) {
     setQuizAnswers((prev) => ({ ...prev, [signalId]: optIdx }))
@@ -144,6 +168,11 @@ export const ChineseSignalsView: React.FC<Props> = ({ onEarnXp }) => {
               💡 <span lang={locale === 'en' ? 'en' : 'ja'}>{localizedSignal.contrastExample.noteJa}</span>
             </div>
           </div>
+
+          <AudioLesson
+            lessonId={`chinese-signals:${activeSignal.id}:${locale}`}
+            segments={audioSegments}
+          />
 
           {/* 主動檢索測驗 (Active Recall Quiz) */}
           <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '0.85rem' }}>

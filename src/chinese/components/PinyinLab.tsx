@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react'
+﻿import React, { useEffect, useMemo, useRef, useState } from 'react'
 import {
   CHINESE_SUPPORT_EN,
   CHINESE_TONES,
@@ -11,6 +11,9 @@ import {
 import { playCorrectSound } from '../../engine/audioSynthesizer'
 import { useI18n } from '../../i18n/i18n'
 import { chineseTeachingCopy, localizeChineseData } from '../teachingCopy'
+import { AudioLesson } from '../../components/AudioLesson'
+import { speakChinese as speakChineseText } from '../../utils/speech'
+import type { AudioLessonSegment } from '../../utils/audioLessonTypes'
 
 interface Props {
   onEarnXp: (amount: number) => void
@@ -22,6 +25,7 @@ export const PinyinLab: React.FC<Props> = ({ onEarnXp }) => {
   const [selectedInitial, setSelectedInitial] = useState<PhonemeData>(INITIALS_DATA[0])
   const [selectedFinal, setSelectedFinal] = useState<PhonemeData>(FINALS_DATA[0])
   const [activeTab, setActiveTab] = useState<'tones' | 'initials' | 'finals' | 'drills'>('tones')
+  const stopSpeechRef = useRef<(() => void) | null>(null)
   const localizedTone = localizeChineseData(selectedTone, locale, CHINESE_SUPPORT_EN)
   const localizedInitial = localizeChineseData(selectedInitial, locale, CHINESE_SUPPORT_EN)
   const localizedFinal = localizeChineseData(selectedFinal, locale, CHINESE_SUPPORT_EN)
@@ -30,15 +34,48 @@ export const PinyinLab: React.FC<Props> = ({ onEarnXp }) => {
   const localizedFinals = localizeChineseData(FINALS_DATA, locale, CHINESE_SUPPORT_EN)
   const localizedDrillWords = localizeChineseData(PINYIN_DRILL_WORDS, locale, CHINESE_SUPPORT_EN)
   const copy = (text: string) => chineseTeachingCopy(locale, text)
+  const audioMaterialId = activeTab === 'tones'
+    ? selectedTone.tone
+    : activeTab === 'initials' ? selectedInitial.id : selectedFinal.id
+  const audioSegments = useMemo<AudioLessonSegment[]>(() => {
+    const lang = locale === 'en' ? 'en-US' : 'ja-JP'
+    if (activeTab === 'tones') {
+      const tone = localizeChineseData(selectedTone, locale, CHINESE_SUPPORT_EN)
+      return [
+        { id: 'tone-character', text: selectedTone.exampleChar, lang: 'zh-TW', kind: 'example' },
+        { id: 'tone-pitch', text: tone.pitchDescriptionJa, lang, kind: 'explanation' },
+        { id: 'tone-word', text: selectedTone.exampleZh, lang: 'zh-TW', kind: 'example' },
+        { id: 'tone-meaning', text: tone.exampleMeaningJa, lang, kind: 'explanation' },
+        { id: 'tone-tip', text: tone.exampleJa, lang, kind: 'explanation' },
+      ]
+    }
+    const phoneme = activeTab === 'initials' ? selectedInitial : selectedFinal
+    const localizedPhoneme = localizeChineseData(phoneme, locale, CHINESE_SUPPORT_EN)
+    return [
+      { id: 'phoneme-example', text: phoneme.exampleChar, lang: 'zh-TW', kind: 'example' },
+      { id: 'phoneme-tip', text: localizedPhoneme.tipsJa, lang, kind: 'explanation' },
+      { id: 'phoneme-meaning', text: localizedPhoneme.exampleMeaningJa, lang, kind: 'explanation' },
+    ]
+  }, [activeTab, selectedTone, selectedInitial, selectedFinal, locale])
 
   function speakChinese(text: string) {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
-    window.speechSynthesis.cancel()
-    const utterance = new SpeechSynthesisUtterance(text)
-    utterance.lang = 'zh-TW'
-    utterance.rate = 0.9
-    window.speechSynthesis.speak(utterance)
+    stopSpeechRef.current = speakChineseText(text, { rate: 0.9 })
   }
+
+  useEffect(() => {
+    const stop = () => {
+      stopSpeechRef.current?.()
+      stopSpeechRef.current = null
+    }
+    const handleHidden = () => {
+      if (document.hidden) stop()
+    }
+    document.addEventListener('visibilitychange', handleHidden)
+    return () => {
+      document.removeEventListener('visibilitychange', handleHidden)
+      stop()
+    }
+  }, [activeTab, locale])
 
   return (
     <div className="math-lab pinyin-lab" style={{ width: '100%', maxWidth: '100%', minWidth: 0 }}>
@@ -408,6 +445,13 @@ export const PinyinLab: React.FC<Props> = ({ onEarnXp }) => {
             </div>
           ))}
         </div>
+      )}
+
+      {activeTab !== 'drills' && (
+        <AudioLesson
+          lessonId={`chinese-pinyin:${activeTab}:${audioMaterialId}:${locale}`}
+          segments={audioSegments}
+        />
       )}
     </div>
   )
