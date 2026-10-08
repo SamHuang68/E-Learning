@@ -236,3 +236,27 @@ Validation and state:
 
 - 依完整測試／掃描的既有確認規則，本機未重跑全庫 Vitest；最新 `main` 的前一輪完整基線為 342 個測試檔、1,609 個測試。正式部署仍須由本候選的遠端 CI 全庫 lint、測試、schema、build 與 dist gate 通過後才能完成。
 - Sam 已於 2026-10-08 明確指示 `git commit push deploy`。本條目建立時為未提交候選，`commit=false`、`push=false`、`merge=false`、`deploy=false`；最終完整 SHA、PR、CI／部署 run 與 live manifest 由同版本 PR 發布紀錄補齊，未取得成功證據前不得稱為已發布。
+
+## cs-secondary-consumer-regression.1 — 2026-10-08 — 本機候選
+
+沿用內容衍生 precache `buildId` 與 npm package `0.0.0` 的既有版本策略。本次只新增自動化回歸測試與修訂追溯，不修改應用程式執行碼、建置設定或使用者資料。
+
+### 修改原因與內容
+
+- 發布後的有界稽核確認：既有 `localeContainerLanguage` gate 只會 SSR `CsApp` 的預設 Today 頁面；`surfaceScanGate` 雖會載入次要頁面，卻使用預設繁中語系且只驗證 HTML 非空，無法防止英文 consumer 忘記接上 canonical localizer。
+- 新增單一聚焦 SSR 測試，直接注入英文 `LocaleContext`，覆蓋課綱、讀本、練習、破題訊號卡、模擬評量、已填入錯題的弱點本，以及馮紐曼、處理器管線、快取映射、AI 矩陣與硬體架構圖五個實驗室。
+- 每個英文畫面都以固定、獨立的使用者可見英文 sentinel 驗證實際 consumer 接線，並檢查完整初始 HTML 無漢字；預期值不由受測 `localize*` helper 動態產生。
+- 另以繁中 `LocaleContext` 渲染課綱，驗證權威繁中單元標題與核心概念仍保留，避免用移除繁中內容換取英文 gate 通過。
+
+### 紅燈、綠燈與驗證結果
+
+- 目前 runtime 行為原本正確，因此以不保留在差異中的受控 mutation 暫時讓 `CsHierarchyTree` 略過 `localizeCsUnit`。新 gate 精確轉紅：單檔 12 個測試中只有課綱案例失敗，固定英文單元標題消失且繁中內容洩漏；這證明測試能攔截原先缺少的 consumer wiring 回歸。
+- mutation 完整還原後，新增測試單檔 12/12 通過；產品檔與基線內容相同，最終候選沒有 runtime 差異。
+- 相關聚合測試涵蓋新增 gate、surface scan、容器語言、CS teaching copy、課程結構、實驗室英文覆蓋與模擬評量，共 8 個測試檔、68 個測試全數通過。
+- 新增測試檔的 scoped oxlint 通過；`tsc -b` 通過；差異 whitespace 檢查通過。
+
+### 已知限制與發布狀態
+
+- 本輪未重跑全庫 Vitest、正式 build、`verify:dist` 或瀏覽器互動；新增 gate 驗證的是 SSR 初始畫面，不代替點擊切頁、計時器、作答與延遲載入網路行為的瀏覽器 E2E。
+- 現有 GitHub Pages 與 Cloudflare Pages 部署未變；本輪沒有以先前部署證據冒充新候選已發布。
+- 本條目建立時為未提交候選，`commit=false`、`push=false`、`merge=false`、`deploy=false`；先前的 `git commit push deploy` 授權已由前一候選履行，未延伸到本輪新候選，因此不建立 PR、不推送、不合併、不部署。
