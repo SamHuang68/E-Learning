@@ -9,6 +9,8 @@ import { ScenarioPlayer } from '../../components/ScenarioPlayer'
 import { SpeakingLab } from '../../components/SpeakingLab'
 import { formatSpeakingMessage } from '../../components/speakingCopy'
 import { CsApp } from '../../cs/CsApp'
+import { CS_CURRICULUM } from '../../cs/data/curriculum'
+import { csTeachingCopy, localizeCsUnit } from '../../i18n/csTeachingCopy'
 import { LocaleContext, type LocaleContextValue } from '../../i18n/i18n'
 import { translate } from '../../i18n/messages'
 import { MathMockExam } from '../../math/components/MathMockExam'
@@ -174,10 +176,24 @@ describe('英文介面的容器語言契約', () => {
 
   it('計算機概論主內容與 STEM 實驗室不會覆寫英文文件語言', () => {
     const cs = renderEnglish(<CsApp onBackHub={noop} onSwitchLang={noop} />)
+    const csTraditional = renderWithLocale(
+      traditionalLocale,
+      <CsApp onBackHub={noop} onSwitchLang={noop} />,
+    )
     const physics = renderEnglish(<PhysicsApp onBackHub={noop} onSwitchLang={noop} />)
     const chemistry = renderEnglish(<ChemistryApp onBackHub={noop} onSwitchLang={noop} />)
+    const firstEnglishUnit = localizeCsUnit('en', CS_CURRICULUM[0]).title.replace(/^Unit \d+:\s*/, '')
+    const networkingEnglishUnit = csTeachingCopy('en', CS_CURRICULUM[4].title)
 
     expect(cs).toContain('id="main-content" lang="en"')
+    expect(cs).toContain(`<h1>Next: ${firstEnglishUnit}</h1>`)
+    expect(cs).toContain(`<p class="cs-httptcp-unit">${networkingEnglishUnit}</p>`)
+    expect(cs.match(/class="cs-httptcp-row"/g)).toHaveLength(4)
+    expect(cs).toContain('Application layer')
+    expect(cs).toContain('not a networking cert')
+    expect(cs).not.toMatch(HAN)
+    expect(csTraditional).toContain(CS_CURRICULUM[0].title)
+    expect(csTraditional).toContain(CS_CURRICULUM[4].title)
     expect(physics).toContain('PHYSICS')
     expect(chemistry).toContain('CHEMISTRY')
     expect(physics).not.toMatch(HAN)
