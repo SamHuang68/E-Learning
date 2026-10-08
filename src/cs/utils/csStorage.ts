@@ -1,14 +1,17 @@
 ﻿import { PROGRESS_STORAGE_KEYS } from '../../utils/progressKeys'
 import { notifyProgressChanged } from '../../utils/storage'
+import {
+  normalizeCsProgress,
+  normalizeCsSignalsMastery,
+  type CsProgress,
+} from './csProgressSchema'
 
-export interface CsProgress {
-  completedQuestions: string[]
-  xp: number
-  errorQuestions: string[]
-  examScores: Record<string, number>
-  labCompleted: string[]
-  lastActiveDate: string
-}
+export {
+  DEFAULT_CS_PROGRESS,
+  normalizeCsProgress,
+  normalizeCsSignalsMastery,
+  type CsProgress,
+} from './csProgressSchema'
 
 let memoryStorage: Record<string, string> = {}
 
@@ -35,38 +38,21 @@ function setStorageItem(key: string, value: string): void {
   }
 }
 
-export const DEFAULT_CS_PROGRESS: CsProgress = {
-  completedQuestions: [],
-  xp: 0,
-  errorQuestions: [],
-  examScores: {},
-  labCompleted: [],
-  lastActiveDate: new Date().toISOString().split('T')[0],
-}
-
 export function loadCsProgress(): CsProgress {
   try {
     const raw = getStorageItem(PROGRESS_STORAGE_KEYS.cs)
-    if (!raw) return { ...DEFAULT_CS_PROGRESS }
-    const parsed = JSON.parse(raw) as Partial<CsProgress>
-    return {
-      ...DEFAULT_CS_PROGRESS,
-      ...parsed,
-      completedQuestions: Array.isArray(parsed.completedQuestions) ? parsed.completedQuestions : [],
-      errorQuestions: Array.isArray(parsed.errorQuestions) ? parsed.errorQuestions : [],
-      labCompleted: Array.isArray(parsed.labCompleted) ? parsed.labCompleted : [],
-      examScores: typeof parsed.examScores === 'object' && parsed.examScores !== null ? parsed.examScores : {},
-    }
+    return raw ? normalizeCsProgress(JSON.parse(raw)) : normalizeCsProgress({})
   } catch {
-    return { ...DEFAULT_CS_PROGRESS }
+    return normalizeCsProgress({})
   }
 }
 
 export function saveCsProgress(progress: CsProgress): void {
   try {
-    setStorageItem(PROGRESS_STORAGE_KEYS.cs, JSON.stringify(progress))
+    const normalized = normalizeCsProgress(progress)
+    setStorageItem(PROGRESS_STORAGE_KEYS.cs, JSON.stringify(normalized))
     if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('cs:progress-updated', { detail: progress }))
+      window.dispatchEvent(new CustomEvent('cs:progress-updated', { detail: normalized }))
     }
     notifyProgressChanged()
   } catch (err) {
@@ -89,7 +75,7 @@ export function resetCsProgress(): void {
 export function loadCsSignalsMastery(): Record<string, boolean> {
   try {
     const raw = getStorageItem(PROGRESS_STORAGE_KEYS.csSignals)
-    return raw ? JSON.parse(raw) : {}
+    return raw ? normalizeCsSignalsMastery(JSON.parse(raw)) : {}
   } catch {
     return {}
   }
@@ -97,9 +83,10 @@ export function loadCsSignalsMastery(): Record<string, boolean> {
 
 export function saveCsSignalsMastery(mastery: Record<string, boolean>): void {
   try {
-    setStorageItem(PROGRESS_STORAGE_KEYS.csSignals, JSON.stringify(mastery))
+    const normalized = normalizeCsSignalsMastery(mastery)
+    setStorageItem(PROGRESS_STORAGE_KEYS.csSignals, JSON.stringify(normalized))
     if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('cs:signals-mastery-updated', { detail: mastery }))
+      window.dispatchEvent(new CustomEvent('cs:signals-mastery-updated', { detail: normalized }))
     }
     notifyProgressChanged()
   } catch (err) {

@@ -46,9 +46,14 @@ import {
 import {
   DEFAULT_CS_PROGRESS,
   loadCsProgress,
+  loadCsSignalsMastery,
   saveCsProgress,
   type CsProgress,
 } from '../cs/utils/csStorage'
+import {
+  normalizeCsProgress,
+  normalizeCsSignalsMastery,
+} from '../cs/utils/csProgressSchema'
 import {
   defaultChineseProgress,
   loadChineseProgress,
@@ -215,7 +220,7 @@ function localBundle() {
     mathSignals: loadSignalMap(PROGRESS_STORAGE_KEYS.mathSignals),
     physicsSignals: loadSignalMap(PROGRESS_STORAGE_KEYS.physicsSignals),
     chemistrySignals: loadSignalMap(PROGRESS_STORAGE_KEYS.chemistrySignals),
-    csSignals: loadSignalMap(PROGRESS_STORAGE_KEYS.csSignals),
+    csSignals: loadCsSignalsMastery(),
     lang: loadLang(),
     meta: loadLearningMeta(),
   }
@@ -260,6 +265,23 @@ function normalizeTrackJson<T extends object>(
 function normalizeSignalMap(value: unknown, local: SignalMasteryMap): SignalMasteryMap {
   if (value && typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length > 0) {
     return value as SignalMasteryMap
+  }
+  return local
+}
+
+function normalizeCsTrack(value: unknown, local: CsProgress): CsProgress {
+  if (value && typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length > 0) {
+    return normalizeCsProgress(value)
+  }
+  return local
+}
+
+function normalizeCsSignalMap(
+  value: unknown,
+  local: Record<string, boolean>,
+): Record<string, boolean> {
+  if (value && typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length > 0) {
+    return normalizeCsSignalsMastery(value)
   }
   return local
 }
@@ -457,10 +479,7 @@ function mergeBundles(local: LocalBundle, cloud: LocalBundle): LocalBundle {
       ...defaultChemistryProgress(),
       ...mergeTrackProgress(local.chemistry, cloud.chemistry),
     } as ChemistryProgressState,
-    cs: {
-      ...defaultCsProgress(),
-      ...mergeTrackProgress(local.cs, cloud.cs),
-    } as CsProgress,
+    cs: normalizeCsProgress(mergeTrackProgress(local.cs, cloud.cs)),
     chinese: {
       ...defaultChineseProgress(),
       ...mergeTrackProgress(local.chinese, cloud.chinese),
@@ -468,7 +487,7 @@ function mergeBundles(local: LocalBundle, cloud: LocalBundle): LocalBundle {
     mathSignals: mergeJsonRecords(local.mathSignals, cloud.mathSignals),
     physicsSignals: mergeJsonRecords(local.physicsSignals, cloud.physicsSignals),
     chemistrySignals: mergeJsonRecords(local.chemistrySignals, cloud.chemistrySignals),
-    csSignals: mergeJsonRecords(local.csSignals, cloud.csSignals),
+    csSignals: normalizeCsSignalsMastery(mergeJsonRecords(local.csSignals, cloud.csSignals)),
     lang: local.lang !== 'hub' ? local.lang : cloud.lang,
     meta: mergeLearningMeta(local.meta, cloud.meta),
   }
@@ -478,12 +497,12 @@ function normalizeRow(data: Record<string, unknown>): Omit<CloudProgressRow, 'us
   mathSignals: SignalMasteryMap
   physicsSignals: SignalMasteryMap
   chemistrySignals: SignalMasteryMap
-  csSignals: SignalMasteryMap
+  csSignals: Record<string, boolean>
 } {
   const math = normalizeTrackJson(data.math, defaultMathProgress, loadMathProgress())
   const physics = normalizeTrackJson(data.physics, defaultPhysicsProgress, loadPhysicsProgress())
   const chemistry = normalizeTrackJson(data.chemistry, defaultChemistryProgress, loadChemistryProgress())
-  const cs = normalizeTrackJson(data.cs, defaultCsProgress, loadCsProgress())
+  const cs = normalizeCsTrack(data.cs, loadCsProgress())
   const chinese = normalizeTrackJson(
     data.chinese ?? data.zh,
     defaultChineseProgress,
@@ -511,9 +530,9 @@ function normalizeRow(data: Record<string, unknown>): Omit<CloudProgressRow, 'us
       data.chemistry_signals ?? data.chemistrySignals,
       loadSignalMap(PROGRESS_STORAGE_KEYS.chemistrySignals),
     ),
-    cs_signals: normalizeSignalMap(
+    cs_signals: normalizeCsSignalMap(
       data.cs_signals ?? data.csSignals,
-      loadSignalMap(PROGRESS_STORAGE_KEYS.csSignals),
+      loadCsSignalsMastery(),
     ),
     mathSignals: normalizeSignalMap(
       data.math_signals ?? data.mathSignals,
@@ -527,9 +546,9 @@ function normalizeRow(data: Record<string, unknown>): Omit<CloudProgressRow, 'us
       data.chemistry_signals ?? data.chemistrySignals,
       loadSignalMap(PROGRESS_STORAGE_KEYS.chemistrySignals),
     ),
-    csSignals: normalizeSignalMap(
+    csSignals: normalizeCsSignalMap(
       data.cs_signals ?? data.csSignals,
-      loadSignalMap(PROGRESS_STORAGE_KEYS.csSignals),
+      loadCsSignalsMastery(),
     ),
     lang: normalizeLang(data.lang),
     meta: (data.meta as LearningMeta) ?? defaultLearningMeta(),

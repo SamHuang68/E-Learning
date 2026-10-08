@@ -2,18 +2,15 @@ import React from 'react'
 import { TrackSwitcher } from '../../components/TrackSwitcher'
 import type { LangId } from '../../utils/storage'
 import { useI18n } from '../../i18n/i18n'
+import { CS_LAB_ID, type CsLabId } from '../csLabRegistry'
 
 export type CsNavSection =
   | 'today'
   | 'practice'
   | 'signals'
-  | 'arch-map'
-  | 'von-neumann'
-  | 'pipeline-hazard'
-  | 'cache-mapping'
-  | 'ai-transformer'
   | 'mock'
   | 'errors'
+  | CsLabId
 
 interface Props {
   activeSection: CsNavSection
@@ -37,11 +34,11 @@ export const CsSidebar: React.FC<Props> = ({
     { id: 'today', icon: '💻', title: t('cs.nav.today'), subtitle: t('cs.nav.todaySub') },
     { id: 'practice', icon: '📚', title: t('cs.nav.practice'), subtitle: t('cs.nav.practiceSub') },
     { id: 'signals', icon: '⚡', title: t('cs.nav.signals'), subtitle: t('cs.nav.signalsSub') },
-    { id: 'arch-map', icon: '🏛️', title: t('cs.nav.arch'), subtitle: t('cs.nav.archSub'), badge: 'NEW' },
-    { id: 'von-neumann', icon: '⚙️', title: t('cs.nav.von'), subtitle: t('cs.nav.vonSub') },
-    { id: 'pipeline-hazard', icon: '⚡', title: t('cs.nav.pipe'), subtitle: t('cs.nav.pipeSub') },
-    { id: 'cache-mapping', icon: '💾', title: t('cs.nav.cache'), subtitle: t('cs.nav.cacheSub') },
-    { id: 'ai-transformer', icon: '🤖', title: t('cs.nav.ai'), subtitle: t('cs.nav.aiSub') },
+    { id: CS_LAB_ID.ARCH_MAP, icon: '🏛️', title: t('cs.nav.arch'), subtitle: t('cs.nav.archSub'), badge: 'NEW' },
+    { id: CS_LAB_ID.VON_NEUMANN, icon: '⚙️', title: t('cs.nav.von'), subtitle: t('cs.nav.vonSub') },
+    { id: CS_LAB_ID.PIPELINE_HAZARD, icon: '⚡', title: t('cs.nav.pipe'), subtitle: t('cs.nav.pipeSub') },
+    { id: CS_LAB_ID.CACHE_MAPPING, icon: '💾', title: t('cs.nav.cache'), subtitle: t('cs.nav.cacheSub') },
+    { id: CS_LAB_ID.AI_TRANSFORMER, icon: '🤖', title: t('cs.nav.ai'), subtitle: t('cs.nav.aiSub') },
     { id: 'mock', icon: '📝', title: t('cs.nav.mock'), subtitle: t('cs.nav.mockSub') },
     { id: 'errors', icon: '📕', title: t('cs.nav.errors'), subtitle: t('cs.nav.errorsSub'), badge: errorCount > 0 ? `${errorCount}` : undefined },
   ]

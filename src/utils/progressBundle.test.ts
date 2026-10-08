@@ -1,6 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { clearLocalProgressCache, exportProgressBundle, importProgressBundle } from './storage'
 import { LOCAL_PREFERENCE_KEYS, PROGRESS_STORAGE_KEYS } from './progressKeys'
+import { CS_CURRICULUM } from '../cs/data/curriculum'
+import { CS_MOCK_EXAMS } from '../cs/data/mockExams'
+import { CS_SOLVING_SIGNALS } from '../cs/data/solvingSignals'
 
 class MemoryStorage {
   private store = new Map<string, string>()
@@ -36,6 +39,16 @@ function parseStored(key: string): unknown {
 }
 
 describe('progress bundle', () => {
+  it('preserves absent CS storage through export and import', () => {
+    const bundle = exportProgressBundle()
+    expect(bundle.cs).toBeNull()
+    expect(bundle.csSignals).toBeNull()
+
+    expect(importProgressBundle(bundle)).toBe(true)
+    expect(localStorage.getItem(PROGRESS_STORAGE_KEYS.cs)).toBeNull()
+    expect(localStorage.getItem(PROGRESS_STORAGE_KEYS.csSignals)).toBeNull()
+  })
+
   it('round-trips canonical STEM keys and clears all learner progress', () => {
     const math = { gradeId: 'g4', xp: 44 }
     const physics = { gradeId: 'g9', xp: 55 }
@@ -68,12 +81,19 @@ describe('progress bundle', () => {
     const math = { gradeId: 'g4', xp: 44 }
     const physics = { gradeId: 'g9', xp: 55 }
     const chemistry = { gradeId: 'g11', xp: 66 }
-    const cs = { xp: 77, completedQuestions: ['q1'] }
+    const cs = {
+      completedQuestions: [CS_CURRICULUM[0].questions[0].id],
+      xp: 77,
+      errorQuestions: [],
+      examScores: {},
+      labCompleted: [],
+      lastActiveDate: '2026-10-08',
+    }
     const chinese = { xp: 88, masteredPinyin: ['zh'] }
     const mathSignals = { algebra: 'mastered' }
     const physicsSignals = { force: true }
     const chemistrySignals = { mole: true }
-    const csSignals = { cache: true }
+    const csSignals = { [CS_SOLVING_SIGNALS[0].id]: true }
 
     localStorage.setItem(PROGRESS_STORAGE_KEYS.math, JSON.stringify(math))
     localStorage.setItem(PROGRESS_STORAGE_KEYS.physics, JSON.stringify(physics))
@@ -124,5 +144,64 @@ describe('progress bundle', () => {
     expect(parseStored(PROGRESS_STORAGE_KEYS.physicsSignals)).toEqual(physicsSignals)
     expect(parseStored(PROGRESS_STORAGE_KEYS.chemistrySignals)).toEqual(chemistrySignals)
     expect(parseStored(PROGRESS_STORAGE_KEYS.csSignals)).toEqual(csSignals)
+  })
+
+  it('canonicalizes dirty CS progress and signal data on import, storage, and export', () => {
+    const questionId = CS_CURRICULUM[0].questions[0].id
+    const mockQuestionId = CS_MOCK_EXAMS.midterm.questions[0].id
+    const signalId = CS_SOLVING_SIGNALS[0].id
+    const nonBooleanSignalId = CS_SOLVING_SIGNALS[1].id
+    const bundle = exportProgressBundle()
+    bundle.cs = {
+      completedQuestions: [questionId, mockQuestionId, 'retired-question', questionId],
+      xp: Number.POSITIVE_INFINITY,
+      errorQuestions: [mockQuestionId, 'retired-question'],
+      examScores: { [CS_MOCK_EXAMS.midterm.id]: 125, 'retired-exam': 90 },
+      labCompleted: ['von-neumann', 'retired-lab'],
+      lastActiveDate: 'not-a-date',
+    }
+    bundle.csSignals = {
+      [signalId]: true,
+      [nonBooleanSignalId]: 'false',
+      'retired-signal': true,
+    }
+
+    expect(importProgressBundle(bundle)).toBe(true)
+
+    const storedCs = parseStored(PROGRESS_STORAGE_KEYS.cs)
+    const storedSignals = parseStored(PROGRESS_STORAGE_KEYS.csSignals)
+    expect(storedCs).toEqual(expect.objectContaining({
+      completedQuestions: [questionId],
+      xp: 0,
+      errorQuestions: [mockQuestionId],
+      examScores: { [CS_MOCK_EXAMS.midterm.id]: 100 },
+      labCompleted: ['von-neumann'],
+    }))
+    expect(storedSignals).toEqual({ [signalId]: true })
+    expect(exportProgressBundle().cs).toEqual(storedCs)
+    expect(exportProgressBundle().csSignals).toEqual(storedSignals)
+  })
+
+  it('does not clear stored CS data when an imported bundle omits optional CS fields', () => {
+    const questionId = CS_CURRICULUM[0].questions[0].id
+    const signalId = CS_SOLVING_SIGNALS[0].id
+    const existingCs = {
+      completedQuestions: [questionId],
+      xp: 25,
+      errorQuestions: [],
+      examScores: {},
+      labCompleted: [],
+      lastActiveDate: '2026-10-08',
+    }
+    const existingSignals = { [signalId]: true }
+    localStorage.setItem(PROGRESS_STORAGE_KEYS.cs, JSON.stringify(existingCs))
+    localStorage.setItem(PROGRESS_STORAGE_KEYS.csSignals, JSON.stringify(existingSignals))
+    const bundle = exportProgressBundle()
+    bundle.cs = undefined
+    bundle.csSignals = undefined
+
+    expect(importProgressBundle(bundle)).toBe(true)
+    expect(parseStored(PROGRESS_STORAGE_KEYS.cs)).toEqual(existingCs)
+    expect(parseStored(PROGRESS_STORAGE_KEYS.csSignals)).toEqual(existingSignals)
   })
 })

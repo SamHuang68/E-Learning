@@ -335,7 +335,7 @@ export const ArchifyHardwareMap: React.FC<Props> = ({ onEarnXp }) => {
         }}
         onClick={handleInteract}
       >
-        <DeferredArchifyIframe key={selectedDiagram} src={diagramMeta.file} title={diagramMeta.title} />
+        <DeferredArchifyIframe key={`${selectedDiagram}-${locale}`} src={diagramMeta.file} title={diagramMeta.title} />
       </div>
       <ContentProvenance>
         {selectedDiagram === 'ai-server'

@@ -68,7 +68,7 @@ export const CsPractice: React.FC<Props> = ({
               onClick={() => setActiveUnitId(u.id)}
             >
               <span>{unitCompleted ? '✓' : idx + 1}</span>
-              <span>{u.title.split('：')[0]}</span>
+              <span>{u.title.split(/[：:]/, 1)[0]}</span>
             </button>
           )
         })}

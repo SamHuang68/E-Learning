@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { CS_MOCK_EXAMS } from '../data/mockExams'
 import type { CsQuestion } from '../data/curriculum'
 import { playCorrectSound, playWrongSound } from '../../engine/audioSynthesizer'
@@ -24,6 +24,7 @@ export const CsMockExam: React.FC<Props> = ({ onRecordExamScore, onEarnXp }) => 
   const [score, setScore] = useState<number | null>(null)
   const [secondsRemaining, setSecondsRemaining] = useState(CS_MOCK_EXAMS.midterm.durationMinutes * 60)
   const [isTimerRunning, setIsTimerRunning] = useState(false)
+  const submitGuardRef = useRef(false)
 
   useEffect(() => {
     setActiveQuestionIdx(0)
@@ -31,10 +32,13 @@ export const CsMockExam: React.FC<Props> = ({ onRecordExamScore, onEarnXp }) => 
     setIsSubmitted(false)
     setScore(null)
     setSecondsRemaining(CS_MOCK_EXAMS[selectedExamKey].durationMinutes * 60)
+    submitGuardRef.current = false
     setIsTimerRunning(true)
   }, [selectedExamKey])
 
   const handleSubmitExam = React.useCallback(() => {
+    if (submitGuardRef.current) return
+    submitGuardRef.current = true
     setIsSubmitted(true)
     setIsTimerRunning(false)
 
@@ -65,17 +69,16 @@ export const CsMockExam: React.FC<Props> = ({ onRecordExamScore, onEarnXp }) => 
   useEffect(() => {
     if (!isTimerRunning || isSubmitted) return
     const timer = setInterval(() => {
-      setSecondsRemaining((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer)
-          handleSubmitExam()
-          return 0
-        }
-        return prev - 1
-      })
+      setSecondsRemaining((prev) => Math.max(0, prev - 1))
     }, 1000)
     return () => clearInterval(timer)
-  }, [isTimerRunning, isSubmitted, handleSubmitExam])
+  }, [isTimerRunning, isSubmitted])
+
+  useEffect(() => {
+    if (isTimerRunning && !isSubmitted && secondsRemaining === 0) {
+      handleSubmitExam()
+    }
+  }, [handleSubmitExam, isSubmitted, isTimerRunning, secondsRemaining])
 
   function handleSelectOption(qId: string, optIdx: number) {
     if (isSubmitted) return
@@ -159,7 +162,7 @@ export const CsMockExam: React.FC<Props> = ({ onRecordExamScore, onEarnXp }) => 
               {copy('評量完成 · 診斷報告', 'Assessment complete · Diagnostic report')}
             </span>
             <h3 style={{ margin: '0.2rem 0', fontSize: '1.2rem' }}>
-              {copy('測驗得分：', 'Score: ')}{score}{copy(' 分', ' points')}（{score >= 60 ? copy('及格通過 🎉', 'Passed 🎉') : copy('需加強複習 💪', 'Review recommended 💪')}）
+              {copy('測驗得分：', 'Score: ')}{score}{copy(' 分', ' points')}{copy('（', ' (')}{score >= 60 ? copy('及格通過 🎉', 'Passed 🎉') : copy('需加強複習 💪', 'Review recommended 💪')}{copy('）', ')')}
             </h3>
             <span style={{ fontSize: '0.74rem', color: 'var(--text)' }}>
               {copy('錯題已自動歸檔至「錯題弱點本」，供您後續深入解析與弱點突破！', 'Missed questions were added to the error vault for focused review.')}
@@ -169,6 +172,7 @@ export const CsMockExam: React.FC<Props> = ({ onRecordExamScore, onEarnXp }) => 
             type="button"
             className="pill-btn"
             onClick={() => {
+              submitGuardRef.current = false
               setUserAnswers({})
               setIsSubmitted(false)
               setScore(null)

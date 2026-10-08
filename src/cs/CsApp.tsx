@@ -5,6 +5,7 @@ import { CsHierarchyTree } from './components/CsHierarchyTree'
 import { CsToday } from './components/CsToday'
 import { loadCsProgress, saveCsProgress, type CsProgress } from './utils/csStorage'
 import { useI18n } from '../i18n/i18n'
+import { CS_LAB_ID, type CsLabId } from './csLabRegistry'
 
 const CsPractice = React.lazy(() =>
   import('./components/CsPractice').then((m) => ({ default: m.CsPractice }))
@@ -118,7 +119,7 @@ export const CsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
     saveCsProgress(next)
   }
 
-  function handleLabCompleted(labId: string) {
+  function handleLabCompleted(labId: CsLabId) {
     if (!progress.labCompleted.includes(labId)) {
       const next: CsProgress = {
         ...progress,
@@ -199,47 +200,47 @@ export const CsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
 
         {activeSection === 'signals' && <CsSignalsView />}
 
-        {activeSection === 'arch-map' && (
+        {activeSection === CS_LAB_ID.ARCH_MAP && (
           <ArchifyHardwareMap
             onEarnXp={(amount) => {
               handleEarnXp(amount)
-              handleLabCompleted('arch-map')
+              handleLabCompleted(CS_LAB_ID.ARCH_MAP)
             }}
           />
         )}
 
-        {activeSection === 'von-neumann' && (
+        {activeSection === CS_LAB_ID.VON_NEUMANN && (
           <VonNeumannArchitectureLab
             onEarnXp={(amount) => {
               handleEarnXp(amount)
-              handleLabCompleted('von-neumann')
+              handleLabCompleted(CS_LAB_ID.VON_NEUMANN)
             }}
           />
         )}
 
-        {activeSection === 'pipeline-hazard' && (
+        {activeSection === CS_LAB_ID.PIPELINE_HAZARD && (
           <PipelineHazardLab
             onEarnXp={(amount) => {
               handleEarnXp(amount)
-              handleLabCompleted('pipeline-hazard')
+              handleLabCompleted(CS_LAB_ID.PIPELINE_HAZARD)
             }}
           />
         )}
 
-        {activeSection === 'cache-mapping' && (
+        {activeSection === CS_LAB_ID.CACHE_MAPPING && (
           <CacheMappingLab
             onEarnXp={(amount) => {
               handleEarnXp(amount)
-              handleLabCompleted('cache-mapping')
+              handleLabCompleted(CS_LAB_ID.CACHE_MAPPING)
             }}
           />
         )}
 
-        {activeSection === 'ai-transformer' && (
+        {activeSection === CS_LAB_ID.AI_TRANSFORMER && (
           <AiMatrixTransformerLab
             onEarnXp={(amount) => {
               handleEarnXp(amount)
-              handleLabCompleted('ai-transformer')
+              handleLabCompleted(CS_LAB_ID.AI_TRANSFORMER)
             }}
           />
         )}
