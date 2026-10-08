@@ -320,3 +320,25 @@ Validation and state:
 - 現有 GitHub workflow 只在 push 至 `main` 或手動 dispatch 時執行，新增閘門是部署閘門，不是 PR 合併前的 GitHub required check。PR 預覽仍以外部 Cloudflare Pages check 及本機完整 gate 為準。
 - 本輪不改變既有驗收缺口：沒有連線 hosted Supabase 驗證跨裝置同步，沒有經由實際檔案選擇器執行匯入 E2E，也沒有在可掛載 React Strict Mode 與 fake timer 的瀏覽器測試環境驗證自動交卷副作用恰好一次。
 - 本條目建立時為未提交候選，`commit=false`、`push=false`、`merge=false`、`deploy=false`。Sam 於 2026-10-09 指示「照建議執行」後，已授權本輪精確依賴修補、完整 gate、新分支、PR、合併與 GitHub Pages／Cloudflare Pages 部署驗收；完整 release commit、merge SHA、遠端 CI 與 live manifest 證據由同版本 PR 與交付回報相互引用，不在包含自身的提交內預寫 SHA。
+
+## pr-required-checks.1 — 2026-10-09 — 發布候選
+
+沿用 npm package `0.0.0` 與內容衍生 precache `buildId` 的版本策略。本輪基底為 `aee980faf0c0c801d48d0d6355708b6055f11fc8`，只修改 CI workflow、README 與本修訂紀錄。
+
+### 修改原因與內容
+
+- 原本完整品質閘門只在 `main` push 後執行，合併前唯一遠端檢查是 Cloudflare 預覽，且 `main` 沒有 required check。現在目標為 `main` 的 PR 與正式部署重用同一個「完整驗證」job，保留兩層 audit、lint、全部測試、schema、build 與 `verify:dist`，不新增平行驗證管線或降低既有門檻。
+- PR 使用預設合併參照 checkout、唯讀 token 與獨立 concurrency 群組；不注入 Supabase 設定，不上傳 Pages artifact，也不進入部署 job。Pages／OIDC 寫入權限只授予 `main` 部署 job，手動執行其他分支也只作驗證。
+- 預定將 GitHub Actions 來源的「完整驗證」設為 `main` required check，要求最新基底並套用管理員；先取得候選的實際 PR CI 證據，再啟用保護規則及合併。GitHub repository 設定的實際啟用結果由同版本 PR 與交付回報互相引用。
+
+### 驗證結果
+
+- actionlint 1.7.12 通過；29 項 workflow 政策檢查通過，包含同來源／fork PR、`main` push、`main` 手動執行及其他分支手動執行的權限、秘密、上傳、部署與 concurrency 分流。獨立唯讀審查為 Critical 0、Required 0、Advisory 0。
+- 精確鎖檔 `npm ci --no-audit --no-fund` 成功，兩層 npm audit 均為 0 項弱點；本機 Pages base-path build 完成 532 個模組，`verify:dist=PASS`：buildId `9e03b661bb41c671`、298 個檔案、99 個必要 public 檔案、8 個延遲載入區塊、8,065,495 bytes precache、最大 bundled JavaScript 436,420 bytes。
+- `git diff --check` 通過，實際變更僅為三個允許檔案。應用程式與依賴未變，本輪不另外重跑本機全套測試；候選的完整 lint、Vitest、schema 與遠端合併前／部署結果將由本次 PR CI 實際執行並追加記錄，尚未執行者不列為通過。
+
+### 已知限制與發布狀態
+
+- PR CI 的 schema 為靜態契約，build 使用本機後端；既有 hosted Supabase、真實檔案選擇器匯入與 Strict Mode 自動交卷驗收缺口維持原紀錄。
+- 完整依賴 audit 仍為非阻擋報告；正式依賴 audit 與必要品質步驟的失敗會阻擋完整驗證。
+- Sam 指示「照建議執行」授權本輪 PR CI、required check 與發布驗收。條目建立時 `commit=false`、`push=false`、`merge=false`、`deploy=false`；完整 SHA、PR、遠端 CI、分支保護 readback 與部署證據由同版本 PR 追加記錄，不在包含自身的提交中預寫 SHA。

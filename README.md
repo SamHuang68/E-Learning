@@ -68,6 +68,14 @@ npm run audit:all      # 完整依賴圖；info 以上告警均以非零狀態�
 
 這兩個命令會把鎖檔中的套件名稱與版本送往目前設定的 npm 套件登錄服務，結果也可能因安全告警資料庫更新而改變，因此不併入可離線重跑的 `verify:local` 或產物層 `verify:dist`。
 
+### PR 合併前驗證
+
+目標為 `main` 的 PR 會執行與正式部署相同的「完整驗證」job：正式依賴稽核、完整依賴報告、鎖檔安裝、lint、全部測試、schema、build 與 `verify:dist`。PR 採 GitHub 的預設合併參照 checkout，以候選與基底整合後的內容接受驗證；不依檔案類型略過，因此文件與 workflow 變更也能產生 required check。建立、提交更新、重開、轉為可審查與編輯 PR 都會觸發，涵蓋變更基底到 `main` 的情境；一般標題或描述編輯也會重新驗證。
+
+PR 的 `GITHUB_TOKEN` 只有 `contents: read`，不注入 Supabase 設定、不上傳 Pages artifact，也不執行 GitHub Pages 部署。PR 的 concurrency 依 PR 編號隔離，更新同一 PR 只會取消該 PR 的舊驗證。只有 `main` 的 push 或手動執行可上傳 artifact 並進入具有 `pages: write`、`id-token: write` 權限的部署 job；Cloudflare 的 PR 預覽由既有外部整合獨立提供。
+
+`main` 的 required check 名稱為「完整驗證」，來源限定 GitHub Actions，要求分支與最新基底同步，並適用於管理員。正式依賴 low 以上告警與任何必要驗證失敗都會阻擋合併；完整依賴圖的 info 以上告警維持非阻擋報告。這項分支保護是 GitHub repository 設定，workflow 檔案本身不會自動啟用；實際啟用狀態及發布證據記錄於本次 PR。
+
 可讀版本紀錄保存在 [`REVISION_HISTORY.md`](REVISION_HISTORY.md)；歷史 round 仍可由 `main` 上的提交標題追溯：
 
 ```bash
