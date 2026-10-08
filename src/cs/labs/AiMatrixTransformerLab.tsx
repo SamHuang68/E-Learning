@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
 import { MathFormula } from '../../math/components/MathFormula'
+import { useI18n } from '../../i18n/i18n'
 
 interface Props {
   onEarnXp: (amount: number) => void
@@ -18,6 +19,8 @@ const ATTENTION_MATRIX: number[][] = [
 ]
 
 export const AiMatrixTransformerLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { locale } = useI18n()
+  const copy = (zhHant: string, en: string) => locale === 'en' ? en : zhHant
   const [selectedTokenIdx, setSelectedTokenIdx] = useState<number>(3) // 'learns'
   const [hardwareMode, setHardwareMode] = useState<'cpu' | 'gpu'>('gpu')
   const [kvCacheEnabled, setKvCacheEnabled] = useState<boolean>(true)
@@ -50,10 +53,10 @@ export const AiMatrixTransformerLab: React.FC<Props> = ({ onEarnXp }) => {
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>🤖</span> 現代 AI 矩陣平行加速與 Transformer Self-Attention 實驗室
+            <span>🤖</span> {copy('現代 AI 矩陣平行加速與 Transformer Self-Attention 實驗室', 'Modern AI Matrix Acceleration and Transformer Self-Attention Lab')}
           </h3>
           <p className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            即時體驗 GPU 平行張量運算 (GEMM)、縮放點積自注意力機制 Softmax(QKᵀ/√d)V 與大模型 KV Cache 空間換時間！
+            {copy('即時體驗 GPU 平行張量運算 (GEMM)、縮放點積自注意力機制與大模型 KV Cache 空間換時間。', 'Explore parallel GPU tensor GEMM, scaled dot-product attention Softmax(QKᵀ/√d)V, and the memory-for-computation tradeoff of an LLM KV cache.')}
           </p>
         </div>
       </div>
@@ -79,15 +82,19 @@ export const AiMatrixTransformerLab: React.FC<Props> = ({ onEarnXp }) => {
           <div style={{ fontSize: '1.8rem' }}>{hardwareMode === 'gpu' ? '🚀 🎛️' : '🐢 🖥️'}</div>
           <div>
             <strong style={{ fontSize: '0.92rem', display: 'block', color: hardwareMode === 'gpu' ? '#10b981' : '#ef4444' }}>
-              當前推論晶片模式：{hardwareMode === 'gpu' ? 'GPU / TPU 平行張量核心 (Tensor Core)' : '傳統 CPU 循序純量迴圈'}
+              {copy('當前推論晶片模式：', 'Current inference hardware:')}{hardwareMode === 'gpu'
+                ? copy('GPU / TPU 平行張量核心', 'GPU / TPU parallel tensor cores')
+                : copy('傳統 CPU 循序純量迴圈', 'Conventional CPU sequential scalar loop')}
             </strong>
             <span style={{ fontSize: '0.74rem', color: 'var(--text)', display: 'block' }}>
               {hardwareMode === 'gpu'
-                ? '數千平行核心同步執行 GEMM 矩陣相乘！HBM3 高頻寬記憶體傳輸，大模型每秒輸出 85+ tokens！'
-                : 'CPU 依序執行雙重巢狀迴圈 O(N³)，記憶體頻寬受限於 DDR 匯流排，推論延遲大幅升高！'}
+                ? copy('數千平行核心同步執行 GEMM；HBM3 提供高頻寬資料傳輸。', 'Thousands of parallel cores execute GEMM concurrently while HBM3 provides high-bandwidth data movement.')
+                : copy('CPU 依序執行 O(N³) 巢狀迴圈，吞吐受 DDR 記憶體頻寬限制。', 'The CPU executes O(N³) nested loops sequentially and is limited by DDR memory bandwidth.')}
             </span>
             <span style={{ fontSize: '0.72rem', color: '#2563eb', display: 'block', marginTop: '0.2rem', fontWeight: 600 }}>
-              ⚡ 推論最佳化狀態：{kvCacheEnabled ? '✓ 已啟用 KV Cache（已生成 Token 鍵值免重算，O(1)極速響應）' : '✗ 未啟用 KV Cache（每步重算全部歷史 Context，延遲劇增）'}
+              ⚡ {copy('推論最佳化狀態：', 'Inference optimization:')}{kvCacheEnabled
+                ? copy('✓ KV Cache 已啟用；不重算既有 Token 的 Key/Value。', '✓ KV cache enabled; existing token keys and values are reused.')
+                : copy('✗ KV Cache 未啟用；每一步都重算完整上下文。', '✗ KV cache disabled; every step recomputes the full context.')}
             </span>
           </div>
         </div>
@@ -103,7 +110,7 @@ export const AiMatrixTransformerLab: React.FC<Props> = ({ onEarnXp }) => {
             }}
             onClick={handleToggleHardware}
           >
-            切換為 {hardwareMode === 'gpu' ? 'CPU 模式' : 'GPU 模式'}
+            {copy('切換為', 'Switch to')} {hardwareMode === 'gpu' ? copy('CPU 模式', 'CPU mode') : copy('GPU 模式', 'GPU mode')}
           </button>
           <button
             type="button"
@@ -118,7 +125,7 @@ export const AiMatrixTransformerLab: React.FC<Props> = ({ onEarnXp }) => {
               }
             }}
           >
-            {kvCacheEnabled ? '⚡ KV Cache 已開' : '⚪ 開啟 KV Cache'}
+            {kvCacheEnabled ? copy('⚡ KV Cache 已開', '⚡ KV cache on') : copy('⚪ 開啟 KV Cache', '⚪ Enable KV cache')}
           </button>
         </div>
       </div>
@@ -129,7 +136,7 @@ export const AiMatrixTransformerLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
           <div>
             <span style={{ fontSize: '0.74rem', color: '#2563eb', fontWeight: 700, display: 'block', marginBottom: '0.4rem' }}>
-              🔍 點擊待查詢 Token (Query Vector $Q$)：
+              {copy('🔍 點擊待查詢 Token (Query Vector Q)：', '🔍 Select the query token (vector Q):')}
             </span>
             <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
               {TOKENS.map((token, idx) => (
@@ -152,7 +159,7 @@ export const AiMatrixTransformerLab: React.FC<Props> = ({ onEarnXp }) => {
 
           <div style={{ background: 'var(--surface-soft)', border: '1px solid var(--line)', borderRadius: '10px', padding: '0.8rem' }}>
             <strong style={{ fontSize: '0.82rem', display: 'block', marginBottom: '0.5rem' }}>
-              「{currentToken}」對上下文各詞彙的注意力權重 α_i = Softmax(Q · K_iᵀ / √d_k)：
+              {copy(`「${currentToken}」對上下文各詞彙的注意力權重`, `Attention weights from “${currentToken}” to each context token`)} α_i = Softmax(Q · K_iᵀ / √d_k):
             </strong>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
@@ -186,7 +193,7 @@ export const AiMatrixTransformerLab: React.FC<Props> = ({ onEarnXp }) => {
         {/* 右側：數學原理與架構重點 */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           <span style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
-            📐 Transformer 注意力數學本質
+            {copy('📐 Transformer 注意力數學本質', '📐 Mathematics of Transformer Attention')}
           </span>
 
           <div style={{ background: 'var(--surface-soft)', border: '1px solid var(--line)', borderRadius: '8px', padding: '0.75rem', fontSize: '0.82rem', lineHeight: 1.6 }}>
@@ -194,15 +201,15 @@ export const AiMatrixTransformerLab: React.FC<Props> = ({ onEarnXp }) => {
               <MathFormula math="\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V" block />
             </div>
             <ul style={{ margin: 0, paddingLeft: '1.2rem', fontSize: '0.74rem', color: 'var(--text)' }}>
-              <li><strong>Q (Query)</strong>：當前詞彙想要尋找的關聯目標。</li>
-              <li><strong>K (Key)</strong>：上下文中各詞彙暴露的特徵標籤。</li>
-              <li><strong>縮放因子 √d_k</strong>：避免高維向量點積數值過大引發 Softmax 梯度消失。</li>
-              <li><strong>V (Value)</strong>：加權融合提取出的上下文語意特徵向量。</li>
+              <li><strong>Q (Query):</strong> {copy('目前 Token 所尋找的關聯目標。', 'the relationship target sought by the current token.')}</li>
+              <li><strong>K (Key):</strong> {copy('上下文 Token 提供的特徵標籤。', 'the feature label exposed by each context token.')}</li>
+              <li><strong>{copy('縮放因子', 'Scale factor')} √d_k:</strong> {copy('避免高維點積過大而使 Softmax 飽和。', 'prevents large high-dimensional dot products from saturating Softmax.')}</li>
+              <li><strong>V (Value):</strong> {copy('加權聚合後的上下文語意向量。', 'the contextual semantic vector aggregated by the weights.')}</li>
             </ul>
           </div>
 
           <div style={{ background: 'var(--surface-soft)', border: '1px solid var(--line)', borderRadius: '8px', padding: '0.65rem 0.75rem', fontSize: '0.74rem', color: 'var(--muted)', lineHeight: 1.45 }}>
-            💡 <strong>工程實務：</strong>在本地端推論（如配備 96GB RAM 與 RTX 5080 16GB 顯卡執行 Ollama / Llama 3.3）時，啟用 <strong>FlashAttention-2</strong> 與 <strong>KV Cache</strong> 可大幅降低顯存讀寫次數，使大模型達到每秒近百字的流暢生成！
+            💡 <strong>{copy('工程實務：', 'Engineering practice:')}</strong>{copy('在本地推論中，FlashAttention-2 與 KV Cache 可減少顯存往返，但實際吞吐仍取決於模型、量化、硬體與上下文長度。', 'For local inference, FlashAttention-2 and a KV cache reduce memory traffic, but actual throughput still depends on the model, quantization, hardware, and context length.')}
           </div>
         </div>
       </div>

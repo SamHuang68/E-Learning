@@ -1,7 +1,8 @@
 ﻿import React, { useState } from 'react'
-import { MEASURE_WORDS, type MeasureWordItem } from '../data/measureWords'
+import { CHINESE_SUPPORT_EN, MEASURE_WORDS, type MeasureWordItem } from '../data/measureWords'
 import { playCorrectSound, playWrongSound } from '../../engine/audioSynthesizer'
 import { useI18n } from '../../i18n/i18n'
+import { localizeChineseData } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
@@ -14,6 +15,7 @@ export const MeasureWordsLab: React.FC<Props> = ({ onEarnXp }) => {
   const [submittedQuiz, setSubmittedQuiz] = useState<Record<string, boolean>>({})
 
   const activeItem: MeasureWordItem = MEASURE_WORDS[selectedMwIdx % MEASURE_WORDS.length]
+  const localizedItem = localizeChineseData(activeItem, locale, CHINESE_SUPPORT_EN)
 
   function speakChinese(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -43,10 +45,12 @@ export const MeasureWordsLab: React.FC<Props> = ({ onEarnXp }) => {
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>🔢</span> 華語量詞精準搭配實驗室 (Classifiers & Measure Words Lab)
+            <span>🔢</span> {locale === 'en' ? 'Mandarin Classifier and Measure-Word Lab' : '華語量詞精準搭配實驗室 (Classifiers & Measure Words Lab)'}
           </h3>
           <p className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            「一張桌子」？「一把椅子」？「一條褲子」？名詞形狀與量詞的自然搭配法則一網打盡！
+            {locale === 'en'
+              ? 'Learn how shape and usage determine natural classifier pairings such as 一張桌子, 一把椅子, and 一條褲子.'
+              : '「一張桌子」？「一把椅子」？「一條褲子」？名詞形狀與量詞的自然搭配法則一網打盡！'}
           </p>
           <p className="section-subtext" style={{ margin: '0.35rem 0 0', fontSize: '0.74rem' }}>
             <span lang={locale}>{t('zh.measure.honesty')}</span>
@@ -81,21 +85,21 @@ export const MeasureWordsLab: React.FC<Props> = ({ onEarnXp }) => {
                 <span lang="zh-Latn">{activeItem.pinyin}</span> · {activeItem.bopomofo}
               </span>
             </div>
-            <span lang="ja" style={{ fontSize: '0.72rem', padding: '0.15rem 0.5rem', borderRadius: '999px', background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', fontWeight: 700 }}>
-              {activeItem.categoryJa}
+            <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.72rem', padding: '0.15rem 0.5rem', borderRadius: '999px', background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', fontWeight: 700 }}>
+              {localizedItem.categoryJa}
             </span>
           </div>
 
           <div style={{ background: 'var(--surface-soft)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
-            <span lang="ja" style={{ fontSize: '0.7rem', color: 'var(--muted)', display: 'block' }}>使い分けのルール：</span>
-            <div lang="ja" style={{ fontSize: '0.8rem', lineHeight: 1.45 }}>{activeItem.usageRuleJa}</div>
+            <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.7rem', color: 'var(--muted)', display: 'block' }}>{locale === 'en' ? 'Usage rule:' : '使い分けのルール：'}</span>
+            <div lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.8rem', lineHeight: 1.45 }}>{localizedItem.usageRuleJa}</div>
           </div>
 
-          <span lang="ja" style={{ fontSize: '0.72rem', color: 'var(--muted)', fontWeight: 700, marginTop: '0.2rem' }}>
-            代表的な名詞の組み合わせ：
+          <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.72rem', color: 'var(--muted)', fontWeight: 700, marginTop: '0.2rem' }}>
+            {locale === 'en' ? 'Common noun pairings:' : '代表的な名詞の組み合わせ：'}
           </span>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-            {activeItem.matchedNouns.map((noun, nIdx) => (
+            {localizedItem.matchedNouns.map((noun, nIdx) => (
               <div
                 key={nIdx}
                 style={{
@@ -111,10 +115,10 @@ export const MeasureWordsLab: React.FC<Props> = ({ onEarnXp }) => {
                 <div>
                   <strong style={{ fontSize: '0.88rem', color: '#f59e0b' }}>{noun.samplePhraseZh}</strong>
                   <span style={{ fontSize: '0.72rem', color: 'var(--muted)', marginLeft: '0.4rem' }}>
-                    ({noun.nounZh} · <span lang="ja">{noun.meaningJa}</span>)
+                    ({noun.nounZh} · <span lang={locale === 'en' ? 'en' : 'ja'}>{noun.meaningJa}</span>)
                   </span>
                 </div>
-                <button aria-label={`朗讀：${noun.samplePhraseZh}`}
+                <button aria-label={locale === 'en' ? `Read aloud: ${noun.samplePhraseZh}` : `朗讀：${noun.samplePhraseZh}`}
                   type="button"
                   style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
                   onClick={() => speakChinese(noun.samplePhraseZh)}
@@ -130,15 +134,15 @@ export const MeasureWordsLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
           <div>
             <span style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
-              🎯 3秒量詞快答挑戰 (Quick Measure Word Quiz)
+              {locale === 'en' ? '🎯 Three-second classifier challenge' : '🎯 3秒量詞快答挑戰 (Quick Measure Word Quiz)'}
             </span>
-            <div lang="ja" style={{ margin: '0.4rem 0', fontSize: '0.76rem', color: 'var(--muted)' }}>
-              次の名詞に最も適した量詞を選んでください：
+            <div lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.4rem 0', fontSize: '0.76rem', color: 'var(--muted)' }}>
+              {locale === 'en' ? 'Choose the most natural classifier for this noun:' : '次の名詞に最も適した量詞を選んでください：'}
             </div>
             <h3 style={{ margin: '0.2rem 0', fontSize: '1.2rem', color: 'var(--text)' }}>
               一 [ ? ] {activeItem.quiz.nounZh}
             </h3>
-            <span style={{ fontSize: '0.76rem', color: 'var(--muted)' }}>(<span lang="ja">{activeItem.quiz.meaningJa}</span>)</span>
+            <span style={{ fontSize: '0.76rem', color: 'var(--muted)' }}>(<span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.quiz.meaningJa}</span>)</span>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.4rem' }}>
@@ -183,10 +187,10 @@ export const MeasureWordsLab: React.FC<Props> = ({ onEarnXp }) => {
           {submittedQuiz[activeItem.id] && (
             <div style={{ background: 'var(--surface-soft)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)', fontSize: '0.76rem', color: 'var(--muted)', lineHeight: 1.45 }}>
               <p style={{ margin: 0 }}>
-                💡 <strong>解説：</strong><span lang="ja">{activeItem.quiz.explanationJa}</span>
+                💡 <strong>{locale === 'en' ? 'Explanation: ' : '解説：'}</strong><span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.quiz.explanationJa}</span>
               </p>
-              {activeItem.quiz.explanationZh ? (
-                <p style={{ margin: '0.35rem 0 0' }}>{activeItem.quiz.explanationZh}</p>
+              {localizedItem.quiz.explanationZh ? (
+                <p style={{ margin: '0.35rem 0 0' }}>{localizedItem.quiz.explanationZh}</p>
               ) : null}
             </div>
           )}

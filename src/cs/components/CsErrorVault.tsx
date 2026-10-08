@@ -3,6 +3,7 @@ import { CS_CURRICULUM, type CsQuestion } from '../data/curriculum'
 import { CS_MOCK_EXAMS } from '../data/mockExams'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
 import { useI18n } from '../../i18n/i18n'
+import { localizeCsMockExam, localizeCsUnit } from '../../i18n/csTeachingCopy'
 
 interface Props {
   errorQuestionIds?: string[]
@@ -14,17 +15,19 @@ export const CsErrorVault: React.FC<Props> = ({ errorQuestionIds = [], onRemoveE
   const rootRef = useRef<HTMLDivElement>(null)
   const headingRef = useRef<HTMLHeadingElement>(null)
   const pendingFocusIndex = useRef<number | null>(null)
-  const [removalMessage, setRemovalMessage] = useState('')
+  const [removalRemainingCount, setRemovalRemainingCount] = useState<number | null>(null)
   // 匯總所有題目池
   const allQuestionsMap: Record<string, CsQuestion> = {}
 
-  CS_CURRICULUM.forEach((unit) => {
+  CS_CURRICULUM.map((unit) => localizeCsUnit(locale, unit)).forEach((unit) => {
     unit.questions.forEach((q) => {
       allQuestionsMap[q.id] = q
     })
   })
 
-  Object.values(CS_MOCK_EXAMS).forEach((exam) => {
+  Object.values(CS_MOCK_EXAMS).map((exam) =>
+    localizeCsMockExam(locale, exam),
+  ).forEach((exam) => {
     exam.questions.forEach((q) => {
       allQuestionsMap[q.id] = q
     })
@@ -33,6 +36,11 @@ export const CsErrorVault: React.FC<Props> = ({ errorQuestionIds = [], onRemoveE
   const errorQuestions = errorQuestionIds
     .map((id) => allQuestionsMap[id])
     .filter((q): q is CsQuestion => Boolean(q))
+  const removalMessage = removalRemainingCount === null
+    ? ''
+    : locale === 'en'
+      ? `Removed from Error Vault. ${removalRemainingCount} remaining.`
+      : `已移除錯題，剩餘 ${removalRemainingCount} 題。`
 
   useLayoutEffect(() => {
     if (pendingFocusIndex.current === null) return
@@ -114,9 +122,7 @@ export const CsErrorVault: React.FC<Props> = ({ errorQuestionIds = [], onRemoveE
                   }}
                   onClick={() => {
                     pendingFocusIndex.current = idx
-                    setRemovalMessage(locale === 'en'
-                      ? `Removed from Error Vault. ${errorQuestions.length - 1} remaining.`
-                      : `已移除錯題，剩餘 ${errorQuestions.length - 1} 題。`)
+                    setRemovalRemainingCount(errorQuestions.length - 1)
                     playCorrectSound()
                     onRemoveError(q.id)
                   }}
@@ -146,7 +152,7 @@ export const CsErrorVault: React.FC<Props> = ({ errorQuestionIds = [], onRemoveE
                   ))}
                 </ol>
                 <div style={{ marginTop: '0.35rem', fontSize: '0.72rem', color: 'var(--muted)' }}>
-                  <strong><span lang={locale}>{t('vault.blindspot')}</span></strong>{q.explanation}
+                  <strong><span lang={locale}>{t('vault.blindspot')}</span></strong>{' '}{q.explanation}
                 </div>
               </div>
             </div>

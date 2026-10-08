@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { weekStudyFlags, loadHubSnapshot, selectHubDerived } from './Hub'
+import { Hub } from './Hub'
+import { weekStudyFlags, loadHubSnapshot, selectHubDerived } from './hubModel'
 import { defaultLearningMeta, type LearningMeta } from './utils/storage'
 
 describe('Hub smoke (Vitest)', () => {
@@ -18,7 +19,7 @@ describe('Hub smoke (Vitest)', () => {
 
   it('Hub component symbol defined (route render entrypoint ready)', () => {
     // Full render test would require @testing-library/react + jsdom setup; this verifies no import/definition throw
-    expect(weekStudyFlags).toBeDefined()
+    expect(Hub).toBeDefined()
   })
 
   it('selectHubDerived is catalog-first on empty snapshot and stable for the same input', () => {

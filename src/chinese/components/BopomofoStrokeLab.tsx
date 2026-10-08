@@ -1,18 +1,24 @@
 ﻿import React, { useState, useRef, useEffect, useCallback } from 'react'
-import { STROKE_CHARACTERS, type ChineseStrokeItem } from '../data/strokeOrders'
-import { INITIALS_DATA, FINALS_DATA } from '../data/pinyinBopomofo'
+import { CHINESE_SUPPORT_EN as STROKE_SUPPORT_EN, STROKE_CHARACTERS, type ChineseStrokeItem } from '../data/strokeOrders'
+import { CHINESE_SUPPORT_EN as PINYIN_SUPPORT_EN, INITIALS_DATA, FINALS_DATA } from '../data/pinyinBopomofo'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
+import { localizeChineseData } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
 }
 
 export const BopomofoStrokeLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { locale } = useI18n()
   const [selectedChar, setSelectedChar] = useState<ChineseStrokeItem>(STROKE_CHARACTERS[0])
   const [activeSubTab, setActiveSubTab] = useState<'stroke' | 'bopomofo'>('stroke')
   const [selectedBopomofo, setSelectedBopomofo] = useState<string>('ㄅ')
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const [isDrawing, setIsDrawing] = useState(false)
+  const localizedChar = localizeChineseData(selectedChar, locale, STROKE_SUPPORT_EN)
+  const localizedInitials = localizeChineseData(INITIALS_DATA, locale, PINYIN_SUPPORT_EN)
+  const localizedFinals = localizeChineseData(FINALS_DATA, locale, PINYIN_SUPPORT_EN)
 
   function speakChinese(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -126,10 +132,12 @@ export const BopomofoStrokeLab: React.FC<Props> = ({ onEarnXp }) => {
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>🖌️</span> 繁體漢字筆順與注音符號實驗室 (Bopomofo & Stroke Lab)
+            <span>🖌️</span> {locale === 'en' ? 'Traditional Character Stroke and Bopomofo Lab' : '繁體漢字筆順與注音符號實驗室 (Bopomofo & Stroke Lab)'}
           </h3>
-          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            台湾で実際に使われる正体字（繁体字）の書き順ルールと、注音符号（ボポモフォ 37音）の発音を攻略！
+          <p lang={locale === 'en' ? 'en' : 'ja'} className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+            {locale === 'en'
+              ? 'Practise stroke order for Traditional Chinese characters and the pronunciation of all 37 Bopomofo symbols used in Taiwan.'
+              : '台湾で実際に使われる正体字（繁体字）の書き順ルールと、注音符号（ボポモフォ 37音）の発音を攻略！'}
           </p>
         </div>
       </div>
@@ -141,14 +149,14 @@ export const BopomofoStrokeLab: React.FC<Props> = ({ onEarnXp }) => {
           className={`pill-btn ${activeSubTab === 'stroke' ? 'active' : ''}`}
           onClick={() => setActiveSubTab('stroke')}
         >
-          ✍️ 繁體漢字筆順臨摹 (Stroke Order)
+          {locale === 'en' ? '✍️ Stroke-order practice' : '✍️ 繁體漢字筆順臨摹 (Stroke Order)'}
         </button>
         <button aria-pressed={activeSubTab === 'bopomofo'}
           type="button"
           className={`pill-btn ${activeSubTab === 'bopomofo' ? 'active' : ''}`}
           onClick={() => setActiveSubTab('bopomofo')}
         >
-          🇹🇼 注音符號 37音矩陣 (Bopomofo Matrix)
+          {locale === 'en' ? '🇹🇼 37-symbol Bopomofo matrix' : '🇹🇼 注音符號 37音矩陣 (Bopomofo Matrix)'}
         </button>
       </div>
 
@@ -176,7 +184,9 @@ export const BopomofoStrokeLab: React.FC<Props> = ({ onEarnXp }) => {
               <canvas
                 ref={canvasRef}
                 role="img"
-                aria-label={`漢字「${selectedChar.char}」臨摹畫布；筆順說明列於下方`}
+                aria-label={locale === 'en'
+                  ? `Tracing canvas for ${selectedChar.char}; stroke-order guidance appears below`
+                  : `漢字「${selectedChar.char}」臨摹畫布；筆順說明列於下方`}
                 onMouseDown={startDraw}
                 onMouseMove={draw}
                 onMouseUp={() => setIsDrawing(false)}
@@ -197,7 +207,7 @@ export const BopomofoStrokeLab: React.FC<Props> = ({ onEarnXp }) => {
 
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               <button type="button" className="pill-btn" onClick={handleClear}>
-                🧹 清空畫布
+                {locale === 'en' ? '🧹 Clear canvas' : '🧹 清空畫布'}
               </button>
               <button
                 type="button"
@@ -208,7 +218,7 @@ export const BopomofoStrokeLab: React.FC<Props> = ({ onEarnXp }) => {
                   playCorrectSound()
                 }}
               >
-                🔊 聽發音 (+10 XP)
+                {locale === 'en' ? '🔊 Play pronunciation (+10 XP)' : '🔊 聽發音 (+10 XP)'}
               </button>
             </div>
           </div>
@@ -219,31 +229,31 @@ export const BopomofoStrokeLab: React.FC<Props> = ({ onEarnXp }) => {
               <div>
                 <h3 style={{ margin: 0, fontSize: '1.8rem', color: '#f59e0b' }}>{selectedChar.char}</h3>
                 <div style={{ fontSize: '0.8rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
-                  <span lang="zh-Latn">{selectedChar.pinyin}</span> · {selectedChar.bopomofo} · 部首：<strong>{selectedChar.radical}</strong> · {selectedChar.strokeCount} 畫
+                  <span lang="zh-Latn">{selectedChar.pinyin}</span> · {selectedChar.bopomofo} · {locale === 'en' ? 'Radical' : '部首'}: <strong>{selectedChar.radical}</strong> · {selectedChar.strokeCount} {locale === 'en' ? 'strokes' : '畫'}
                 </div>
               </div>
             </div>
 
             <div style={{ background: 'var(--surface-soft)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
-              <span lang="ja" style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block' }}>🇯🇵 日本語の意味：</span>
-              <strong lang="ja" style={{ fontSize: '0.88rem' }}>{selectedChar.meaningJa}</strong>
+              <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block' }}>{locale === 'en' ? 'English meaning:' : '🇯🇵 日本語の意味：'}</span>
+              <strong lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.88rem' }}>{localizedChar.meaningJa}</strong>
             </div>
 
             <div style={{ background: 'rgba(245, 158, 11, 0.08)', padding: '0.6rem', borderRadius: '8px', border: '1px solid rgba(245, 158, 11, 0.3)' }}>
-              <span style={{ fontSize: '0.72rem', color: '#f59e0b', fontWeight: 700, display: 'block' }}>✍️ Stroke Order Tip / 筆順教學提示 (zh-Hant / en)</span>
-              <p lang="ja" style={{ margin: '0.2rem 0 0', fontSize: '0.78rem', lineHeight: 1.45 }}>{selectedChar.strokeRuleJa}</p>
+              <span style={{ fontSize: '0.72rem', color: '#f59e0b', fontWeight: 700, display: 'block' }}>{locale === 'en' ? '✍️ Stroke-order tip' : '✍️ Stroke Order Tip / 筆順教學提示 (zh-Hant / en)'}</span>
+              <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.2rem 0 0', fontSize: '0.78rem', lineHeight: 1.45 }}>{localizedChar.strokeRuleJa}</p>
               <div style={{ marginTop: '0.4rem', fontSize: '0.72rem', color: 'var(--muted)' }}>
-                <strong>Stroke Sequence (筆順步驟):</strong> {selectedChar.strokeSequence.map((s, i) => `${i+1}.${s}`).join(' → ')}
+                <strong>{locale === 'en' ? 'Stroke sequence:' : 'Stroke Sequence (筆順步驟):'}</strong> {selectedChar.strokeSequence.map((s, i) => `${i+1}.${s}`).join(' → ')}
               </div>
               <div style={{ marginTop: '0.3rem', fontSize: '0.7rem', color: '#94a3b8' }}>
-                Tip: Follow the numbered order for correct writing. / 按照編號順序書寫以確保正確筆順。
+                {locale === 'en' ? 'Follow the numbered order to write the character correctly.' : 'Tip: Follow the numbered order for correct writing. / 按照編號順序書寫以確保正確筆順。'}
               </div>
             </div>
 
             <div style={{ background: 'var(--surface-soft)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
-              <span style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block' }}>例文 (Example)：</span>
+              <span style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block' }}>{locale === 'en' ? 'Target example:' : '例文 (Example)：'}</span>
               <strong style={{ fontSize: '0.86rem', display: 'block', margin: '0.15rem 0' }}>{selectedChar.exampleSentenceZh}</strong>
-              <span lang="ja" style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>{selectedChar.exampleSentenceJa}</span>
+              <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>{localizedChar.exampleSentenceJa}</span>
             </div>
           </div>
         </div>
@@ -252,10 +262,10 @@ export const BopomofoStrokeLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))', gap: '0.8rem' }}>
           <div>
             <span style={{ fontSize: '0.76rem', fontWeight: 700, color: 'var(--muted)', display: 'block', marginBottom: '0.4rem' }}>
-              【聲母 21 音】
+              {locale === 'en' ? '21 initials' : '【聲母 21 音】'}
             </span>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(48px, 1fr))', gap: '0.3rem' }}>
-              {INITIALS_DATA.map((item) => (
+              {localizedInitials.map((item) => (
                 <button aria-pressed={selectedBopomofo === item.bopomofo}
                   key={item.bopomofo}
                   type="button"
@@ -280,10 +290,10 @@ export const BopomofoStrokeLab: React.FC<Props> = ({ onEarnXp }) => {
             </div>
 
             <span style={{ fontSize: '0.76rem', fontWeight: 700, color: 'var(--muted)', display: 'block', margin: '0.8rem 0 0.4rem' }}>
-              【韻母 16 音】
+              {locale === 'en' ? '16 finals' : '【韻母 16 音】'}
             </span>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(48px, 1fr))', gap: '0.3rem' }}>
-              {FINALS_DATA.map((item) => (
+              {localizedFinals.map((item) => (
                 <button aria-pressed={selectedBopomofo === item.bopomofo}
                   key={item.bopomofo}
                   type="button"
@@ -310,12 +320,14 @@ export const BopomofoStrokeLab: React.FC<Props> = ({ onEarnXp }) => {
 
           {/* 符號詳解卡片 */}
           <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-            <span style={{ fontSize: '0.8rem', color: 'var(--muted)' }}>注音符號 (Bopomofo)</span>
+            <span style={{ fontSize: '0.8rem', color: 'var(--muted)' }}>{locale === 'en' ? 'Bopomofo symbol' : '注音符號 (Bopomofo)'}</span>
             <h2 style={{ fontSize: '4rem', margin: '0.4rem 0', color: '#f59e0b' }}>{selectedBopomofo}</h2>
-            <p lang="ja" style={{ margin: '0 0 1rem', fontSize: '0.82rem', color: 'var(--muted)' }}>
-              台湾の小学校で最初に習う発音記号。クリックするとネイティブ発音を再生します。
+            <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0 0 1rem', fontSize: '0.82rem', color: 'var(--muted)' }}>
+              {locale === 'en'
+                ? 'This phonetic script is taught first in Taiwan primary schools. Select a symbol to hear its pronunciation.'
+                : '台湾の小学校で最初に習う発音記号。クリックするとネイティブ発音を再生します。'}
             </p>
-            <button lang="ja"
+            <button lang={locale === 'en' ? 'en' : 'ja'}
               type="button"
               className="btn-primary"
               onClick={() => {
@@ -324,7 +336,7 @@ export const BopomofoStrokeLab: React.FC<Props> = ({ onEarnXp }) => {
                 playCorrectSound()
               }}
             >
-              🔊 発音を聞く (+5 XP)
+              {locale === 'en' ? '🔊 Play pronunciation (+5 XP)' : '🔊 発音を聞く (+5 XP)'}
             </button>
           </div>
         </div>

@@ -3,6 +3,8 @@ import { PHYSICS_SOLVING_SIGNALS, type PhysicsSolvingSignal } from '../data/solv
 import { MathFormula } from '../../math/components/MathFormula'
 import { PROGRESS_STORAGE_KEYS } from '../../utils/progressKeys'
 import { notifyProgressChanged } from '../../utils/storage'
+import { useI18n } from '../../i18n/i18n'
+import { localizePhysicsSignal } from '../locale/content'
 
 const STORAGE_KEY_PHYSICS_MASTERY = PROGRESS_STORAGE_KEYS.physicsSignals
 
@@ -52,6 +54,13 @@ function saveMasteryToStorage(map: MasteryMap): void {
  * 4. 掌握度追蹤：自動持久化儲存「已掌握 / 需複習」進度
  */
 export const PhysicsSignalsView: React.FC = () => {
+  const { locale } = useI18n()
+  const isEnglish = locale === 'en'
+  const copy = (zhHant: string, en: string) => isEnglish ? en : zhHant
+  const signals = useMemo(
+    () => PHYSICS_SOLVING_SIGNALS.map((signal) => localizePhysicsSignal(signal, locale)),
+    [locale],
+  )
   // 檢視模式：學習卡片 或 即時快答翻轉測驗
   const [viewMode, setViewMode] = useState<ViewMode>('cards')
 
@@ -96,14 +105,16 @@ export const PhysicsSignalsView: React.FC = () => {
 
   // 重設所有掌握度
   const handleResetAllMastery = useCallback(() => {
-    if (window.confirm('確定要重設所有物理 3 秒破題卡的掌握度紀錄嗎？')) {
+    if (window.confirm(isEnglish
+      ? 'Reset every physics signal card mastery record?'
+      : '確定要重設所有物理 3 秒破題卡的掌握度紀錄嗎？')) {
       setMasteryMap({})
     }
-  }, [])
+  }, [isEnglish])
 
   // 根據條件篩選卡片清單 (學習卡片模式)
   const filteredSignals = useMemo(() => {
-    return PHYSICS_SOLVING_SIGNALS.filter((sig: PhysicsSolvingSignal) => {
+    return signals.filter((sig: PhysicsSolvingSignal) => {
       // 學段篩選
       if (selectedStage !== 'all' && sig.stage !== selectedStage) {
         return false
@@ -127,11 +138,11 @@ export const PhysicsSignalsView: React.FC = () => {
       }
       return true
     })
-  }, [selectedStage, statusFilter, searchQuery, masteryMap])
+  }, [selectedStage, statusFilter, searchQuery, masteryMap, signals])
 
   // 測驗模式卡片清單
   const drillSignals = useMemo(() => {
-    let list = PHYSICS_SOLVING_SIGNALS.filter((sig: PhysicsSolvingSignal) => {
+    let list = signals.filter((sig: PhysicsSolvingSignal) => {
       if (selectedStage !== 'all' && sig.stage !== selectedStage) {
         return false
       }
@@ -147,7 +158,7 @@ export const PhysicsSignalsView: React.FC = () => {
 
     return list
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedStage, drillOnlyReview, isShuffled, shuffledSeed, masteryMap])
+  }, [selectedStage, drillOnlyReview, isShuffled, shuffledSeed, masteryMap, signals])
 
   // 當前測驗卡片
   const currentDrillCard: PhysicsSolvingSignal | undefined = drillSignals[drillIndex]
@@ -203,7 +214,7 @@ export const PhysicsSignalsView: React.FC = () => {
   }, [isShuffled])
 
   // 掌握度統計
-  const totalCount = PHYSICS_SOLVING_SIGNALS.length
+  const totalCount = signals.length
   const masteredCount = useMemo(
     () => Object.values(masteryMap).filter((v) => v === 'mastered').length,
     [masteryMap]
@@ -263,7 +274,7 @@ export const PhysicsSignalsView: React.FC = () => {
                 marginBottom: '0.35rem',
               }}
             >
-              ⚛️ 物理 3 秒破題訊號庫 · 108 課綱專屬
+              {copy('⚛️ 物理 3 秒破題訊號庫 · 108 課綱專屬', '⚛️ Physics Three-Second Signal Library · Taiwan 108 Curriculum')}
             </span>
             <h2
               style={{
@@ -274,7 +285,7 @@ export const PhysicsSignalsView: React.FC = () => {
                 lineHeight: 1.3,
               }}
             >
-              ⚡ 物理 3 秒破題訊號決策卡
+              {copy('⚡ 物理 3 秒破題訊號決策卡', '⚡ Physics Three-Second Decision Cards')}
             </h2>
             <p
               style={{
@@ -284,7 +295,10 @@ export const PhysicsSignalsView: React.FC = () => {
                 lineHeight: 1.4,
               }}
             >
-              看到題目特徵關鍵字 ➜ 3 秒直覺反射核心物理公式與模型！
+              {copy(
+                '看到題目特徵關鍵字 ➜ 3 秒直覺反射核心物理公式與模型！',
+                'Spot the problem cue, then recall the governing physics equation or model in three seconds.',
+              )}
             </p>
           </div>
 
@@ -322,7 +336,7 @@ export const PhysicsSignalsView: React.FC = () => {
                 minWidth: 0,
               }}
             >
-              <span>🗂️ 學習卡片模式</span>
+              <span>{copy('🗂️ 學習卡片模式', '🗂️ Study Cards')}</span>
             </button>
 
             <button
@@ -349,7 +363,7 @@ export const PhysicsSignalsView: React.FC = () => {
                 minWidth: 0,
               }}
             >
-              <span>⚡ 3秒快答翻轉測驗</span>
+              <span>{copy('⚡ 3秒快答翻轉測驗', '⚡ Three-Second Drill')}</span>
               {reviewCount > 0 && (
                 <span
                   style={{
@@ -394,12 +408,12 @@ export const PhysicsSignalsView: React.FC = () => {
             }}
           >
             <span>
-              🎯 掌握率：<strong>{masteryPercentage}%</strong> ({masteredCount}/{totalCount})
+              🎯 {copy('掌握率：', 'Mastery: ')}<strong>{masteryPercentage}%</strong> ({masteredCount}/{totalCount})
             </span>
             <span style={{ color: '#bae6fd' }}>•</span>
-            <span style={{ color: '#86efac' }}>🟢 已掌握 {masteredCount}</span>
-            <span style={{ color: '#fca5a5' }}>🔴 需複習 {reviewCount}</span>
-            <span style={{ color: '#cbd5e1' }}>⚪ 尚未測驗 {totalCount - masteredCount - reviewCount}</span>
+            <span style={{ color: '#86efac' }}>🟢 {copy('已掌握', 'Mastered')} {masteredCount}</span>
+            <span style={{ color: '#fca5a5' }}>🔴 {copy('需複習', 'Review')} {reviewCount}</span>
+            <span style={{ color: '#cbd5e1' }}>⚪ {copy('尚未測驗', 'Not tested')} {totalCount - masteredCount - reviewCount}</span>
           </div>
 
           <div
@@ -435,7 +449,7 @@ export const PhysicsSignalsView: React.FC = () => {
               <button
                 type="button"
                 onClick={handleResetAllMastery}
-                title="重設掌握度紀錄"
+                title={copy('重設掌握度紀錄', 'Reset mastery records')}
                 style={{
                   background: 'rgba(255, 255, 255, 0.15)',
                   border: 'none',
@@ -447,7 +461,7 @@ export const PhysicsSignalsView: React.FC = () => {
                   whiteSpace: 'nowrap',
                 }}
               >
-                重設
+                {copy('重設', 'Reset')}
               </button>
             )}
           </div>
@@ -482,7 +496,7 @@ export const PhysicsSignalsView: React.FC = () => {
                 onClick={() => setSelectedStage('all')}
                 style={{ fontSize: '0.78rem', padding: '0.35rem 0.65rem' }}
               >
-                全部物理 ({PHYSICS_SOLVING_SIGNALS.length})
+                {copy('全部物理', 'All Physics')} ({signals.length})
               </button>
               <button
                 type="button"
@@ -490,7 +504,7 @@ export const PhysicsSignalsView: React.FC = () => {
                 onClick={() => setSelectedStage('junior')}
                 style={{ fontSize: '0.78rem', padding: '0.35rem 0.65rem' }}
               >
-                國中物理 G7~G9 (4)
+                {copy('國中物理 G7~G9', 'Junior High Physics G7–G9')} ({signals.filter((signal) => signal.stage === 'junior').length})
               </button>
               <button
                 type="button"
@@ -498,14 +512,14 @@ export const PhysicsSignalsView: React.FC = () => {
                 onClick={() => setSelectedStage('senior')}
                 style={{ fontSize: '0.78rem', padding: '0.35rem 0.65rem' }}
               >
-                高中物理 G10~G12 (15)
+                {copy('高中物理 G10~G12', 'Senior High Physics G10–G12')} ({signals.filter((signal) => signal.stage === 'senior').length})
               </button>
             </div>
 
             {/* 狀態篩選與搜尋框 */}
             <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap', alignItems: 'center', minWidth: 0 }}>
               <select
-                aria-label="掌握狀態篩選"
+                aria-label={copy('掌握狀態篩選', 'Filter by mastery status')}
                 id="physics-signals-status-filter"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
@@ -519,18 +533,18 @@ export const PhysicsSignalsView: React.FC = () => {
                   minHeight: '34px',
                 }}
               >
-                <option value="all">全部狀態</option>
-                <option value="mastered">🟢 僅已掌握</option>
-                <option value="review">🔴 僅需複習</option>
-                <option value="untested">⚪ 尚未測驗</option>
+                <option value="all">{copy('全部狀態', 'All statuses')}</option>
+                <option value="mastered">🟢 {copy('僅已掌握', 'Mastered only')}</option>
+                <option value="review">🔴 {copy('僅需複習', 'Review only')}</option>
+                <option value="untested">⚪ {copy('尚未測驗', 'Not tested')}</option>
               </select>
 
               <input
                 type="search"
-                aria-label="搜尋物理破題訊號"
+                aria-label={copy('搜尋物理破題訊號', 'Search physics solving signals')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="搜尋題目特徵或口訣..."
+                placeholder={copy('搜尋題目特徵或口訣...', 'Search problem cues or rules…')}
                 style={{
                   fontSize: '0.78rem',
                   padding: '0.35rem 0.65rem',
@@ -559,7 +573,7 @@ export const PhysicsSignalsView: React.FC = () => {
                 fontSize: '0.9rem',
               }}
             >
-              🔍 沒有符合篩選條件的物理破題訊號卡。
+              🔍 {copy('沒有符合篩選條件的物理破題訊號卡。', 'No physics signal cards match these filters.')}
             </div>
           ) : (
             <div
@@ -658,10 +672,10 @@ export const PhysicsSignalsView: React.FC = () => {
                         }}
                       >
                         {status === 'mastered'
-                          ? '🟢 已掌握'
+                          ? copy('🟢 已掌握', '🟢 Mastered')
                           : status === 'review'
-                          ? '🔴 需複習'
-                          : '⚪ 未測驗'}
+                          ? copy('🔴 需複習', '🔴 Review')
+                          : copy('⚪ 未測驗', '⚪ Not tested')}
                       </span>
                     </div>
 
@@ -683,7 +697,7 @@ export const PhysicsSignalsView: React.FC = () => {
                           marginBottom: '0.15rem',
                         }}
                       >
-                        🔍 看到題目訊號：
+                        🔍 {copy('看到題目訊號：', 'Problem cue:')}
                       </div>
                       <div
                         style={{
@@ -715,7 +729,7 @@ export const PhysicsSignalsView: React.FC = () => {
                           marginBottom: '0.15rem',
                         }}
                       >
-                        ⚡ 3 秒破題口訣：
+                        ⚡ {copy('3 秒破題口訣：', 'Three-second rule:')}
                       </div>
                       <div
                         style={{
@@ -747,7 +761,7 @@ export const PhysicsSignalsView: React.FC = () => {
                           marginBottom: '0.2rem',
                         }}
                       >
-                        📐 破題第一步算式：
+                        📐 {copy('破題第一步算式：', 'First-step equation:')}
                       </div>
                       <div
                         style={{
@@ -782,7 +796,7 @@ export const PhysicsSignalsView: React.FC = () => {
                           userSelect: 'none',
                         }}
                       >
-                        💡 查看秒殺解題示範
+                        💡 {copy('查看秒殺解題示範', 'View the quick solution')}
                       </summary>
                       <div
                         style={{
@@ -796,7 +810,7 @@ export const PhysicsSignalsView: React.FC = () => {
                         }}
                       >
                         <div style={{ color: 'var(--ink)', lineHeight: 1.4 }}>
-                          <strong>題目：</strong>
+                          <strong>{copy('題目：', 'Problem:')}</strong>
                           <MathFormula math={sig.exampleProblem.question} />
                         </div>
                         <div
@@ -808,7 +822,7 @@ export const PhysicsSignalsView: React.FC = () => {
                             lineHeight: 1.4,
                           }}
                         >
-                          <strong>⚡ 秒解：</strong>
+                          <strong>⚡ {copy('秒解：', 'Quick solution:')}</strong>
                           <MathFormula math={sig.exampleProblem.quickSolve} />
                         </div>
                       </div>
@@ -847,7 +861,9 @@ export const PhysicsSignalsView: React.FC = () => {
                             cursor: 'pointer',
                           }}
                         >
-                          {status === 'mastered' ? '✓ 已掌握' : '標為掌握'}
+                          {status === 'mastered'
+                            ? copy('✓ 已掌握', '✓ Mastered')
+                            : copy('標為掌握', 'Mark mastered')}
                         </button>
                         <button
                           type="button"
@@ -867,7 +883,9 @@ export const PhysicsSignalsView: React.FC = () => {
                             cursor: 'pointer',
                           }}
                         >
-                          {status === 'review' ? '⚠ 需複習' : '標為複習'}
+                          {status === 'review'
+                            ? copy('⚠ 需複習', '⚠ Review')
+                            : copy('標為複習', 'Mark for review')}
                         </button>
                       </div>
 
@@ -888,7 +906,7 @@ export const PhysicsSignalsView: React.FC = () => {
                           gap: '0.2rem',
                         }}
                       >
-                        <span>⚡ 快答測驗</span>
+                        <span>{copy('⚡ 快答測驗', '⚡ Quick Drill')}</span>
                       </button>
                     </div>
                   </div>
@@ -945,7 +963,7 @@ export const PhysicsSignalsView: React.FC = () => {
                   cursor: 'pointer',
                 }}
               >
-                ← 返回卡片總覽
+                ← {copy('返回卡片總覽', 'Back to Cards')}
               </button>
 
               <div style={{ display: 'flex', gap: '0.25rem' }}>
@@ -960,7 +978,7 @@ export const PhysicsSignalsView: React.FC = () => {
                   }}
                   style={{ fontSize: '0.74rem', padding: '0.25rem 0.5rem' }}
                 >
-                  全部
+                  {copy('全部', 'All')}
                 </button>
                 <button
                   type="button"
@@ -973,7 +991,7 @@ export const PhysicsSignalsView: React.FC = () => {
                   }}
                   style={{ fontSize: '0.74rem', padding: '0.25rem 0.5rem' }}
                 >
-                  國中
+                  {copy('國中', 'Junior High')}
                 </button>
                 <button
                   type="button"
@@ -986,7 +1004,7 @@ export const PhysicsSignalsView: React.FC = () => {
                   }}
                   style={{ fontSize: '0.74rem', padding: '0.25rem 0.5rem' }}
                 >
-                  高中
+                  {copy('高中', 'Senior High')}
                 </button>
               </div>
             </div>
@@ -1013,7 +1031,7 @@ export const PhysicsSignalsView: React.FC = () => {
                     setIsDrillFinished(false)
                   }}
                 />
-                <span>僅複習需加強卡 ({reviewCount})</span>
+                <span>{copy('僅複習需加強卡', 'Review cards only')} ({reviewCount})</span>
               </label>
 
               <button
@@ -1036,7 +1054,9 @@ export const PhysicsSignalsView: React.FC = () => {
                   cursor: 'pointer',
                 }}
               >
-                🔀 {isShuffled ? '隨機抽題中' : '隨機抽題'}
+                🔀 {isShuffled
+                  ? copy('隨機抽題中', 'Shuffled')
+                  : copy('隨機抽題', 'Shuffle')}
               </button>
             </div>
           </div>
@@ -1053,9 +1073,13 @@ export const PhysicsSignalsView: React.FC = () => {
               }}
             >
               <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🎉</div>
-              <h3 style={{ margin: '0 0 0.5rem', color: '#0369a1' }}>目前無符合條件的卡片！</h3>
+              <h3 style={{ margin: '0 0 0.5rem', color: '#0369a1' }}>
+                {copy('目前無符合條件的卡片！', 'No cards match these filters.')}
+              </h3>
               <p style={{ fontSize: '0.85rem', color: 'var(--muted)', margin: '0 0 1.25rem' }}>
-                {drillOnlyReview ? '太棒了！目前沒有被標記為「需複習」的卡片。' : '請調整篩選學段或模式。'}
+                {drillOnlyReview
+                  ? copy('太棒了！目前沒有被標記為「需複習」的卡片。', 'Great work! No cards are currently marked for review.')
+                  : copy('請調整篩選學段或模式。', 'Adjust the stage or drill filters.')}
               </p>
               <button
                 type="button"
@@ -1074,7 +1098,7 @@ export const PhysicsSignalsView: React.FC = () => {
                   cursor: 'pointer',
                 }}
               >
-                切換為全部物理破題卡
+                {copy('切換為全部物理破題卡', 'Use All Physics Cards')}
               </button>
             </div>
           ) : isDrillFinished ? (
@@ -1091,10 +1115,13 @@ export const PhysicsSignalsView: React.FC = () => {
             >
               <div style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>🏆</div>
               <h3 style={{ margin: '0 0 0.4rem', fontSize: '1.3rem', color: '#0369a1' }}>
-                本輪 3 秒破題快答測驗完成！
+                {copy('本輪 3 秒破題快答測驗完成！', 'Three-Second Drill Complete!')}
               </h3>
               <p style={{ fontSize: '0.85rem', color: 'var(--muted)', margin: '0 0 1.5rem' }}>
-                看見題目關鍵訊號，即刻反射第一步核心公式，是考場秒殺高分的關鍵思維！
+                {copy(
+                  '看見題目關鍵訊號，即刻反射第一步核心公式，是考場秒殺高分的關鍵思維！',
+                  'Keep linking each problem cue to the first governing equation until the response becomes automatic.',
+                )}
               </p>
 
               {/* 成績數據面板 */}
@@ -1115,9 +1142,9 @@ export const PhysicsSignalsView: React.FC = () => {
                     padding: '0.85rem',
                   }}
                 >
-                  <span style={{ fontSize: '0.72rem', color: '#0369a1', fontWeight: 600 }}>本輪測驗</span>
+                  <span style={{ fontSize: '0.72rem', color: '#0369a1', fontWeight: 600 }}>{copy('本輪測驗', 'Cards This Round')}</span>
                   <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0284c7' }}>
-                    {drillSignals.length} <span style={{ fontSize: '0.8rem' }}>組</span>
+                    {drillSignals.length} <span style={{ fontSize: '0.8rem' }}>{copy('組', 'cards')}</span>
                   </div>
                 </div>
 
@@ -1129,10 +1156,10 @@ export const PhysicsSignalsView: React.FC = () => {
                     padding: '0.85rem',
                   }}
                 >
-                  <span style={{ fontSize: '0.72rem', color: '#047857', fontWeight: 600 }}>本輪掌握</span>
+                  <span style={{ fontSize: '0.72rem', color: '#047857', fontWeight: 600 }}>{copy('本輪掌握', 'Mastered This Round')}</span>
                   <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#059669' }}>
                     {Object.values(sessionRecord).filter((v) => v === 'mastered').length}{' '}
-                    <span style={{ fontSize: '0.8rem' }}>組</span>
+                    <span style={{ fontSize: '0.8rem' }}>{copy('組', 'cards')}</span>
                   </div>
                 </div>
 
@@ -1144,10 +1171,10 @@ export const PhysicsSignalsView: React.FC = () => {
                     padding: '0.85rem',
                   }}
                 >
-                  <span style={{ fontSize: '0.72rem', color: '#be123c', fontWeight: 600 }}>本輪需複習</span>
+                  <span style={{ fontSize: '0.72rem', color: '#be123c', fontWeight: 600 }}>{copy('本輪需複習', 'Review This Round')}</span>
                   <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#e11d48' }}>
                     {Object.values(sessionRecord).filter((v) => v === 'review').length}{' '}
-                    <span style={{ fontSize: '0.8rem' }}>組</span>
+                    <span style={{ fontSize: '0.8rem' }}>{copy('組', 'cards')}</span>
                   </div>
                 </div>
               </div>
@@ -1175,7 +1202,7 @@ export const PhysicsSignalsView: React.FC = () => {
                     cursor: 'pointer',
                   }}
                 >
-                  🔄 重新挑戰本輪
+                  🔄 {copy('重新挑戰本輪', 'Retry This Round')}
                 </button>
 
                 {reviewCount > 0 && (
@@ -1198,7 +1225,7 @@ export const PhysicsSignalsView: React.FC = () => {
                       cursor: 'pointer',
                     }}
                   >
-                    ⚡ 僅針對需複習卡 ({reviewCount}) 特訓
+                    ⚡ {copy('僅針對需複習卡', 'Train Review Cards Only')} ({reviewCount})
                   </button>
                 )}
 
@@ -1216,7 +1243,7 @@ export const PhysicsSignalsView: React.FC = () => {
                     cursor: 'pointer',
                   }}
                 >
-                  🗂️ 返回卡片總覽
+                  🗂️ {copy('返回卡片總覽', 'Back to Cards')}
                 </button>
               </div>
             </div>
@@ -1243,7 +1270,7 @@ export const PhysicsSignalsView: React.FC = () => {
                   }}
                 >
                   <span>
-                    卡片 <strong>{drillIndex + 1}</strong> / {drillSignals.length}
+                    {copy('卡片', 'Card')} <strong>{drillIndex + 1}</strong> / {drillSignals.length}
                   </span>
                   <div
                     style={{
@@ -1333,10 +1360,10 @@ export const PhysicsSignalsView: React.FC = () => {
                       }}
                     >
                       {masteryMap[currentDrillCard.id] === 'mastered'
-                        ? '🟢 歷史記錄：已掌握'
+                        ? copy('🟢 歷史記錄：已掌握', '🟢 Previous status: mastered')
                         : masteryMap[currentDrillCard.id] === 'review'
-                        ? '🔴 歷史記錄：需複習'
-                        : '⚪ 歷史記錄：未測驗'}
+                        ? copy('🔴 歷史記錄：需複習', '🔴 Previous status: review')
+                        : copy('⚪ 歷史記錄：未測驗', '⚪ Previous status: not tested')}
                     </span>
                   </div>
 
@@ -1360,7 +1387,7 @@ export const PhysicsSignalsView: React.FC = () => {
                         marginBottom: '0.35rem',
                       }}
                     >
-                      🎯 題目關鍵特徵訊號（Trigger Signal）：
+                      🎯 {copy('題目關鍵特徵訊號（Trigger Signal）：', 'Problem Cue:')}
                     </div>
                     <div
                       style={{
@@ -1391,10 +1418,13 @@ export const PhysicsSignalsView: React.FC = () => {
                     >
                       <div style={{ fontSize: '1.4rem' }}>🧠</div>
                       <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#166534' }}>
-                        請在腦中進行 3 秒直覺反射：
+                        {copy('請在腦中進行 3 秒直覺反射：', 'Take three seconds to recall:')}
                       </div>
                       <div style={{ fontSize: '0.8rem', color: '#15803d', maxWidth: '420px', lineHeight: 1.4 }}>
-                        「針對此特徵，3 秒破題口訣是什麼？解題第一步該列出哪一道關鍵公式？」
+                        {copy(
+                          '「針對此特徵，3 秒破題口訣是什麼？解題第一步該列出哪一道關鍵公式？」',
+                          'What rule does this physics cue trigger, and which governing equation should you write first?',
+                        )}
                       </div>
 
                       <button
@@ -1417,7 +1447,7 @@ export const PhysicsSignalsView: React.FC = () => {
                           gap: '0.4rem',
                         }}
                       >
-                        <span>👁️ 揭曉 3 秒破題口訣與第一步算式</span>
+                        <span>{copy('👁️ 揭曉 3 秒破題口訣與第一步算式', '👁️ Reveal the Rule and First Step')}</span>
                       </button>
                     </div>
                   ) : (
@@ -1450,7 +1480,7 @@ export const PhysicsSignalsView: React.FC = () => {
                             marginBottom: '0.2rem',
                           }}
                         >
-                          ⚡ 3 秒破題口訣：
+                          ⚡ {copy('3 秒破題口訣：', 'Three-second rule:')}
                         </div>
                         <div
                           style={{
@@ -1482,7 +1512,7 @@ export const PhysicsSignalsView: React.FC = () => {
                             marginBottom: '0.35rem',
                           }}
                         >
-                          📐 破題第一步算式：
+                          📐 {copy('破題第一步算式：', 'First-step equation:')}
                         </div>
                         <div
                           style={{
@@ -1510,7 +1540,7 @@ export const PhysicsSignalsView: React.FC = () => {
                         }}
                       >
                         <div style={{ color: 'var(--ink)', marginBottom: '0.35rem', lineHeight: 1.4 }}>
-                          <strong>範例題目：</strong>
+                          <strong>{copy('範例題目：', 'Example:')}</strong>
                           <MathFormula math={currentDrillCard.exampleProblem.question} />
                         </div>
                         <div
@@ -1522,7 +1552,7 @@ export const PhysicsSignalsView: React.FC = () => {
                             lineHeight: 1.4,
                           }}
                         >
-                          <strong>⚡ 秒殺步驟：</strong>
+                          <strong>⚡ {copy('秒殺步驟：', 'Quick solution:')}</strong>
                           <MathFormula math={currentDrillCard.exampleProblem.quickSolve} />
                         </div>
                       </div>
@@ -1541,7 +1571,7 @@ export const PhysicsSignalsView: React.FC = () => {
                         }}
                       >
                         <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--ink)' }}>
-                          剛才你在 3 秒內成功反射破題口訣與公式了嗎？
+                          {copy('剛才你在 3 秒內成功反射破題口訣與公式了嗎？', 'Did you recall the rule and first equation within three seconds?')}
                         </div>
 
                         <div
@@ -1573,7 +1603,7 @@ export const PhysicsSignalsView: React.FC = () => {
                               gap: '0.3rem',
                             }}
                           >
-                            <span>🔴 需再複習 (難以反射)</span>
+                            <span>{copy('🔴 需再複習 (難以反射)', '🔴 Review Again')}</span>
                           </button>
 
                           <button
@@ -1597,7 +1627,7 @@ export const PhysicsSignalsView: React.FC = () => {
                               gap: '0.3rem',
                             }}
                           >
-                            <span>🟢 3秒秒殺 (已精準掌握)</span>
+                            <span>{copy('🟢 3秒秒殺 (已精準掌握)', '🟢 Mastered in Three Seconds')}</span>
                           </button>
                         </div>
                       </div>
@@ -1634,7 +1664,7 @@ export const PhysicsSignalsView: React.FC = () => {
                         cursor: drillIndex === 0 ? 'not-allowed' : 'pointer',
                       }}
                     >
-                      ← 上一張
+                      ← {copy('上一張', 'Previous')}
                     </button>
 
                     {isRevealed && (
@@ -1650,7 +1680,7 @@ export const PhysicsSignalsView: React.FC = () => {
                           textDecoration: 'underline',
                         }}
                       >
-                        隱藏答案重新思考
+                        {copy('隱藏答案重新思考', 'Hide Answer and Retry')}
                       </button>
                     )}
 
@@ -1674,7 +1704,9 @@ export const PhysicsSignalsView: React.FC = () => {
                         cursor: 'pointer',
                       }}
                     >
-                      {drillIndex === drillSignals.length - 1 ? '結束測驗 ➡' : '下一張 ➡'}
+                      {drillIndex === drillSignals.length - 1
+                        ? copy('結束測驗 ➡', 'Finish Drill ➡')
+                        : copy('下一張 ➡', 'Next ➡')}
                     </button>
                   </div>
                 </div>

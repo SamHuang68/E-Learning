@@ -1,6 +1,8 @@
 ﻿import React, { useState } from 'react'
-import { START_OF_WINTER_DIALOGUES, type StartOfWinterDialogueItem } from '../data/startOfWinterZhDialogues'
+import { CHINESE_SUPPORT_EN, START_OF_WINTER_DIALOGUES, type StartOfWinterDialogueItem } from '../data/startOfWinterZhDialogues'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
+import { localizeChineseData } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
@@ -22,7 +24,15 @@ const TONIC_DISHES: TonicDishItem[] = [
   { id: 'duck-noodles', nameZh: '鴨油蔥酥手工麵線', nameJa: 'アヒル油と揚げネギの素麺（麵線）', icon: '🍜', descZh: '熱騰騰細麵線拌入薑母鴨油與油蔥酥，香氣直衝腦門！', descJa: '鴨の旨味油とフライドエシャロットを和えた絶品サイドメニュー！' },
 ]
 
+const TONIC_DISH_EN: Record<string, { name: string; description: string }> = {
+  'ginger-duck': { name: 'Charcoal-clay-pot ginger duck', description: 'Mature ginger, black sesame oil, duck, and rice wine simmer together and are served with fermented tofu sauce.' },
+  'sesame-chicken': { name: 'Sesame-oil chicken with rice wine', description: 'Free-range chicken absorbs black sesame oil and mature ginger in this warming seasonal soup.' },
+  'mutton-hotpot': { name: 'Xihu clear-broth skin-on mutton hot pot', description: 'Skin-on mutton simmers in a clear herbal broth until tender and springy.' },
+  'duck-noodles': { name: 'Handmade thin noodles with duck fat and shallots', description: 'Hot thin noodles are tossed with ginger-duck fat and crisp fried shallots.' },
+}
+
 export const StartOfWinterZhLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { locale } = useI18n()
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [activeDishId, setActiveDishId] = useState<string>('ginger-duck')
   const [isSimmering, setIsSimmering] = useState(false)
@@ -30,8 +40,11 @@ export const StartOfWinterZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
   const activeItem: StartOfWinterDialogueItem =
     START_OF_WINTER_DIALOGUES[selectedIdx % START_OF_WINTER_DIALOGUES.length]
+  const localizedItem = localizeChineseData(activeItem, locale, CHINESE_SUPPORT_EN)
+  const localizedDialogues = localizeChineseData(START_OF_WINTER_DIALOGUES, locale, CHINESE_SUPPORT_EN)
 
   const currentDish = TONIC_DISHES.find((d) => d.id === activeDishId) || TONIC_DISHES[0]
+  const currentDishEn = TONIC_DISH_EN[currentDish.id]
 
   function speakChinese(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -61,10 +74,12 @@ export const StartOfWinterZhLab: React.FC<Props> = ({ onEarnXp }) => {
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>🦆</span> 台灣立冬補冬炭火薑母鴨實驗室 (Start of Winter Lab)
+            <span>🦆</span> {locale === 'en' ? 'Taiwan Start-of-Winter Ginger Duck Lab' : '台灣立冬補冬炭火薑母鴨實驗室 (Start of Winter Lab)'}
           </h3>
-          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            台湾の冬の風物詩「立冬補冬、補嘴空」！「炭火陶鍋薑母鴨・拌鴨油手工麵線・沾濃香豆腐乳醬・麻油雞」を徹底マスター！
+          <p lang={locale === 'en' ? 'en' : 'ja'} className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+            {locale === 'en'
+              ? 'Practise Mandarin through Taiwan’s start-of-winter tonic foods: charcoal-clay-pot ginger duck, duck-fat noodles, fermented tofu sauce, and sesame-oil chicken.'
+              : '台湾の冬の風物詩「立冬補冬、補嘴空」！「炭火陶鍋薑母鴨・拌鴨油手工麵線・沾濃香豆腐乳醬・麻油雞」を徹底マスター！'}
           </p>
         </div>
       </div>
@@ -88,14 +103,14 @@ export const StartOfWinterZhLab: React.FC<Props> = ({ onEarnXp }) => {
           <div style={{ fontSize: '1.8rem' }}>{isSimmering ? '🔥🍲' : dippedSauce ? '🥢 😋' : '🦆 🫕'}</div>
           <div>
             <strong style={{ fontSize: '0.9rem', display: 'block' }}>
-              立冬進補美饌：{currentDish.nameZh}
+              {locale === 'en' ? `Start-of-Winter Tonic Dish: ${currentDish.nameZh}` : `立冬進補美饌：${currentDish.nameZh}`}
             </strong>
             <span style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
               {isSimmering
-                ? '🔥 紅泥炭火木炭燒得通紅！陶鍋中黑麻油米酒與老薑大滾，香氣四溢暖人心脾！(+15 XP)'
+                ? locale === 'en' ? '🔥 Charcoal heats the clay pot as black sesame oil, rice wine, and mature ginger simmer with the duck. (+15 XP)' : '🔥 紅泥炭火木炭燒得通紅！陶鍋中黑麻油米酒與老薑大滾，香氣四溢暖人心脾！(+15 XP)'
                 : dippedSauce
-                ? '🥢 鴨肉沾滿特調甘甜豆腐乳醬與辣椒醬油！肉質緊實彈牙，甘甜濃醇！(+15 XP)'
-                : `${currentDish.descZh}`}
+                ? locale === 'en' ? '🥢 Dip the duck in sweet fermented tofu sauce with chili soy sauce. (+15 XP)' : '🥢 鴨肉沾滿特調甘甜豆腐乳醬與辣椒醬油！肉質緊實彈牙，甘甜濃醇！(+15 XP)'
+                : locale === 'en' ? currentDishEn.description : currentDish.descZh}
             </span>
           </div>
         </div>
@@ -111,7 +126,9 @@ export const StartOfWinterZhLab: React.FC<Props> = ({ onEarnXp }) => {
             }}
             onClick={handleSimmerPot}
           >
-            {isSimmering ? '🔥 陶鍋滾煮沸騰中' : '🍲 炭火大滾薑母鴨 (+15 XP)'}
+            {isSimmering
+              ? locale === 'en' ? '🔥 Clay pot simmering' : '🔥 陶鍋滾煮沸騰中'
+              : locale === 'en' ? '🍲 Simmer ginger duck over charcoal (+15 XP)' : '🍲 炭火大滾薑母鴨 (+15 XP)'}
           </button>
           <button
             type="button"
@@ -123,7 +140,9 @@ export const StartOfWinterZhLab: React.FC<Props> = ({ onEarnXp }) => {
             }}
             onClick={handleDipSauce}
           >
-            {dippedSauce ? '✓ 沾醬美味享用' : '🥢 沾特調豆腐乳醬 (+15 XP)'}
+            {dippedSauce
+              ? locale === 'en' ? '✓ Dipped in sauce' : '✓ 沾醬美味享用'
+              : locale === 'en' ? '🥢 Dip in fermented tofu sauce (+15 XP)' : '🥢 沾特調豆腐乳醬 (+15 XP)'}
           </button>
         </div>
       </div>
@@ -152,7 +171,7 @@ export const StartOfWinterZhLab: React.FC<Props> = ({ onEarnXp }) => {
             >
               <span style={{ fontSize: '1.4rem' }}>{dish.icon}</span>
               <strong style={{ fontSize: '0.78rem' }}>{dish.nameZh.slice(0, 6)}</strong>
-              <span style={{ fontSize: '0.66rem', color: 'var(--muted)' }}>{dish.nameJa.split('（')[0]}</span>
+              <span style={{ fontSize: '0.66rem', color: 'var(--muted)' }}>{locale === 'en' ? TONIC_DISH_EN[dish.id].name : dish.nameJa.split('（')[0]}</span>
             </button>
           )
         })}
@@ -160,14 +179,14 @@ export const StartOfWinterZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
       {/* 場景切換膠囊 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
-        {START_OF_WINTER_DIALOGUES.map((item, idx) => (
+        {localizedDialogues.map((item, idx) => (
           <button aria-pressed={selectedIdx === idx}
             key={item.id}
             type="button"
             className={`pill-btn ${selectedIdx === idx ? 'active' : ''}`}
             onClick={() => setSelectedIdx(idx)}
           >
-            <span>{item.icon}</span> {item.title.split('：')[0]}
+            <span>{item.icon}</span> {locale === 'en' ? item.title : item.title.split('：')[0]}
           </button>
         ))}
       </div>
@@ -178,12 +197,12 @@ export const StartOfWinterZhLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(220, 38, 38, 0.15)', color: '#dc2626', fontWeight: 700 }}>
-              {activeItem.locationZh} (<span lang="ja">{activeItem.locationJa}</span>)
+              {localizedItem.locationZh} (<span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.locationJa}</span>)
             </span>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem', marginTop: '0.3rem' }}>
-            {activeItem.dialogueLines.map((line, lIdx) => (
+            {localizedItem.dialogueLines.map((line, lIdx) => (
               <div
                 key={lIdx}
                 style={{
@@ -198,9 +217,9 @@ export const StartOfWinterZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#dc2626' }}>
-                    <span lang="ja">{line.speakerJa}</span>：
+                    <span lang={locale === 'en' ? 'en' : 'ja'}>{line.speakerJa}</span>:
                   </span>
-                  <button aria-label={`朗讀：${line.zh}`}
+                  <button aria-label={locale === 'en' ? `Read aloud: ${line.zh}` : `朗讀：${line.zh}`}
                     type="button"
                     style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
                     onClick={() => speakChinese(line.zh)}
@@ -210,7 +229,7 @@ export const StartOfWinterZhLab: React.FC<Props> = ({ onEarnXp }) => {
                 </div>
                 <strong style={{ fontSize: '0.86rem', color: 'var(--text)' }}>{line.zh}</strong>
                 <span lang="zh-Latn" style={{ fontSize: '0.72rem', color: '#d97706' }}>{line.pinyin}</span>
-                <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
+                <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
                   {line.ja}
                 </span>
               </div>
@@ -220,12 +239,12 @@ export const StartOfWinterZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
         {/* 右側：補冬民俗名詞 */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          <span style={{ fontSize: '0.74rem', color: '#dc2626', fontWeight: 700, display: 'block' }}>
-            💡 台湾立冬補冬・冬鍋文化豆知識（Winter Tonic Tips）
+          <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: '#dc2626', fontWeight: 700, display: 'block' }}>
+            {locale === 'en' ? '💡 Taiwan start-of-winter tonic-food tips' : '💡 台湾立冬補冬・冬鍋文化豆知識（Winter Tonic Tips）'}
           </span>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginTop: '0.3rem' }}>
-            {activeItem.winterTonicGlossary.map((vocab, vIdx) => (
+            {localizedItem.winterTonicGlossary.map((vocab, vIdx) => (
               <div
                 key={vIdx}
                 style={{
@@ -237,9 +256,9 @@ export const StartOfWinterZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <strong style={{ fontSize: '0.88rem', color: '#dc2626' }}>{vocab.termZh}</strong>
-                  <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
+                  <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
                 </div>
-                <p lang="ja" style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+                <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
                   {vocab.tipJa}
                 </p>
               </div>

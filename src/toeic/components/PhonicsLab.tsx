@@ -7,8 +7,12 @@ import {
   warmVoices,
 } from '../../utils/speech'
 import { alphabet, starterWords, type PhonicsItem } from '../data/phonics'
-import { TOEIC_ACCENTS, type ToeicAccent } from '../data/accents'
+import { TOEIC_ACCENTS } from '../data/accents'
 import { playCorrectSound, playWrongSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
+import { pickUi } from '../../i18n/pickUi'
+import { localizeToeicData } from '../teachingCopy'
+import { formatPhonicsListenFeedback, type PhonicsQuizFeedback } from './phonicsFeedback'
 
 type Mode = 'alphabet' | 'words' | 'listen' | 'accent' | 'guide'
 
@@ -19,10 +23,17 @@ type Props = {
 }
 
 type AccentQuiz = {
-  item: PhonicsItem
-  accent: ToeicAccent
+  itemId: string
+  accentCode: string
   userChoice: string | null
-  feedback: 'idle' | 'correct' | 'wrong'
+  feedback: PhonicsQuizFeedback
+}
+
+type ListenQuiz = {
+  answerId: string
+  optionIds: string[]
+  feedback: PhonicsQuizFeedback
+  selectedId?: string
 }
 
 function shuffle<T>(arr: T[]): T[] {
@@ -35,27 +46,44 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
+  const { locale } = useI18n()
+  const words = useMemo(
+    () => starterWords.map((item) => localizeToeicData(item, locale)),
+    [locale],
+  )
+  const accents = useMemo(
+    () => TOEIC_ACCENTS.map((item) => localizeToeicData(item, locale)),
+    [locale],
+  )
+  const ui = (zh: string, en: string) => pickUi(locale, zh, en)
   const [mode, setMode] = useState<Mode>('alphabet')
-  const [selected, setSelected] = useState<PhonicsItem | null>(null)
+  const [selectedId, setSelectedId] = useState<string | null>(null)
   const [speaking, setSpeaking] = useState(false)
   const [voiceOk, setVoiceOk] = useState(isSpeechSupported())
   const [flashIndex, setFlashIndex] = useState(0)
-  const [quiz, setQuiz] = useState<{
-    answer: PhonicsItem
-    options: PhonicsItem[]
-    feedback: 'idle' | 'correct' | 'wrong'
-    selectedId?: string
-  } | null>(null)
+  const [quiz, setQuiz] = useState<ListenQuiz | null>(null)
   const [accentQuiz, setAccentQuiz] = useState<AccentQuiz | null>(null)
   const [guideIndex, setGuideIndex] = useState(-1)
   const cancel = useRef({ cancelled: false })
 
-  const pool = mode === 'words' || mode === 'listen' ? starterWords : alphabet
+  const pool = mode === 'words' || mode === 'listen' ? words : alphabet
+  const quizAnswer = quiz ? words.find((item) => item.id === quiz.answerId) : undefined
+  const quizOptions = quiz
+    ? quiz.optionIds
+      .map((id) => words.find((item) => item.id === id))
+      .filter((item): item is PhonicsItem => item !== undefined)
+    : []
+  const accentItem = accentQuiz
+    ? words.find((item) => item.id === accentQuiz.itemId)
+    : undefined
+  const accentTarget = accentQuiz
+    ? accents.find((item) => item.code === accentQuiz.accentCode)
+    : undefined
   const masteredSet = useMemo(() => new Set(mastered), [mastered])
   const total = alphabet.length + starterWords.length
   const masteredCount = mastered.filter(
     (id) =>
-      alphabet.some((a) => a.id === id) || starterWords.some((w) => w.id === id),
+      alphabet.some((a) => a.id === id) || words.some((w) => w.id === id),
   ).length
 
   useEffect(() => {
@@ -74,7 +102,7 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
   function speak(item: PhonicsItem) {
     cancel.current.cancelled = true
     stopSpeaking()
-    setSelected(item)
+    setSelectedId(item.id)
     setSpeaking(true)
     speakEnglish(item.speak, {
       onEnd: () => setSpeaking(false),
@@ -89,15 +117,15 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
   }
 
   function startListen() {
-    const source = starterWords
+    const source = words
     const answer = source[Math.floor(Math.random() * source.length)]
     const distractors = shuffle(source.filter((x) => x.id !== answer.id)).slice(
       0,
       3,
     )
     setQuiz({
-      answer,
-      options: shuffle([answer, ...distractors]),
+      answerId: answer.id,
+      optionIds: shuffle([answer, ...distractors]).map((item) => item.id),
       feedback: 'idle',
     })
     setSpeaking(true)
@@ -108,23 +136,23 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
   }
 
   function answerQuiz(choice: PhonicsItem) {
-    if (!quiz || quiz.feedback !== 'idle') return
-    const correct = choice.id === quiz.answer.id
+    if (!quiz || !quizAnswer || quiz.feedback !== 'idle') return
+    const correct = choice.id === quiz.answerId
     setQuiz({ ...quiz, selectedId: choice.id, feedback: correct ? 'correct' : 'wrong' })
-    setSelected(choice)
+    setSelectedId(choice.id)
     if (correct) {
       mark(choice)
       onXp?.(5)
     }
-    speakEnglish(quiz.answer.speak)
+    speakEnglish(quizAnswer.speak)
   }
 
   function startAccentQuiz() {
-    const item = starterWords[Math.floor(Math.random() * starterWords.length)]
-    const accent = TOEIC_ACCENTS[Math.floor(Math.random() * TOEIC_ACCENTS.length)]
+    const item = words[Math.floor(Math.random() * words.length)]
+    const accent = accents[Math.floor(Math.random() * accents.length)]
     setAccentQuiz({
-      item,
-      accent,
+      itemId: item.id,
+      accentCode: accent.code,
       userChoice: null,
       feedback: 'idle',
     })
@@ -133,7 +161,7 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
 
   function answerAccentQuiz(choiceCode: string) {
     if (!accentQuiz || accentQuiz.feedback !== 'idle') return
-    const isCorrect = choiceCode === accentQuiz.accent.code
+    const isCorrect = choiceCode === accentQuiz.accentCode
     setAccentQuiz({
       ...accentQuiz,
       userChoice: choiceCode,
@@ -159,7 +187,7 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
       500,
       (i) => {
         setGuideIndex(i)
-        setSelected(alphabet[i] ?? null)
+        setSelectedId(alphabet[i]?.id ?? null)
       },
       signal,
       'en-US',
@@ -171,24 +199,27 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
   }
 
   return (
-    <section className="kana-lab phonics-lab" lang="zh-Hant">
+    <section className="kana-lab phonics-lab" lang={locale}>
       <header className="kana-hero">
         <div>
           <p className="eyebrow">ORANGE · PHONICS</p>
-          <h2>字母／常用字 · 4 國口音盲測</h2>
+          <h2>{ui('字母／常用字 · 4 國口音盲測', 'Letters, Core Words, and Four-Accent Challenge')}</h2>
           <p className="lede">
-            橘／棕證書打底：點字母聽音、跟讀高頻字，再用 4 國口音盲測強化英澳加美聽辨力。
+            {ui(
+              '橘／棕證書打底：點字母聽音、跟讀高頻字，再用 4 國口音盲測強化英澳加美聽辨力。',
+              'Build an Orange/Brown foundation by hearing letter names, repeating high-frequency words, and distinguishing American, British, Australian, and Canadian accents.',
+            )}
           </p>
           <div className="kana-stats">
             <span>
-              已掌握 {masteredCount}/{total}
+              {ui('已掌握', 'Mastered')} {masteredCount}/{total}
             </span>
             <span className={speaking ? 'live' : ''}>
               {speaking
-                ? '🔊 導讀中'
+                ? ui('🔊 導讀中', '🔊 Guided playback')
                 : voiceOk
-                  ? '音訊就緒 · 多國口音'
-                  : '音訊待命'}
+                  ? ui('音訊就緒 · 多國口音', 'Audio ready · four accents')
+                  : ui('音訊待命', 'Audio unavailable')}
             </span>
           </div>
         </div>
@@ -198,11 +229,11 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
         <div className="mode-tabs">
           {(
             [
-              ['alphabet', '字母表'],
-              ['words', '常用字'],
-              ['listen', '聽音選字'],
-              ['accent', '4國口音盲測'],
-              ['guide', '字母導讀'],
+              ['alphabet', ui('字母表', 'Alphabet')],
+              ['words', ui('常用字', 'Core words')],
+              ['listen', ui('聽音選字', 'Listen and choose')],
+              ['accent', ui('4國口音盲測', 'Four-accent challenge')],
+              ['guide', ui('字母導讀', 'Letter guide')],
             ] as const
           ).map(([id, label]) => (
             <button
@@ -235,9 +266,9 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
               type="button"
               className={[
                 'kana-cell',
-                selected?.id === item.id ? 'selected' : '',
+                selectedId === item.id ? 'selected' : '',
                 masteredSet.has(item.id) ? 'mastered' : '',
-                speaking && selected?.id === item.id ? 'speaking' : '',
+                speaking && selectedId === item.id ? 'speaking' : '',
               ]
                 .filter(Boolean)
                 .join(' ')}
@@ -259,30 +290,30 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
             type="button"
             className="ghost"
             onClick={() => {
-              const next = (flashIndex - 1 + starterWords.length) % starterWords.length
+              const next = (flashIndex - 1 + words.length) % words.length
               setFlashIndex(next)
-              speak(starterWords[next])
+              speak(words[next])
             }}
           >
-            上一個
+            {ui('上一個', 'Previous')}
           </button>
           <button
             type="button"
             className="primary-btn inline"
-            onClick={() => speak(starterWords[flashIndex])}
+            onClick={() => speak(words[flashIndex])}
           >
-            🔊 {starterWords[flashIndex]?.label}
+            🔊 {words[flashIndex]?.label}
           </button>
           <button
             type="button"
             className="ghost"
             onClick={() => {
-              const next = (flashIndex + 1) % starterWords.length
+              const next = (flashIndex + 1) % words.length
               setFlashIndex(next)
-              speak(starterWords[next])
+              speak(words[next])
             }}
           >
-            下一個
+            {ui('下一個', 'Next')}
           </button>
         </div>
       )}
@@ -291,28 +322,28 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
         <div className="kana-listen">
           <div className="listen-prompt">
             <p className="eyebrow">LISTEN & CHOOSE</p>
-            <h3>聽語音，選出正確單字</h3>
+            <h3>{ui('聽語音，選出正確單字', 'Listen and choose the word you hear')}</h3>
             <button
               type="button"
               className="speak-big"
               onClick={() => {
-                if (quiz) speak(quiz.answer)
+                if (quizAnswer) speak(quizAnswer)
                 else startListen()
               }}
             >
-              {speaking ? '播放中…' : '🔊 播放題目'}
+              {speaking ? ui('播放中…', 'Playing…') : ui('🔊 播放題目', '🔊 Play prompt')}
             </button>
           </div>
           <div className="listen-options">
-            {(quiz?.options ?? []).map((opt) => {
+            {quizOptions.map((opt) => {
               const classes = ['listen-opt']
-              if (quiz?.feedback !== 'idle' && opt.id === quiz?.answer.id) {
+              if (quiz?.feedback !== 'idle' && opt.id === quiz?.answerId) {
                 classes.push('correct')
               }
               if (
                 quiz?.feedback === 'wrong' &&
                 quiz.selectedId === opt.id &&
-                opt.id !== quiz.answer.id
+                opt.id !== quiz.answerId
               ) {
                 classes.push('wrong')
               }
@@ -333,8 +364,8 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
             })}
           </div>
           <p role="status" aria-live="polite" aria-atomic="true">
-            {quiz && quiz.feedback !== 'idle'
-              ? `${quiz.feedback === 'correct' ? '答對了！' : '答錯了。'} 正確單字：${quiz.answer.label}`
+            {quiz && quizAnswer
+              ? formatPhonicsListenFeedback(locale, quiz.feedback, quizAnswer.label)
               : ''}
           </p>
           <button
@@ -343,7 +374,7 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
             onClick={startListen}
             style={{ maxWidth: 280, marginTop: '0.75rem' }}
           >
-            下一題
+            {ui('下一題', 'Next question')}
           </button>
         </div>
       )}
@@ -351,7 +382,10 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
       {mode === 'accent' && (
         <div className="kana-listen" style={{ maxWidth: '520px', margin: '0 auto' }}>
           <p className="lede">
-            🎧 盲測挑戰：仔細聆聽發音，辨析這屬於美式、英式、澳式或加拿大口音！
+            {ui(
+              '🎧 盲測挑戰：仔細聆聽發音，辨析這屬於美式、英式、澳式或加拿大口音！',
+              '🎧 Listen carefully and identify whether the pronunciation is American, British, Australian, or Canadian.',
+            )}
           </p>
 
           <div
@@ -368,18 +402,18 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
             }}
           >
             <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--primary)' }}>
-              「{accentQuiz?.item.label || 'office'}」
+              「{accentItem?.label || 'office'}」
             </div>
             <div style={{ fontSize: '0.82rem', color: 'var(--muted)' }}>
-              {accentQuiz?.item.tip || '商業高頻字'}
+              {accentItem?.tip || ui('商業高頻字', 'High-frequency business word')}
             </div>
 
             <button
               type="button"
               className="primary-btn"
               onClick={() => {
-                if (accentQuiz) {
-                  speakEnglish(accentQuiz.item.speak, { lang: accentQuiz.accent.code })
+                if (accentItem && accentTarget) {
+                  speakEnglish(accentItem.speak, { lang: accentTarget.code })
                 }
               }}
               style={{
@@ -391,7 +425,7 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
                 marginTop: '0.3rem',
               }}
             >
-              🔊 重複播放口音
+              {ui('🔊 重複播放口音', '🔊 Replay accent')}
             </button>
           </div>
 
@@ -403,9 +437,9 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
               marginBottom: '0.85rem',
             }}
           >
-            {TOEIC_ACCENTS.map((acc) => {
+            {accents.map((acc) => {
               const isSelected = accentQuiz?.userChoice === acc.code
-              const isTarget = accentQuiz?.accent.code === acc.code
+              const isTarget = accentQuiz?.accentCode === acc.code
               let btnBg = 'var(--surface)'
               let btnBorder = '1px solid var(--line)'
               let btnColor = 'var(--text-main)'
@@ -454,7 +488,7 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
           </div>
 
           <div role="status" aria-live="polite" aria-atomic="true">
-          {accentQuiz && accentQuiz.feedback !== 'idle' && (
+          {accentQuiz && accentTarget && accentQuiz.feedback !== 'idle' && (
             <div
               style={{
                 padding: '0.65rem 0.85rem',
@@ -469,11 +503,17 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
             >
               <strong>
                 {accentQuiz.feedback === 'correct'
-                  ? `🎉 辨析正確！(+10 XP) 這是 ${accentQuiz.accent.flag} ${accentQuiz.accent.name}`
-                  : `❌ 這是 ${accentQuiz.accent.flag} ${accentQuiz.accent.name}`}
+                  ? ui(
+                    `🎉 辨析正確！(+10 XP) 這是 ${accentTarget.flag} ${accentTarget.name}`,
+                    `🎉 Correct! (+10 XP) This is ${accentTarget.flag} ${accentTarget.name}.`,
+                  )
+                  : ui(
+                    `❌ 這是 ${accentTarget.flag} ${accentTarget.name}`,
+                    `❌ This is ${accentTarget.flag} ${accentTarget.name}.`,
+                  )}
               </strong>
               <div style={{ marginTop: '0.25rem', fontSize: '0.72rem' }}>
-                💡 <b>口音特徵：</b>{accentQuiz.accent.features}（{accentQuiz.accent.testWeight}）
+                💡 <b>{ui('口音特徵：', 'Accent features: ')}</b>{accentTarget.features} ({accentTarget.testWeight})
               </div>
             </div>
           )}
@@ -485,14 +525,14 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
             onClick={startAccentQuiz}
             style={{ maxWidth: 280, margin: '0 auto', display: 'block' }}
           >
-            ➡️ 下一題盲測
+            {ui('➡️ 下一題盲測', '➡️ Next accent challenge')}
           </button>
         </div>
       )}
 
       {mode === 'guide' && (
         <div className="kana-guide">
-          <p className="lede">整段導讀 A–J（可跟讀），使用 en-US 語音。</p>
+          <p className="lede">{ui('整段導讀 A–J（可跟讀），使用 en-US 語音。', 'Hear and repeat letters A–J with an en-US voice.')}</p>
           <div className="guide-strip">
             {alphabet.slice(0, 10).map((cell, i) => (
               <button
@@ -518,7 +558,7 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
               onClick={() => void runGuide()}
               disabled={speaking}
             >
-              ▶ 開始導讀
+              {ui('▶ 開始導讀', '▶ Start guided playback')}
             </button>
             <button
               type="button"
@@ -530,7 +570,7 @@ export function PhonicsLab({ mastered, onMaster, onXp }: Props) {
                 setGuideIndex(-1)
               }}
             >
-              停止
+              {ui('停止', 'Stop')}
             </button>
           </div>
         </div>

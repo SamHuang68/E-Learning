@@ -78,3 +78,20 @@ export const DRAGON_BOAT_DIALOGUES: DragonBoatDialogueItem[] = [
     ],
   },
 ]
+
+export const CHINESE_SUPPORT_EN = {
+  '台灣端午節：正午立蛋求好運、南北粽大對決與懸掛菖蒲艾草': 'Taiwan Dragon Boat Festival: Egg Balancing, Southern and Northern Rice Dumplings, and Protective Herbs',
+  '台湾の端午節：正午の生卵立て・南部粽vs北部粽の大論争とよもぎ除災': 'Taiwan Dragon Boat Festival: Egg Balancing, Southern and Northern Rice Dumplings, and Protective Herbs',
+  '台湾のおばあちゃんの家のリビングと笹の葉香る台所': 'A grandmother\'s living room and bamboo-leaf-scented kitchen in Taiwan',
+  '台湾のおばあちゃん': 'Taiwanese grandmother',
+  '今日は旧暦5月5日の端午節だよ！時計を見てごらん、正午の12時は一年で最も陽気が盛んな時間なんだ。みんな床で「卵立て（立蛋）」に挑戦していて、卵が直立すれば一年中幸運に恵まれると言われているよ！': 'Today is the fifth day of the fifth lunar month, the Dragon Boat Festival. Noon is said to be the year\'s strongest moment of yang energy. People try to stand an egg upright, believing success brings good luck for the year.',
+  '日本人旅行者': 'Japanese traveller',
+  '立ちました！不思議ですね！台所からとてもいい香りが漂ってきますが、茹でているのは台湾のちまき（粽子）ですか？': 'My egg is standing! Amazing. Is that wonderful smell from Taiwan rice dumplings boiling in the kitchen?',
+  'うちの南部の水煮ちまき（南部粽）だよ！生の餅米で豚の角煮、椎茸、栗、塩漬け卵黄を包んで、沸騰したお湯でコトコト煮込むから、もっちり柔らか。とろみ醤油とピーナッツ粉をかけて食べるのさ！北部は味付けしたおこわを蒸すからお米が立っていて、どちらも最高だよ！': 'These are southern-style boiled zongzi. Raw glutinous rice wraps braised pork, mushrooms, chestnuts, and salted egg yolk, then cooks until soft and sticky. We serve them with thick soy sauce and peanut powder. Northern zongzi steam seasoned cooked rice, giving a firmer grain.',
+  '端午節正午に生卵を立てる民俗行事（幸運と陽気充填の兆し）': 'The festival custom of balancing a raw egg at noon as a sign of luck and strong yang energy',
+  '端午節の正午（昼12時）は太陽の引力と陽気が最も高まる瞬間と信じられ、全国民がこぞって卵立てに挑む。': 'Tradition says noon on the festival carries peak solar and yang energy, inspiring egg-balancing attempts across Taiwan.',
+  '南部風水煮ちまき（生米と具を竹皮に包み、長時間茹で上げるため粘りと香りが豊か）': 'Southern-style zongzi, made by wrapping raw rice and fillings in bamboo leaves and boiling them until soft and aromatic',
+  '台湾南部では甘辛い醤油タレ（醬油膏）と香ばしいピーナッツ粉（花生粉）をたっぷりかけて食す。': 'In southern Taiwan, they are commonly topped with sweet-savory thick soy sauce and fragrant peanut powder.',
+  '北部風蒸しちまき（炒めて味付けした餅米・おこわを蒸籠で蒸し上げる、米粒がしっかり）': 'Northern-style zongzi, made by stir-frying seasoned glutinous rice before steaming it for firmer grains',
+  '炒めた紅ネギ（油蔥酥）と胡椒のスパイスが効いており、香ばしさと歯ごたえが際立つ。': 'Fried shallots and pepper give northern zongzi a distinctive aroma and bite.',
+} as const

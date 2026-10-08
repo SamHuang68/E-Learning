@@ -9,7 +9,7 @@ import { catalogPrerequisiteRows } from '../data/calculusCatalog'
 export function CalculusPrerequisiteGraph() {
   const c = useCalculusCopy()
   const { t, locale } = useI18n()
-  const rows = catalogPrerequisiteRows()
+  const rows = catalogPrerequisiteRows(locale)
   const join = locale === 'en' ? ', ' : '、'
 
   return (

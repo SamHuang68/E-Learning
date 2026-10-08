@@ -1,18 +1,23 @@
 ﻿import React, { useState } from 'react'
-import { REPAIR_DIALOGUES, type RepairDialogueItem } from '../data/repairZhDialogues'
+import { CHINESE_SUPPORT_EN, REPAIR_DIALOGUES, type RepairDialogueItem } from '../data/repairZhDialogues'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
+import { localizeChineseData } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
 }
 
 export const RepairZhLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { locale } = useI18n()
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [issueItem, setIssueItem] = useState('分離式冷氣滴水漏水')
   const [repairStatus, setRepairStatus] = useState(false)
 
   const activeItem: RepairDialogueItem =
     REPAIR_DIALOGUES[selectedIdx % REPAIR_DIALOGUES.length]
+  const localizedItem = localizeChineseData(activeItem, locale, CHINESE_SUPPORT_EN)
+  const localizedDialogues = localizeChineseData(REPAIR_DIALOGUES, locale, CHINESE_SUPPORT_EN)
 
   function speakChinese(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -36,10 +41,12 @@ export const RepairZhLab: React.FC<Props> = ({ onEarnXp }) => {
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>🔧</span> 台灣租屋水電修繕與管委會實驗室 (Home Repair & Community Lab)
+            <span>🔧</span> {locale === 'en' ? 'Taiwan Home Repair and Building Management Lab' : '台灣租屋水電修繕與管委會實驗室 (Home Repair & Community Lab)'}
           </h3>
-          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            台湾生活のトラブル解決！「冷気滴水報修・水電師傅予約・大樓管委會管理費・總開關跳電」のリアル日常会話を徹底攻略！
+          <p lang={locale === 'en' ? 'en' : 'ja'} className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+            {locale === 'en'
+              ? 'Practise essential Mandarin for reporting an air-conditioner leak, booking a technician, discussing building fees, and handling a tripped circuit breaker.'
+              : '台湾生活のトラブル解決！「冷気滴水報修・水電師傅予約・大樓管委會管理費・總開關跳電」のリアル日常会話を徹底攻略！'}
           </p>
         </div>
       </div>
@@ -62,15 +69,18 @@ export const RepairZhLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <div style={{ fontSize: '1.8rem' }}>🔧 🏠</div>
           <div>
-            <strong style={{ fontSize: '0.9rem', display: 'block' }}>房東修繕與水電到府叫修 (Landlord Repair Request)</strong>
+            <strong style={{ fontSize: '0.9rem', display: 'block' }}>{locale === 'en' ? 'Landlord and home-repair request' : '房東修繕與水電到府叫修 (Landlord Repair Request)'}</strong>
             <span style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
-              {repairStatus ? '✓ 房東回覆：已指派水電師傅明日到府！(+10 XP)' : '報修項目：' + issueItem}
+              {repairStatus
+                ? locale === 'en' ? '✓ Landlord replied: a technician will visit tomorrow (+10 XP)' : '✓ 房東回覆：已指派水電師傅明日到府！(+10 XP)'
+                : locale === 'en' ? `Issue: ${issueItem}` : '報修項目：' + issueItem}
             </span>
           </div>
         </div>
 
         <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
-          <select aria-label="報修項目"
+          <select
+            aria-label={locale === 'en' ? 'Repair issue' : '報修項目'}
             value={issueItem}
             onChange={(e) => setIssueItem(e.target.value)}
             style={{
@@ -98,21 +108,23 @@ export const RepairZhLab: React.FC<Props> = ({ onEarnXp }) => {
             }}
             onClick={handleReportIssue}
           >
-            {repairStatus ? '報修成功' : '📲 LINE 發訊房東報修'}
+            {repairStatus
+              ? locale === 'en' ? 'Request sent' : '報修成功'
+              : locale === 'en' ? '📲 Message the landlord on LINE' : '📲 LINE 發訊房東報修'}
           </button>
         </div>
       </div>
 
       {/* 場景切換膠囊 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
-        {REPAIR_DIALOGUES.map((item, idx) => (
+        {localizedDialogues.map((item, idx) => (
           <button aria-pressed={selectedIdx === idx}
             key={item.id}
             type="button"
             className={`pill-btn ${selectedIdx === idx ? 'active' : ''}`}
             onClick={() => setSelectedIdx(idx)}
           >
-            <span>{item.icon}</span> {item.title.split('：')[0]}
+            <span>{item.icon}</span> {locale === 'en' ? item.title : item.title.split('：')[0]}
           </button>
         ))}
       </div>
@@ -123,7 +135,7 @@ export const RepairZhLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', fontWeight: 700 }}>
-              {activeItem.locationZh} (<span lang="ja">{activeItem.locationJa}</span>)
+              {activeItem.locationZh} (<span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.locationJa}</span>)
             </span>
           </div>
 
@@ -143,9 +155,9 @@ export const RepairZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#38bdf8' }}>
-                    <span lang="ja">{line.speakerJa}</span>：
+                    <span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.dialogueLines[lIdx].speakerJa}</span>:
                   </span>
-                  <button aria-label={`朗讀：${line.zh}`}
+                  <button aria-label={locale === 'en' ? `Read aloud: ${line.zh}` : `朗讀：${line.zh}`}
                     type="button"
                     style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
                     onClick={() => speakChinese(line.zh)}
@@ -155,8 +167,8 @@ export const RepairZhLab: React.FC<Props> = ({ onEarnXp }) => {
                 </div>
                 <strong style={{ fontSize: '0.86rem', color: 'var(--text)' }}>{line.zh}</strong>
                 <span lang="zh-Latn" style={{ fontSize: '0.72rem', color: '#f59e0b' }}>{line.pinyin}</span>
-                <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
-                  {line.ja}
+                <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
+                  {localizedItem.dialogueLines[lIdx].ja}
                 </span>
               </div>
             ))}
@@ -165,12 +177,12 @@ export const RepairZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
         {/* 右側：生活修繕重要單詞 */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          <span lang="ja" style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
-            💡 台湾賃貸生活・修繕の知恵（Living & Repair Tips）
+          <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
+            {locale === 'en' ? '💡 Rental-home and repair tips' : '💡 台湾賃貸生活・修繕の知恵（Living & Repair Tips）'}
           </span>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginTop: '0.3rem' }}>
-            {activeItem.repairGlossary.map((vocab, vIdx) => (
+            {localizedItem.repairGlossary.map((vocab, vIdx) => (
               <div
                 key={vIdx}
                 style={{
@@ -182,9 +194,9 @@ export const RepairZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <strong style={{ fontSize: '0.88rem', color: '#f59e0b' }}>{vocab.termZh}</strong>
-                  <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
+                  <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
                 </div>
-                <p lang="ja" style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+                <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
                   {vocab.tipJa}
                 </p>
               </div>

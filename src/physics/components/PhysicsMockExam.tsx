@@ -7,6 +7,8 @@ import {
   savePhysicsProgress,
   type PhysicsProgressState,
 } from '../utils/physicsStorage'
+import { useI18n } from '../../i18n/i18n'
+import { localizePhysicsMockExam } from '../locale/content'
 
 type Props = {
   onSaveScore: (examId: string, score: number) => void
@@ -16,32 +18,42 @@ type Props = {
 /** 物理五大領域中文對照、圖標與診斷建議 */
 const STRAND_CONFIG: Record<
   PhysicsStrand,
-  { name: string; icon: string; advice: string }
+  { name: string; nameEn: string; icon: string; advice: string; adviceEn: string }
 > = {
   mechanics: {
     name: '力學與運動學',
+    nameEn: 'Mechanics and Kinematics',
     icon: '🚀',
     advice: '加強受力分析自由體圖 (FBD)、牛頓運動定律、動能定理與動量守恆綜合運算。',
+    adviceEn: 'Review free-body diagrams, Newton\'s laws, the work-energy theorem, and momentum conservation.',
   },
   thermodynamics: {
     name: '熱學與熱力學',
+    nameEn: 'Thermal Physics and Thermodynamics',
     icon: '🔥',
     advice: '複習熱平衡公式 H=msΔT、絕熱系統熱交換、比熱測定與相變化潛熱。',
+    adviceEn: 'Review thermal equilibrium, heat exchange, specific heat, and latent heat.',
   },
   waves_optics: {
     name: '波動與光學',
+    nameEn: 'Waves and Optics',
     icon: '🌈',
     advice: '熟記透鏡成像公式 1/p+1/q=1/f、司乃耳折射定律與雙狹縫干涉/單狹縫繞射條件。',
+    adviceEn: 'Review lens imaging, Snell\'s law, interference, and diffraction conditions.',
   },
   electromagnetism: {
     name: '電磁學與電路',
+    nameEn: 'Electromagnetism and Circuits',
     icon: '⚡',
     advice: '掌握歐姆定律串並聯電路分析、法拉第與冷次定律感應方向及帶電粒子磁場迴旋運動。',
+    adviceEn: 'Review Ohm\'s law, series and parallel circuits, induction, and charged-particle motion in magnetic fields.',
   },
   modern: {
     name: '近代物理與量子',
+    nameEn: 'Modern and Quantum Physics',
     icon: '⚛️',
     advice: '熟練光電方程式 Ek=hν-W、德布羅意物質波長與四大基本交互作用尺度比較。',
+    adviceEn: 'Review the photoelectric equation, de Broglie wavelength, and the scales of the fundamental interactions.',
   },
 }
 
@@ -140,7 +152,12 @@ export const PhysicsMockExam: React.FC<Props> = ({
   onSaveScore,
   onNavigateVault,
 }) => {
-  const exams = Object.values(PHYSICS_MOCK_EXAMS)
+  const { locale } = useI18n()
+  const isEnglish = locale === 'en'
+  const exams = useMemo(
+    () => Object.values(PHYSICS_MOCK_EXAMS).map((item) => localizePhysicsMockExam(item, locale)),
+    [locale],
+  )
   const [selectedExamId, setSelectedExamId] = useState<string>(
     exams[0]?.id || 'cap',
   )
@@ -339,13 +356,13 @@ export const PhysicsMockExam: React.FC<Props> = ({
     // 計算各考試類型對應級分或等級
     let gradeRating = ''
     if (exam.id === 'cap') {
-      if (percentage >= 90) gradeRating = 'A++ (精熟頂級)'
-      else if (percentage >= 80) gradeRating = 'A+ (精熟優等)'
-      else if (percentage >= 70) gradeRating = 'A (精熟基礎)'
-      else if (percentage >= 60) gradeRating = 'B++ (基礎前段)'
-      else if (percentage >= 50) gradeRating = 'B+ (基礎中段)'
-      else if (percentage >= 40) gradeRating = 'B (基礎後段)'
-      else gradeRating = 'C (待加強)'
+      if (percentage >= 90) gradeRating = isEnglish ? 'A++ (Advanced Mastery)' : 'A++ (精熟頂級)'
+      else if (percentage >= 80) gradeRating = isEnglish ? 'A+ (Strong Mastery)' : 'A+ (精熟優等)'
+      else if (percentage >= 70) gradeRating = isEnglish ? 'A (Mastery)' : 'A (精熟基礎)'
+      else if (percentage >= 60) gradeRating = isEnglish ? 'B++ (Upper Foundation)' : 'B++ (基礎前段)'
+      else if (percentage >= 50) gradeRating = isEnglish ? 'B+ (Mid Foundation)' : 'B+ (基礎中段)'
+      else if (percentage >= 40) gradeRating = isEnglish ? 'B (Developing Foundation)' : 'B (基礎後段)'
+      else gradeRating = isEnglish ? 'C (Needs Review)' : 'C (待加強)'
     } else if (exam.id === 'gsat') {
       const gsatScale = Math.min(
         15,
@@ -353,15 +370,15 @@ export const PhysicsMockExam: React.FC<Props> = ({
       )
       const level =
         gsatScale >= 13
-          ? '頂標'
+          ? isEnglish ? 'Top Benchmark' : '頂標'
           : gsatScale >= 11
-            ? '前標'
+            ? isEnglish ? 'Upper Benchmark' : '前標'
             : gsatScale >= 8
-              ? '均標'
+              ? isEnglish ? 'Average Benchmark' : '均標'
               : gsatScale >= 5
-                ? '後標'
-                : '底標'
-      gradeRating = `${gsatScale} 級分 (${level})`
+                ? isEnglish ? 'Lower Benchmark' : '後標'
+                : isEnglish ? 'Base Benchmark' : '底標'
+      gradeRating = isEnglish ? `${gsatScale} points (${level})` : `${gsatScale} 級分 (${level})`
     } else {
       const astScale = Math.min(
         60,
@@ -369,29 +386,31 @@ export const PhysicsMockExam: React.FC<Props> = ({
       )
       const level =
         astScale >= 50
-          ? '頂標'
+          ? isEnglish ? 'Top Benchmark' : '頂標'
           : astScale >= 42
-            ? '前標'
+            ? isEnglish ? 'Upper Benchmark' : '前標'
             : astScale >= 30
-              ? '均標'
+              ? isEnglish ? 'Average Benchmark' : '均標'
               : astScale >= 20
-                ? '後標'
-                : '底標'
-      gradeRating = `${astScale} 級分 (${level})`
+                ? isEnglish ? 'Lower Benchmark' : '後標'
+                : isEnglish ? 'Base Benchmark' : '底標'
+      gradeRating = isEnglish ? `${astScale} points (${level})` : `${astScale} 級分 (${level})`
     }
 
     const strandList = Object.values(strandMap).map((item) => {
       const rate = Math.round((item.correct / item.total) * 100)
       const info = STRAND_CONFIG[item.strand] || {
         name: item.strand,
+        nameEn: item.strand,
         icon: '⚛️',
         advice: '持續針對觀念進行題目演練。',
+        adviceEn: 'Continue practising questions that target the core concepts.',
       }
       return {
         strand: item.strand,
-        name: info.name,
+        name: isEnglish ? info.nameEn : info.name,
         icon: info.icon,
-        advice: info.advice,
+        advice: isEnglish ? info.adviceEn : info.advice,
         total: item.total,
         correct: item.correct,
         rate,
@@ -405,7 +424,7 @@ export const PhysicsMockExam: React.FC<Props> = ({
       gradeRating,
       strands: strandList,
     }
-  }, [isSubmitted, exam, answers])
+  }, [isSubmitted, exam, answers, isEnglish])
 
   // 已作答題數統計
   const answeredCount = useMemo(() => {
@@ -422,7 +441,7 @@ export const PhysicsMockExam: React.FC<Props> = ({
   return (
     <div
       className="math-mock-shell physics-mock-shell"
-      lang="zh-Hant"
+      lang={locale}
       style={{
         maxWidth: '920px',
         margin: '0 auto',
@@ -532,7 +551,9 @@ export const PhysicsMockExam: React.FC<Props> = ({
                 type="button"
                 aria-pressed={isPaused}
                 onClick={handleTogglePause}
-                title={isPaused ? '繼續計時' : '暫停計時'}
+                title={isPaused
+                  ? isEnglish ? 'Resume timer' : '繼續計時'
+                  : isEnglish ? 'Pause timer' : '暫停計時'}
                 style={{
                   background: 'none',
                   border: 'none',
@@ -542,12 +563,14 @@ export const PhysicsMockExam: React.FC<Props> = ({
                   color: '#0284c7',
                 }}
               >
-                {isPaused ? '▶️ 繼續' : '⏸️ 暫停'}
+                {isPaused
+                  ? isEnglish ? '▶️ Resume' : '▶️ 繼續'
+                  : isEnglish ? '⏸️ Pause' : '⏸️ 暫停'}
               </button>
               <button
                 type="button"
                 onClick={handleResetTimer}
-                title="重設計時器"
+                title={isEnglish ? 'Reset timer' : '重設計時器'}
                 style={{
                   background: 'none',
                   border: 'none',
@@ -557,7 +580,7 @@ export const PhysicsMockExam: React.FC<Props> = ({
                   color: 'var(--muted)',
                 }}
               >
-                🔄 重設
+                🔄 {isEnglish ? 'Reset' : '重設'}
               </button>
             </>
           )}
@@ -585,14 +608,15 @@ export const PhysicsMockExam: React.FC<Props> = ({
           }}
         >
           <span>
-            📌 題號導覽 (已答 {answeredCount} / {exam.questions.length} 題)
+            📌 {isEnglish ? 'Question Navigator' : '題號導覽'} ({isEnglish ? 'answered' : '已答'}{' '}
+            {answeredCount} / {exam.questions.length} {isEnglish ? 'questions' : '題'})
           </span>
           <span role="status" aria-atomic="true" style={{ fontWeight: 600 }}>
             {isSubmitted
-              ? '考卷已批改完成'
+              ? isEnglish ? 'Exam graded' : '考卷已批改完成'
               : isPaused
-                ? '計時暫停中'
-                : '測驗進行中'}
+                ? isEnglish ? 'Timer paused' : '計時暫停中'
+                : isEnglish ? 'Exam in progress' : '測驗進行中'}
           </span>
         </div>
 
@@ -679,7 +703,9 @@ export const PhysicsMockExam: React.FC<Props> = ({
             fontSize: '0.82rem',
           }}
         >
-          ⏰ 考試時間已截止！系統已自動為您交卷並產出物理診斷成績單。
+          ⏰ {isEnglish
+            ? 'Time is up. The exam was submitted automatically and your physics diagnostic report is ready.'
+            : '考試時間已截止！系統已自動為您交卷並產出物理診斷成績單。'}
         </div>
       )}
 
@@ -709,7 +735,7 @@ export const PhysicsMockExam: React.FC<Props> = ({
           >
             <div>
               <h3 style={{ margin: 0, fontSize: '1.2rem', color: '#0284c7' }}>
-                📊 {exam.title} · 全真成績報告單
+                📊 {exam.title} · {isEnglish ? 'Diagnostic Score Report' : '全真成績報告單'}
               </h3>
               <p
                 style={{
@@ -718,10 +744,11 @@ export const PhysicsMockExam: React.FC<Props> = ({
                   color: 'var(--muted)',
                 }}
               >
-                測驗耗時：{Math.floor(timeSpentSeconds / 60)} 分{' '}
-                {timeSpentSeconds % 60} 秒 ｜ 答對{' '}
+                {isEnglish ? 'Time used:' : '測驗耗時：'} {Math.floor(timeSpentSeconds / 60)}{' '}
+                {isEnglish ? 'min' : '分'} {timeSpentSeconds % 60} {isEnglish ? 'sec' : '秒'} ｜{' '}
+                {isEnglish ? 'Correct' : '答對'}{' '}
                 {diagnosticReport.correctTotal} /{' '}
-                {diagnosticReport.totalQuestions} 題
+                {diagnosticReport.totalQuestions} {isEnglish ? 'questions' : '題'}
               </p>
             </div>
 
@@ -753,7 +780,7 @@ export const PhysicsMockExam: React.FC<Props> = ({
                   fontWeight: 700,
                 }}
               >
-                分
+                {isEnglish ? 'Score' : '分'}
               </span>
               <span
                 style={{
@@ -787,8 +814,10 @@ export const PhysicsMockExam: React.FC<Props> = ({
             }}
           >
             <span>
-              ✅ 已自動將 <strong>{syncedErrorCount}</strong>{' '}
-              題答錯題目寫入 LocalStorage 錯題筆記本 (errorQuestions)！
+              ✅ {isEnglish ? 'Automatically saved' : '已自動將'} <strong>{syncedErrorCount}</strong>{' '}
+              {isEnglish
+                ? 'incorrect answers to the local Error Vault.'
+                : '題答錯題目寫入 LocalStorage 錯題筆記本 (errorQuestions)！'}
             </span>
             {onNavigateVault && (
               <button
@@ -805,7 +834,7 @@ export const PhysicsMockExam: React.FC<Props> = ({
                   cursor: 'pointer',
                 }}
               >
-                前往錯題本 📖
+                {isEnglish ? 'Open Error Vault' : '前往錯題本'} 📖
               </button>
             )}
           </div>
@@ -818,7 +847,7 @@ export const PhysicsMockExam: React.FC<Props> = ({
               color: 'var(--ink)',
             }}
           >
-            🎯 各物理主軸掌握度與備考診斷：
+            🎯 {isEnglish ? 'Physics Strand Mastery and Review Guidance:' : '各物理主軸掌握度與備考診斷：'}
           </h4>
 
           <div
@@ -862,7 +891,7 @@ export const PhysicsMockExam: React.FC<Props> = ({
                             : '#ef4444',
                     }}
                   >
-                    {st.correct}/{st.total} 題 ({st.rate}%)
+                    {st.correct}/{st.total} {isEnglish ? 'correct' : '題'} ({st.rate}%)
                   </span>
                 </div>
 
@@ -933,7 +962,7 @@ export const PhysicsMockExam: React.FC<Props> = ({
                 cursor: 'pointer',
               }}
             >
-              🔄 重新測驗此卷
+              🔄 {isEnglish ? 'Retake This Exam' : '重新測驗此卷'}
             </button>
           </div>
         </div>
@@ -994,7 +1023,7 @@ export const PhysicsMockExam: React.FC<Props> = ({
                     fontWeight: 700,
                   }}
                 >
-                  第 {idx + 1} 題
+                  {isEnglish ? `Question ${idx + 1}` : `第 ${idx + 1} 題`}
                 </span>
                 <span
                   style={{
@@ -1008,7 +1037,9 @@ export const PhysicsMockExam: React.FC<Props> = ({
                   }}
                 >
                   {STRAND_CONFIG[q.strand]?.icon}{' '}
-                  {STRAND_CONFIG[q.strand]?.name || q.strand}
+                  {(isEnglish
+                    ? STRAND_CONFIG[q.strand]?.nameEn
+                    : STRAND_CONFIG[q.strand]?.name) || q.strand}
                 </span>
                 <span
                   style={{
@@ -1017,7 +1048,7 @@ export const PhysicsMockExam: React.FC<Props> = ({
                     marginLeft: 'auto',
                   }}
                 >
-                  難度 {'★'.repeat(q.difficulty || 3)}
+                  {isEnglish ? 'Difficulty' : '難度'} {'★'.repeat(q.difficulty || 3)}
                   {'☆'.repeat(Math.max(0, 5 - (q.difficulty || 3)))}
                 </span>
 
@@ -1037,9 +1068,13 @@ export const PhysicsMockExam: React.FC<Props> = ({
                       fontWeight: 600,
                       transition: 'all 0.15s ease',
                     }}
-                    title={flaggedQuestions[q.id] ? '點擊取消標記' : '點擊標記此題為不確定'}
+                    title={flaggedQuestions[q.id]
+                      ? isEnglish ? 'Remove flag' : '點擊取消標記'
+                      : isEnglish ? 'Flag this question for review' : '點擊標記此題為不確定'}
                   >
-                    {flaggedQuestions[q.id] ? '🚩 已標記' : '🏳️ 標記'}
+                    {flaggedQuestions[q.id]
+                      ? isEnglish ? '🚩 Flagged' : '🚩 已標記'
+                      : isEnglish ? '🏳️ Flag' : '🏳️ 標記'}
                   </button>
                 )}
               </div>
@@ -1167,7 +1202,7 @@ export const PhysicsMockExam: React.FC<Props> = ({
                       fontWeight: 600,
                     }}
                   >
-                    📌 多選題（可勾選多個正確選項）
+                    📌 {isEnglish ? 'Multiple-select question (choose every correct option)' : '多選題（可勾選多個正確選項）'}
                   </div>
                   <div
                     className="options-grid"
@@ -1282,7 +1317,7 @@ export const PhysicsMockExam: React.FC<Props> = ({
                       marginBottom: '0.3rem',
                     }}
                   >
-                    請填入數值或精確答案：
+                    {isEnglish ? 'Enter a number or exact answer:' : '請填入數值或精確答案：'}
                   </label>
                   <input
                     id={`physics-answer-${q.id}`}
@@ -1291,7 +1326,7 @@ export const PhysicsMockExam: React.FC<Props> = ({
                     aria-errormessage={isSubmitted && !isCorrect ? `physics-answer-result-${q.id}` : undefined}
                     aria-describedby={`physics-question-${q.id}${isSubmitted ? ` physics-answer-result-${q.id}` : ''}`}
                     disabled={isSubmitted}
-                    placeholder="請輸入答案 (例如: 12.5)"
+                    placeholder={isEnglish ? 'Enter an answer (for example, 12.5)' : '請輸入答案 (例如: 12.5)'}
                     value={userAns ?? ''}
                     onChange={(e) => handleFillAnswer(q.id, e.target.value)}
                     style={{
@@ -1317,7 +1352,7 @@ export const PhysicsMockExam: React.FC<Props> = ({
                         color: isCorrect ? '#10b981' : '#ef4444',
                       }}
                     >
-                      標準答案：<strong>{String(q.answer)}</strong>
+                      {isEnglish ? 'Correct answer:' : '標準答案：'} <strong>{String(q.answer)}</strong>
                     </div>
                   )}
                 </div>
@@ -1346,7 +1381,9 @@ export const PhysicsMockExam: React.FC<Props> = ({
                       marginBottom: '0.35rem',
                     }}
                   >
-                    {isCorrect ? '✓ 答對！解析推導：' : '❌ 答錯！詳細步驟解析：'}
+                    {isCorrect
+                      ? isEnglish ? '✓ Correct! Reasoning:' : '✓ 答對！解析推導：'
+                      : isEnglish ? '❌ Incorrect. Step-by-step solution:' : '❌ 答錯！詳細步驟解析：'}
                   </div>
                   <div className="solution-content">
                     <MathFormula math={q.solution} />
@@ -1361,7 +1398,7 @@ export const PhysicsMockExam: React.FC<Props> = ({
                         paddingTop: '0.35rem',
                       }}
                     >
-                      🎓 課綱素養對應：{q.competency}
+                      🎓 {isEnglish ? 'Curriculum competency:' : '課綱素養對應：'} {q.competency}
                     </div>
                   )}
                 </div>
@@ -1386,8 +1423,9 @@ export const PhysicsMockExam: React.FC<Props> = ({
           }}
         >
           <span style={{ fontSize: '0.8rem', color: 'var(--muted)' }}>
-            作答進度：{answeredCount} / {exam.questions.length} 題
-            {answeredCount < exam.questions.length && ' (尚有未答題目)'}
+            {isEnglish ? 'Progress:' : '作答進度：'} {answeredCount} / {exam.questions.length}{' '}
+            {isEnglish ? 'questions' : '題'}
+            {answeredCount < exam.questions.length && (isEnglish ? ' (some questions are unanswered)' : ' (尚有未答題目)')}
           </span>
 
           <button
@@ -1407,7 +1445,7 @@ export const PhysicsMockExam: React.FC<Props> = ({
             }}
             onClick={() => handleCalculateScore(false)}
           >
-            交卷計算成績 📊
+            {isEnglish ? 'Submit and Grade' : '交卷計算成績'} 📊
           </button>
         </div>
       )}

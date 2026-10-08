@@ -1,4 +1,4 @@
-import { jaTeachingCopy } from '../i18n/jaTeachingCopy'
+import { jaTeachingCopy, localizeJaPractice } from '../i18n/jaTeachingCopy'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useAuth } from '../auth/AuthContext'
@@ -9,6 +9,11 @@ import {
   aobaUnitChromeTitle,
   jlptTierLabel,
 } from '../i18n/jlptChrome'
+import {
+  localizeJaMockQuestions,
+  localizeJaPlacementQuestions,
+  localizeJaScenarios,
+} from '../i18n/jaInteractiveCopy'
 import { Breadcrumbs } from '../components/Breadcrumbs'
 import { KanaLab } from '../components/KanaLab'
 import { KanjiLab } from '../components/KanjiLab'
@@ -88,6 +93,16 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
   const currentPack = useMemo(
     () => getJaPractice(progress.levelId, unit.id),
     [progress.levelId, unit.id],
+  )
+  const localizedSpeakingPack = useMemo(
+    () => localizeJaPractice(currentPack, locale),
+    [currentPack, locale],
+  )
+  const localizedScenarios = useMemo(() => localizeJaScenarios(locale), [locale])
+  const localizedMockQuestions = useMemo(() => localizeJaMockQuestions(locale), [locale])
+  const localizedPlacementQuestions = useMemo(
+    () => localizeJaPlacementQuestions(locale),
+    [locale],
   )
   const unitItemIds = useMemo(
     () =>
@@ -210,6 +225,7 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
     return (
       <MockExam
         lang="ja"
+        questions={localizedMockQuestions}
         onExit={() => {
           setSpecial(null)
           setNav('today')
@@ -276,6 +292,7 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
       return (
         <PlacementTest
           lang="ja"
+          questions={localizedPlacementQuestions}
           onExit={() => {
             setSpecial(null)
             setNav('today')
@@ -307,6 +324,7 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
       return withUnitGate(
         <ScenarioPlayer
           track="ja"
+          scenarios={localizedScenarios}
           onExit={() => setNav('today')}
           onComplete={(result) => {
             track('scenario_complete', result)
@@ -318,8 +336,8 @@ export function AobaApp({ onBackHub, onSwitchLang }: Props) {
     }
 
     if (nav === 'speaking') {
-      const prompts = currentPack
-        ? [...currentPack.vocab, ...currentPack.passage].slice(0, 8)
+      const prompts = localizedSpeakingPack
+        ? [...localizedSpeakingPack.vocab, ...localizedSpeakingPack.passage].slice(0, 8)
         : []
       return withUnitGate(
         <SpeakingLab

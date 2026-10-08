@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { CS_CURRICULUM, csStrandMessageKey, type CsUnit, type CsQuestion } from '../data/curriculum'
 import { playCorrectSound, playWrongSound } from '../../engine/audioSynthesizer'
 import { useI18n } from '../../i18n/i18n'
+import { csTeachingCopy, localizeCsUnit } from '../../i18n/csTeachingCopy'
 
 interface Props {
   completedQuestions?: string[]
@@ -17,6 +18,8 @@ export const CsPractice: React.FC<Props> = ({
   initialUnitId,
 }) => {
   const { t, locale } = useI18n()
+  const copy = (zhHant: string, en: string) => locale === 'en' ? en : zhHant
+  const curriculum = CS_CURRICULUM.map((unit) => localizeCsUnit(locale, unit))
   const [activeUnitId, setActiveUnitId] = useState<string>(
     initialUnitId && CS_CURRICULUM.some((u) => u.id === initialUnitId)
       ? initialUnitId
@@ -25,7 +28,7 @@ export const CsPractice: React.FC<Props> = ({
   const [selectedOptions, setSelectedOptions] = useState<Record<string, number>>({})
   const [submittedQuestions, setSubmittedQuestions] = useState<Record<string, boolean>>({})
 
-  const currentUnit: CsUnit = CS_CURRICULUM.find((u) => u.id === activeUnitId) || CS_CURRICULUM[0]
+  const currentUnit: CsUnit = curriculum.find((u) => u.id === activeUnitId) || curriculum[0]
 
   function handleSelectOption(q: CsQuestion, optIdx: number) {
     if (submittedQuestions[q.id]) return
@@ -47,7 +50,7 @@ export const CsPractice: React.FC<Props> = ({
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
       {/* 單元切換膠囊 */}
       <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
-        {CS_CURRICULUM.map((u, idx) => {
+        {curriculum.map((u, idx) => {
           const isActive = u.id === activeUnitId
           const unitCompleted = u.questions.every((q) => completedQuestions.includes(q.id))
           return (
@@ -76,7 +79,7 @@ export const CsPractice: React.FC<Props> = ({
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
           <div>
             <span style={{ fontSize: '0.7rem', padding: '0.1rem 0.4rem', borderRadius: '999px', background: 'rgba(37, 99, 235, 0.15)', color: '#2563eb', fontWeight: 700 }}>
-              <span lang={locale}>{t(csStrandMessageKey(currentUnit.strand))}</span> · {currentUnit.band}
+              {t(csStrandMessageKey(currentUnit.strand))} · {csTeachingCopy(locale, currentUnit.band)}
             </span>
             <h3 style={{ margin: '0.3rem 0 0.1rem', fontSize: '1.05rem' }}>{currentUnit.title}</h3>
             <span style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>{currentUnit.subtitle}</span>
@@ -86,7 +89,7 @@ export const CsPractice: React.FC<Props> = ({
         {/* 核心觀念要點 */}
         <div style={{ background: 'var(--surface-soft)', borderRadius: '8px', padding: '0.65rem 0.8rem', marginTop: '0.5rem', border: '1px solid var(--line)' }}>
           <strong style={{ fontSize: '0.76rem', color: '#2563eb', display: 'block', marginBottom: '0.25rem' }}>
-            📖 本單元核心觀念精要：
+            {copy('📖 本單元核心觀念精要：', '📖 Core concepts in this unit:')}
           </strong>
           <ul style={{ margin: 0, paddingLeft: '1.1rem', fontSize: '0.74rem', lineHeight: 1.5, color: 'var(--text)' }}>
             {currentUnit.concepts.map((concept, cIdx) => (
@@ -116,12 +119,12 @@ export const CsPractice: React.FC<Props> = ({
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                   <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.4rem', borderRadius: '999px', background: 'rgba(37, 99, 235, 0.15)', color: '#2563eb', fontWeight: 700 }}>
-                    第 {qIdx + 1} 題
+                    {copy(`第 ${qIdx + 1} 題`, `Question ${qIdx + 1}`)}
                   </span>
                   <strong style={{ fontSize: '0.88rem' }}>{q.title}</strong>
                 </div>
                 {isDone && (
-                  <span style={{ fontSize: '0.72rem', color: '#10b981', fontWeight: 700 }}>✓ 已掌握 (+15 XP)</span>
+                  <span style={{ fontSize: '0.72rem', color: '#10b981', fontWeight: 700 }}>{copy('✓ 已掌握 (+15 XP)', '✓ Mastered (+15 XP)')}</span>
                 )}
               </div>
 
@@ -170,8 +173,8 @@ export const CsPractice: React.FC<Props> = ({
                         onClick={() => handleSelectOption(q, optIdx)}
                       >
                         <span style={{ fontSize: '0.8rem' }}>{opt}</span>
-                        {isSubmitted && isCorrect && <span style={{ color: '#10b981', fontWeight: 700 }}>✓ 正確</span>}
-                        {isSubmitted && isChosen && !isCorrect && <span style={{ color: '#ef4444', fontWeight: 700 }}>✗ 錯誤</span>}
+                        {isSubmitted && isCorrect && <span style={{ color: '#10b981', fontWeight: 700 }}>{copy('✓ 正確', '✓ Correct')}</span>}
+                        {isSubmitted && isChosen && !isCorrect && <span style={{ color: '#ef4444', fontWeight: 700 }}>{copy('✗ 錯誤', '✗ Incorrect')}</span>}
                       </button>
                     )
                   })}
@@ -182,10 +185,10 @@ export const CsPractice: React.FC<Props> = ({
               {isSubmitted && (
                 <div style={{ marginTop: '0.65rem', padding: '0.75rem', borderRadius: '8px', background: 'var(--surface-soft)', border: '1px solid var(--line)' }}>
                   <p role="status" aria-live="polite" aria-atomic="true" className="status-line" style={{ margin: '0 0 0.4rem' }}>
-                    {chosenOpt === q.answer ? '答對了' : '答錯了'}
+                    {chosenOpt === q.answer ? copy('答對了', 'Correct') : copy('答錯了', 'Incorrect')}
                   </p>
                   <strong style={{ fontSize: '0.78rem', color: '#2563eb', display: 'block', marginBottom: '0.3rem' }}>
-                    💡 步驟式深度解析：
+                    {copy('💡 步驟式深度解析：', '💡 Step-by-step explanation:')}
                   </strong>
                   <ol style={{ margin: 0, paddingLeft: '1.2rem', fontSize: '0.76rem', lineHeight: 1.5, color: 'var(--text)' }}>
                     {q.solution.map((step, sIdx) => (
@@ -193,7 +196,7 @@ export const CsPractice: React.FC<Props> = ({
                     ))}
                   </ol>
                   <div style={{ marginTop: '0.4rem', fontSize: '0.72rem', color: 'var(--muted)' }}>
-                    <strong>考點精要：</strong>{q.explanation}
+                    <strong>{copy('考點精要：', 'Key point:')}</strong>{q.explanation}
                   </div>
                 </div>
               )}

@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
 import { PHONE_SCENARIOS, type PhoneScenarioItem } from '../data/phoneDialogues'
 import { playCorrectSound, playWrongSound } from '../../engine/audioSynthesizer'
+import { useMemo } from 'react'
+import { useI18n } from '../../i18n/i18n'
+import { localizeToeicData, toeicSupportLang } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
@@ -8,14 +11,22 @@ interface Props {
 }
 
 export const PhoneLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'zh' }) => {
-  const isJa = instructionLang === 'ja'
+  const { locale } = useI18n()
+  const supportLang = toeicSupportLang(locale, instructionLang)
+  const isJa = supportLang === 'ja'
+  const isEn = supportLang === 'en'
+  const copy = (zh: string, ja: string, en: string) => isEn ? en : isJa ? ja : zh
+  const scenarios = useMemo(
+    () => PHONE_SCENARIOS.map((item) => localizeToeicData(item, locale, instructionLang)),
+    [instructionLang, locale],
+  )
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const [showScript, setShowScript] = useState(false)
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, number>>({})
   const [submitted, setSubmitted] = useState<Record<string, boolean>>({})
 
-  const activeItem: PhoneScenarioItem = PHONE_SCENARIOS[selectedIdx % PHONE_SCENARIOS.length]
+  const activeItem: PhoneScenarioItem = scenarios[selectedIdx % scenarios.length]
 
   function speakPhoneAudio(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -48,19 +59,21 @@ export const PhoneLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'zh' }) 
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>📞</span> {isJa ? 'TOEIC 電話応対・留守電（Voicemail）特訓ラボ' : 'TOEIC 商務電話與語音信箱聽力特訓實驗室'}
+            <span>📞</span> {copy('TOEIC 商務電話與語音信箱聽力特訓實驗室', 'TOEIC 電話応対・留守電（Voicemail）特訓ラボ', 'TOEIC Business-Phone and Voicemail Listening Lab')}
           </h3>
           <p className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            {isJa
-              ? 'リスニングPart 4で頻出する「留守番電話メッセージ・日程変更・折り返し要請」の速記と即座の文脈把握を徹底特訓！'
-              : '訓練 Part 3/4 高頻商務電話留言：轉機延誤、會議改期、分機號碼等關鍵資訊盲聽秒殺！'}
+            {copy(
+              '訓練 Part 3/4 高頻商務電話留言：轉機延誤、會議改期、分機號碼等關鍵資訊盲聽秒殺！',
+              'リスニングPart 4で頻出する「留守番電話メッセージ・日程変更・折り返し要請」の速記と即座の文脈把握を徹底特訓！',
+              'Practise TOEIC Part 3 and 4 voicemail details such as flight delays, meeting changes, callback requests, and extension numbers.',
+            )}
           </p>
         </div>
       </div>
 
       {/* 場景切換膠囊 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
-        {PHONE_SCENARIOS.map((item, idx) => (
+        {scenarios.map((item, idx) => (
           <button
             key={item.id}
             type="button"
@@ -102,14 +115,14 @@ export const PhoneLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'zh' }) 
               }}
               onClick={() => speakPhoneAudio(activeItem.audioScript)}
             >
-              {isPlaying ? '再生中...' : '▶ 留守電を聴く (Play)'}
+              {isPlaying ? copy('播放中…', '再生中…', 'Playing…') : copy('▶ 播放語音留言', '▶ 留守電を聴く', '▶ Play voicemail')}
             </button>
             <button
               type="button"
               className="pill-btn"
               onClick={() => setShowScript((prev) => !prev)}
             >
-              {showScript ? '隠す' : '📝 スクリプト'}
+              {showScript ? copy('隱藏逐字稿', 'スクリプトを隠す', 'Hide transcript') : copy('📝 顯示逐字稿', '📝 スクリプトを表示', '📝 Show transcript')}
             </button>
           </div>
 
@@ -168,7 +181,7 @@ export const PhoneLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'zh' }) 
                       onClick={() => handleSelectOption(q.id, optIdx, q.correctIndex)}
                     >
                       <span style={{ fontSize: '0.82rem' }}>{opt}</span>
-                      {isDone && isCorrect && <span style={{ color: '#10b981', fontWeight: 700 }}>✓ 正解 (+15 XP)</span>}
+                      {isDone && isCorrect && <span style={{ color: '#10b981', fontWeight: 700 }}>✓ {copy('答對', '正解', 'Correct')} (+15 XP)</span>}
                     </button>
                   )
                 })}
@@ -176,7 +189,7 @@ export const PhoneLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'zh' }) 
 
               {submitted[q.id] && (
                 <div style={{ marginTop: '0.6rem', padding: '0.6rem', borderRadius: '8px', background: 'var(--surface-soft)', fontSize: '0.76rem', color: 'var(--muted)', lineHeight: 1.45 }}>
-                  💡 <strong>{isJa ? '解説：' : '解析：'}</strong> {isJa ? q.explanationJa : q.explanationZh}
+                  💡 <strong>{copy('解析：', '解説：', 'Explanation:')}</strong> {isJa ? q.explanationJa : q.explanationZh}
                 </div>
               )}
             </div>

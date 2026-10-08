@@ -1,12 +1,13 @@
-import { useMathLabCopy } from '../../i18n/mathLabCopy'
 import React, { useState } from 'react'
+import { useI18n } from '../../i18n/i18n'
 
 /**
  * 高中「三角函數單位圓實驗室 (UnitCircleLab)」
  * 透過旋轉單位圓角度 $\theta$ (0° ~ 360° / 0 ~ 2π)，即時計算 $\sin\theta, \cos\theta, \tan\theta$ 坐標與象限符號。
  */
 export const UnitCircleLab: React.FC = () => {
-  const ml = useMathLabCopy()
+  const { locale } = useI18n()
+  const copy = (zhHant: string, en: string) => locale === 'en' ? en : zhHant
   const [angleDeg, setAngleDeg] = useState(45)
 
   const angleRad = (angleDeg * Math.PI) / 180
@@ -17,14 +18,14 @@ export const UnitCircleLab: React.FC = () => {
   // 判斷象限
   const quadrant =
     angleDeg > 0 && angleDeg < 90
-      ? ml("第一象限 (I: +, +)")
+      ? copy('第一象限 (I: +, +)', 'Quadrant I (+, +)')
       : angleDeg > 90 && angleDeg < 180
-      ? ml("第二象限 (II: -, +)")
+      ? copy('第二象限 (II: -, +)', 'Quadrant II (-, +)')
       : angleDeg > 180 && angleDeg < 270
-      ? ml("第三象限 (III: -, -)")
+      ? copy('第三象限 (III: -, -)', 'Quadrant III (-, -)')
       : angleDeg > 270 && angleDeg < 360
-      ? ml("第四象限 (IV: +, -)")
-      : ml("坐標軸上")
+      ? copy('第四象限 (IV: +, -)', 'Quadrant IV (+, -)')
+      : copy('坐標軸上', 'On an axis')
 
   const cx = 140
   const cy = 140
@@ -36,8 +37,10 @@ export const UnitCircleLab: React.FC = () => {
     <div className="math-lab unit-circle-lab">
       <div className="lab-header">
         <div>
-          <h3>{ml("三角函數單位圓實驗室 (Unit Circle & Trigonometry)")}</h3>
-          <p className="lab-desc">{ml("在半徑為 1 的單位圓上，動徑端點坐標即為 $(\\cos\\theta, \\sin\\theta)$。")}</p>
+          <h3>{copy('三角函數單位圓實驗室', 'Unit Circle and Trigonometry Lab')}</h3>
+          <p className="lab-desc">
+            {copy('在半徑為 1 的單位圓上，動徑端點坐標為 $(\\cos\\theta, \\sin\\theta)$。', 'On a unit circle of radius 1, the terminal point has coordinates $(\\cos\\theta, \\sin\\theta)$.')}
+          </p>
         </div>
       </div>
 
@@ -69,27 +72,31 @@ export const UnitCircleLab: React.FC = () => {
 
         <div className="circle-data-card">
           <div className="angle-heading">
-            <h4>{ml("旋轉角 $\\theta$ = ")}{angleDeg}{ml("°（")}{(angleDeg / 180).toFixed(2)}{ml("$\\pi$ rad）")}</h4>
+            <h4>
+              {copy('旋轉角', 'Angle')} $\theta$ = {angleDeg}° ({(angleDeg / 180).toFixed(2)}$\pi$ rad)
+            </h4>
             <span className="quad-badge">{quadrant}</span>
           </div>
 
           <div className="trig-values-grid">
             <div className="trig-val-item sin-item">
-              <span className="trig-name">{ml("$\\sin\\theta$ (高度 / y坐標)")}</span>
+              <span className="trig-name">$\sin\theta$ ({copy('高度 / y坐標', 'height / y-coordinate')})</span>
               <strong>{sinVal.toFixed(4)}</strong>
             </div>
             <div className="trig-val-item cos-item">
-              <span className="trig-name">{ml("$\\cos\\theta$ (底寬 / x坐標)")}</span>
+              <span className="trig-name">$\cos\theta$ ({copy('底寬 / x坐標', 'horizontal run / x-coordinate')})</span>
               <strong>{cosVal.toFixed(4)}</strong>
             </div>
             <div className="trig-val-item tan-item">
-              <span className="trig-name">{ml("$\\tan\\theta$ (斜率)")}</span>
-              <strong>{Number.isFinite(tanVal) ? tanVal.toFixed(4) : ml("無意義")}</strong>
+              <span className="trig-name">$\tan\theta$ ({copy('斜率', 'slope')})</span>
+              <strong>{Number.isFinite(tanVal) ? tanVal.toFixed(4) : copy('未定義', 'undefined')}</strong>
             </div>
           </div>
 
           <div style={{ marginBottom: '0.6rem' }}>
-            <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--muted)', display: 'block', marginBottom: '0.25rem' }}>{ml("⚡ 經典特別角快照：")}</span>
+            <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--muted)', display: 'block', marginBottom: '0.25rem' }}>
+              {copy('⚡ 經典特別角快照：', '⚡ Standard special angles:')}
+            </span>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.3rem' }}>
               <button
                 type="button"
@@ -160,18 +167,18 @@ export const UnitCircleLab: React.FC = () => {
                   textAlign: 'left',
                 }}
               >
-                ⭕ <strong>{ml("90° (π/2) 頂點")}</strong>
-                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>{ml("sin=1 · cos=0 · tan無窮")}</div>
+                ⭕ <strong>90° (π/2) {copy('頂點', 'top point')}</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>sin=1 · cos=0 · tan {copy('未定義', 'undefined')}</div>
               </button>
             </div>
           </div>
 
           <div className="slider-item">
-            <label>{ml("調整旋轉角度: ")}{angleDeg}°</label>
+            <label>{copy('調整旋轉角度:', 'Adjust angle:')} {angleDeg}°</label>
             <input
               type="range"
-              aria-label={ml("單位圓旋轉角度")}
-              aria-valuetext={ml("{v0} 度", [angleDeg])}
+              aria-label={copy('單位圓旋轉角度', 'Unit-circle angle')}
+              aria-valuetext={copy(`${angleDeg} 度`, `${angleDeg} degrees`)}
               min="0"
               max="360"
               step="5"

@@ -78,3 +78,20 @@ export const YOUBIKE_DIALOGUES: YouBikeDialogueItem[] = [
     ],
   },
 ]
+
+export const CHINESE_SUPPORT_EN = {
+  '台北 YouBike 2.0 悠遊卡感應借車、座墊反轉與捷運轉乘優惠': 'Using Taipei YouBike 2.0: EasyCard Rental, Reversed Saddles, and Transit Discounts',
+  'YouBike 2.0の借り方・サドル反転（故障車サイン）とMRT乗継割引': 'Using Taipei YouBike 2.0: EasyCard Rental, Reversed Saddles, and Transit Discounts',
+  'MRT忠孝復興駅のYouBike（シェアサイクル）ステーション': 'YouBike station outside Zhongxiao Fuxing MRT Station',
+  '台湾の友人': 'Taiwanese friend',
+  'MRT駅からYouBikeに乗れば5分で着くよ！見て、あの自転車サドルが180度後ろ向きに反転されてるでしょ？あれは台湾人の暗黙のサインで「この自転車は故障中だから借りないで」って意味なんだ。隣のにしよう！': 'YouBike gets us there in five minutes. See that saddle turned backward? In Taiwan, that is an informal sign that the bicycle is broken, so let\'s choose the next one.',
+  '日本人留学生': 'Japanese exchange student',
+  'サドル反転が故障車のサインだったんですね、賢い！悠遊カード（EasyCard）をスマート車載モニターにタッチしたらすぐ解錠できました！さっきMRTを降りたばかりですが、乗継割引で5元引きになりますか？': 'So a reversed saddle marks a broken bike—clever! My EasyCard unlocked the bike as soon as I tapped the display. Since I just left the MRT, will I receive the NT$5 transfer discount?',
+  'その通り！1時間以内のMRT・路線バスとYouBikeの相互乗り継ぎは割引補助が出るよ！返却時は前輪の金属ジョイントをスタンドに押し込んで、「ピピッ」と2回鳴って画面に返却完了と出ればOKだよ！': 'Yes. MRT or bus transfers to YouBike within one hour receive a subsidy. To return the bike, push the front-wheel connector into the dock and wait for two beeps and the return-complete message.',
+  'サドル反転（自転車の故障・チェーン外れ・パンクの合図）': 'A reversed saddle signals a bicycle fault, slipped chain, or flat tyre',
+  '台湾では乗車前点検で故障を見つけたらサドルを逆向きにして次の人へ知らせるマナーがある。': 'Riders commonly turn the saddle backward to warn the next person about a problem.',
+  'MRT・路線バスとYouBikeの相互乗り継ぎ割引（5元引き）': 'NT$5 transfer discount between YouBike and MRT or city bus',
+  '同一の悠遊カードで60分以内に公共交通機関を乗り継ぐと割引が自動適用される。': 'The discount is applied automatically when the same EasyCard is used for an eligible transfer within 60 minutes.',
+  'ジョイント金具をステーションのロック柱に差し込む（返却ロック）': 'Insert the bicycle connector into the station dock to lock the return',
+  '青いライトが点滅から点灯に変わり、音が鳴って返却完了。': 'The return is complete when the blue light becomes steady and the dock beeps.',
+} as const

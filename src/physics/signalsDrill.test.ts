@@ -3,11 +3,11 @@ import { PHYSICS_SOLVING_SIGNALS } from './data/solvingSignals'
 import { CHEMISTRY_SOLVING_SIGNALS } from '../chemistry/data/solvingSignals'
 
 describe('3秒破題訊號卡與翻轉測驗模式 (Signals & Quick Drill) 資料完整性測試', () => {
-  it('物理破題訊號庫應包含 19 組國中與高中訊號', () => {
-    expect(PHYSICS_SOLVING_SIGNALS).toHaveLength(19)
+  it('物理破題訊號庫應包含 20 組國中與高中訊號', () => {
+    expect(PHYSICS_SOLVING_SIGNALS).toHaveLength(20)
     const junior = PHYSICS_SOLVING_SIGNALS.filter((s) => s.stage === 'junior')
     const senior = PHYSICS_SOLVING_SIGNALS.filter((s) => s.stage === 'senior')
-    expect(junior).toHaveLength(4)
+    expect(junior).toHaveLength(5)
     expect(senior).toHaveLength(15)
   })
 
@@ -19,9 +19,9 @@ describe('3秒破題訊號卡與翻轉測驗模式 (Signals & Quick Drill) 資�
     expect(senior).toHaveLength(12)
   })
 
-  it('物理與化學 34 組訊號卡皆具備完整必備欄位', () => {
+  it('物理與化學 35 組訊號卡皆具備完整必備欄位', () => {
     const allSignals = [...PHYSICS_SOLVING_SIGNALS, ...CHEMISTRY_SOLVING_SIGNALS]
-    expect(allSignals).toHaveLength(34)
+    expect(allSignals).toHaveLength(35)
 
     allSignals.forEach((sig) => {
       expect(sig.id).toBeTruthy()

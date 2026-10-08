@@ -1,6 +1,8 @@
-import { useMathLabCopy } from '../../i18n/mathLabCopy'
+import { BALANCE_STEP_TEMPLATES, useMathLabCopy } from '../../i18n/mathLabCopy'
 import React, { useState } from 'react'
 import { BALANCE_PRESETS, type BalanceEquationPreset } from '../data/diagramPresets'
+import { BALANCE_PRESETS_EN } from '../data/diagramPresets.en'
+import { useI18n } from '../../i18n/i18n'
 
 /**
  * 天平平衡解題器 (BalanceScaleSolver)
@@ -8,8 +10,11 @@ import { BALANCE_PRESETS, type BalanceEquationPreset } from '../data/diagramPres
  */
 export const BalanceScaleSolver: React.FC = () => {
   const ml = useMathLabCopy()
+  const { locale } = useI18n()
+  const copy = (zh: string, en: string) => locale === 'en' ? en : zh
+  const presets = locale === 'en' ? BALANCE_PRESETS_EN : BALANCE_PRESETS
   const [selectedPresetId, setSelectedPresetId] = useState<string>(BALANCE_PRESETS[0].id)
-  const preset = BALANCE_PRESETS.find((p) => p.id === selectedPresetId) ?? BALANCE_PRESETS[0]
+  const preset = presets.find((p) => p.id === selectedPresetId) ?? presets[0]
 
   const [leftX, setLeftX] = useState<number>(preset.leftX)
   const [leftConst, setLeftConst] = useState<number>(preset.leftConst)
@@ -43,7 +48,10 @@ export const BalanceScaleSolver: React.FC = () => {
     const newRightC = Math.max(0, rightConst - val)
     setLeftConst(newLeftC)
     setRightConst(newRightC)
-    setStepHistory((prev) => [...prev, { text: "兩邊同時減去 {v0} ➜ {v1}", values: [val, formatEq(leftX, newLeftC, rightX, newRightC)] }])
+    setStepHistory((prev) => [...prev, {
+      text: BALANCE_STEP_TEMPLATES.subtractConstant,
+      values: [val, formatEq(leftX, newLeftC, rightX, newRightC)],
+    }])
   }
 
   // 兩邊同時扣除 X
@@ -53,7 +61,10 @@ export const BalanceScaleSolver: React.FC = () => {
     const newRightX = rightX - 1
     setLeftX(newLeftX)
     setRightX(newRightX)
-    setStepHistory((prev) => [...prev, { text: "兩邊各拿掉 1 個 x ➜ {v0}", values: [formatEq(newLeftX, leftConst, newRightX, rightConst)] }])
+    setStepHistory((prev) => [...prev, {
+      text: BALANCE_STEP_TEMPLATES.subtractVariable,
+      values: [formatEq(newLeftX, leftConst, newRightX, rightConst)],
+    }])
   }
 
   // 兩邊同時除以 2
@@ -67,7 +78,10 @@ export const BalanceScaleSolver: React.FC = () => {
       setLeftConst(newLeftC)
       setRightX(newRightX)
       setRightConst(newRightC)
-      setStepHistory((prev) => [...prev, { text: "兩邊同時除以 2 ➜ {v0}", values: [formatEq(newLeftX, newLeftC, newRightX, newRightC)] }])
+      setStepHistory((prev) => [...prev, {
+        text: BALANCE_STEP_TEMPLATES.divideByTwo,
+        values: [formatEq(newLeftX, newLeftC, newRightX, newRightC)],
+      }])
     }
   }
 
@@ -92,19 +106,19 @@ export const BalanceScaleSolver: React.FC = () => {
     <div className="balance-solver-card">
       <div className="solver-top-bar">
         <div className="solver-title-block">
-          <h3>{ml("⚖️ 天平平衡與等量公理解題器")}</h3>
-          <p>{ml("不講死板的移項變號！操作天平兩端「同加同減同除」，直觀感受代數平衡。")}</p>
+          <h3>{copy('⚖️ 天平平衡與等量公理解題器', '⚖️ Balance Scale and Equality Solver')}</h3>
+          <p>{copy('不講死板的移項變號！操作天平兩端「同加同減同除」，直觀感受代數平衡。', 'Apply the same addition, subtraction, or division to both pans and see why an equation stays balanced.')}</p>
         </div>
 
         <div className="preset-tabs">
-          {BALANCE_PRESETS.map((p) => (
+          {presets.map((p) => (
             <button
               key={p.id}
               type="button"
               className={`pill-btn ${p.id === selectedPresetId ? 'active' : ''}`}
               onClick={() => handleSelectPreset(p)}
             >
-              {ml(p.title.split('：')[0])}
+              {p.title.split(locale === 'en' ? ':' : '：')[0]}
             </button>
           ))}
         </div>
@@ -113,7 +127,9 @@ export const BalanceScaleSolver: React.FC = () => {
       <div className="solver-main-grid">
         {/* SVG 天平互動區 */}
         <div className="balance-visual-box">
-          <div className="current-eq-badge">{ml("目前狀態：")}<strong>{formatEq(leftX, leftConst, rightX, rightConst)}</strong>
+          <div className="current-eq-badge">
+            {copy('目前狀態：', 'Current state: ')}
+            <strong>{formatEq(leftX, leftConst, rightX, rightConst)}</strong>
           </div>
 
           <svg viewBox="0 0 500 280" className="balance-svg">
@@ -174,7 +190,8 @@ export const BalanceScaleSolver: React.FC = () => {
                         stroke="#d97706"
                       />
                     ))}
-                    <text x={leftPivotX} y={leftPivotY + 105} textAnchor="middle" fontSize="12" fill="#334155" fontWeight="bold">{ml("左盤: ")}{leftX > 0 ? ml("{v0}個 x", [leftX]) : ''} {leftConst > 0 ? `+ ${leftConst}` : ''}
+                    <text x={leftPivotX} y={leftPivotY + 105} textAnchor="middle" fontSize="12" fill="#334155" fontWeight="bold">
+                      {copy('左盤:', 'Left pan:')} {leftX > 0 ? copy(`${leftX}個 x`, `${leftX} x`) : ''} {leftConst > 0 ? `+ ${leftConst}` : ''}
                     </text>
                   </g>
 
@@ -213,7 +230,8 @@ export const BalanceScaleSolver: React.FC = () => {
                         stroke="#d97706"
                       />
                     ))}
-                    <text x={rightPivotX} y={rightPivotY + 105} textAnchor="middle" fontSize="12" fill="#334155" fontWeight="bold">{ml("右盤: ")}{rightX > 0 ? ml("{v0}個 x", [rightX]) : ''} {rightConst > 0 ? `${rightConst}` : ''}
+                    <text x={rightPivotX} y={rightPivotY + 105} textAnchor="middle" fontSize="12" fill="#334155" fontWeight="bold">
+                      {copy('右盤:', 'Right pan:')} {rightX > 0 ? copy(`${rightX}個 x`, `${rightX} x`) : ''} {rightConst > 0 ? `${rightConst}` : ''}
                     </text>
                   </g>
                 </>
@@ -222,14 +240,16 @@ export const BalanceScaleSolver: React.FC = () => {
           </svg>
 
           {isSolved && (
-            <div className="solved-banner">{ml("🎉 完美解出！未知數 ")}<strong>x = {preset.targetX}</strong>{ml("（天平維持水平平衡）")}</div>
+            <div className="solved-banner">
+              {copy('🎉 完美解出！未知數 ', '🎉 Solved! The unknown is ')}<strong>x = {preset.targetX}</strong>{copy('（天平維持水平平衡）', ' (the scale remains level).')}
+            </div>
           )}
         </div>
 
         {/* 等量公理操作面板 */}
         <div className="balance-controls-panel">
-          <h4>{ml("🛠️ 等量公理動作 (Equal Operations)")}</h4>
-          <p className="hint-text">{ml("💡 提示：")}{ml(preset.hint)}</p>
+          <h4>{copy('🛠️ 等量公理動作 (Equal Operations)', '🛠️ Equal Operations')}</h4>
+          <p className="hint-text">{copy('💡 提示：', '💡 Hint: ')}{preset.hint}</p>
 
           <div className="action-buttons-stack">
             <button
@@ -237,35 +257,45 @@ export const BalanceScaleSolver: React.FC = () => {
               className="op-btn"
               onClick={() => handleSubtractConst(1)}
               disabled={leftConst < 1 || rightConst < 1}
-            >{ml("兩邊同時 － 1 砝碼")}</button>
+            >
+              {copy('兩邊同時 － 1 砝碼', 'Subtract 1 weight from both sides')}
+            </button>
             <button
               type="button"
               className="op-btn"
               onClick={() => handleSubtractConst(preset.leftConst > 0 ? preset.leftConst : 2)}
               disabled={leftConst <= 0 || rightConst <= 0}
-            >{ml("兩邊同時 － ")}{preset.leftConst > 0 ? preset.leftConst : 2}{ml(" 砝碼")}</button>
+            >
+              {copy('兩邊同時 － ', 'Subtract ')}{preset.leftConst > 0 ? preset.leftConst : 2}{copy(' 砝碼', ' weights from both sides')}
+            </button>
             {rightX > 0 && (
               <button
                 type="button"
                 className="op-btn highlight"
                 onClick={handleSubtractX}
                 disabled={leftX < 1 || rightX < 1}
-              >{ml("兩邊同時 － 1 個未知數箱子 x")}</button>
+              >
+                {copy('兩邊同時 － 1 個未知數箱子 x', 'Subtract one unknown box x from both sides')}
+              </button>
             )}
             <button
               type="button"
               className="op-btn"
               onClick={handleDivideBy2}
               disabled={!(leftX % 2 === 0 && leftConst % 2 === 0 && rightConst % 2 === 0)}
-            >{ml("兩邊同時 ÷ 2 (分兩半)")}</button>
-            <button type="button" className="btn-reset" onClick={handleReset}>{ml("↺ 重設天平")}</button>
+            >
+              {copy('兩邊同時 ÷ 2 (分兩半)', 'Divide both sides by 2')}
+            </button>
+            <button type="button" className="btn-reset" onClick={handleReset}>
+              {copy('↺ 重設天平', '↺ Reset scale')}
+            </button>
           </div>
 
           {/* 步驟歷程 */}
           <div className="steps-history-box">
-            <h5>{ml("📜 推導步驟紀錄：")}</h5>
+            <h5>{copy('📜 推導步驟紀錄：', '📜 Derivation history:')}</h5>
             {stepHistory.length === 0 ? (
-              <span className="empty-hint">{ml("尚未進行任何等量操作。")}</span>
+              <span className="empty-hint">{copy('尚未進行任何等量操作。', 'No equal operation has been applied yet.')}</span>
             ) : (
               <ol>
                 {stepHistory.map((s, idx) => (

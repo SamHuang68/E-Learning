@@ -18,7 +18,7 @@ export type BalanceEquationPreset = {
 export type BarModelPreset = {
   id: string
   title: string
-  category: '和差問題' | '倍數問題' | '基準量與比較量'
+  category: '和差問題' | '倍數問題' | '基準量與比較量' | 'Sum and difference' | 'Multiplicative comparison' | 'Reference and comparison amounts'
   story: string
   personA: { name: string; baseAmount: number; extraAmount: number; color: string }
   personB: { name: string; baseAmount: number; extraAmount: number; color: string }
@@ -50,7 +50,7 @@ export type MatrixTransformPreset = {
   description: string
   matrix: [[number, number], [number, number]] // [[a, b], [c, d]]
   det: number
-  category: '旋轉' | '縮放' | '剪切 (Shear)' | '反射'
+  category: '旋轉' | '縮放' | '剪切 (Shear)' | '反射' | 'Rotation' | 'Scaling' | 'Shear' | 'Reflection'
 }
 
 export type RiemannPreset = {

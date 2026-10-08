@@ -7,6 +7,7 @@ export interface BusinessInterruptionScenarioItem {
   id: string
   title: string
   titleJa: string
+  titleEn: string
   icon: string
   targetAccent: 'en-US' | 'en-GB' | 'en-AU' | 'en-CA'
   accentLabel: string
@@ -23,8 +24,10 @@ export interface BusinessInterruptionScenarioItem {
     correctIndex: number
     explanationZh: string
     explanationJa: string
+    explanationEn: string
   }>
   businessInterruptionKeywordsTipsJa: string
+  businessInterruptionKeywordsTipsEn: string
 }
 
 export const BUSINESS_INTERRUPTION_SCENARIOS: BusinessInterruptionScenarioItem[] = [
@@ -32,6 +35,7 @@ export const BUSINESS_INTERRUPTION_SCENARIOS: BusinessInterruptionScenarioItem[]
     id: 'business-interruption-fire-claim',
     title: '半導體封裝廠火災停工：營業中斷保險理賠與 72 小時等待期審定',
     titleJa: '半導体パッケージ工場の火災操業停止：休業損害保険金請求と72時間免責期間の算定',
+    titleEn: 'Semiconductor Packaging-Plant Fire: Business-Interruption Claim and 72-Hour Waiting Period',
     icon: '🏭',
     targetAccent: 'en-US',
     accentLabel: '美式口音 🇺🇸',
@@ -54,6 +58,7 @@ export const BUSINESS_INTERRUPTION_SCENARIOS: BusinessInterruptionScenarioItem[]
         correctIndex: 1,
         explanationZh: 'Douglas 指出免賠額為「the first seventy-two hours of lost production are designated as the waiting period deductible（前 72 小時的產能損失被設定為等待期免賠額）」。',
         explanationJa: '「操業停止の最初の72時間分の損失が待機期間免責（waiting period deductible）として控除される」と明記されています。',
+        explanationEn: 'The first seventy-two hours of lost production are the waiting-period deductible and are excluded from the final payout.',
       },
       {
         id: 'bii-2',
@@ -68,8 +73,10 @@ export const BUSINESS_INTERRUPTION_SCENARIOS: BusinessInterruptionScenarioItem[]
         correctIndex: 1,
         explanationZh: 'Douglas 確認「Continuing normal operating expenses and extra mitigation expenses（持續正常營運費用如薪資，以及異地租賃無塵室設備的額外費用）皆在保障範圍內」。',
         explanationJa: '「継続的な通常運営費用（給与など）および社外クリーンルーム設備の臨時リース費用」が補償対象となります。',
+        explanationEn: 'The policy covers continuing normal operating expenses, including payroll, and the extra cost of temporarily leasing off-site cleanroom equipment.',
       },
     ],
     businessInterruptionKeywordsTipsJa: 'TOEICでは「Business Interruption Insurance / BII（休業損害保険）」「waiting period deductible（待機期間免責）」「lost gross profit（喪失粗利益）」「continuing normal operating expenses（継続的固定費）」「extra expense coverage（臨時追加費用補償）」が頻出です。',
+    businessInterruptionKeywordsTipsEn: 'Key TOEIC terms here are business interruption insurance (BII), waiting-period deductible, lost gross profit, continuing normal operating expenses, and extra-expense coverage.',
   },
 ]

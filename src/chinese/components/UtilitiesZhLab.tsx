@@ -1,12 +1,15 @@
 ﻿import React, { useState } from 'react'
-import { UTILITIES_DIALOGUES, type UtilitiesDialogueItem } from '../data/utilitiesZhDialogues'
+import { CHINESE_SUPPORT_EN, UTILITIES_DIALOGUES, type UtilitiesDialogueItem } from '../data/utilitiesZhDialogues'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
+import { localizeChineseData } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
 }
 
 export const UtilitiesZhLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { locale } = useI18n()
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [kwhUsed, setKwhUsed] = useState<number>(180)
   const [ratePerKwh, setRatePerKwh] = useState<number>(5.0)
@@ -14,6 +17,8 @@ export const UtilitiesZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
   const activeItem: UtilitiesDialogueItem =
     UTILITIES_DIALOGUES[selectedIdx % UTILITIES_DIALOGUES.length]
+  const localizedItem = localizeChineseData(activeItem, locale, CHINESE_SUPPORT_EN)
+  const localizedDialogues = localizeChineseData(UTILITIES_DIALOGUES, locale, CHINESE_SUPPORT_EN)
 
   const totalElectricityCost = Math.round(kwhUsed * ratePerKwh)
 
@@ -39,10 +44,12 @@ export const UtilitiesZhLab: React.FC<Props> = ({ onEarnXp }) => {
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>⚡</span> 台灣水電瓦斯帳單與搬家生活實驗室 (Utilities & Relocation Lab)
+            <span>⚡</span> {locale === 'en' ? 'Taiwan Utilities and Relocation Lab' : '台灣水電瓦斯帳單與搬家生活實驗室 (Utilities & Relocation Lab)'}
           </h3>
-          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            台湾生活のリアル！「台電の電気代計算（一度電）・個別メーター抄表・大樓管理費・引越し業者（搬家師傅）」を完全網羅！
+          <p lang={locale === 'en' ? 'en' : 'ja'} className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+            {locale === 'en'
+              ? 'Practise essential Mandarin for electricity bills, meter readings, building fees, utility settlement, and arranging a move.'
+              : '台湾生活のリアル！「台電の電気代計算（一度電）・個別メーター抄表・大樓管理費・引越し業者（搬家師傅）」を完全網羅！'}
           </p>
         </div>
       </div>
@@ -65,16 +72,18 @@ export const UtilitiesZhLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <div style={{ fontSize: '1.8rem' }}>⚡ 💡</div>
           <div>
-            <strong style={{ fontSize: '0.9rem', display: 'block' }}>獨立電表度數與電費試算 (Electricity Calculator)</strong>
-            <span style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
-              用電度數：{kwhUsed} 度 × 一度 {ratePerKwh} 元 = NT$ {totalElectricityCost} 元
+            <strong style={{ fontSize: '0.9rem', display: 'block' }}>{locale === 'en' ? 'Electricity meter and bill calculator' : '獨立電表度數與電費試算 (Electricity Calculator)'}</strong>
+            <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
+              {locale === 'en'
+                ? <>Usage: {kwhUsed} kWh × NT$ {ratePerKwh} per kWh = NT$ {totalElectricityCost}</>
+                : <>用電度數：{kwhUsed} 度 × 一度 {ratePerKwh} 元 = NT$ {totalElectricityCost} 元</>}
             </span>
           </div>
         </div>
 
         <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
-          <label style={{ fontSize: '0.76rem' }}>度數：</label>
-          <input aria-label="用電度數 (kWh)"
+          <label style={{ fontSize: '0.76rem' }}>{locale === 'en' ? 'Usage:' : '度數：'}</label>
+          <input aria-label={locale === 'en' ? 'Electricity usage (kWh)' : '用電度數 (kWh)'}
             type="number"
             value={kwhUsed}
             step="10"
@@ -92,8 +101,8 @@ export const UtilitiesZhLab: React.FC<Props> = ({ onEarnXp }) => {
             }}
           />
 
-          <label style={{ fontSize: '0.76rem' }}>單價：</label>
-          <select aria-label="每度電費 (NT$)"
+          <label style={{ fontSize: '0.76rem' }}>{locale === 'en' ? 'Rate:' : '單價：'}</label>
+          <select aria-label={locale === 'en' ? 'Electricity rate (NT$ per kWh)' : '每度電費 (NT$)'}
             value={ratePerKwh}
             onChange={(e) => setRatePerKwh(Number(e.target.value))}
             style={{
@@ -120,21 +129,23 @@ export const UtilitiesZhLab: React.FC<Props> = ({ onEarnXp }) => {
             }}
             onClick={handleSettleBill}
           >
-            {billSettled ? '✓ 電費繳清完成！(+10 XP)' : '🧾 模擬水電結算'}
+            {billSettled
+              ? locale === 'en' ? '✓ Utility bill settled (+10 XP)' : '✓ 電費繳清完成！(+10 XP)'
+              : locale === 'en' ? '🧾 Simulate utility settlement' : '🧾 模擬水電結算'}
           </button>
         </div>
       </div>
 
       {/* 場景切換膠囊 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
-        {UTILITIES_DIALOGUES.map((item, idx) => (
+        {localizedDialogues.map((item, idx) => (
           <button aria-pressed={selectedIdx === idx}
             key={item.id}
             type="button"
             className={`pill-btn ${selectedIdx === idx ? 'active' : ''}`}
             onClick={() => setSelectedIdx(idx)}
           >
-            <span>{item.icon}</span> {item.title.split('與')[0]}
+            <span>{item.icon}</span> {locale === 'en' ? item.title : item.title.split('與')[0]}
           </button>
         ))}
       </div>
@@ -145,7 +156,7 @@ export const UtilitiesZhLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(234, 179, 8, 0.15)', color: '#eab308', fontWeight: 700 }}>
-              {activeItem.locationZh} (<span lang="ja">{activeItem.locationJa}</span>)
+              {activeItem.locationZh} (<span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.locationJa}</span>)
             </span>
           </div>
 
@@ -165,9 +176,9 @@ export const UtilitiesZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#38bdf8' }}>
-                    <span lang="ja">{line.speakerJa}</span>：
+                    <span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.dialogueLines[lIdx].speakerJa}</span>:
                   </span>
-                  <button aria-label={`朗讀：${line.zh}`}
+                  <button aria-label={locale === 'en' ? `Read aloud: ${line.zh}` : `朗讀：${line.zh}`}
                     type="button"
                     style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
                     onClick={() => speakChinese(line.zh)}
@@ -177,8 +188,8 @@ export const UtilitiesZhLab: React.FC<Props> = ({ onEarnXp }) => {
                 </div>
                 <strong style={{ fontSize: '0.86rem', color: 'var(--text)' }}>{line.zh}</strong>
                 <span lang="zh-Latn" style={{ fontSize: '0.72rem', color: '#f59e0b' }}>{line.pinyin}</span>
-                <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
-                  {line.ja}
+                <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
+                  {localizedItem.dialogueLines[lIdx].ja}
                 </span>
               </div>
             ))}
@@ -187,12 +198,12 @@ export const UtilitiesZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
         {/* 右側：水電搬家重要單詞 */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          <span lang="ja" style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
-            💡 台湾光熱費・引越し必須単語（Utilities Tips）
+          <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
+            {locale === 'en' ? '💡 Utilities and relocation tips' : '💡 台湾光熱費・引越し必須単語（Utilities Tips）'}
           </span>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginTop: '0.3rem' }}>
-            {activeItem.utilitiesGlossary.map((vocab, vIdx) => (
+            {localizedItem.utilitiesGlossary.map((vocab, vIdx) => (
               <div
                 key={vIdx}
                 style={{
@@ -204,9 +215,9 @@ export const UtilitiesZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <strong style={{ fontSize: '0.88rem', color: '#f59e0b' }}>{vocab.termZh}</strong>
-                  <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
+                  <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
                 </div>
-                <p lang="ja" style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+                <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
                   {vocab.tipJa}
                 </p>
               </div>

@@ -2,6 +2,8 @@
  * 微積分表達式抽象語法樹 (Abstract Syntax Tree, AST) 結構定義
  */
 
+import type { UiLocale } from '../../../../i18n/locale'
+
 export type ASTNode =
   | { type: 'constant'; value: number }
   | { type: 'variable'; name: string }
@@ -18,11 +20,12 @@ export function isPiName(name: string): boolean {
 }
 
 /** 畫布／圖例用的有限數值格式；NaN／Infinity 不偽裝成一般實數。 */
-export function formatCalcNumber(n: number): string {
-  if (Number.isNaN(n)) return '未定義'
+export function formatCalcNumber(n: number, locale: UiLocale = 'zh-Hant'): string {
+  const undefinedLabel = locale === 'en' ? 'undefined' : '未定義'
+  if (Number.isNaN(n)) return undefinedLabel
   if (n === Infinity) return '∞'
   if (n === -Infinity) return '-∞'
-  if (!Number.isFinite(n)) return '未定義'
+  if (!Number.isFinite(n)) return undefinedLabel
   if (Number.isInteger(n)) return String(n)
   return n.toFixed(5).replace(/\.?0+$/, '')
 }

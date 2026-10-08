@@ -1,0 +1,128 @@
+import type { ChemistryMockCopy, ChemistryQuestionCopy } from './types'
+
+export const CHEMISTRY_MOCK_EN: Record<string, ChemistryMockCopy> = {
+  exam_cap_chemistry: {
+    title: 'CAP Chemistry Competency Mock Exam',
+    subtitle: 'Solutions, atoms and molecules, reaction stoichiometry, redox, acids and bases, salts, and everyday organic chemistry',
+  },
+  exam_gsat_chemistry: {
+    title: 'GSAT Chemistry Mock Exam',
+    subtitle: 'Required-chemistry competency, data interpretation, separation, limiting reagents, and sustainable chemistry',
+  },
+  exam_ast_chemistry: {
+    title: 'AST Advanced Chemistry Mock Exam',
+    subtitle: 'Equilibrium, kinetics, buffers, electrode potentials, and organic reaction reasoning',
+  },
+}
+
+export const CHEMISTRY_MOCK_QUESTION_EN: Record<string, ChemistryQuestionCopy> = {
+  cap_q1: {
+    title: 'Saturated Solution and Solubility',
+    question: 'At $25^\\circ\\text C$, $40\\text{ g}$ salt is stirred into $100\\text{ g}$ water and $4\\text{ g}$ remains undissolved. Which statement is correct?',
+    options: [
+      'A. The solution is unsaturated.',
+      'B. The solubility at $25^\\circ\\text C$ is $36\\text{ g}/100\\text{ g water}$.',
+      'C. Adding $10\\text{ g}$ more water increases the undissolved salt mass.',
+      'D. The mass-percent concentration is 40%.',
+    ],
+    solution: 'Undissolved solid shows saturation. The dissolved mass is $40-4=36\\text{ g}$ per $100\\text{ g}$ water, so the solubility is 36 g per 100 g water. Choose B.',
+    hint: 'Dissolved mass equals added mass minus residue.',
+    competency: 'Interpret saturation and solubility in a daily-life setting.',
+    tags: ['CAP', 'solubility', 'saturated solution'],
+  },
+  cap_q2: {
+    title: 'Mass Conservation in a Reaction',
+    question: 'In a closed vessel, $10\\text{ g}$ of A reacts completely with $16\\text{ g}$ of B and forms $18\\text{ g}$ of C plus D. What mass of D forms?',
+    options: ['A. 6 g', 'B. 8 g', 'C. 10 g', 'D. 12 g'],
+    solution: 'Conservation of mass gives $10+16=18+m_D$, so $m_D=8\\text{ g}$. Choose B.',
+    hint: 'Total reactant mass equals total product mass.',
+    competency: 'Apply mass conservation in a closed reaction system.',
+    tags: ['CAP', 'mass conservation'],
+  },
+  cap_q3: {
+    title: 'Acid-Base Indicators',
+    question: 'Colourless phenolphthalein is added separately to dilute hydrochloric acid, sodium hydroxide solution, and pure water. Which tube becomes red or pink?',
+    options: ['A. Hydrochloric acid', 'B. Sodium hydroxide solution', 'C. Pure water', 'D. All remain colourless'],
+    solution: 'Phenolphthalein is colourless in acidic and neutral solutions and pink to red in a basic solution. Sodium hydroxide is strongly basic. Choose B.',
+    hint: 'Phenolphthalein turns pink in base and remains colourless in acid or neutral water.',
+    competency: 'Use an indicator to distinguish acid-base conditions.',
+    tags: ['CAP', 'phenolphthalein', 'indicator'],
+  },
+  cap_q4: {
+    title: 'Esterification and Product Properties',
+    question: 'Acetic acid and ethanol are heated with a few drops of concentrated sulfuric acid. Which statement about the product is incorrect?',
+    options: [
+      'A. Ethyl acetate and water form.',
+      'B. The ester has a characteristic fruity smell.',
+      'C. The ester is poorly soluble and denser than water, so it sinks.',
+      'D. Concentrated sulfuric acid acts as a catalyst and dehydrating agent.',
+    ],
+    solution: 'Ethyl acetate is poorly soluble in water but has density about $0.90\\text{ g/cm}^3$, so it floats rather than sinks. Choose C.',
+    hint: 'Many small esters are less dense than water and form an upper layer.',
+    competency: 'Connect esterification procedure to product properties.',
+    tags: ['CAP', 'esterification', 'ethyl acetate'],
+  },
+  gsat_q1: {
+    title: 'Green Chemistry and Atom Economy',
+    question: 'Which reaction type can theoretically reach 100% atom economy?',
+    options: [
+      'A. Esterification of ethanol and acetic acid',
+      'B. Addition of water to ethene to form ethanol',
+      'C. Photochemical substitution of methane with chlorine',
+      'D. Thermal decomposition of calcium carbonate',
+    ],
+    solution: '$C_2H_4+H_2O\\rightarrow C_2H_5OH$ puts every reactant atom into the single desired product and forms no by-product, so atom economy is 100%. Choose B.',
+    hint: 'An addition reaction with no by-product can have 100% atom economy.',
+    competency: 'Evaluate a synthesis using green-chemistry principles.',
+    tags: ['GSAT', 'green chemistry', 'atom economy'],
+  },
+  gsat_q2: {
+    title: 'Stoichiometry and Gas Volume at STP',
+    question: 'At STP, $13.0\\text{ g}$ zinc of atomic mass 65.0 reacts with excess dilute sulfuric acid according to $Zn+H_2SO_4\\rightarrow ZnSO_4+H_2$. What hydrogen volume forms?',
+    solution: '$n_{Zn}=13.0/65.0=0.20\\text{ mol}$. The 1:1 ratio forms $0.20\\text{ mol H}_2$, so $V=0.20(22.4)=4.48\\text{ L}$.',
+    hint: 'Convert zinc mass to moles, then use $22.4\\text{ L/mol}$ at STP.',
+    competency: 'Convert between mass, reaction moles, and gas volume.',
+    tags: ['GSAT', 'STP', 'gas stoichiometry'],
+  },
+  gsat_q3: {
+    title: 'Isomers, Lewis Structures, and Properties',
+    question: 'Ethanol and dimethyl ether share molecular formula $C_2H_6O$. Which comparisons are correct? Select two.',
+    options: [
+      'A. Ethanol forms intermolecular hydrogen bonds and boils much higher.',
+      'B. Ethanol reacts with sodium metal to produce hydrogen, but dimethyl ether does not.',
+      'C. Oxygen has one lone pair in both Lewis structures.',
+      'D. Dimethyl ether is more soluble in water than ethanol.',
+      'E. Their heats of combustion are exactly equal.',
+    ],
+    solution: 'Ethanol has an O-H bond, so it forms hydrogen bonds and its acidic O-H hydrogen reacts with sodium. Oxygen has two lone pairs, ethanol is more water-soluble, and structural isomers need not have equal combustion enthalpies. Choose A and B.',
+    hint: 'The alcohol O-H group enables hydrogen bonding and reaction with sodium.',
+    competency: 'Relate functional-group structure to physical and chemical properties.',
+    tags: ['GSAT', 'isomer', 'hydrogen bonding'],
+  },
+  ast_q1: {
+    title: 'Initial Rates and Reaction Orders',
+    question: 'For $A+2B\\rightarrow C$, doubling $[A]$ while halving $[B]$ doubles the rate; doubling both concentrations multiplies rate by 8. What are the orders in A and B?',
+    options: ['A. 1 in A and 2 in B', 'B. 2 in A and 1 in B', 'C. 2 in A and 0 in B', 'D. 3 in A and 0 in B'],
+    solution: 'For $r=k[A]^m[B]^n$, the conditions give $m-n=1$ and $m+n=3$. Solving gives $m=2$ and $n=1$. Choose B.',
+    hint: 'Solve $m-n=1$ and $m+n=3$.',
+    competency: 'Derive a rate law from paired concentration changes.',
+    tags: ['AST', 'initial rates', 'reaction order'],
+  },
+  ast_q2: {
+    title: 'Precise pH of a Weak-Acid Buffer',
+    question: 'Mix $50\\text{ mL}$ of $0.20\\text{ M HCN}$ with $50\\text{ mL}$ of $0.10\\text{ M NaOH}$. Given $pK_a=9.30$, what is the final buffer pH?',
+    solution: 'Initial HCN is $0.010\\text{ mol}$ and hydroxide is $0.0050\\text{ mol}$. Neutralization leaves $0.0050\\text{ mol HCN}$ and forms $0.0050\\text{ mol CN}^-$. Equal amounts give $pH=pK_a=9.30$.',
+    hint: 'Half-neutralization makes acid and conjugate-base amounts equal.',
+    competency: 'Use neutralization stoichiometry and Henderson-Hasselbalch.',
+    tags: ['AST', 'buffer', 'Henderson-Hasselbalch'],
+  },
+  ast_q3: {
+    title: 'Cell Potential after Selective Precipitation',
+    question: 'A standard zinc-copper cell has $E^\\circ_{cell}=1.10\\text V$. What happens to its cell potential if sodium sulfide is added to the copper half-cell?',
+    options: ['A. It increases.', 'B. It decreases.', 'C. It remains unchanged.', 'D. The cell spontaneously charges in reverse.'],
+    solution: 'Sulfide precipitates $Cu^{2+}$ as very insoluble $CuS$, greatly lowering free $[Cu^{2+}]$. The Nernst equation therefore gives a lower forward cell potential. Choose B.',
+    hint: 'Removing a reactant ion from solution reduces the forward electrochemical driving force.',
+    competency: 'Connect precipitation equilibrium to a concentration-dependent cell potential.',
+    tags: ['AST', 'Nernst equation', 'cell potential'],
+  },
+}

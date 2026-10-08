@@ -1,5 +1,3 @@
-import { stemCatalogCopy } from '../i18n/stemCatalogCopy'
-import { stemVaultCopy } from '../i18n/stemVaultCopy'
 import React, { useState, useEffect } from 'react'
 import {
   type PhysicsGradeId,
@@ -29,6 +27,7 @@ import { BuoyancyLab } from './labs/BuoyancyLab'
 import { Breadcrumbs } from '../components/Breadcrumbs'
 import type { LangId } from '../utils/storage'
 import { useI18n } from '../i18n/i18n'
+import { localizePhysicsGrade, localizePhysicsUnit } from './locale/content'
 
 type Props = {
   onBackHub: () => void
@@ -69,8 +68,10 @@ export const PhysicsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
     return () => window.removeEventListener('e-learning:progress-hydrated', refresh)
   }, [])
 
-  const gradeInfo = getPhysicsGradeInfo(currentGradeId)
-  const currentUnit = getPhysicsUnit(currentGradeId, currentUnitId) || gradeInfo.units[0]
+  const rawGradeInfo = getPhysicsGradeInfo(currentGradeId)
+  const rawCurrentUnit = getPhysicsUnit(currentGradeId, currentUnitId) || rawGradeInfo.units[0]
+  const gradeInfo = localizePhysicsGrade(rawGradeInfo, locale)
+  const currentUnit = localizePhysicsUnit(rawCurrentUnit, locale)
 
   function persistSelection(gid: PhysicsGradeId, requestedUnitId: number) {
     const info = getPhysicsGradeInfo(gid)
@@ -123,7 +124,7 @@ export const PhysicsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
     { label: t('physics.brand'), onClick: () => setActiveNav('today') },
     { label: locale === 'en' ? gradeInfo.nameEn : gradeInfo.name, onClick: () => setActiveNav('today') },
     ...(activeNav === 'practice'
-      ? [{ label: t('chrome.unitNColon', { n: currentUnit.id, title: stemCatalogCopy(locale, currentUnit.title) }) }]
+      ? [{ label: t('chrome.unitNColon', { n: currentUnit.id, title: currentUnit.title }) }]
       : activeNav === 'mock'
       ? [{ label: t('chrome.mockCap') }]
       : activeNav === 'vault'
@@ -157,7 +158,7 @@ export const PhysicsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         <header className="topbar">
           <div>
             <p className="eyebrow" style={{ color: '#0369a1' }}>
-              PHYSICS · {stemVaultCopy(locale, gradeInfo.band)} · {gradeInfo.nameEn}
+              PHYSICS · {gradeInfo.band} · {gradeInfo.nameEn}
             </p>
             <h1>{locale === 'en' ? gradeInfo.nameEn : gradeInfo.name}</h1>
           </div>
@@ -171,10 +172,10 @@ export const PhysicsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
                 onChange={(e) => handleSelectGrade(e.target.value as PhysicsGradeId)}
               >
                 {(Object.keys(PHYSICS_GRADES) as PhysicsGradeId[]).map((gid) => {
-                  const info = PHYSICS_GRADES[gid]
+                  const info = localizePhysicsGrade(PHYSICS_GRADES[gid], locale)
                   return (
                     <option key={gid} value={gid}>
-                      {locale === 'en' ? info.nameEn : info.name}
+                      {info.name}
                     </option>
                   )
                 })}
@@ -190,7 +191,7 @@ export const PhysicsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
               >
                 {gradeInfo.units.map((u) => (
                   <option key={u.id} value={u.id}>
-                    {t('chrome.unitNColon', { n: u.id, title: stemCatalogCopy(locale, u.title) })}
+                    {t('chrome.unitNColon', { n: u.id, title: u.title })}
                   </option>
                 ))}
               </select>
@@ -257,7 +258,7 @@ export const PhysicsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         )}
 
         {activeNav === 'labs' && (
-          <div className="physics-labs-showcase" lang="zh-Hant" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div className="physics-labs-showcase" lang={locale} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div className="mock-nav-tabs">
               <button
                 type="button"
@@ -265,7 +266,7 @@ export const PhysicsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
                 className={`mock-tab ${labKey.includes('projectile') ? 'active' : ''}`}
                 onClick={() => setActiveLabId('projectile')}
               >
-                🚀 斜向拋體運動
+                🚀 {locale === 'en' ? 'Projectile Motion' : '斜向拋體運動'}
               </button>
               <button
                 type="button"
@@ -273,7 +274,7 @@ export const PhysicsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
                 className={`mock-tab ${labKey.includes('shm') || labKey.includes('energy') ? 'active' : ''}`}
                 onClick={() => setActiveLabId('shm')}
               >
-                ⏱️ 簡諧運動與單擺
+                ⏱️ {locale === 'en' ? 'SHM and Pendulum' : '簡諧運動與單擺'}
               </button>
               <button
                 type="button"
@@ -281,7 +282,7 @@ export const PhysicsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
                 className={`mock-tab ${labKey.includes('optics') || labKey.includes('lens') ? 'active' : ''}`}
                 onClick={() => setActiveLabId('optics')}
               >
-                🌈 司乃耳折射與全反射
+                🌈 {locale === 'en' ? 'Snell Refraction and TIR' : '司乃耳折射與全反射'}
               </button>
               <button
                 type="button"
@@ -289,7 +290,7 @@ export const PhysicsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
                 className={`mock-tab ${labKey.includes('circuit') || labKey.includes('kirchhoff') ? 'active' : ''}`}
                 onClick={() => setActiveLabId('circuit')}
               >
-                ⚡ 直流電路歐姆定律
+                ⚡ {locale === 'en' ? 'DC Circuits and Ohm\'s Law' : '直流電路歐姆定律'}
               </button>
               <button
                 type="button"
@@ -297,7 +298,7 @@ export const PhysicsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
                 className={`mock-tab ${labKey.includes('buoyancy') || labKey.includes('density') || labKey.includes('measurement') ? 'active' : ''}`}
                 onClick={() => setActiveLabId('buoyancy')}
               >
-                ⛵ 阿基米德浮力與密度
+                ⛵ {locale === 'en' ? 'Archimedes Buoyancy and Density' : '阿基米德浮力與密度'}
               </button>
             </div>
 

@@ -78,3 +78,20 @@ export const WEIYA_DIALOGUES: WeiyaDialogueItem[] = [
     ],
   },
 ]
+
+export const CHINESE_SUPPORT_EN = {
+  '台灣公司年終尾牙：吃刈包虎咬豬、摸彩大喊加碼與雞頭幽默化解': 'A Taiwan Company Weiya: Gua Bao, Prize Draws, Bonus Calls, and the Chicken-Head Custom',
+  '台湾の忘年会（尾牙）：角煮パオ（虎咬豬）・大抽選会「加碼（ボーナス上乗せ）」と鶏頭マナー': 'A Taiwan Company Weiya: Gua Bao, Prize Draws, Bonus Calls, and the Chicken-Head Custom',
+  '会社の忘年会（尾牙）大宴会場': 'A company weiya banquet hall',
+  '台湾の先輩': 'Taiwanese senior colleague',
+  '今日は年に一度の「尾牙（忘年会）」だよ！テーブルの蒸し鶏だけど、昔の伝統では鶏の頭が向いた人がクビ（解雇）という合図だったんだ。今はみんな頭を社長に向けて「ボーナス上乗せ（加碼）＆昇給！」って盛り上がるのがお決まりさ！': 'Today is our annual weiya banquet. Traditionally, the person facing the chicken head was being dismissed. Now everyone points it toward the boss and cheers for a larger bonus and a raise.',
+  '日本人駐在員': 'Japanese expatriate employee',
+  'はは！みんなで「加碼（ジャーマー）！加碼！」と叫ぶのは大迫力ですね！この白いハンバーガーのような料理は何ですか？': 'Everyone shouting jiama for a bigger prize is impressive! What is this dish that looks like a white hamburger?',
+  'これは「刈包（グァパオ）」、別名「虎咬豬（トラが豚を噛む）」だよ！角煮、高菜漬け、パクチー、ピーナッツシュガーを挟んであって、1年分の福と金運をガブッと丸呑みして商売繁盛を祈る縁起物なんだ！': 'It is gua bao, also called “tiger bites pig.” Braised pork, pickled mustard greens, coriander, and peanut sugar fill the bun. It symbolizes biting firmly into a year of good fortune and prosperity.',
+  '台湾の忘年会・慰労大宴会（旧暦12月16日の土地神への感謝祭が起源）': 'A Taiwan company year-end appreciation banquet that originated in offerings to the Earth God',
+  '日本の忘年会と異なり会社主催で全額会社負担。高級ホテルでの豪華コース料理や豪華芸能人ライブ、高額賞金抽選会が名物。': 'The company normally pays for the event, which may feature a hotel banquet, live entertainment, and high-value prize drawings.',
+  '抽選会の賞金・賞品の上乗せコール（「社長、もっと賞金出して！」の合図）': 'A chant asking management to increase the prize money or add more prizes',
+  '会場全体で「加碼！加碼！」とコールし、経営陣や役員がポケットマネーで現金10万〜100万元を追加提供するのが最高潮の盛り上がり。': 'The room chants jiama while executives sometimes contribute additional cash prizes, creating a high point of the banquet.',
+  '台湾式角煮バーガー（虎が豚肉を噛んでいる姿に見える縁起物）': 'A Taiwan braised-pork bun whose shape resembles a tiger biting pork',
+  '福を噛んで離さない、お財布がパンパンに膨らむという意味が込められ、尾牙で必ず食べられる。': 'At weiya, it represents holding on to good fortune and a wallet filled with prosperity.',
+} as const

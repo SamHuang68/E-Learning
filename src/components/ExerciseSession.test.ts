@@ -26,6 +26,14 @@ describe('practice answer field labels', () => {
   })
 })
 
+describe('practice support-language metadata', () => {
+  it('labels support copy with the current interface locale for every target track', () => {
+    const src = readFileSync(join(process.cwd(), 'src/components/ExerciseSession.tsx'), 'utf8')
+    expect(src).toContain('const meaningLang = locale')
+    expect(src).not.toContain("lang === 'ja' ? locale : 'zh-Hant'")
+  })
+})
+
 describe('SRS grade live region', () => {
   it('announces Good/Again outcomes with polite aria-live', () => {
     const src = readFileSync(join(process.cwd(), 'src/components/ExerciseSession.tsx'), 'utf8')

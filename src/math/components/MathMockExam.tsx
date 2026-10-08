@@ -1,16 +1,58 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
-import { MOCK_EXAMS, practiceScoreLabel, type MockExamType } from '../data/mockExams'
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import {
+  MOCK_EXAMS,
+  practiceScoreLabel,
+  type MathMockExamDefinition,
+  type MockExamType,
+} from '../data/mockExams'
 import { MathFormula } from './MathFormula'
 import { recordMockScore, loadMathProgress, saveMathProgress } from '../utils/mathStorage'
+import { useI18n } from '../../i18n/i18n'
+import { localizeMathExam } from '../../i18n/mathTeachingCopy'
+import type { UiLocale } from '../../i18n/locale'
 
 type Props = {
   onExit: () => void
+}
+
+export type MathMockScoreResult = {
+  correctCount: number
+  totalCount: number
+  percentage: number
+  wrongQuestionIds: string[]
+}
+
+/** 只由穩定評分事實與目前語系的題卷推導顯示文案。 */
+// oxlint-disable-next-line react/only-export-components -- 聚焦測試需直接驗證純函式，且不另增平行模組。
+export function deriveMathMockResultDisplay(
+  result: MathMockScoreResult,
+  exam: MathMockExamDefinition,
+  locale: UiLocale,
+): { scaleGrade: string; weakStrands: string[] } {
+  const wrongQuestionIds = new Set(result.wrongQuestionIds)
+  const weakStrands = Array.from(
+    new Set(
+      exam.questions
+        .filter((question) => wrongQuestionIds.has(question.id))
+        .map((question) => question.title),
+    ),
+  )
+
+  return {
+    scaleGrade:
+      locale === 'en'
+        ? `Correct ${result.correctCount} of ${result.totalCount}. This is a practice-paper result, not an official level or scaled score.`
+        : practiceScoreLabel(result.correctCount, result.totalCount),
+    weakStrands,
+  }
 }
 
 /**
  * 三張短練習卷。答對率不換算會考等級或學測級分。
  */
 export const MathMockExam: React.FC<Props> = ({ onExit }) => {
+  const { locale } = useI18n()
+  const copy = (zhHant: string, en: string) => locale === 'en' ? en : zhHant
   const [examType, setExamType] = useState<MockExamType>('cap')
   const [isStarted, setIsStarted] = useState(false)
   const [answers, setAnswers] = useState<Record<number, any>>({})
@@ -20,16 +62,14 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
   const timerRef = useRef<number | null>(null)
   const examHeadingRef = useRef<HTMLHeadingElement>(null)
   const resultHeadingRef = useRef<HTMLHeadingElement>(null)
-  const [scoreResult, setScoreResult] = useState<{
-    correctCount: number
-    totalCount: number
-    percentage: number
-    scaleGrade: string
-    weakStrands: string[]
-  } | null>(null)
+  const [scoreResult, setScoreResult] = useState<MathMockScoreResult | null>(null)
   const [flagged, setFlagged] = useState<Record<number, boolean>>({})
 
-  const exam = MOCK_EXAMS[examType]
+  const exam = useMemo(() => localizeMathExam(MOCK_EXAMS[examType], locale), [examType, locale])
+  const resultDisplay = useMemo(
+    () => scoreResult && deriveMathMockResultDisplay(scoreResult, exam, locale),
+    [exam, locale, scoreResult],
+  )
 
   useEffect(() => {
     if (!isStarted) return
@@ -61,7 +101,6 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
 
   const handleSubmit = useCallback(() => {
     let correct = 0
-    const weakList: string[] = []
     const wrongQIds: string[] = []
 
     exam.questions.forEach((q, idx) => {
@@ -82,13 +121,11 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
       if (qCorrect) {
         correct++
       } else {
-        weakList.push(q.title)
         wrongQIds.push(q.id)
       }
     })
 
     const pct = Math.round((correct / exam.questions.length) * 100)
-    const scale = practiceScoreLabel(correct, exam.questions.length)
 
     // 自動將錯題寫入 LocalStorage
     try {
@@ -107,8 +144,7 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
       correctCount: correct,
       totalCount: exam.questions.length,
       percentage: pct,
-      scaleGrade: scale,
-      weakStrands: weakList,
+      wrongQuestionIds: wrongQIds,
     })
     setIsFinished(true)
     recordMockScore(examType, pct)
@@ -143,7 +179,7 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
   }
 
   return (
-    <div className="math-mock-shell" lang="zh-Hant">
+    <div className="math-mock-shell" lang={locale}>
       {!isStarted ? (
         <div className="mock-intro-card">
           <div className="mock-nav-tabs">
@@ -153,7 +189,7 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
               aria-pressed={examType === 'elementary'}
               onClick={() => setExamType('elementary')}
             >
-              國小練習卷
+              {copy('國小練習卷', 'Elementary practice')}
             </button>
             <button
               type="button"
@@ -161,7 +197,7 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
               aria-pressed={examType === 'cap'}
               onClick={() => setExamType('cap')}
             >
-              國中練習卷
+              {copy('國中練習卷', 'Junior high practice')}
             </button>
             <button
               type="button"
@@ -169,7 +205,7 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
               aria-pressed={examType === 'gsat'}
               onClick={() => setExamType('gsat')}
             >
-              高中練習卷
+              {copy('高中練習卷', 'Senior high practice')}
             </button>
           </div>
 
@@ -178,24 +214,24 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
             <p className="mock-sub">{exam.subtitle}</p>
             <div className="exam-meta-grid">
               <div className="meta-cell">
-                <span>適合學段</span>
+                <span>{copy('適合學段', 'Target grades')}</span>
                 <strong>{exam.targetGrade}</strong>
               </div>
               <div className="meta-cell">
-                <span>測驗題數</span>
-                <strong>{exam.questions.length} 題</strong>
+                <span>{copy('測驗題數', 'Questions')}</span>
+                <strong>{exam.questions.length} {copy('題', 'questions')}</strong>
               </div>
               <div className="meta-cell">
-                <span>評分標準</span>
+                <span>{copy('評分標準', 'Scoring')}</span>
                 <strong>{exam.gradingScale}</strong>
               </div>
             </div>
             <div className="mock-actions">
               <button type="button" className="btn-primary btn-start-exam" onClick={handleStart}>
-                開始練習卷
+                {copy('開始練習卷', 'Start practice')}
               </button>
               <button type="button" className="btn-back" onClick={onExit}>
-                返回今日學習
+                {copy('返回今日學習', 'Back to today')}
               </button>
             </div>
           </div>
@@ -226,7 +262,7 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
                 style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}
                 onClick={() => setIsTimerRunning(!isTimerRunning)}
               >
-                {isTimerRunning ? '⏸️ 暫停' : '▶️ 繼續'}
+                {isTimerRunning ? copy('⏸️ 暫停', '⏸️ Pause') : copy('▶️ 繼續', '▶️ Resume')}
               </button>
             </div>
           </div>
@@ -287,7 +323,9 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
             {exam.questions.map((q, idx) => (
               <div key={q.id} id={`math-mock-q-${idx}`} className="mock-q-item" role="group" tabIndex={-1} aria-labelledby={`math-mock-number-${idx}`}>
                 <div className="mock-q-num" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span id={`math-mock-number-${idx}`}>第 {idx + 1} 題（難度 ★{q.difficulty}）</span>
+                  <span id={`math-mock-number-${idx}`}>
+                    {copy(`第 ${idx + 1} 題（難度 ★${q.difficulty}）`, `Question ${idx + 1} (difficulty ★${q.difficulty})`)}
+                  </span>
                   <button
                     type="button"
                     onClick={() => setFlagged((prev) => ({ ...prev, [idx]: !prev[idx] }))}
@@ -303,9 +341,9 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
                       fontWeight: 600,
                       transition: 'all 0.15s ease',
                     }}
-                    title={flagged[idx] ? '點擊取消標記' : '點擊標記此題為不確定'}
+                    title={flagged[idx] ? copy('點擊取消標記', 'Remove flag') : copy('點擊標記此題為不確定', 'Flag this question as uncertain')}
                   >
-                    {flagged[idx] ? '🚩 已標記' : '🏳️ 標記'}
+                    {flagged[idx] ? copy('🚩 已標記', '🚩 Flagged') : copy('🏳️ 標記', '🏳️ Flag')}
                   </button>
                 </div>
                 <div id={`math-mock-prompt-${idx}`} className="mock-q-text">
@@ -334,7 +372,7 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
                     <input
                       type="text"
                       aria-labelledby={`math-mock-number-${idx} math-mock-prompt-${idx}`}
-                      placeholder="請輸入答案"
+                      placeholder={copy('請輸入答案', 'Enter your answer')}
                       value={answers[idx] || ''}
                       onChange={(e) => handleFillAnswer(idx, e.target.value)}
                       className="fill-text-input"
@@ -347,17 +385,17 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
 
           <div className="mock-footer-bar">
             <button type="button" className="btn-secondary" onClick={() => setIsStarted(false)}>
-              放棄交卷
+              {copy('放棄交卷', 'Exit without submitting')}
             </button>
             <button type="button" className="btn-primary" onClick={handleSubmit}>
-              交卷評分 📝
+              {copy('交卷評分 📝', 'Submit for scoring 📝')}
             </button>
           </div>
         </div>
       ) : (
         <div className="mock-result-card">
           <div className="result-header">
-            <h3 ref={resultHeadingRef} tabIndex={-1}>{exam.title} · 答對紀錄</h3>
+            <h3 ref={resultHeadingRef} tabIndex={-1}>{exam.title} · {copy('答對紀錄', 'Result')}</h3>
           </div>
 
           <div className="score-hero">
@@ -366,17 +404,17 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
               <span className="score-unit">%</span>
             </div>
             <div className="scale-result">
-              <span className="scale-label">這一卷：</span>
-              <strong className="scale-badge">{scoreResult?.scaleGrade}</strong>
-              <p>答對 {scoreResult?.correctCount} / {scoreResult?.totalCount} 題</p>
+              <span className="scale-label">{copy('這一卷：', 'This paper:')}</span>
+              <strong className="scale-badge">{resultDisplay?.scaleGrade}</strong>
+              <p>{copy(`答對 ${scoreResult?.correctCount} / ${scoreResult?.totalCount} 題`, `Correct ${scoreResult?.correctCount} of ${scoreResult?.totalCount}`)}</p>
             </div>
           </div>
 
-          {scoreResult && scoreResult.weakStrands.length > 0 && (
+          {resultDisplay && resultDisplay.weakStrands.length > 0 && (
             <div className="weakness-box">
-              <h4>🎯 弱點觀念複習建議：</h4>
+              <h4>🎯 {copy('弱點觀念複習建議：', 'Topics to review:')}</h4>
               <ul>
-                {scoreResult.weakStrands.map((w, i) => (
+                {resultDisplay.weakStrands.map((w, i) => (
                   <li key={i}>{w}</li>
                 ))}
               </ul>
@@ -385,10 +423,10 @@ export const MathMockExam: React.FC<Props> = ({ onExit }) => {
 
           <div className="result-actions">
             <button type="button" className="btn-primary" onClick={() => setIsStarted(false)}>
-              再測一次
+              {copy('再測一次', 'Try again')}
             </button>
             <button type="button" className="btn-back" onClick={onExit}>
-              返回學習中心
+              {copy('返回學習中心', 'Back to learning center')}
             </button>
           </div>
         </div>

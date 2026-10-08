@@ -84,3 +84,22 @@ export const START_OF_WINTER_DIALOGUES: StartOfWinterDialogueItem[] = [
     ],
   },
 ]
+
+export const CHINESE_SUPPORT_EN = {
+  "台灣立冬補冬：騎樓炭火薑母鴨、麵線拌鴨油、沾濃郁豆腐乳醬": "Start of Winter in Taiwan: Charcoal Ginger Duck, Duck-Oil Noodles, and Fermented-Tofu Sauce",
+  "台湾の立冬「補冬（冬の滋養強壮）」：炭火生姜鴨鍋（薑母鴨）・アヒル油の素麺・豆腐乳タレ": "Taiwan's Start-of-Winter Nourishment: Ginger Duck, Duck-Oil Noodles, and Fermented-Tofu Sauce",
+  "立冬の夜、湯気と活気に満ちた軒先（騎樓）の炭火生姜鴨鍋（薑母鴨）専門店": "A lively open-front ginger-duck restaurant on the night of the Start of Winter",
+  "台湾のグルメ通": "Taiwanese food enthusiast",
+  "今日は二十四節気の「立冬」！台湾には「立冬補冬、補嘴空（立冬に滋養食を食べて口と体を満たす）」ということわざがあって、薬膳のご馳走で一年の労をねぎらうんだ！今夜は絶対「炭火生姜鴨鍋（薑母鴨）」だよ！": "Today is the Start of Winter, one of the twenty-four solar terms. A Taiwan saying encourages nourishing the body at this time, so people reward a year's hard work with restorative dishes. Tonight calls for ginger duck over charcoal.",
+  "日本のグルメ好き": "Japanese food enthusiast",
+  "土鍋の下は本物の赤泥炭火コンロですね！スープから黒胡麻油、ひね生姜（老薑）、米酒の香ばしい香りが漂って食欲をそそります！": "There is a real red-clay charcoal stove under the pot. The aromas of dark sesame oil, mature ginger, and rice wine make the broth irresistible.",
+  "バリケン鴨（紅面番鴨）の引き締まった肉質を、特製の「ピリ辛豆腐乳（発酵豆腐タレ）」にディップするのが一番の醍醐味！アヒル油と揚げニンニクを絡めた「手打ち素麺（麵線）」を食べれば、つま先までポカポカだよ！": "The highlight is dipping firm Muscovy-duck meat into the house mildly spicy fermented-tofu sauce. Hand-pulled thin noodles tossed with duck fat and fried garlic will warm you from head to toe.",
+  "立冬の滋養強壮習慣（本格的な冬の到来に備え、温熱性の鍋料理を食べる風習）": "The custom of eating warming, nourishing food at the Start of Winter",
+  "薑母鴨のほか、麻油雞（鶏肉の胡麻油煮）や羊肉爐（羊肉鍋）の店に行列ができる。": "Restaurants serving ginger duck, sesame-oil chicken, and lamb hotpot often draw long lines.",
+  "生姜鴨鍋（老薑・黒胡麻油・米酒・漢方生薬で鴨肉を炒め煮込んだ台湾の代表的冬鍋）": "Ginger duck, a classic winter hotpot of duck simmered with mature ginger, dark sesame oil, rice wine, and herbs",
+  "「薑母」とは栽培後数年経った辛味と薬効の強い「ひね生姜」のこと。": "The term jiangmu refers to mature ginger prized for its stronger heat and flavour.",
+  "発酵豆腐だれ（チーズのように濃厚でまろやかな薑母鴨・羊肉爐必須のつけダレ）": "A rich, mellow fermented-tofu dipping sauce commonly served with ginger duck and lamb hotpot",
+  "甘みとコクがあり、唐辛子醤油（辣椒醬油）とお好みでブレンドして食べる。": "Its sweet, savoury richness can be blended with chilli soy sauce to taste.",
+  "アヒル油和え素麺（茹でたて極細素麺に鍋の鴨油・フライドオニオン・刻みニンニクを絡めた定番主食）": "Fine noodles tossed with duck fat, fried shallots, and chopped garlic",
+  "鍋が煮立つまでの間にまず注文して空腹を満たすのが台湾ローカルの通な頼み方。": "Regulars often order the noodles first to eat while waiting for the hotpot to boil.",
+} as const

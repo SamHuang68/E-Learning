@@ -1,4 +1,8 @@
 import React, { useState, useMemo } from 'react'
+import { PERIODIC_TABLE_ELEMENTS } from '../data/interactiveTools'
+import { useI18n } from '../../i18n/i18n'
+import { pickUi } from '../../i18n/pickUi'
+import { formatPeriodicTrendQuiz } from './periodicTrendQuiz'
 
 interface ElementData {
   z: number
@@ -54,15 +58,17 @@ const ELEMENTS: ElementData[] = [
   { z: 36, sym: 'Kr', name: '氪', period: 4, group: 18, mass: 83.80, en: 0, r: 88, config: '[Ar] 3d¹⁰ 4s² 4p⁶', shells: [2, 8, 18, 8], type: 'noble', valElectrons: 8 },
 ]
 
-const TYPE_COLORS: Record<string, { bg: string; border: string; text: string; label: string }> = {
-  alkali: { bg: '#ef444422', border: '#ef4444', text: '#f87171', label: '鹼金屬' },
-  alkaline: { bg: '#f59e0b22', border: '#f59e0b', text: '#fbbf24', label: '鹼土金屬' },
-  transition: { bg: '#8b5cf622', border: '#8b5cf6', text: '#a78bfa', label: '過渡金屬' },
-  metal: { bg: '#3b82f622', border: '#3b82f6', text: '#60a5fa', label: '主族金屬' },
-  metalloid: { bg: '#10b98122', border: '#10b981', text: '#34d399', label: '類金屬' },
-  nonmetal: { bg: '#06b6d422', border: '#06b6d4', text: '#22d3ee', label: '非金屬' },
-  halogen: { bg: '#ec489922', border: '#ec4899', text: '#f472b6', label: '鹵素' },
-  noble: { bg: '#64748b22', border: '#64748b', text: '#94a3b8', label: '鈍氣' },
+const PERIODIC_ELEMENT_BY_Z = new Map(PERIODIC_TABLE_ELEMENTS.map((element) => [element.atomicNumber, element]))
+
+const TYPE_COLORS: Record<string, { bg: string; border: string; text: string; label: string; labelEn: string }> = {
+  alkali: { bg: '#ef444422', border: '#ef4444', text: '#f87171', label: '鹼金屬', labelEn: 'Alkali metals' },
+  alkaline: { bg: '#f59e0b22', border: '#f59e0b', text: '#fbbf24', label: '鹼土金屬', labelEn: 'Alkaline-earth metals' },
+  transition: { bg: '#8b5cf622', border: '#8b5cf6', text: '#a78bfa', label: '過渡金屬', labelEn: 'Transition metals' },
+  metal: { bg: '#3b82f622', border: '#3b82f6', text: '#60a5fa', label: '主族金屬', labelEn: 'Main-group metals' },
+  metalloid: { bg: '#10b98122', border: '#10b981', text: '#34d399', label: '類金屬', labelEn: 'Metalloids' },
+  nonmetal: { bg: '#06b6d422', border: '#06b6d4', text: '#22d3ee', label: '非金屬', labelEn: 'Nonmetals' },
+  halogen: { bg: '#ec489922', border: '#ec4899', text: '#f472b6', label: '鹵素', labelEn: 'Halogens' },
+  noble: { bg: '#64748b22', border: '#64748b', text: '#94a3b8', label: '鈍氣', labelEn: 'Noble gases' },
 }
 
 /**
@@ -70,6 +76,12 @@ const TYPE_COLORS: Record<string, { bg: string; border: string; text: string; la
  * 涵蓋原子序 1~36 元素電子組態、波耳原子模型電子軌域分佈、電負度與共價半徑週期律。
  */
 export const PeriodicTableLab: React.FC = () => {
+  const { locale } = useI18n()
+  const copy = (zhHant: string, en: string) => pickUi(locale, zhHant, en)
+  const elementName = (element: ElementData) => copy(
+    element.name,
+    PERIODIC_ELEMENT_BY_Z.get(element.z)?.name ?? element.sym,
+  )
   const [selectedZ, setSelectedZ] = useState<number>(6) // 預設碳 (C, Z=6)
   const [filterType, setFilterType] = useState<string>('all')
 
@@ -88,15 +100,18 @@ export const PeriodicTableLab: React.FC = () => {
   const shellRadii = [22, 38, 54, 70] // K, L, M, N 軌域半徑
 
   return (
-    <div className="math-lab chemistry-lab periodic-table-lab" style={{ width: '100%', maxWidth: '100%', minWidth: 0 }}>
+    <div lang={locale} className="math-lab chemistry-lab periodic-table-lab" style={{ width: '100%', maxWidth: '100%', minWidth: 0 }}>
       {/* 頂部標題 */}
       <div className="lab-header" style={{ marginBottom: '0.6rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.05rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>🔬</span> 元素週期律與波耳原子模型探測器 (Periodic Table Lab)
+            <span>🔬</span> {copy('元素週期律與波耳原子模型探測器', 'Periodic Trends and Bohr Atom Explorer')}
           </h3>
           <p className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            週期表橫列為「週期」（同週期電子層數相同），縱行「族」（同族價電子數相同，化學性質相似）。
+            {copy(
+              '週期表橫列為「週期」（同週期電子層數相同），縱行「族」（同族價電子數相同，化學性質相似）。',
+              'Rows in the periodic table are periods (with the same number of electron shells); columns are groups (with the same number of valence electrons and similar chemical properties).',
+            )}
           </p>
         </div>
       </div>
@@ -104,7 +119,7 @@ export const PeriodicTableLab: React.FC = () => {
       {/* 經典族群與週期性快照 */}
       <div style={{ marginBottom: '0.6rem' }}>
         <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--muted)', display: 'block', marginBottom: '0.25rem' }}>
-          ⚡ 經典主族與週期規律快照：
+          ⚡ {copy('經典主族與週期規律快照：', 'Key Groups and Periodic-Trend Snapshots:')}
         </span>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.3rem' }}>
           <button
@@ -123,8 +138,8 @@ export const PeriodicTableLab: React.FC = () => {
               fontWeight: 700,
             }}
           >
-            🔥 <strong>1A 鹼金屬族 (Na)</strong>
-            <div style={{ fontSize: '0.62rem', color: 'var(--muted)', fontWeight: 400 }}>價電子 1 · 還原力強</div>
+            🔥 <strong>{copy('1A 鹼金屬族 (Na)', 'Group 1A Alkali Metals (Na)')}</strong>
+            <div style={{ fontSize: '0.62rem', color: 'var(--muted)', fontWeight: 400 }}>{copy('價電子 1 · 還原力強', '1 valence electron · strong reducing power')}</div>
           </button>
           <button
             type="button"
@@ -142,8 +157,8 @@ export const PeriodicTableLab: React.FC = () => {
               fontWeight: 700,
             }}
           >
-            ⚡ <strong>7A 鹵素族 (F)</strong>
-            <div style={{ fontSize: '0.62rem', color: 'var(--muted)', fontWeight: 400 }}>電負度 3.98 · 氧化力極強</div>
+            ⚡ <strong>{copy('7A 鹵素族 (F)', 'Group 7A Halogens (F)')}</strong>
+            <div style={{ fontSize: '0.62rem', color: 'var(--muted)', fontWeight: 400 }}>{copy('電負度 3.98 · 氧化力極強', 'Electronegativity 3.98 · very strong oxidizing power')}</div>
           </button>
           <button
             type="button"
@@ -161,8 +176,8 @@ export const PeriodicTableLab: React.FC = () => {
               fontWeight: 700,
             }}
           >
-            👑 <strong>8A 鈍氣族 (Ne)</strong>
-            <div style={{ fontSize: '0.62rem', color: 'var(--muted)', fontWeight: 400 }}>八隅體滿殼層 · 穩定極高</div>
+            👑 <strong>{copy('8A 鈍氣族 (Ne)', 'Group 8A Noble Gases (Ne)')}</strong>
+            <div style={{ fontSize: '0.62rem', color: 'var(--muted)', fontWeight: 400 }}>{copy('八隅體滿殼層 · 穩定極高', 'Complete octet shell · extremely stable')}</div>
           </button>
           <button
             type="button"
@@ -180,8 +195,8 @@ export const PeriodicTableLab: React.FC = () => {
               fontWeight: 700,
             }}
           >
-            💎 <strong>第二週期核心 (C)</strong>
-            <div style={{ fontSize: '0.62rem', color: 'var(--muted)', fontWeight: 400 }}>價電子 4 · 共價有機核心</div>
+            💎 <strong>{copy('第二週期核心 (C)', 'Period 2 Core Element (C)')}</strong>
+            <div style={{ fontSize: '0.62rem', color: 'var(--muted)', fontWeight: 400 }}>{copy('價電子 4 · 共價有機核心', '4 valence electrons · covalent core of organic chemistry')}</div>
           </button>
         </div>
       </div>
@@ -195,7 +210,7 @@ export const PeriodicTableLab: React.FC = () => {
           aria-pressed={filterType === 'all'}
           onClick={() => setFilterType('all')}
         >
-          全部 (1~36)
+          {copy('全部 (1~36)', 'All (1–36)')}
         </button>
         {Object.entries(TYPE_COLORS).map(([key, meta]) => (
           <button
@@ -206,7 +221,7 @@ export const PeriodicTableLab: React.FC = () => {
             aria-pressed={filterType === key}
             onClick={() => setFilterType(key)}
           >
-            {meta.label}
+            {copy(meta.label, meta.labelEn)}
           </button>
         ))}
       </div>
@@ -227,7 +242,9 @@ export const PeriodicTableLab: React.FC = () => {
           className="elements-mini-grid"
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(42px, 1fr))',
+            gridTemplateColumns: locale === 'en'
+              ? 'repeat(auto-fill, minmax(72px, 1fr))'
+              : 'repeat(auto-fill, minmax(42px, 1fr))',
             gap: '0.3rem',
             background: 'linear-gradient(180deg, #0b1329 0%, #0f172a 100%)',
             padding: '0.6rem',
@@ -263,7 +280,7 @@ export const PeriodicTableLab: React.FC = () => {
               >
                 <span style={{ fontSize: '0.58rem', color: '#94a3b8', lineHeight: 1 }}>{el.z}</span>
                 <strong style={{ fontSize: '0.85rem', lineHeight: 1.1 }}>{el.sym}</strong>
-                <span style={{ fontSize: '0.62rem', color: isSel ? '#fff' : typeMeta.text, lineHeight: 1 }}>{el.name}</span>
+                <span style={{ fontSize: '0.62rem', color: isSel ? '#fff' : typeMeta.text, lineHeight: 1 }}>{elementName(el)}</span>
               </button>
             )
           })}
@@ -316,7 +333,7 @@ export const PeriodicTableLab: React.FC = () => {
             <div style={{ minWidth: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                 <h4 style={{ margin: 0, fontSize: '1rem', whiteSpace: 'nowrap' }}>
-                  {current.name} ({current.sym})
+                  {elementName(current)} ({current.sym})
                 </h4>
                 <span
                   style={{
@@ -329,14 +346,14 @@ export const PeriodicTableLab: React.FC = () => {
                     fontWeight: 600,
                   }}
                 >
-                  {currentTypeMeta.label}
+                  {copy(currentTypeMeta.label, currentTypeMeta.labelEn)}
                 </span>
               </div>
               <p style={{ margin: '0.15rem 0 0', fontSize: '0.72rem', color: 'var(--muted)' }}>
-                原子序 {current.z} · 原子量 {current.mass}
+                {copy(`原子序 ${current.z} · 原子量 ${current.mass}`, `Atomic number ${current.z} · atomic mass ${current.mass}`)}
               </p>
               <p style={{ margin: '0.15rem 0 0', fontSize: '0.72rem', color: '#2563eb', fontFamily: 'monospace', fontWeight: 600 }}>
-                {current.config} (層: {current.shells.join('-')})
+                {current.config} ({copy('層', 'shells')}: {current.shells.join('-')})
               </p>
             </div>
           </div>
@@ -355,21 +372,21 @@ export const PeriodicTableLab: React.FC = () => {
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: 'var(--muted)' }}>週期 / 族：</span>
-              <strong>第 {current.period} 週期 · 第 {current.group} 族</strong>
+              <span style={{ color: 'var(--muted)' }}>{copy('週期 / 族：', 'Period / group:')}</span>
+              <strong>{copy(`第 ${current.period} 週期 · 第 ${current.group} 族`, `Period ${current.period} · Group ${current.group}`)}</strong>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: 'var(--muted)' }}>價電子數 (Valence)：</span>
-              <strong style={{ color: '#2563eb' }}>{current.valElectrons} 個</strong>
+              <span style={{ color: 'var(--muted)' }}>{copy('價電子數：', 'Valence electrons:')}</span>
+              <strong style={{ color: '#2563eb' }}>{copy(`${current.valElectrons} 個`, `${current.valElectrons}`)}</strong>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: 'var(--muted)' }}>電負度 (Pauling EN)：</span>
+              <span style={{ color: 'var(--muted)' }}>{copy('電負度 (Pauling EN)：', 'Electronegativity (Pauling EN):')}</span>
               <strong style={{ color: current.en > 0 ? '#10b981' : 'var(--muted)' }}>
-                {current.en > 0 ? current.en.toFixed(2) : '無 (鈍氣惰性)'}
+                {current.en > 0 ? current.en.toFixed(2) : copy('無 (鈍氣惰性)', 'None (inert noble gas)')}
               </strong>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: 'var(--muted)' }}>共價原子半徑：</span>
+              <span style={{ color: 'var(--muted)' }}>{copy('共價原子半徑：', 'Covalent atomic radius:')}</span>
               <strong style={{ color: '#f59e0b' }}>{current.r} pm</strong>
             </div>
           </div>
@@ -378,23 +395,25 @@ export const PeriodicTableLab: React.FC = () => {
 
       {/* Periodic Trend Quiz with high-quality distractors (common misconceptions) */}
       <div style={{ marginTop: '1rem', padding: '0.75rem', background: 'var(--surface-soft)', borderRadius: '8px', border: '1px solid var(--line)' }}>
-        <h4 style={{ margin: '0 0 0.5rem', fontSize: '0.95rem' }}>週期性質測驗 (Periodic Trend Quiz) — 提升干擾項品質</h4>
+        <h4 style={{ margin: '0 0 0.5rem', fontSize: '0.95rem' }}>{copy('週期性質測驗', 'Periodic Trend Quiz')}</h4>
         <p style={{ fontSize: '0.72rem', color: 'var(--muted)', margin: '0 0 0.5rem' }}>
-          測試同週期/同族趨勢：原子半徑 (radius ↓ across period, ↑ down group)、電負度 (EN ↑ across, ↓ down)。干擾項針對常見錯誤設計 (反向趨勢、混淆族/週期、半徑與EN混淆)。
+          {copy(
+            '測試同週期／同族趨勢：原子半徑（同週期向右遞減、同族向下遞增）；電負度（同週期向右遞增、同族向下遞減）。選項會檢查反向趨勢、族與週期混淆，以及半徑與電負度混淆。',
+            'Test trends within periods and groups: atomic radius decreases across a period and increases down a group; electronegativity increases across a period and decreases down a group. The choices target common misconceptions about direction, groups versus periods, and radius versus electronegativity.',
+          )}
         </p>
         <button
           type="button"
-          onClick={() => {
-            const q = '在第 3 週期中，哪個元素共價原子半徑最大？ (Which element has the largest covalent atomic radius in Period 3?)';
-            const opts = ['A. Cl (氯) — 反向趨勢陷阱', 'B. Na (鈉) — 正確 (左側金屬)', 'C. Ar (氬) — 惰性氣體邊緣陷阱', 'D. S (硫) — 混淆 EN 趨勢'];
-            alert(q + '\n\nOptions (high-quality distractors):\n' + opts.join('\n') + '\n\nCorrect: B (radius decreases left→right; Na largest in period).');
-          }}
+          onClick={() => alert(formatPeriodicTrendQuiz(locale))}
           style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem', background: '#2563eb', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
         >
-          開始測驗 Start Quiz (示例：原子半徑趨勢)
+          {copy('開始測驗（原子半徑趨勢）', 'Start Quiz (Atomic-Radius Trend)')}
         </button>
         <div style={{ fontSize: '0.65rem', color: 'var(--muted)', marginTop: '0.4rem' }}>
-          Distractor quality improved: options now include 1 correct + 3 misconception-based (reverse trend, property confusion, edge case like noble gases). Bilingual zh-Hant/en strings added.
+          {copy(
+            '一個正確選項搭配三個常見迷思選項：反向趨勢、性質混淆與鈍氣邊界案例。',
+            'One correct choice is paired with three misconception-based distractors: a reversed trend, a property mix-up, and a noble-gas edge case.',
+          )}
         </div>
       </div>
     </div>

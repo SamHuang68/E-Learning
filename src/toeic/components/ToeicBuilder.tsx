@@ -11,6 +11,31 @@ import { useI18n } from '../../i18n/i18n'
 import { buildPrompt } from '../buildPrompt'
 import { localizeToeicCertificate } from '../../i18n/toeicCertificateCopy'
 import { toeicBuilderCopy } from '../../i18n/toeicBuilderCopy'
+import type { UiLocale } from '../../i18n/locale'
+
+type ToeicBuilderStatus =
+  | { code: 'prompt-generated' }
+  | { code: 'prompt-updated-and-copied' }
+  | { code: 'preset-saved'; presetName: string }
+  | { code: 'template-applied'; templateId: string }
+  | null
+
+function formatToeicBuilderStatus(status: ToeicBuilderStatus, locale: UiLocale): string {
+  if (!status) return ''
+  switch (status.code) {
+    case 'prompt-generated':
+      return toeicBuilderCopy(locale, '已產生本地提示詞')
+    case 'prompt-updated-and-copied':
+      return toeicBuilderCopy(locale, '已更新並複製')
+    case 'preset-saved':
+      return `Saved ${status.presetName}`
+    case 'template-applied': {
+      const template = toeicTemplates.find((item) => item.id === status.templateId)
+      if (!template) return ''
+      return `${locale === 'en' ? 'Applied' : '已套用'} ${locale === 'en' ? template.titleEn : template.title}`
+    }
+  }
+}
 
 export function ToeicBuilder() {
   const { locale } = useI18n()
@@ -19,7 +44,8 @@ export function ToeicBuilder() {
   const [prompt, setPrompt] = useState('')
   const [presetName, setPresetName] = useState('')
   const [presets, setPresets] = useState(() => loadToeicPresets())
-  const [status, setStatus] = useState('')
+  const [status, setStatus] = useState<ToeicBuilderStatus>(null)
+  const statusMessage = formatToeicBuilderStatus(status, locale)
 
   const cert = useMemo(
     () => {
@@ -72,7 +98,7 @@ export function ToeicBuilder() {
                   </button>
                 ))}
               </div>
-              <p className="hint">{cert?.audience}</p>
+              <p className="hint">{cert ? localizeToeicCertificate(cert, locale).audience : ''}</p>
             </div>
           </section>
 
@@ -170,7 +196,7 @@ export function ToeicBuilder() {
                 className="generate-empty"
                 onClick={() => {
                   setPrompt(buildPrompt(config, locale))
-                  setStatus(copy('已產生本地提示詞'))
+                  setStatus({ code: 'prompt-generated' })
                 }}
               >
                 <span className="spark">✦</span>
@@ -187,7 +213,7 @@ export function ToeicBuilder() {
                 onClick={() => {
                   setPrompt(buildPrompt(config, locale))
                   void navigator.clipboard.writeText(buildPrompt(config, locale))
-                  setStatus(copy('已更新並複製'))
+                  setStatus({ code: 'prompt-updated-and-copied' })
                 }}
               >
                 Regenerate & copy
@@ -208,7 +234,7 @@ export function ToeicBuilder() {
                 onClick={() => {
                   const name = presetName.trim() || config.topic.slice(0, 20)
                   setPresets(saveToeicPreset(name, config))
-                  setStatus(`Saved ${name}`)
+                  setStatus({ code: 'preset-saved', presetName: name })
                 }}
               >
                 Save
@@ -221,13 +247,13 @@ export function ToeicBuilder() {
                   type="button"
                   onClick={() => {
                     setConfig((c) => ({ ...c, ...t.config }))
-                    setStatus(`Applied ${copy(t.title)}`)
+                    setStatus({ code: 'template-applied', templateId: t.id })
                   }}
                 >
                   <i>{t.icon}</i>
                   <div>
-                    <strong>{copy(t.title)}</strong>
-                    <span>{copy(t.desc)}</span>
+                    <strong>{locale === 'en' ? t.titleEn : t.title}</strong>
+                    <span>{locale === 'en' ? t.descEn : t.desc}</span>
                   </div>
                 </button>
               ))}
@@ -238,7 +264,7 @@ export function ToeicBuilder() {
               </p>
             )}
           </section>
-          {status && <p className="status-line">{status}</p>}
+          {statusMessage && <p className="status-line">{statusMessage}</p>}
         </aside>
       </div>
     </section>

@@ -3,7 +3,9 @@
 > 🏛️ **Sam Huang 專案總入口**：[https://samhuang68.github.io/](https://samhuang68.github.io/)
 > 🌐 **E-Learning 線上體驗站**：[https://samhuang68.github.io/E-Learning/](https://samhuang68.github.io/E-Learning/)
 
-同一個 Vite / React 專案內整合 JLPT 日語、TOEIC 多益英語、台湾華語、臺灣 108 課綱數學、微積分、物理、化學與計算機概論。未登入可本機試用；登入後進度可同步至 Supabase。託管於 GitHub Pages（靜態站）。
+同一個 Vite / React 專案內整合 JLPT 日語、TOEIC 多益英語、臺灣華語、臺灣 108 課綱數學、微積分、物理、化學與計算機概論。未登入可本機試用；登入後進度可同步至 Supabase。託管於 GitHub Pages（靜態站）。
+
+發布產物沿用內容衍生的 precache `buildId` 識別；可讀修訂紀錄見 [`REVISION_HISTORY.md`](REVISION_HISTORY.md)。
 
 ## 功能成熟度
 
@@ -57,13 +59,13 @@ npm run build          # tsc + vite + generate-precache
 npm run verify:dist    # 缺 public audio／archify／content 或 Hub chunk 即失敗
 ```
 
-Round log：repo 沒有獨立 round-log 檔。以 `main` 上 `Rnn:` squash 標題為準：
+可讀版本紀錄保存在 [`REVISION_HISTORY.md`](REVISION_HISTORY.md)；歷史 round 仍可由 `main` 上的提交標題追溯：
 
 ```bash
 git log --oneline -12
 ```
 
-`verify:schema` 輸出含 `hostedCloudRequired: false`（未設 env 時 App 仍是本機）。`verify:dist` 必須先 `build`。oxlint 目前允許 Hub／i18n 的 `only-export-components` 警告；**errors 必須為 0**。
+`verify:schema` 輸出含 `hostedCloudRequired: false`（未設 env 時 App 仍是本機）。`verify:dist` 必須先 `build`。oxlint 的 errors 與 warnings 都必須為 `0`；React Fast Refresh 的元件邊界也在這個門檻內。
 
 ## 本機（離線）帳號後端
 

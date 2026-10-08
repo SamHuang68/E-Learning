@@ -7,6 +7,7 @@ export interface AntitrustHhiScenarioItem {
   id: string
   title: string
   titleJa: string
+  titleEn: string
   icon: string
   targetAccent: 'en-US' | 'en-GB' | 'en-AU' | 'en-CA'
   accentLabel: string
@@ -23,8 +24,10 @@ export interface AntitrustHhiScenarioItem {
     correctIndex: number
     explanationZh: string
     explanationJa: string
+    explanationEn: string
   }>
   antitrustHhiKeywordsTipsJa: string
+  antitrustHhiKeywordsTipsEn: string
 }
 
 export const ANTITRUST_HHI_SCENARIOS: AntitrustHhiScenarioItem[] = [
@@ -32,6 +35,7 @@ export const ANTITRUST_HHI_SCENARIOS: AntitrustHhiScenarioItem[] = [
     id: 'antitrust-hhi-merger-review',
     title: '電信巨頭合併案反壟斷審查：HHI 指數激增 340 點與司法部訴訟風險',
     titleJa: '通信大手合併の反トラスト審査：HHI指数340ポイント急増と司法省の提訴リスク',
+    titleEn: 'Telecom Merger Review: HHI Increase and Department of Justice Litigation Risk',
     icon: '📊',
     targetAccent: 'en-US',
     accentLabel: '美式口音 🇺🇸',
@@ -54,6 +58,7 @@ export const ANTITRUST_HHI_SCENARIOS: AntitrustHhiScenarioItem[] = [
         correctIndex: 1,
         explanationZh: 'Marcus 指出基準 HHI 已達 1950（高度集中），而合併後 HHI 增幅遠超過引發反競爭假定的 100 點門檻（`well above the hundred-point threshold that triggers an automatic presumption of anticompetitive harm`）。',
         explanationJa: 'すでに高度に集中した市場（HHI 1,950）において、合併によるHHIの増加が規制上の基準値（100ポイント）を大幅に超過したためです。',
+        explanationEn: 'The market already has a baseline HHI of 1,950, and the merger would raise it by far more than the one-hundred-point threshold that triggers a presumption of anticompetitive harm.',
       },
       {
         id: 'hhi-2',
@@ -68,8 +73,10 @@ export const ANTITRUST_HHI_SCENARIOS: AntitrustHhiScenarioItem[] = [
         correctIndex: 0,
         explanationZh: 'Eleanor 提議透過「propose substantial structural divestitures of our regional wireless spectrum holdings（承諾實質結構性剝離部分區域無線頻譜資產）」以化解司法部的阻擋。',
         explanationJa: '「地域的な無線周波数帯の保有資産を大幅に構造的売却・分離（structural divestitures）すること」を提案しています。',
+        explanationEn: 'Eleanor proposes substantial structural divestitures of regional wireless-spectrum holdings to address the Department of Justice\'s concerns.',
       },
     ],
     antitrustHhiKeywordsTipsJa: 'TOEICでは「Herfindahl-Hirschman Index / HHI（市場集中度指数）」「Department of Justice / DOJ（米司法省反トラスト局）」「preliminary injunction（仮差止命令）」「structural divestiture（構造的資産売却・事業分離）」「market share（市場占有率）」が頻出です。',
+    antitrustHhiKeywordsTipsEn: 'Key TOEIC terms here are Herfindahl-Hirschman Index (HHI), Department of Justice (DOJ), preliminary injunction, structural divestiture, and market share.',
   },
 ]

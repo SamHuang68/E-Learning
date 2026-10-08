@@ -1,5 +1,3 @@
-import { stemCatalogCopy } from '../i18n/stemCatalogCopy'
-import { stemVaultCopy } from '../i18n/stemVaultCopy'
 import React, { useState, useEffect } from 'react'
 import {
   type ChemistryGradeId,
@@ -27,6 +25,7 @@ import { SolubilityLab } from './labs/SolubilityLab'
 import { Breadcrumbs } from '../components/Breadcrumbs'
 import type { LangId } from '../utils/storage'
 import { useI18n } from '../i18n/i18n'
+import { localizeChemistryGrade } from './locale/content'
 
 type Props = {
   onBackHub: () => void
@@ -71,7 +70,8 @@ export const ChemistryApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
     return () => window.removeEventListener('e-learning:progress-hydrated', refresh)
   }, [])
 
-  const gradeInfo = getChemistryGradeInfo(currentGradeId)
+  const rawGradeInfo = getChemistryGradeInfo(currentGradeId)
+  const gradeInfo = localizeChemistryGrade(rawGradeInfo, locale)
   const currentUnit = gradeInfo.units.find((u) => u.id === currentUnitId) || gradeInfo.units[0]
 
   function persistSelection(gid: ChemistryGradeId, requestedUnitId: number) {
@@ -127,7 +127,7 @@ export const ChemistryApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
     { label: t('chemistry.brand'), onClick: () => setActiveNav('today') },
     { label: locale === 'en' ? gradeInfo.nameEn : gradeInfo.name, onClick: () => setActiveNav('today') },
     ...(activeNav === 'practice'
-      ? [{ label: t('chrome.unitNColon', { n: currentUnit.id, title: stemCatalogCopy(locale, currentUnit.title) }) }]
+      ? [{ label: t('chrome.unitNColon', { n: currentUnit.id, title: currentUnit.title }) }]
       : activeNav === 'mock'
       ? [{ label: t('chrome.mockCap') }]
       : activeNav === 'vault'
@@ -159,7 +159,7 @@ export const ChemistryApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         <header className="topbar">
           <div>
             <p className="eyebrow" style={{ color: '#059669' }}>
-              CHEMISTRY · {stemVaultCopy(locale, gradeInfo.band)} · {gradeInfo.nameEn}
+              CHEMISTRY · {gradeInfo.band} · {gradeInfo.nameEn}
             </p>
             <h1>{locale === 'en' ? gradeInfo.nameEn : gradeInfo.name}</h1>
           </div>
@@ -173,10 +173,10 @@ export const ChemistryApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
                 onChange={(e) => handleSelectGrade(e.target.value as ChemistryGradeId)}
               >
                 {(Object.keys(CHEMISTRY_GRADES) as ChemistryGradeId[]).map((gid) => {
-                  const info = CHEMISTRY_GRADES[gid]
+                  const info = localizeChemistryGrade(CHEMISTRY_GRADES[gid], locale)
                   return (
                     <option key={gid} value={gid}>
-                      {locale === 'en' ? info.nameEn : info.name}
+                      {info.name}
                     </option>
                   )
                 })}
@@ -192,7 +192,7 @@ export const ChemistryApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
               >
                 {gradeInfo.units.map((u) => (
                   <option key={u.id} value={u.id}>
-                    {t('chrome.unitNColon', { n: u.id, title: stemCatalogCopy(locale, u.title) })}
+                    {t('chrome.unitNColon', { n: u.id, title: u.title })}
                   </option>
                 ))}
               </select>
@@ -256,7 +256,7 @@ export const ChemistryApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         {activeNav === 'signals' && <ChemistrySignalsView />}
 
         {activeNav === 'labs' && (
-          <div className="chemistry-labs-showcase" lang="zh-Hant" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div className="chemistry-labs-showcase" lang={locale} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div
               className="chemistry-safety-banner"
               lang={locale}
@@ -285,7 +285,7 @@ export const ChemistryApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
                 className={`mock-tab ${labKey.includes('periodic') ? 'active' : ''}`}
                 onClick={() => setActiveLabId('periodic')}
               >
-                🔬 元素週期表探測器
+                {locale === 'en' ? '🔬 Periodic Table Explorer' : '🔬 元素週期表探測器'}
               </button>
               <button
                 type="button"
@@ -293,7 +293,7 @@ export const ChemistryApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
                 className={`mock-tab ${labKey.includes('vsepr') || labKey.includes('geometry') ? 'active' : ''}`}
                 onClick={() => setActiveLabId('vsepr')}
               >
-                📐 VSEPR 分子空間幾何
+                {locale === 'en' ? '📐 VSEPR Molecular Geometry' : '📐 VSEPR 分子空間幾何'}
               </button>
               <button
                 type="button"
@@ -301,7 +301,7 @@ export const ChemistryApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
                 className={`mock-tab ${labKey.includes('titration') || labKey.includes('acid') ? 'active' : ''}`}
                 onClick={() => setActiveLabId('titration')}
               >
-                🧪 酸鹼滴定與 pH 曲線
+                {locale === 'en' ? '🧪 Acid-Base Titration and pH Curve' : '🧪 酸鹼滴定與 pH 曲線'}
               </button>
               <button
                 type="button"
@@ -309,7 +309,7 @@ export const ChemistryApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
                 className={`mock-tab ${labKey.includes('gas') ? 'active' : ''}`}
                 onClick={() => setActiveLabId('gas')}
               >
-                🎈 理想氣體定律 PV=nRT
+                {locale === 'en' ? '🎈 Ideal Gas Law PV=nRT' : '🎈 理想氣體定律 PV=nRT'}
               </button>
               <button
                 type="button"
@@ -317,7 +317,7 @@ export const ChemistryApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
                 className={`mock-tab ${labKey.includes('solubility') || labKey.includes('solution') ? 'active' : ''}`}
                 onClick={() => setActiveLabId('solubility')}
               >
-                🧊 溶解度與結晶析出
+                {locale === 'en' ? '🧊 Solubility and Crystallization' : '🧊 溶解度與結晶析出'}
               </button>
             </div>
 

@@ -1,6 +1,8 @@
 ﻿import React, { useState } from 'react'
-import { DOUBLE_NINTH_DIALOGUES, type DoubleNinthDialogueItem } from '../data/doubleNinthZhDialogues'
+import { CHINESE_SUPPORT_EN, DOUBLE_NINTH_DIALOGUES, type DoubleNinthDialogueItem } from '../data/doubleNinthZhDialogues'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
+import { localizeChineseData } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
@@ -22,7 +24,15 @@ const SENIOR_TRADITIONS: SeniorTraditionItem[] = [
   { id: 'mountain-hiking', nameZh: '象山陽明山登高步道', nameJa: '秋晴れの登高ハイキング（象山）', icon: '⛰️', symbolZh: '秋高氣爽登高望遠！開闊胸襟避災厄、全家踏青舒暢！', symbolJa: '秋風爽やかな山歩き！厄を払い三世代で心身をリフレッシュ！' },
 ]
 
+const SENIOR_TRADITION_EN: Record<string, { name: string; symbol: string }> = {
+  'chrysanthemum-tea': { name: 'Tongluo chrysanthemum tea', symbol: 'Fragrant golden chrysanthemum tea from Tongluo, brewed as a wish for health and longevity.' },
+  'chongyang-cake': { name: 'Brown-sugar red-bean Chongyang cake', symbol: 'A soft rice cake whose name, 糕, sounds like 高, expressing a wish to rise step by step.' },
+  'elder-gift': { name: 'Double Ninth elder gift and gold pendant', symbol: 'A gift that thanks elders for their contributions and wishes them health and longevity.' },
+  'mountain-hiking': { name: 'Xiangshan or Yangmingshan hike', symbol: 'Climbing in clear autumn weather is associated with broad views, well-being, and avoiding misfortune.' },
+}
+
 export const DoubleNinthZhLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { locale } = useI18n()
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [activeTradId, setActiveTradId] = useState<string>('chrysanthemum-tea')
   const [isBrewingTea, setIsBrewingTea] = useState(false)
@@ -30,8 +40,11 @@ export const DoubleNinthZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
   const activeItem: DoubleNinthDialogueItem =
     DOUBLE_NINTH_DIALOGUES[selectedIdx % DOUBLE_NINTH_DIALOGUES.length]
+  const localizedItem = localizeChineseData(activeItem, locale, CHINESE_SUPPORT_EN)
+  const localizedDialogues = localizeChineseData(DOUBLE_NINTH_DIALOGUES, locale, CHINESE_SUPPORT_EN)
 
   const currentTrad = SENIOR_TRADITIONS.find((t) => t.id === activeTradId) || SENIOR_TRADITIONS[0]
+  const currentTradEn = SENIOR_TRADITION_EN[currentTrad.id]
 
   function speakChinese(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -61,10 +74,12 @@ export const DoubleNinthZhLab: React.FC<Props> = ({ onEarnXp }) => {
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>⛰️</span> 台灣九九重陽節登高與敬老尊賢實驗室 (Double Ninth Lab)
+            <span>⛰️</span> {locale === 'en' ? 'Taiwan Double Ninth Festival Lab' : '台灣九九重陽節登高與敬老尊賢實驗室 (Double Ninth Lab)'}
           </h3>
-          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            台湾の秋の伝統「九九重陽節」！「登高步道踏青・領敬老禮金・泡銅鑼杭菊茶吃重陽糕步步高升」を徹底マスター！
+          <p lang={locale === 'en' ? 'en' : 'ja'} className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+            {locale === 'en'
+              ? 'Practise Mandarin through Taiwan’s Double Ninth Festival: climb to a high place, honor elders, brew Tongluo chrysanthemum tea, and eat Chongyang cake.'
+              : '台湾の秋の伝統「九九重陽節」！「登高步道踏青・領敬老禮金・泡銅鑼杭菊茶吃重陽糕步步高升」を徹底マスター！'}
           </p>
         </div>
       </div>
@@ -88,14 +103,14 @@ export const DoubleNinthZhLab: React.FC<Props> = ({ onEarnXp }) => {
           <div style={{ fontSize: '1.8rem' }}>{hikingCompleted ? '⛰️ 🌤️' : isBrewingTea ? '🫖 🌼' : '🥮 🧧'}</div>
           <div>
             <strong style={{ fontSize: '0.9rem', display: 'block' }}>
-              重陽敬老民俗體驗：{currentTrad.nameZh}
+              {locale === 'en' ? `Double Ninth Tradition: ${currentTrad.nameZh}` : `重陽敬老民俗體驗：${currentTrad.nameZh}`}
             </strong>
             <span style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
               {hikingCompleted
-                ? '⛰️ 全家陪同長輩登上象山步道涼亭！眺望台北101遠景，舒展筋骨延年益壽！(+15 XP)'
+                ? locale === 'en' ? '⛰️ The family accompanies an elder to a Xiangshan trail pavilion and looks out toward Taipei 101. (+15 XP)' : '⛰️ 全家陪同長輩登上象山步道涼亭！眺望台北101遠景，舒展筋骨延年益壽！(+15 XP)'
                 : isBrewingTea
-                ? '🌼 熱水沖入透明玻璃壺，苗栗銅鑼杭菊朵朵綻放！茶湯金黃透亮，清香甘美明目降火！(+15 XP)'
-                : `${currentTrad.symbolZh}`}
+                ? locale === 'en' ? '🌼 Hot water opens the Tongluo chrysanthemum blossoms, producing a clear golden and fragrant tea. (+15 XP)' : '🌼 熱水沖入透明玻璃壺，苗栗銅鑼杭菊朵朵綻放！茶湯金黃透亮，清香甘美明目降火！(+15 XP)'
+                : locale === 'en' ? currentTradEn.symbol : currentTrad.symbolZh}
             </span>
           </div>
         </div>
@@ -111,7 +126,9 @@ export const DoubleNinthZhLab: React.FC<Props> = ({ onEarnXp }) => {
             }}
             onClick={handleBrewTea}
           >
-            {isBrewingTea ? '🌼 菊花茶沖泡完成' : '🫖 沖泡銅鑼杭菊茶 (+15 XP)'}
+            {isBrewingTea
+              ? locale === 'en' ? '🌼 Chrysanthemum tea brewed' : '🌼 菊花茶沖泡完成'
+              : locale === 'en' ? '🫖 Brew Tongluo chrysanthemum tea (+15 XP)' : '🫖 沖泡銅鑼杭菊茶 (+15 XP)'}
           </button>
           <button
             type="button"
@@ -123,7 +140,9 @@ export const DoubleNinthZhLab: React.FC<Props> = ({ onEarnXp }) => {
             }}
             onClick={handleCompleteHike}
           >
-            {hikingCompleted ? '✓ 登高踏青完成' : '⛰️ 陪伴長輩登高踏青 (+15 XP)'}
+            {hikingCompleted
+              ? locale === 'en' ? '✓ Climb completed' : '✓ 登高踏青完成'
+              : locale === 'en' ? '⛰️ Accompany an elder on a climb (+15 XP)' : '⛰️ 陪伴長輩登高踏青 (+15 XP)'}
           </button>
         </div>
       </div>
@@ -152,7 +171,7 @@ export const DoubleNinthZhLab: React.FC<Props> = ({ onEarnXp }) => {
             >
               <span style={{ fontSize: '1.4rem' }}>{trad.icon}</span>
               <strong style={{ fontSize: '0.78rem' }}>{trad.nameZh.slice(0, 6)}</strong>
-              <span style={{ fontSize: '0.66rem', color: 'var(--muted)' }}>{trad.nameJa.split('（')[0]}</span>
+              <span style={{ fontSize: '0.66rem', color: 'var(--muted)' }}>{locale === 'en' ? SENIOR_TRADITION_EN[trad.id].name : trad.nameJa.split('（')[0]}</span>
             </button>
           )
         })}
@@ -160,14 +179,14 @@ export const DoubleNinthZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
       {/* 場景切換膠囊 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
-        {DOUBLE_NINTH_DIALOGUES.map((item, idx) => (
+        {localizedDialogues.map((item, idx) => (
           <button aria-pressed={selectedIdx === idx}
             key={item.id}
             type="button"
             className={`pill-btn ${selectedIdx === idx ? 'active' : ''}`}
             onClick={() => setSelectedIdx(idx)}
           >
-            <span>{item.icon}</span> {item.title.split('：')[0]}
+            <span>{item.icon}</span> {locale === 'en' ? item.title : item.title.split('：')[0]}
           </button>
         ))}
       </div>
@@ -178,12 +197,12 @@ export const DoubleNinthZhLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(234, 88, 12, 0.15)', color: '#ea580c', fontWeight: 700 }}>
-              {activeItem.locationZh} (<span lang="ja">{activeItem.locationJa}</span>)
+              {localizedItem.locationZh} (<span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.locationJa}</span>)
             </span>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem', marginTop: '0.3rem' }}>
-            {activeItem.dialogueLines.map((line, lIdx) => (
+            {localizedItem.dialogueLines.map((line, lIdx) => (
               <div
                 key={lIdx}
                 style={{
@@ -198,9 +217,9 @@ export const DoubleNinthZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#ea580c' }}>
-                    <span lang="ja">{line.speakerJa}</span>：
+                    <span lang={locale === 'en' ? 'en' : 'ja'}>{line.speakerJa}</span>:
                   </span>
-                  <button aria-label={`朗讀：${line.zh}`}
+                  <button aria-label={locale === 'en' ? `Read aloud: ${line.zh}` : `朗讀：${line.zh}`}
                     type="button"
                     style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
                     onClick={() => speakChinese(line.zh)}
@@ -210,7 +229,7 @@ export const DoubleNinthZhLab: React.FC<Props> = ({ onEarnXp }) => {
                 </div>
                 <strong style={{ fontSize: '0.86rem', color: 'var(--text)' }}>{line.zh}</strong>
                 <span lang="zh-Latn" style={{ fontSize: '0.72rem', color: '#d97706' }}>{line.pinyin}</span>
-                <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
+                <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
                   {line.ja}
                 </span>
               </div>
@@ -220,12 +239,12 @@ export const DoubleNinthZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
         {/* 右側：重陽敬老民俗名詞 */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          <span style={{ fontSize: '0.74rem', color: '#ea580c', fontWeight: 700, display: 'block' }}>
-            💡 台湾重陽節・敬老登高文化豆知識（Double Ninth Tips）
+          <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: '#ea580c', fontWeight: 700, display: 'block' }}>
+            {locale === 'en' ? '💡 Taiwan Double Ninth Festival tips' : '💡 台湾重陽節・敬老登高文化豆知識（Double Ninth Tips）'}
           </span>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginTop: '0.3rem' }}>
-            {activeItem.doubleNinthGlossary.map((vocab, vIdx) => (
+            {localizedItem.doubleNinthGlossary.map((vocab, vIdx) => (
               <div
                 key={vIdx}
                 style={{
@@ -237,9 +256,9 @@ export const DoubleNinthZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <strong style={{ fontSize: '0.88rem', color: '#ea580c' }}>{vocab.termZh}</strong>
-                  <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
+                  <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
                 </div>
-                <p lang="ja" style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+                <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
                   {vocab.tipJa}
                 </p>
               </div>

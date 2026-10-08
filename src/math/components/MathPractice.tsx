@@ -1,4 +1,3 @@
-import { mathTeachingCopy } from '../../i18n/mathTeachingCopy'
 import React, { useState } from 'react'
 import type { MathQuestion, MathUnit } from '../data/curriculum'
 import { MathFormula } from './MathFormula'
@@ -19,6 +18,7 @@ type Props = {
  */
 export const MathPractice: React.FC<Props> = ({ unit, onBack, onComplete }) => {
   const { t, locale } = useI18n()
+  const copy = (zhHant: string, en: string) => locale === 'en' ? en : zhHant
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
   const [fillInput, setFillInput] = useState('')
@@ -100,9 +100,9 @@ export const MathPractice: React.FC<Props> = ({ unit, onBack, onComplete }) => {
   if (!currentQ) {
     return (
       <div className="math-practice-empty">
-        <h3>此單元目前無練習題</h3>
+        <h3>{copy('此單元目前無練習題', 'This unit has no practice questions yet')}</h3>
         <button type="button" className="btn-primary" onClick={onBack}>
-          返回今日學習
+          {copy('返回今日學習', 'Back to today')}
         </button>
       </div>
     )
@@ -114,20 +114,20 @@ export const MathPractice: React.FC<Props> = ({ unit, onBack, onComplete }) => {
     <div
       className="math-practice-shell"
       role="region"
-      aria-label={mathTeachingCopy(locale, unit.title)}
+      aria-label={unit.title}
       aria-keyshortcuts="A B C D 1 2 3 4 Enter Space H"
       tabIndex={0}
       onKeyDown={handlePracticeKeyDown}
     >
       <div className="practice-top-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <button type="button" className="btn-back" onClick={onBack}>
-          ← 返回單元
+          ← {copy('返回單元', 'Back to unit')}
         </button>
         <div className="practice-progress-pill">
-          第 <strong>{currentIndex + 1}</strong> / {questions.length} 題
+          {copy('第', 'Question')} <strong>{currentIndex + 1}</strong> / {questions.length} {locale === 'en' ? '' : '題'}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-          <div className="practice-unit-tag">{mathTeachingCopy(locale, unit.title)}</div>
+          <div className="practice-unit-tag">{unit.title}</div>
           <button
             type="button"
             className="pill-btn"
@@ -137,7 +137,7 @@ export const MathPractice: React.FC<Props> = ({ unit, onBack, onComplete }) => {
             aria-haspopup="dialog"
             aria-controls={showScratchpad ? 'math-practice-scratchpad' : undefined}
           >
-            {locale === 'en' ? '✏️ Scratchpad' : '✏️ 草稿紙'}
+            ✏️ {copy('草稿紙', 'Scratchpad')}
           </button>
         </div>
       </div>
@@ -146,7 +146,7 @@ export const MathPractice: React.FC<Props> = ({ unit, onBack, onComplete }) => {
 
       <div className="practice-card">
         <div className="question-header">
-          <span className="diff-badge">難度 ★{currentQ.difficulty}</span>
+          <span className="diff-badge">{copy('難度', 'Difficulty')} ★{currentQ.difficulty}</span>
           <span className="strand-tag">{currentQ.title}</span>
         </div>
 
@@ -220,7 +220,7 @@ export const MathPractice: React.FC<Props> = ({ unit, onBack, onComplete }) => {
               aria-expanded={showHint}
               aria-controls={showHint ? 'math-practice-hint' : undefined}
             >
-              {showHint ? '隱藏提示' : '💡 提示'}
+              {showHint ? copy('隱藏提示', 'Hide hint') : copy('💡 提示', '💡 Hint')}
             </button>
           )}
 
@@ -235,7 +235,7 @@ export const MathPractice: React.FC<Props> = ({ unit, onBack, onComplete }) => {
                   : fillInput.trim() === ''
               }
             >
-              確認答案
+              {copy('確認答案', 'Check answer')}
             </button>
           ) : (
             <button
@@ -243,7 +243,7 @@ export const MathPractice: React.FC<Props> = ({ unit, onBack, onComplete }) => {
               className="btn-primary btn-next-question"
               onClick={handleNext}
             >
-              {isLastQuestion ? '完成練習 🎉' : '下一題 →'}
+              {isLastQuestion ? copy('完成練習 🎉', 'Finish practice 🎉') : copy('下一題 →', 'Next question →')}
             </button>
           )}
         </div>
@@ -251,7 +251,7 @@ export const MathPractice: React.FC<Props> = ({ unit, onBack, onComplete }) => {
         {/* 提示面板 */}
         {showHint && currentQ.hint && !submitted && (
           <div id="math-practice-hint" className="hint-card">
-            <strong>解題靈感：</strong>
+            <strong>{copy('解題靈感：', 'Hint:')}</strong>
             <MathFormula math={currentQ.hint} />
           </div>
         )}
@@ -260,20 +260,20 @@ export const MathPractice: React.FC<Props> = ({ unit, onBack, onComplete }) => {
         {submitted && (
           <div className={`solution-card ${isCorrect ? 'sol-correct' : 'sol-wrong'}`}>
             <div id="math-practice-grade" className="solution-status" role="status" aria-live="polite" aria-atomic="true">
-              {isCorrect ? '✅ 答對了！+5 XP' : '❌ 答錯了，已自動收入錯題本'}
+              {isCorrect ? copy('✅ 答對了！+5 XP', '✅ Correct! +5 XP') : copy('❌ 答錯了，已自動收入錯題本', '❌ Incorrect. Added to the error vault.')}
             </div>
             <div className="solution-content">
-              <strong>【逐步詳解】</strong>
+              <strong>{copy('【逐步詳解】', 'Step-by-step solution')}</strong>
               <MathFormula math={currentQ.solution} block={true} />
             </div>
             {currentQ.competency && (
               <div className="competency-note">
-                <span>108 課綱核心素養：{currentQ.competency}</span>
+                <span>{copy('108 課綱核心素養：', 'Curriculum competency: ')}{currentQ.competency}</span>
               </div>
             )}
             {submitted && isDiscriminantDrill && (
               <div className="honesty-labels">
-                <strong>誠實練習標籤 / Honesty Labels（判別式專用）</strong>
+                <strong>{copy('誠實練習標籤（判別式專用）', 'Honesty labels (discriminant practice)')}</strong>
                 <div className="honesty-options">
                   <label>
                     <input
@@ -281,7 +281,7 @@ export const MathPractice: React.FC<Props> = ({ unit, onBack, onComplete }) => {
                       checked={honestyLabel === true}
                       onChange={() => setHonestyLabel(true)}
                     />{' '}
-                    我獨立完成，未偷看答案或提示 / I solved independently without peeking answers or hints
+                    {copy('我獨立完成，未偷看答案或提示', 'I solved independently without viewing answers or hints')}
                   </label>
                   <label>
                     <input
@@ -289,12 +289,12 @@ export const MathPractice: React.FC<Props> = ({ unit, onBack, onComplete }) => {
                       checked={honestyLabel === false}
                       onChange={() => setHonestyLabel(false)}
                     />{' '}
-                    我使用了提示或參考 / I used hints or references
+                    {copy('我使用了提示或參考', 'I used hints or references')}
                   </label>
                 </div>
                 {honestyLabel !== null && (
                   <div className="honesty-note">
-                    感謝誠實回報！這有助於真實追蹤學習進度。/ Thank you for honest reporting! This helps track real learning progress.
+                    {copy('感謝誠實回報！這有助於真實追蹤學習進度。', 'Thank you for reporting honestly. This helps track real learning progress.')}
                   </div>
                 )}
               </div>

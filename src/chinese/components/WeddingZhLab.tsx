@@ -1,12 +1,15 @@
 ﻿import React, { useState } from 'react'
-import { WEDDING_DIALOGUES, type WeddingDialogueItem } from '../data/weddingZhDialogues'
+import { CHINESE_SUPPORT_EN, WEDDING_DIALOGUES, type WeddingDialogueItem } from '../data/weddingZhDialogues'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
+import { localizeChineseData } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
 }
 
 export const WeddingZhLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { locale } = useI18n()
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [venue, setVenue] = useState<'hotel' | 'banquet' | 'outdoor'>('hotel')
   const [attendance, setAttendance] = useState<'single' | 'couple'>('single')
@@ -15,6 +18,8 @@ export const WeddingZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
   const activeItem: WeddingDialogueItem =
     WEDDING_DIALOGUES[selectedIdx % WEDDING_DIALOGUES.length]
+  const localizedItem = localizeChineseData(activeItem, locale, CHINESE_SUPPORT_EN)
+  const localizedDialogues = localizeChineseData(WEDDING_DIALOGUES, locale, CHINESE_SUPPORT_EN)
 
   function speakChinese(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -52,10 +57,12 @@ export const WeddingZhLab: React.FC<Props> = ({ onEarnXp }) => {
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>💒</span> 台灣婚禮紅包行情與喜酒文化實驗室 (Wedding Red Envelope Lab)
+            <span>💒</span> {locale === 'en' ? 'Taiwan Wedding Red Envelope Lab' : '台灣婚禮紅包行情與喜酒文化實驗室 (Wedding Red Envelope Lab)'}
           </h3>
-          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            台湾の結婚式（喝喜酒）マナー！「ご祝儀は偶数が吉（4と8は厳禁）・ホテルvs会館相場・袋の縦書き記名・喜餅引換券」を完全制覇！
+          <p lang={locale === 'en' ? 'en' : 'ja'} className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+            {locale === 'en'
+              ? 'Practise Mandarin for a Taiwan wedding: estimate an auspicious cash gift, choose a blessing, sign in at the gift table, and collect the wedding-cookie card.'
+              : '台湾の結婚式（喝喜酒）マナー！「ご祝儀は偶数が吉（4と8は厳禁）・ホテルvs会館相場・袋の縦書き記名・喜餅引換券」を完全制覇！'}
           </p>
         </div>
       </div>
@@ -78,36 +85,40 @@ export const WeddingZhLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <div style={{ fontSize: '1.8rem' }}>🧧 💒</div>
           <div>
-            <strong style={{ fontSize: '0.9rem', display: 'block' }}>紅包禮金行情試算 (Red Packet Estimator)</strong>
+            <strong style={{ fontSize: '0.9rem', display: 'block' }}>{locale === 'en' ? 'Red Envelope Gift Estimator' : '紅包禮金行情試算 (Red Packet Estimator)'}</strong>
             <span style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
               {submittedRedPacket
-                ? `✓ 已於禮金桌簽到送出！金額 NT$ ${suggestedAmount}・賀詞「${blessingPhrase}」領取喜餅卡！(+15 XP)`
-                : `建議包禮金額：NT$ ${suggestedAmount} (雙數吉利・避開四與八)`}
+                ? locale === 'en'
+                  ? `✓ Gift recorded at the reception table: NT$${suggestedAmount}, with the blessing “${blessingPhrase}”. Wedding-cookie card collected. (+15 XP)`
+                  : `✓ 已於禮金桌簽到送出！金額 NT$ ${suggestedAmount}・賀詞「${blessingPhrase}」領取喜餅卡！(+15 XP)`
+                : locale === 'en'
+                  ? `Suggested gift: NT$${suggestedAmount} (use an auspicious even amount; avoid 4 and 8)`
+                  : `建議包禮金額：NT$ ${suggestedAmount} (雙數吉利・避開四與八)`}
             </span>
           </div>
         </div>
 
         <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center', flexWrap: 'wrap' }}>
-          <select aria-label="婚宴場地"
+          <select aria-label={locale === 'en' ? 'Wedding venue' : '婚宴場地'}
             value={venue}
             onChange={(e) => setVenue(e.target.value as 'hotel' | 'banquet' | 'outdoor')}
             style={{ padding: '0.3rem 0.45rem', borderRadius: '6px', border: '1px solid var(--line)', background: 'var(--surface)', color: 'var(--text)', fontSize: '0.74rem' }}
           >
-            <option value="hotel">五星級飯店 (3600~6600)</option>
-            <option value="banquet">一般婚宴會館 (2600~4200)</option>
-            <option value="outdoor">辦桌流水席 (2200~3600)</option>
+            <option value="hotel">{locale === 'en' ? 'Five-star hotel (NT$3,600–6,600)' : '五星級飯店 (3600~6600)'}</option>
+            <option value="banquet">{locale === 'en' ? 'Banquet hall (NT$2,600–4,200)' : '一般婚宴會館 (2600~4200)'}</option>
+            <option value="outdoor">{locale === 'en' ? 'Outdoor banquet (NT$2,200–3,600)' : '辦桌流水席 (2200~3600)'}</option>
           </select>
 
-          <select aria-label="出席人數"
+          <select aria-label={locale === 'en' ? 'Number of guests' : '出席人數'}
             value={attendance}
             onChange={(e) => setAttendance(e.target.value as 'single' | 'couple')}
             style={{ padding: '0.3rem 0.45rem', borderRadius: '6px', border: '1px solid var(--line)', background: 'var(--surface)', color: 'var(--text)', fontSize: '0.74rem' }}
           >
-            <option value="single">一人出席 (Single)</option>
-            <option value="couple">攜伴二人出席 (Couple)</option>
+            <option value="single">{locale === 'en' ? 'One guest' : '一人出席 (Single)'}</option>
+            <option value="couple">{locale === 'en' ? 'Two guests' : '攜伴二人出席 (Couple)'}</option>
           </select>
 
-          <select aria-label="紅包賀詞"
+          <select aria-label={locale === 'en' ? 'Red-envelope congratulatory phrase' : '紅包賀詞'}
             value={blessingPhrase}
             onChange={(e) => setBlessingPhrase(e.target.value)}
             style={{ padding: '0.3rem 0.45rem', borderRadius: '6px', border: '1px solid var(--line)', background: 'var(--surface)', color: 'var(--text)', fontSize: '0.74rem' }}
@@ -128,21 +139,23 @@ export const WeddingZhLab: React.FC<Props> = ({ onEarnXp }) => {
             }}
             onClick={handlePresentGift}
           >
-            {submittedRedPacket ? '送出完成' : '🧧 送禮金簽名'}
+            {submittedRedPacket
+              ? locale === 'en' ? 'Gift recorded' : '送出完成'
+              : locale === 'en' ? '🧧 Present gift and sign in' : '🧧 送禮金簽名'}
           </button>
         </div>
       </div>
 
       {/* 場景切換膠囊 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
-        {WEDDING_DIALOGUES.map((item, idx) => (
+        {localizedDialogues.map((item, idx) => (
           <button aria-pressed={selectedIdx === idx}
             key={item.id}
             type="button"
             className={`pill-btn ${selectedIdx === idx ? 'active' : ''}`}
             onClick={() => setSelectedIdx(idx)}
           >
-            <span>{item.icon}</span> {item.title.split('：')[0]}
+            <span>{item.icon}</span> {locale === 'en' ? item.title : item.title.split('：')[0]}
           </button>
         ))}
       </div>
@@ -153,12 +166,12 @@ export const WeddingZhLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(239, 68, 68, 0.15)', color: '#ef4444', fontWeight: 700 }}>
-              {activeItem.locationZh} (<span lang="ja">{activeItem.locationJa}</span>)
+              {localizedItem.locationZh} (<span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.locationJa}</span>)
             </span>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem', marginTop: '0.3rem' }}>
-            {activeItem.dialogueLines.map((line, lIdx) => (
+            {localizedItem.dialogueLines.map((line, lIdx) => (
               <div
                 key={lIdx}
                 style={{
@@ -173,9 +186,9 @@ export const WeddingZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#38bdf8' }}>
-                    <span lang="ja">{line.speakerJa}</span>：
+                    <span lang={locale === 'en' ? 'en' : 'ja'}>{line.speakerJa}</span>:
                   </span>
-                  <button aria-label={`朗讀：${line.zh}`}
+                  <button aria-label={locale === 'en' ? `Read aloud: ${line.zh}` : `朗讀：${line.zh}`}
                     type="button"
                     style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
                     onClick={() => speakChinese(line.zh)}
@@ -185,7 +198,7 @@ export const WeddingZhLab: React.FC<Props> = ({ onEarnXp }) => {
                 </div>
                 <strong style={{ fontSize: '0.86rem', color: 'var(--text)' }}>{line.zh}</strong>
                 <span lang="zh-Latn" style={{ fontSize: '0.72rem', color: '#f59e0b' }}>{line.pinyin}</span>
-                <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
+                <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
                   {line.ja}
                 </span>
               </div>
@@ -195,12 +208,12 @@ export const WeddingZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
         {/* 右側：紅包民俗智慧與袋身格式 */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          <span lang="ja" style={{ fontSize: '0.74rem', color: '#ef4444', fontWeight: 700, display: 'block' }}>
-            💡 台湾結婚式・紅包（ご祝儀）マナー（Wedding Red Packet Tips）
+          <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: '#ef4444', fontWeight: 700, display: 'block' }}>
+            {locale === 'en' ? '💡 Taiwan wedding and red-envelope etiquette' : '💡 台湾結婚式・紅包（ご祝儀）マナー（Wedding Red Packet Tips）'}
           </span>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginTop: '0.3rem' }}>
-            {activeItem.weddingGlossary.map((vocab, vIdx) => (
+            {localizedItem.weddingGlossary.map((vocab, vIdx) => (
               <div
                 key={vIdx}
                 style={{
@@ -212,9 +225,9 @@ export const WeddingZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <strong style={{ fontSize: '0.88rem', color: '#ef4444' }}>{vocab.termZh}</strong>
-                  <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
+                  <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
                 </div>
-                <p lang="ja" style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+                <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
                   {vocab.tipJa}
                 </p>
               </div>

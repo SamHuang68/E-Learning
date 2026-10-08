@@ -18,6 +18,8 @@ import {
 } from '../../engine/sessionResults'
 import type { ToeicUnit } from '../data/certificates'
 import { getToeicPractice } from '../data/practiceContent'
+import { useI18n } from '../../i18n/i18n'
+import { localizeToeicPractice } from '../teachingCopy'
 
 type Props = {
   kind: 'vocab' | 'listening' | 'grammar'
@@ -86,8 +88,12 @@ export function ToeicPractice({
   onBack,
   onProgress,
 }: Props) {
+  const { locale } = useI18n()
   const meta = copy[kind]
-  const pack = getToeicPractice(certificateId, unit.id)
+  const pack = localizeToeicPractice(
+    getToeicPractice(certificateId, unit.id),
+    locale,
+  )
   const isReview = Boolean(reviewIds)
   const sourceCards = isReview ? allCards(pack) : cardsForKind(kind, pack)
   const cards = reviewFilter(sourceCards, reviewIds)
@@ -210,13 +216,13 @@ export function ToeicPractice({
           <div className="flash-face" role="status" aria-live="polite" aria-atomic="true">
             <strong lang="en">{card.head}</strong>
             {(card.reading || card.meaning) && (
-              <span className="flash-meaning" lang="zh-Hant">
+              <span className="flash-meaning" lang={locale}>
                 {[card.reading, card.meaning].filter(Boolean).join(' · ')}
               </span>
             )}
             <p lang="en">{card.sentence}</p>
-            {card.sentenceZh && (
-              <span className="flash-sentence-zh" lang="zh-Hant">{card.sentenceZh}</span>
+            {card.sentenceZh && card.sentenceZh !== card.sentence && (
+              <span className="flash-sentence-zh" lang={locale === 'en' ? 'en' : 'zh-Hant'}>{card.sentenceZh}</span>
             )}
             <div className="flash-meta">
               <span className="scenario-chip">{card.scenario}</span>

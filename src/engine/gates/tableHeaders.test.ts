@@ -9,7 +9,9 @@ describe('practice table headers', () => {
     expect(ja).toContain('<th scope="row" className="pattern-cell">')
 
     const toeic = readFileSync(join(process.cwd(), 'src/toeic/components/ToeicStoryReview.tsx'), 'utf8')
-    expect(toeic).toContain('<th scope="col">Chunk 核心語塊</th>')
+    expect(toeic).toContain("chunk: 'Chunk 核心語塊'")
+    expect(toeic).toContain("chunk: 'Core chunk'")
+    expect(toeic).toContain('<th scope="col">{copy.chunk}</th>')
     expect(toeic).toContain('<th scope="row" className="chunk-name-cell">')
   })
 })

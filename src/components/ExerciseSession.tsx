@@ -58,7 +58,7 @@ export function ExerciseSession({
   )
   const correct = completedResults.filter((result) => result.correct).length
   const { t, locale } = useI18n()
-  const meaningLang = lang === 'ja' ? locale : 'zh-Hant'
+  const meaningLang = locale
   const copy = uiCopy(t)
 
   useEffect(() => {

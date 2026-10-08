@@ -35,8 +35,8 @@ describe('Strict Review Gate: Content Integrity & Pedagogy Quality Invariants', 
       })
     })
 
-    it('[GATE-PHYS-SIGNALS] 19 solving signals have keywords, formulas, and examples', () => {
-      expect(PHYSICS_SOLVING_SIGNALS.length).toBe(19)
+    it('[GATE-PHYS-SIGNALS] 20 solving signals have keywords, formulas, and examples', () => {
+      expect(PHYSICS_SOLVING_SIGNALS.length).toBe(20)
       PHYSICS_SOLVING_SIGNALS.forEach((sig) => {
         expect(sig.problemSignal.length).toBeGreaterThan(0)
         expect(sig.threeSecondRule.length).toBeGreaterThan(0)

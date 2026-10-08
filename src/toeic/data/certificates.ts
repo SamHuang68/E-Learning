@@ -359,7 +359,9 @@ export const toeicTemplates = [
   {
     id: 'orange-basics',
     title: '基礎自我介紹',
+    titleEn: 'Basic Self-Introduction',
     desc: '字母＋短句聽辨',
+    descEn: 'Letters and short-sentence listening',
     icon: 'ABC',
     config: {
       topic: 'Introduce yourself in 8 sentences',
@@ -371,7 +373,9 @@ export const toeicTemplates = [
   {
     id: 'green-email',
     title: '綠色郵件',
+    titleEn: 'Green Email',
     desc: '預約與禮貌請求',
+    descEn: 'Scheduling and polite requests',
     icon: 'Mail',
     config: {
       topic: 'Write a polite meeting-request email',
@@ -383,7 +387,9 @@ export const toeicTemplates = [
   {
     id: 'blue-meeting',
     title: '藍色會議',
+    titleEn: 'Blue Meeting',
     desc: '例行業務與客戶對話',
+    descEn: 'Routine business and client dialogue',
     icon: 'Meet',
     config: {
       topic: 'Handle a client status-update call',
@@ -395,7 +401,9 @@ export const toeicTemplates = [
   {
     id: 'gold-negotiate',
     title: '金色談判',
+    titleEn: 'Gold Negotiation',
     desc: '主持會議與協商',
+    descEn: 'Chairing meetings and negotiating',
     icon: 'Deal',
     config: {
       topic: 'Chair a negotiation and close next steps',

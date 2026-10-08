@@ -7,6 +7,7 @@ export interface AntitrustScenarioItem {
   id: string
   title: string
   titleJa: string
+  titleEn: string
   icon: string
   targetAccent: 'en-US' | 'en-GB' | 'en-AU' | 'en-CA'
   accentLabel: string
@@ -23,8 +24,10 @@ export interface AntitrustScenarioItem {
     correctIndex: number
     explanationZh: string
     explanationJa: string
+    explanationEn: string
   }>
   antitrustKeywordsTipsJa: string
+  antitrustKeywordsTipsEn: string
 }
 
 export const ANTITRUST_SCENARIOS: AntitrustScenarioItem[] = [
@@ -32,6 +35,7 @@ export const ANTITRUST_SCENARIOS: AntitrustScenarioItem[] = [
     id: 'antitrust-cartel-compliance',
     title: '跨國半導體產業公會會議：反托拉斯合規、價格合謀防範與吹哨者通報',
     titleJa: '半導体業界団体会合：独占禁止法コンプライアンス・価格カルテル防止と内部通報',
+    titleEn: 'Semiconductor Trade Association: Antitrust Compliance, Cartel Prevention, and Whistleblowing',
     icon: '⚖️',
     targetAccent: 'en-US',
     accentLabel: '美式口音 🇺🇸',
@@ -54,6 +58,7 @@ export const ANTITRUST_SCENARIOS: AntitrustScenarioItem[] = [
         correctIndex: 1,
         explanationZh: 'Raymond 指出業務主管被嚴格禁止與競業討論「production capacity allocations, future pricing strategies, or customer division（產能配額分配、未來定價策略或瓜分客戶）」。',
         explanationJa: '「生産能力の割当、将来の価格戦略、顧客の分割」について議論することが固く禁じられています。',
+        explanationEn: 'Representatives are strictly forbidden from discussing production-capacity allocations, future pricing strategies, or the division of customers with competitors.',
       },
       {
         id: 'aq-2',
@@ -68,8 +73,10 @@ export const ANTITRUST_SCENARIOS: AntitrustScenarioItem[] = [
         correctIndex: 1,
         explanationZh: 'Raymond 說明正確程序是「state their objection on the formal record, leave the room, and report the incident to our anonymous whistleblower compliance hotline（正式記錄提出異議、離席並於 24 小時內通報吹哨者合規專線）」。',
         explanationJa: '「公式記録に反対の旨を残して退席し、24時間以内に内部通報ホットラインに報告する」ことが求められます。',
+        explanationEn: 'The executive must object on the formal record, leave the room, and report the incident to the anonymous compliance hotline within twenty-four hours.',
       },
     ],
     antitrustKeywordsTipsJa: 'TOEICでは「antitrust / competition law（独占禁止法・競争法）」「price-fixing（価格カルテル）」「market allocation（市場分割協定）」「trade association（業界団体）」「whistleblower hotline（内部通報ホットライン）」が頻出です。',
+    antitrustKeywordsTipsEn: 'Key TOEIC terms here are antitrust or competition law, price-fixing, market allocation, trade association, and whistleblower hotline.',
   },
 ]

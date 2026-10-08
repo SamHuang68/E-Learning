@@ -1,10 +1,8 @@
-import { use } from 'react'
-import { loadStemConceptCopy, stemConceptCopy } from '../../i18n/stemConceptCopy'
-import { stemCatalogCopy } from '../../i18n/stemCatalogCopy'
 import { useI18n } from '../../i18n/i18n'
 import { physicsFormulaSheetSections } from '../data/curriculum'
 import { MathFormula } from '../../math/components/MathFormula'
 import { WaveInterferenceDiagram } from './WaveInterferenceDiagram'
+import { localizePhysicsFormulaSections } from '../locale/content'
 
 type Props = {
   onBack: () => void
@@ -16,8 +14,7 @@ type Props = {
  */
 export function PhysicsFormulaSheet({ onBack }: Props) {
   const { t, locale } = useI18n()
-  if (locale === 'en') use(loadStemConceptCopy())
-  const sections = physicsFormulaSheetSections()
+  const sections = localizePhysicsFormulaSections(physicsFormulaSheetSections(), locale)
 
   return (
     <div className="formula-sheet physics-formula-sheet">
@@ -32,17 +29,17 @@ export function PhysicsFormulaSheet({ onBack }: Props) {
       {sections.map((section) => (
         <section key={section.gradeId} className="unit-map-section" aria-labelledby={`phys-sheet-${section.gradeId}`}>
           <h3 id={`phys-sheet-${section.gradeId}`}>
-            {locale === 'en' ? section.nameEn : section.name}
+            {section.name}
           </h3>
           {section.units.map((unit) => (
             <div key={`${section.gradeId}-${unit.id}`} className="physics-formula-unit">
-              <h4>{t('chrome.unitNColon', { n: unit.id, title: stemCatalogCopy(locale, unit.title) })}</h4>
+              <h4>{t('chrome.unitNColon', { n: unit.id, title: unit.title })}</h4>
               <div className="concept-cards-grid">
                 {unit.concepts.map((concept, idx) => (
                   <div key={idx} className="concept-item-card">
                     <span className="concept-idx">{t('physics.formulas.item', { n: idx + 1 })}</span>
                     <div className="concept-text">
-                      <MathFormula math={stemConceptCopy(locale, concept)} />
+                      <MathFormula math={concept} />
                     </div>
                   </div>
                 ))}

@@ -1,4 +1,4 @@
-import { mathTeachingCopy } from '../../i18n/mathTeachingCopy'
+import { localizeMathStrand, mathTeachingCopy } from '../../i18n/mathTeachingCopy'
 import React from 'react'
 import type { MathGradeInfo, MathUnit } from '../data/curriculum'
 import type { MathProgressState } from '../utils/mathStorage'
@@ -41,19 +41,19 @@ export const MathToday: React.FC<Props> = ({
       <section className="math-hero-card compact-hero">
         <div className="hero-header-line">
           <div className="hero-title-group">
-            <span className="stage-pill">{mathTeachingCopy(locale, gradeInfo.band)}</span>
-            <h2>{t('math.today.classroom', { name: locale === 'en' ? gradeInfo.nameEn : gradeInfo.name })}</h2>
+            <span className="stage-pill">{gradeInfo.band}</span>
+            <h2>{t('math.today.classroom', { name: gradeInfo.name })}</h2>
             {gradeInfo.targetExam && (
-              <span className="exam-target-pill">🎯 {mathTeachingCopy(locale, gradeInfo.targetExam)}</span>
+              <span className="exam-target-pill">🎯 {gradeInfo.targetExam}</span>
             )}
           </div>
-          <span className="hero-desc-inline">{mathTeachingCopy(locale, gradeInfo.description)}</span>
+          <span className="hero-desc-inline">{gradeInfo.description}</span>
         </div>
         <WhyThisNext kind="unit" />
 
         <div className="hero-quick-actions">
           <button type="button" className="btn-hero-primary" onClick={onStartPractice}>
-            ▶ {t('math.today.practice', { title: mathTeachingCopy(locale, currentUnit.title) })}
+            ▶ {t('math.today.practice', { title: currentUnit.title })}
           </button>
           <button
             type="button"
@@ -103,7 +103,7 @@ export const MathToday: React.FC<Props> = ({
               >
                 <div className="unit-card-header">
                   <span className="unit-seq">{t('math.today.unitN', { n: u.id })}</span>
-                  <span className="unit-strand">{u.strand}</span>
+                  <span className="unit-strand">{localizeMathStrand(u.strand, locale)}</span>
                 </div>
                 <h4>
                   <button
@@ -112,10 +112,10 @@ export const MathToday: React.FC<Props> = ({
                     aria-pressed={isCurrent}
                     onClick={(event) => { event.stopPropagation(); onSelectUnit(u.id) }}
                   >
-                    {mathTeachingCopy(locale, u.title)}
+                    {u.title}
                   </button>
                 </h4>
-                <p className="unit-sub">{mathTeachingCopy(locale, u.subtitle)}</p>
+                <p className="unit-sub">{u.subtitle}</p>
 
                 <div className="unit-progress-bar-wrap">
                   <div
@@ -141,7 +141,7 @@ export const MathToday: React.FC<Props> = ({
             <div key={idx} className="concept-item-card">
               <span className="concept-idx">{t('math.today.conceptN', { n: String(idx + 1).padStart(2, '0') })}</span>
               <div className="concept-text">
-                <MathFormula math={mathTeachingCopy(locale, concept)} />
+                <MathFormula math={concept} />
               </div>
             </div>
           ))}
@@ -161,13 +161,13 @@ export const MathToday: React.FC<Props> = ({
               >
                 <div className="lab-icon">⚗️</div>
                 <div className="lab-info">
-                  <h4>{mathTeachingCopy(locale, lab.name)}</h4>
-                  <p>{mathTeachingCopy(locale, lab.description)}</p>
+                  <h4>{lab.name}</h4>
+                  <p>{lab.description}</p>
                 </div>
                 <button
                   type="button"
                   className="btn-enter-lab"
-                  aria-label={`${mathTeachingCopy(locale, '開啟教具 →')} ${mathTeachingCopy(locale, lab.name)}`}
+                  aria-label={`${mathTeachingCopy(locale, '開啟教具 →')} ${lab.name}`}
                 >
                   {mathTeachingCopy(locale, '開啟教具 →')}
                 </button>

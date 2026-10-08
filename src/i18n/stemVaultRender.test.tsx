@@ -52,7 +52,7 @@ it('直尺與層析題的真實展開步驟使用本題提示，不顯示無關�
     const stepOne = (html: string) => html.split('class="vault-step-card"')[1]
     const physicsStep = stepOne(physics)
     const chemistryStep = stepOne(chemistry)
-    expect(physicsStep).toContain(locale === 'en' ? 'The last digit is estimated' : '估計值')
+    expect(physicsStep).toContain(locale === 'en' ? 'The last recorded digit is estimated' : '估計值')
     expect(chemistryStep).toContain('R_f')
     expect(physicsStep).not.toMatch(/photoelectric|光電/)
     expect(chemistryStep).not.toMatch(/crystall|結晶|析出/)
@@ -84,10 +84,10 @@ for (const [name, Component, units, exams, signals] of [
     it('未知題號的英文備援卡片與步驟完整顯示', async () => {
       const html = await renderVault(Component, ['unknown-vault-id'])
       expect(html).toContain('unknown-vault-id')
-      expect(html).toContain('review question')
+      expect(html).toContain('review item')
       expect(html).toContain('review bank')
       expect(html).toContain('vault-steps-accordion')
-      expect(html).toContain('Common pitfalls')
+      expect(html).toContain('Common blind')
       expect(html).not.toMatch(CJK)
     })
 
@@ -95,7 +95,7 @@ for (const [name, Component, units, exams, signals] of [
       const id = '舊題-1'
       const html = await renderVault(Component, [units[0].questions[0].id, id])
       expect(html.match(/class="vault-card-item/g)).toHaveLength(2)
-      expect(html).toContain(`review question (${id})`)
+      expect(html).toContain(`review item (${id})`)
       expect(html).toContain('Collapse all steps')
       expect(html.replaceAll(id, '')).not.toMatch(CJK)
       const chinese = await renderVault(Component, [id], 'zh-Hant')
@@ -106,8 +106,8 @@ for (const [name, Component, units, exams, signals] of [
       const saved = signals.splice(0)
       try {
         const html = await renderVault(Component, ['unknown-vault-id'])
-        expect(html).toContain('Focus on')
-        expect(html).toContain('select the applicable definition or relationship')
+        expect(html).toContain('Identify the')
+        expect(html).toContain('known quantities')
         expect(html).not.toContain('katex-error')
         expect(html).not.toMatch(CJK)
       } finally {

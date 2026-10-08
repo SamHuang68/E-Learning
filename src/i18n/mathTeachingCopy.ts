@@ -1,6 +1,65 @@
+import type {
+  MathGradeId,
+  MathGradeInfo,
+  MathQuestion,
+  MathStrand,
+  MathUnit,
+} from '../math/data/curriculum'
+import type { MathMockExamDefinition, MockExamType } from '../math/data/mockExams'
 import type { UiLocale } from './locale'
 
+const HAN = /[\u3400-\u9fff\uf900-\ufaff]/u
+
 export const MATH_TEACHING_EN: Record<string, string> = {
+  '國小一年級': 'Grade 1',
+  '國小二年級': 'Grade 2',
+  '國小三年級': 'Grade 3',
+  '國小四年級': 'Grade 4',
+  '國小五年級': 'Grade 5',
+  '國小六年級': 'Grade 6',
+  '國中七年級': 'Grade 7',
+  '國中八年級': 'Grade 8',
+  '國中九年級': 'Grade 9',
+  '高中十年級': 'Grade 10',
+  '高中十一年級': 'Grade 11',
+  '高中十二年級': 'Grade 12',
+  '看到條件，先寫第一步': 'Recognize the condition and write the first step',
+  '這些卡片只把條件對上公式。看過不等於會算。': 'These cards connect conditions to formulas. Reading them does not demonstrate solving ability.',
+  '國小訊號 (G1~G6)': 'Elementary signals (G1-G6)',
+  '國中訊號 (G7~G9)': 'Junior high signals (G7-G9)',
+  '高中訊號 (G10~G12)': 'Senior high signals (G10-G12)',
+  '🔍 看到題目訊號：': '🔍 Problem cue:',
+  '口訣：': 'Rule of thumb:',
+  '破題第一步算式：': 'First-step formula:',
+  '查看例題': 'Show example',
+  '題目：': 'Problem:',
+  '怎麼想：': 'Reasoning:',
+  '開啟教具 →': 'Open lab →',
+  '臺灣 K-12 數學練習 · 十二個年級各有教學題，不是完整課綱，也不是會考或學測分數': 'Taiwan K-12 math practice: teaching items for 12 grades, not the complete curriculum or a CAP / GSAT score.',
+  '進度儲存於本機 · 支援離線學習': 'Progress saved locally · offline learning supported',
+  '返回課程': 'Back to course',
+  '十進位積木': 'Base-ten blocks',
+  '九九乘法': 'Multiplication facts',
+  '分數圓盤': 'Fraction circles',
+  '坐標與函數': 'Coordinates and functions',
+  '畢氏定理': 'Pythagorean theorem',
+  '三角單位圓': 'Trigonometric unit circle',
+  '微積分': 'Calculus',
+  '100 以內的數與二位數加減': 'Numbers within 100 and two-digit operations',
+  '10 以內的數與加減': 'Numbers, addition, and subtraction within 10',
+  '生活中的時鐘與長度': 'Clocks and length in everyday life',
+  '100 以內的數、位值、基礎加減法、生活長度比較、整點與半點時鐘。': 'Numbers within 100, place value, basic operations, comparing lengths, and clocks at the hour and half hour.',
+  '認識數的順序、分與合，以及生活中的加法與減法': 'Number order, composing and decomposing numbers, and everyday operations',
+  '十進位結構、十位與個位、簡單進位加法與退位減法': 'Base ten, tens and ones, and addition and subtraction with regrouping',
+  '認識時針與分針、整點與半點、比長短與厚薄': 'Hour and minute hands, hours and half hours, and comparing length and thickness',
+  '1~10 的順序與比大小': 'Order and compare numbers from 1 to 10',
+  '數的分與合（例如 7 可以分成 3 和 4）': 'Compose and decompose numbers, such as 7 = 3 + 4',
+  '加法算式：$3 + 4 = 7$': 'Addition: $3 + 4 = 7$',
+  '減法算式：$8 - 5 = 3$': 'Subtraction: $8 - 5 = 3$',
+  '十進位積木計數器': 'Base-ten blocks',
+  '透過拖曳 1 與 10 的積木，理解位值與進退位。': 'Drag blocks of 1 and 10 to explore place value and regrouping.',
+  '互動時鐘實驗室': 'Interactive clock lab',
+  '操作時針與分針，認識整點與半點。': 'Move the hour and minute hands to explore hours and half hours.',
   "國小低年級": "Lower elementary",
   "國小中年級": "Middle elementary",
   "國小高年級": "Upper elementary",
@@ -10,38 +69,6 @@ export const MATH_TEACHING_EN: Record<string, string> = {
   "高中必修": "Senior high required",
   "高中選組": "Senior high pathways",
   "高中選修": "Senior high electives",
-  "國小一年級": "Grade 1",
-  "國小五年級": "Grade 5",
-  "國小六年級": "Grade 6",
-  "10 以內的數與加減": "Numbers, addition, and subtraction within 10",
-  "100 以內的數與二位數加減": "Numbers within 100 and two-digit operations",
-  "生活中的時鐘與長度": "Clocks and length in everyday life",
-  "100 以內的數、位值、基礎加減法、生活長度比較、整點與半點時鐘。": "Numbers within 100, place value, basic operations, comparing lengths, and clocks at the hour and half hour.",
-  "認識數的順序、分與合，以及生活中的加法與減法": "Number order, composing and decomposing numbers, and everyday operations",
-  "十進位結構、十位與個位、簡單進位加法與退位減法": "Base ten, tens and ones, and addition and subtraction with regrouping",
-  "認識時針與分針、整點與半點、比長短與厚薄": "Hour and minute hands, hours and half hours, comparing length and thickness",
-  "1~10 的順序與比大小": "Order and compare numbers from 1 to 10",
-  "數的分與合（例如 7 可以分成 3 和 4）": "Compose and decompose numbers (for example, 7 is 3 plus 4)",
-  "加法算式：$3 + 4 = 7$": "Addition: $3 + 4 = 7$",
-  "減法算式：$8 - 5 = 3$": "Subtraction: $8 - 5 = 3$",
-  "十進位積木計數器": "Base-ten blocks",
-  "透過拖曳 1 與 10 的積木，理解位值與進退位。": "Drag blocks of 1 and 10 to explore place value and regrouping.",
-  "互動時鐘實驗室": "Interactive clock lab",
-  "操作時針與分針，認識整點與半點。": "Move the hour and minute hands to explore hours and half hours.",
-  "開啟教具 →": "Open lab →",
-  "臺灣 K-12 數學練習 · 十二個年級各有教學題，不是完整課綱，也不是會考或學測分數": "Taiwan K-12 math practice: teaching items for 12 grades, not the complete curriculum or a CAP / GSAT score.",
-  "進度儲存於本機 · 支援離線學習": "Progress saved locally · offline learning supported",
-  "看到條件，先寫第一步": "Recognize the condition and write the first step",
-  "這些卡片只把條件對上公式。看過不等於會算。": "These cards connect conditions to formulas. Reading them does not demonstrate solving ability.",
-  "國小訊號 (G1~G6)": "Elementary signals (G1-G6)",
-  "國中訊號 (G7~G9)": "Junior high signals (G7-G9)",
-  "高中訊號 (G10~G12)": "Senior high signals (G10-G12)",
-  "🔍 看到題目訊號：": "🔍 Problem cue:",
-  "口訣：": "Rule of thumb:",
-  "破題第一步算式：": "First-step formula:",
-  "查看例題": "Show example",
-  "題目：": "Problem:",
-  "怎麼想：": "Reasoning:",
   "十個 1 是一組 10": "Ten ones make one group of ten",
   "十位數與個位數的意義": "The meaning of the tens and ones places",
   "整十數的加減（例如 $30 + 20 = 50$）": "Adding and subtracting multiples of ten (for example, $30 + 20 = 50$)",
@@ -257,23 +284,379 @@ export const MATH_TEACHING_EN: Record<string, string> = {
   "定積分的幾何意義：當 $f(x) \\ge 0$ 時，$\\int_a^b f(x) dx$ 表示函數曲線與 $x$ 軸所圍成的面積": "For $f(x) \\ge 0$, the definite integral $\\int_a^b f(x) dx$ is the area between the curve and the $x$-axis",
   "兩曲線 $y = f(x)$ 與 $y = g(x)$ 所圍面積：$\\int_a^b [f(x) - g(x)] dx$（其中 $f(x) \\ge g(x)$）": "The area between $y = f(x)$ and $y = g(x)$ is $\\int_a^b [f(x) - g(x)] dx$, where $f(x) \\ge g(x)$",
   "← 返回課程": "← Back to course",
-  "十進位積木": "Base-ten blocks",
-  "九九乘法": "Times tables",
-  "分數圓盤": "Fraction circles",
-  "坐標與函數": "Coordinates and functions",
-  "畢氏定理": "Pythagorean theorem",
-  "三角單位圓": "Trigonometric unit circle",
-  "微積分": "Calculus",
   "微積分切線與定積分實驗室": "Tangent and definite integral lab",
-  "動態拖曳觀察切線斜率（導數）與黎曼和/定積分著色面積。": "Drag to explore tangent slopes (derivatives) and shaded areas for Riemann sums and definite integrals."
+  "動態拖曳觀察切線斜率（導數）與黎曼和/定積分著色面積。": "Drag to explore tangent slopes (derivatives) and shaded areas for Riemann sums and definite integrals.",
+}
+
+const BAND_EN: Record<string, string> = {
+  '國小低年級': 'Lower elementary',
+  '國小中年級': 'Middle elementary',
+  '國小高年級': 'Upper elementary',
+  '國中基礎': 'Junior high foundation',
+  '國中進階': 'Junior high intermediate',
+  '國中衝刺': 'Junior high review',
+  '高中必修': 'Senior high required',
+  '高中選組': 'Senior high pathways',
+  '高中選修': 'Senior high electives',
+}
+
+const STRAND_EN: Record<MathStrand, string> = {
+  number: 'Number and quantity',
+  algebra: 'Algebra and equations',
+  geometry: 'Geometry and space',
+  function: 'Functions and analysis',
+  statistics: 'Data and probability',
+}
+
+type GradeCopy = {
+  description: string
+  targetExam?: string
+  labs: Record<string, { name: string; description: string }>
+}
+
+const GRADE_EN: Record<MathGradeId, GradeCopy> = {
+  g1: {
+    description: 'Numbers within 100, place value, basic operations, comparing lengths, and clocks at the hour and half hour.',
+    labs: {
+      blocks: { name: 'Base-ten blocks', description: 'Drag blocks of 1 and 10 to explore place value and regrouping.' },
+      clock: { name: 'Interactive clock lab', description: 'Move the hour and minute hands to explore hours and half hours.' },
+    },
+  },
+  g2: {
+    description: 'Two-digit column arithmetic, multiplication facts, centimeters and meters, plane shapes and angles, and introductory division.',
+    labs: {
+      multiplication: { name: 'Multiplication facts challenge', description: 'Explore an interactive multiplication table with audio feedback.' },
+      clock: { name: 'Angle and length measuring lab', description: 'Measure with a centimeter ruler and explore plane angles.' },
+    },
+  },
+  g3: {
+    description: 'Operations within 10,000, long division and remainders, introductory fractions and decimals, perimeter, area, and protractors.',
+    labs: {
+      fraction: { name: 'Fraction circles and number line', description: 'Use dynamic slices and a number-line slider to compare equivalent fractions.' },
+    },
+  },
+  g4: {
+    description: 'Large numbers, multi-digit multiplication and division, mixed and improper fractions, hundredths, parallel and perpendicular lines, angles, and quadrilaterals.',
+    labs: {
+      fraction: { name: 'Improper and mixed fraction converter', description: 'Switch visually between improper fractions and mixed numbers.' },
+      clock: { name: 'Interactive protractor lab', description: 'Measure acute, right, obtuse, and straight angles.' },
+    },
+  },
+  g5: {
+    description: 'Factors and multiples, GCD and LCM, unlike fractions, fraction multiplication, surface area and volume, and the unknown x.',
+    labs: {
+      factor: { name: 'Factor and prime-factor tree', description: 'Expand factor trees to find the greatest common divisor and least common multiple.' },
+      fraction: { name: 'Unlike-fraction common-denominator board', description: 'Visualize common denominators and why unlike-fraction operations work.' },
+    },
+  },
+  g6: {
+    description: 'Prime factorization, fraction division, ratios and proportions, circles, prisms, rates, and reference quantities.',
+    labs: {
+      factor: { name: 'Prime factorization tool', description: 'Decompose a positive integer into a product of prime factors.' },
+      fraction: { name: 'Invert-and-multiply fraction model', description: 'Visualize why dividing by a fraction is equivalent to multiplying by its reciprocal.' },
+    },
+  },
+  g7: {
+    description: 'Negative numbers and the number line, integer operations and scientific notation, linear equations, systems of linear equations, and the Cartesian plane.',
+    targetExam: 'Junior high teaching practice, not a CAP score',
+    labs: { coordinate: { name: '2D coordinate-plane plotter', description: 'Explore the slope and intercepts of the line $ax + by = c$.' } },
+  },
+  g8: {
+    description: 'Algebraic identities, square roots and the Pythagorean theorem, factorization, quadratic equations, arithmetic sequences, and triangle congruence.',
+    targetExam: 'Junior high teaching practice, not a CAP score',
+    labs: { pythagoras: { name: 'Pythagorean theorem proof lab', description: 'Rearrange area pieces for the right-triangle relation $a^2 + b^2 = c^2$.' } },
+  },
+  g9: {
+    description: 'Similarity, circle geometry, triangle centers, quadratic graphs and extrema, statistics, and probability.',
+    targetExam: 'Junior high teaching practice, not a CAP score',
+    labs: { coordinate: { name: 'Dynamic quadratic graph lab', description: 'Adjust the vertex $(h,k)$ and opening parameter $a$ in $y = a(x-h)^2 + k$.' } },
+  },
+  g10: {
+    description: 'Real numbers and the AM-GM inequality, polynomial functions, exponentials and logarithms, lines and circles, and data analysis.',
+    targetExam: 'Senior high teaching practice, not a GSAT score',
+    labs: { coordinate: { name: 'Dynamic polynomial function lab', description: 'Explore local behavior of cubic polynomials and root bracketing.' } },
+  },
+  g11: {
+    description: 'General trigonometric functions, vectors and planes in space, 2-by-2 matrices and linear transformations, conditional probability, and Bayes theorem.',
+    targetExam: 'Senior high teaching practice, not a GSAT score',
+    labs: { unitcircle: { name: 'Trigonometric unit-circle lab', description: 'Explore the geometric definitions, signs, and periods of $\\sin\\theta$, $\\cos\\theta$, and $\\tan\\theta$.' } },
+  },
+  g12: {
+    description: 'Limits and continuity, derivatives and extrema, definite integrals and area, complex polar form, and conic sections.',
+    targetExam: 'Senior high teaching practice, not an AST score',
+    labs: { calculus: { name: 'Calculus tangent and definite-integral lab', description: 'Drag points to explore tangent slope, Riemann sums, and the shaded area of a definite integral.' } },
+  },
+}
+
+type UnitCopy = { title: string; subtitle: string; concepts: string[] }
+
+const UNIT_EN: Record<string, UnitCopy> = {
+  'g1:1': { title: 'Numbers, addition, and subtraction within 10', subtitle: 'Number order, composing and decomposing numbers, and everyday operations', concepts: ['Order and compare numbers from 1 to 10', 'Compose and decompose numbers, such as 7 = 3 + 4', 'Addition: $3 + 4 = 7$', 'Subtraction: $8 - 5 = 3$'] },
+  'g1:2': { title: 'Numbers within 100 and two-digit operations', subtitle: 'Base ten, tens and ones, and addition and subtraction with regrouping', concepts: ['Ten ones make one ten', 'Meaning of the tens and ones places', 'Add and subtract multiples of ten, such as $30 + 20 = 50$', 'Add and subtract two-digit and one-digit numbers'] },
+  'g1:3': { title: 'Clocks and length in everyday life', subtitle: 'Hour and minute hands, hours and half hours, and comparing length and thickness', concepts: ['The short hand is the hour hand; the long hand is the minute hand', 'The minute hand at 12 marks the hour; at 6 it marks the half hour (30 minutes)', 'Compare objects directly and indirectly'] },
+  'g2:1': { title: 'Two-digit column arithmetic and three-digit numbers', subtitle: 'Column methods, regrouping, and numbers to 1,000', concepts: ['Two-digit column addition with regrouping', 'Two-digit column subtraction with borrowing', 'Hundreds, tens, and ones in three-digit numbers'] },
+  'g2:2': { title: 'Multiplication facts and the meaning of multiplication', subtitle: 'Repeated addition, multiplication facts from 2 to 9, and multiples', concepts: ['Equal groups can be written as multiplication; 3 boxes of 4 are $4 \\times 3 = 12$', 'Meaning of the multiplicand and multiplier', 'Patterns and mental strategies for multiplication facts'] },
+  'g2:3': { title: 'Units of length and plane shapes', subtitle: 'Centimeters and meters, squares, rectangles, triangles, and angles', concepts: ['$1\\text{ m} = 100\\text{ cm}$', 'A square has four equal sides and four right angles', 'A rectangle has equal opposite sides and four right angles'] },
+  'g3:1': { title: 'Long division and remainders', subtitle: 'Equal sharing, quotative division, the long-division layout, and checking', concepts: ['dividend $\\div$ divisor = quotient ... remainder', 'The remainder must be less than the divisor', 'Check: dividend = divisor $\\times$ quotient + remainder'] },
+  'g3:2': { title: 'Introduction to fractions', subtitle: 'Equal parts, unit fractions, and operations with like denominators', concepts: ['When a whole is divided into equal parts, one part is a unit fraction', 'For like denominators, keep the denominator and add the numerators', 'Example: $\\frac{2}{5} + \\frac{1}{5} = \\frac{3}{5}$'] },
+  'g3:3': { title: 'Perimeter and area of rectangles and squares', subtitle: 'Square centimeters, perimeter, and area formulas', concepts: ['Rectangle perimeter = $(\\text{length} + \\text{width}) \\times 2$', 'Rectangle area = $\\text{length} \\times \\text{width}$', 'Square area = $\\text{side} \\times \\text{side}$'] },
+  'g4:1': { title: 'Improper, mixed, and equivalent fractions', subtitle: 'Converting among proper, improper, and mixed fractions and scaling equivalent fractions', concepts: ['Proper fractions have numerator < denominator; improper fractions have numerator $\\ge$ denominator', 'Convert an improper fraction: $\\frac{11}{4} = 2\\frac{3}{4}$', 'Multiply numerator and denominator by the same nonzero number to preserve value'] },
+  'g4:2': { title: 'Hundredths and decimal column arithmetic', subtitle: 'Tenths, hundredths, whole numbers, and aligning decimal points', concepts: ['$0.01$ is one hundredth', 'Align decimal points before adding or subtracting decimals', 'Trailing zeros in a decimal do not change its value'] },
+  'g4:3': { title: 'Angles, perpendicular lines, and parallel lines', subtitle: 'Angles from 1° to 360°, perpendicular bisectors, parallel lines, and quadrilaterals', concepts: ['Acute (< 90°), right (90°), obtuse (90° to 180°), and straight (180°) angles', 'Lines that intersect at 90 degrees are perpendicular', 'Properties of trapezoids, parallelograms, rhombi, rectangles, and squares'] },
+  'g5:1': { title: 'Factors, multiples, GCD, and LCM', subtitle: 'Divisibility, prime and composite numbers, greatest common divisors, and least common multiples', concepts: ['If $a \\div b$ divides evenly, $b$ is a factor of $a$ and $a$ is a multiple of $b$', 'A prime has exactly two positive factors: 1 and itself', 'The GCD is the greatest shared factor; the LCM is the least shared positive multiple'] },
+  'g5:2': { title: 'Unlike fractions and fraction multiplication', subtitle: 'Common denominators, multiplying a fraction by an integer, and multiplying fractions', concepts: ['For unlike fractions, first use the least common denominator, then add or subtract numerators', 'Multiply numerators and denominators; simplify before multiplying when possible', '$\\frac{a}{b} \\times \\frac{c}{d} = \\frac{a \\times c}{b \\times d}$'] },
+  'g5:3': { title: 'Surface area and volume of solids', subtitle: 'Rectangular-prism and cube volume, surface area, and nets', concepts: ['Rectangular-prism volume = $\\text{length} \\times \\text{width} \\times \\text{height}$', 'Cube volume = $\\text{side} \\times \\text{side} \\times \\text{side}$', 'Rectangular-prism surface area = $(\\text{length}\\times\\text{width} + \\text{length}\\times\\text{height} + \\text{width}\\times\\text{height}) \\times 2$'] },
+  'g6:1': { title: 'Fraction division and reciprocals', subtitle: 'Why dividing by a fraction means multiplying by its reciprocal, with applications', concepts: ['Reciprocals multiply to 1; the reciprocal of $\\frac{a}{b}$ is $\\frac{b}{a}$', '$\\frac{a}{b} \\div \\frac{c}{d} = \\frac{a}{b} \\times \\frac{d}{c}$', 'Convert a mixed number to an improper fraction before dividing'] },
+  'g6:2': { title: 'Ratios, ratio values, and proportions', subtitle: 'Antecedents, consequents, simplified ratios, and applications of proportions', concepts: ['In $a:b$, $a$ is the antecedent, $b$ is the consequent, and the ratio value is $\\frac{a}{b}$', 'A simplest integer ratio has relatively prime integer terms', 'If $a:b=c:d$, then the product of the extremes equals the product of the means: $a \\times d = b \\times c$'] },
+  'g6:3': { title: 'Circumference and area of a circle', subtitle: '$\\pi \\approx 3.14$, circumference $2\\pi r$, and area $\\pi r^2$', concepts: ['Circumference = diameter $\\times \\pi = 2 \\times \\pi \\times$ radius', 'Circle area = radius $\\times$ radius $\\times \\pi = \\pi r^2$', 'Sector area = circle area $\\times \\frac{\\text{central angle}}{360^\\circ}$'] },
+  'g7:1': { title: 'Integer operations and negative numbers', subtitle: 'Signed numbers, the number line, absolute value, opposites, and integer operations', concepts: ['Add like signs and keep the sign; for unlike signs, subtract absolute values and keep the sign of the greater absolute value', 'Sign rules: positive times positive is positive; positive times negative is negative; negative times negative is positive', '$|a|$ is the distance from $a$ to zero, so it is nonnegative'] },
+  'g7:2': { title: 'Linear equations in one variable', subtitle: 'Writing equations, equality properties, transposition, and applications', concepts: ['Adding, subtracting, multiplying, or dividing both sides by the same nonzero value preserves equality', 'Distribute parentheses and clear denominators with a common multiple', 'For an application: define $x$, write an equation, solve it, and check reasonableness'] },
+  'g7:3': { title: 'Systems of linear equations and coordinate graphs', subtitle: 'Substitution, elimination, the Cartesian plane, and intersections of lines', concepts: ['For substitution, write one equation as $y=ax+b$ and substitute it into the other', 'For elimination, add or subtract equations with matching coefficient magnitudes', 'A linear equation in two variables graphs as a line; an intersection is the unique solution of the system'] },
+  'g8:1': { title: 'Algebraic identities and polynomial operations', subtitle: 'Squares of sums and differences, difference of squares, and polynomial long division', concepts: ['$(a+b)^2=a^2+2ab+b^2$', '$(a-b)^2=a^2-2ab+b^2$', '$(a+b)(a-b)=a^2-b^2$'] },
+  'g8:2': { title: 'Square roots and the Pythagorean theorem', subtitle: 'Radicals, simplest radical form, the Pythagorean theorem, and its converse', concepts: ['If $x^2=a$ with $a\\ge0$, then $x=\\pm\\sqrt{a}$', 'A simplest radical has no square factor inside and no radical in the denominator', 'For a right triangle, $a^2+b^2=c^2$; common triples include 3:4:5 and 5:12:13'] },
+  'g8:3': { title: 'Factorization and quadratic equations', subtitle: 'Factoring, completing the square, and the quadratic formula', concepts: ['$x^2+(p+q)x+pq=(x+p)(x+q)$', '$x=\\frac{-b\\pm\\sqrt{b^2-4ac}}{2a}$', 'For $D=b^2-4ac$: $D>0$ gives two distinct real roots, $D=0$ a repeated root, and $D<0$ no real root'] },
+  'g9:1': { title: 'Similarity and proportional segments', subtitle: 'Parallel-line proportions, AA/SAS/SSS similarity, and area ratios', concepts: ['Similar polygons have equal corresponding angles and proportional corresponding sides', 'The area ratio of similar triangles is the square of the side-length ratio: $\\frac{\\text{Area}_1}{\\text{Area}_2}=(\\frac{s_1}{s_2})^2$', 'A centroid divides each median in a $2:1$ ratio'] },
+  'g9:2': { title: 'Circle geometry and triangle centers', subtitle: 'Central and inscribed angles, tangent-chord angles, circumcenter, incenter, and centroid', concepts: ['An inscribed angle is half the central angle subtending the same arc', 'The circumcenter is equidistant from all three vertices', 'The incenter is equidistant from all three sides; $r=\\frac{2\\Delta}{a+b+c}$'] },
+  'g9:3': { title: 'Quadratic functions and extrema', subtitle: 'Vertex form, the vertex, axis of symmetry, and opening direction', concepts: ['For $y=a(x-h)^2+k$, the vertex is $(h,k)$ and the axis is $x=h$', 'If $a>0$, the graph opens upward and has minimum $k$ at $x=h$', 'If $a<0$, the graph opens downward and has maximum $k$ at $x=h$'] },
+  'g10:1': { title: 'Real numbers and the AM-GM inequality', subtitle: 'Rational and irrational numbers, absolute value as distance, and AM-GM applications', concepts: ['For $a,b>0$, $\\frac{a+b}{2}\\ge\\sqrt{ab}$, with equality when $a=b$', '$|x-c|\\le r \\Leftrightarrow c-r\\le x\\le c+r$', '$\\sqrt{a+b\\pm2\\sqrt{ab}}=\\sqrt a\\pm\\sqrt b$ when the signs and ordering permit'] },
+  'g10:2': { title: 'Polynomial functions and division', subtitle: '$f(x)=g(x)q(x)+r(x)$, the remainder theorem, factor theorem, and root bracketing', concepts: ['The remainder when $f(x)$ is divided by $x-c$ is $f(c)$', '$x-c$ is a factor of $f(x)$ if and only if $f(c)=0$', 'If a real polynomial has $f(a)f(b)<0$, it has at least one real root in $(a,b)$'] },
+  'g10:3': { title: 'Exponential and logarithmic functions', subtitle: 'Exponent rules, logarithms, logarithm laws, and change of base', concepts: ['$\\log_a(xy)=\\log_a x+\\log_a y$ and $\\log_a(\\frac{x}{y})=\\log_a x-\\log_a y$', '$\\log_a(x^k)=k\\log_a x$', '$\\log_a b=\\frac{\\log_c b}{\\log_c a}$'] },
+  'g11:1': { title: 'Trigonometry and the laws of sines and cosines', subtitle: 'The sine law, cosine law, angle formulas, and sinusoid combination', concepts: ['$\\frac{a}{\\sin A}=\\frac{b}{\\sin B}=\\frac{c}{\\sin C}=2R$', '$c^2=a^2+b^2-2ab\\cos C$', '$a\\sin x+b\\cos x=\\sqrt{a^2+b^2}\\sin(x+\\phi)$'] },
+  'g11:2': { title: 'Vectors in space and plane equations', subtitle: '3D coordinates, dot and cross products, and plane normals', concepts: ['$\\vec u\\cdot\\vec v=|\\vec u||\\vec v|\\cos\\theta=u_1v_1+u_2v_2+u_3v_3$', '$\\vec u\\times\\vec v$ is perpendicular to both vectors, with magnitude equal to the parallelogram area', 'A plane through $(x_0,y_0,z_0)$ with normal $(a,b,c)$ is $a(x-x_0)+b(y-y_0)+c(z-z_0)=0$'] },
+  'g11:3': { title: 'Conditional probability and Bayes theorem', subtitle: 'Conditional probability, independent events, and reverse inference with Bayes theorem', concepts: ['$P(A|B)=\\frac{P(A\\cap B)}{P(B)}$', 'Independent events satisfy $P(A\\cap B)=P(A)P(B)$', 'Bayes theorem computes the probability of a cause given an observed result'] },
+  'g12:1': { title: 'Limits and continuity', subtitle: 'Sequence limits, infinite geometric series, function limits, and the squeeze theorem', concepts: ['An infinite geometric series converges when $|r|<1$, with sum $S=\\frac{a_1}{1-r}$', 'Limit laws: $\\lim[f(x)\\pm g(x)]=\\lim f(x)\\pm\\lim g(x)$', 'If $g(x)\\le f(x)\\le h(x)$ and both outer limits equal $L$, then $\\lim f(x)=L$'] },
+  'g12:2': { title: 'Derivatives and tangent slopes', subtitle: 'The derivative definition, polynomial rules, tangent equations, and extrema tests', concepts: ["$f'(x)=\\lim_{h\\to0}\\frac{f(x+h)-f(x)}{h}$ is the tangent slope", "$(c)'=0$, $(x^n)'=nx^{n-1}$, and $(cf(x))'=cf'(x)$", "Critical points satisfy $f'(x)=0$ and require a first- or second-derivative test to classify"] },
+  'g12:3': { title: 'Integration and area under curves', subtitle: 'Antiderivatives, the fundamental theorem of calculus, and areas between curves', concepts: ["If $F'(x)=f(x)$, then $\\int_a^b f(x)dx=F(b)-F(a)$", 'When $f(x)\\ge0$, $\\int_a^b f(x)dx$ is the area between the graph and the x-axis', 'If $f(x)\\ge g(x)$, the area between them is $\\int_a^b[f(x)-g(x)]dx$'] },
+}
+
+type QuestionCopy = {
+  title: string
+  question: string
+  options?: string[]
+  solution: string
+  hint?: string
+  competency?: string
+}
+
+const QUESTION_EN: Record<string, QuestionCopy> = {
+  'g1-1-1': { title: 'Compose and decompose numbers', question: 'There are 7 apples. Ming receives 3, and Hua receives the rest. How many apples does Hua receive?', options: ['3 apples', '4 apples', '5 apples', '6 apples'], solution: 'Decompose 7: $7 - 3 = 4$ (or $3 + 4 = 7$), so Hua receives 4 apples.', hint: 'What number must be added to 3 to make 7?', competency: 'Understand composition and decomposition within 10 and apply it to an everyday situation.' },
+  'g1-1-2': { title: 'Basic addition', question: 'Four boys and five girls are playing on the playground. How many children are there in all? Enter a number.', solution: 'Write the addition sentence: $4 + 5 = 9$ children.', hint: 'Count forward five numbers from 4: 5, 6, 7, 8, 9.', competency: 'Fluently add within 10.' },
+  'g1-1-3': { title: 'Basic subtraction', question: 'A refrigerator held 9 bottles of milk. Four were consumed. How many bottles remain?', options: ['4 bottles', '5 bottles', '6 bottles', '13 bottles'], solution: 'Start with 9 bottles and remove 4: $9 - 4 = 5$ bottles.', hint: 'Count backward four numbers from 9.' },
+  'g1-2-1': { title: 'Base-ten place value', question: 'In the number $58$, what does the digit 5 represent?', options: ['5 ones', '5 tens (50)', '58 ones', '8 tens'], solution: 'The 5 in $58$ is in the tens place, so it represents 5 tens, or 50. The 8 is in the ones place.', hint: 'The digit on the left is the tens digit; the digit on the right is the ones digit.' },
+  'g1-2-2': { title: 'Two-digit addition', question: 'A pack of paper costs 25 dollars and a pencil costs 7 dollars. How much do they cost in all?', solution: 'Compute $25 + 7$. In the ones place, $5 + 7 = 12$, so regroup 1 ten. Then $2 + 1 = 3$ tens. The total is 32 dollars.', hint: 'Add the ones first: $5 + 7 = 12$, then regroup 10 into the tens place.' },
+  'g1-2-3': { title: 'Adding multiples of ten', question: 'Calculate $30 + 20$.', solution: 'Three tens plus two tens is five tens, so the answer is 50. Both ones digits are 0, so no regrouping is needed.' },
+  'g1-3-1': { title: 'Reading a half-hour time', question: 'The hour hand is between 4 and 5, and the minute hand points to 6. What time is it?', options: ['4:06', '4:30 (half past four)', '5:30', '6:20'], solution: 'The minute hand at 6 means 30 minutes. The hour hand is past 4 but has not reached 5, so the time is 4:30.' },
+  'g1-3-2': { title: 'Direct comparison of length', question: 'Place a pencil and an eraser side by side with their ends aligned to see which is longer. What kind of comparison is this?', options: ['Direct comparison', 'Both objects must first be converted to meters', 'Only a clock can compare them', 'The two objects cannot be compared'], solution: 'Placing two objects side by side compares their lengths directly. Centimeters or meters are not needed yet.' },
+  'g1-3-3': { title: 'Time on the hour', question: 'The hour hand points to 3 and the minute hand points to 12. What time is it?', options: ['3:00', '12:03', '3:30', '12:15'], solution: 'The minute hand at 12 marks the hour, and the hour hand at 3 means 3:00. The minute hand at 6 would mark the half hour.' },
+  'g2-1-1': { title: 'Column subtraction with borrowing', question: 'Calculate $83 - 47$.', solution: 'In the ones place, borrow one ten so $13 - 7 = 6$. In the tens place, $8 - 1 - 4 = 3$. The answer is 36.' },
+  'g2-1-2': { title: 'Column addition with regrouping', question: 'Calculate $52 + 39$.', solution: 'In the ones place, $2 + 9 = 11$: write 1 and regroup 1 ten. Then $5 + 3 + 1 = 9$ tens. The answer is 91.' },
+  'g2-1-3': { title: 'Hundreds place', question: 'What digit is in the hundreds place of $245$?', solution: '$245$ has 2 hundreds, 4 tens, and 5 ones. The hundreds digit is 2, not the tens digit 4 and not the sum of the digits.' },
+  'g2-2-1': { title: 'Writing a multiplication expression', question: 'Each toy car has 4 wheels. Seven toy cars are parked. How many wheels are there in all?', options: ['$4 + 7 = 11$', '$4 \\times 7 = 28$', '$7 \\times 4 = 28$ (with wheels as the multiplicand)', '$4 \\times 8 = 32$'], solution: 'Each car has 4 wheels and there are 7 equal groups, so $4 \\times 7 = 28$ wheels.' },
+  'g2-2-2': { title: 'Multiplication fact', question: 'Calculate $8 \\times 6$.', solution: 'Eight times six is forty-eight, so $8 \\times 6 = 48$.' },
+  'g2-2-3': { title: 'Writing repeated addition as multiplication', question: 'Which multiplication expression has the same value as $4 + 4 + 4$?', solution: 'Three groups of 4 are $4 \\times 3 = 12$. $4 + 3$ is addition and does not represent the same equal groups.' },
+  'g2-3-1': { title: 'Converting units of length', question: 'Hua is 1 meter 28 centimeters tall. What is this height in centimeters?', solution: '$1\\text{ m} = 100\\text{ cm}$, so $100 + 28 = 128\\text{ cm}$.' },
+  'g2-3-2': { title: 'Sides of a square', question: 'A square has four right angles. What relationship do its four sides have?', options: ['All four sides have the same length', 'Only opposite sides are equal; adjacent sides may differ', 'Only one side is a right angle', 'All four sides must have different lengths'], solution: 'A square has four equal sides and four right angles. A rectangle has equal opposite sides, but its four sides need not all be equal.' },
+  'g2-3-3': { title: 'Opposite sides of a rectangle', question: 'A rectangle has four right angles. What is true of its sides?', options: ['Opposite sides are equal; adjacent sides may differ', 'All four sides must be equal', 'It has only one side', 'It has no right angles'], solution: 'A rectangle has equal opposite sides. A square has all four sides equal. Both shapes have four right angles.' },
+  'g3-1-1': { title: 'Division with a remainder', question: 'There are 38 candies. Six candies fill one bag. How many full bags can be made, and how many candies remain?', options: ['6 full bags, 2 remaining', '5 full bags, 8 remaining', '7 full bags, 0 remaining', '6 full bags, 4 remaining'], solution: '$38 \\div 6 = 6 \\dots 2$, so 6 bags can be filled and 2 candies remain. The remainder 2 is less than the divisor 6.', hint: '$6 \\times 6 = 36$, and $38 - 36 = 2$.' },
+  'g3-1-2': { title: 'Checking division', question: 'Given $17 \\div 5 = 3 \\dots 2$, what result should divisor × quotient + remainder produce?', solution: '$5 \\times 3 + 2 = 17$, the original dividend. The remainder 2 is also less than the divisor 5.' },
+  'g3-1-3': { title: 'The remainder is smaller than the divisor', question: 'Which statement is valid?', solution: 'The remainder must be smaller than the divisor. $5 \\times 3 + 2 = 17$, and 2 is less than 5. Remainders 7 and 12 are too large; $5 \\times 4 + 3 = 23$, not 17.' },
+  'g3-2-1': { title: 'Adding fractions with like denominators', question: 'A pizza is divided into 8 equal slices. Ming eats $\\frac{3}{8}$ and Hua eats $\\frac{2}{8}$. What fraction of the pizza do they eat in all?', options: ['$\\frac{5}{16}$ of a pizza', '$\\frac{5}{8}$ of a pizza', '$\\frac{1}{8}$ of a pizza', '$\\frac{6}{8}$ of a pizza'], solution: 'Keep the common denominator and add the numerators: $\\frac{3}{8} + \\frac{2}{8} = \\frac{3+2}{8} = \\frac{5}{8}$.' },
+  'g3-2-2': { title: 'Comparing fractions with like denominators', question: 'Which is greater, $\\frac{3}{7}$ or $\\frac{5}{7}$?', options: ['$\\frac{5}{7}$', '$\\frac{3}{7}$', 'They are equal', 'Fractions with the same denominator cannot be compared'], solution: 'Both denominators are 7, so the pieces have equal size. Since 5 is greater than 3, $\\frac{5}{7}$ is greater.' },
+  'g3-2-3': { title: 'One part is a unit fraction', question: 'A cake is divided into 4 equal pieces. What fraction is one piece?', solution: 'One of 4 equal pieces is $\\frac{1}{4}$. $\\frac{4}{1}$ means 4 wholes, not one piece.' },
+  'g3-3-1': { title: 'Area of a rectangle', question: 'A rectangular card is 8 cm long and 5 cm wide. What is its area in square centimeters?', solution: 'Rectangle area = $\\text{length} \\times \\text{width} = 8 \\times 5 = 40\\text{ cm}^2$.' },
+  'g3-3-2': { title: 'Perimeter of a rectangle', question: 'A rectangle is 6 cm long and 4 cm wide. What is its perimeter?', solution: 'Add all four sides: $(6 + 4) \\times 2 = 20$ cm. This is not the area $6 \\times 4 = 24$.' },
+  'g3-3-3': { title: 'Area of a square', question: 'A square has side length 5 cm. What is its area?', solution: 'Square area = side × side = $5 \\times 5 = 25$. Its perimeter would be $5 \\times 4 = 20$.' },
+  'g4-1-1': { title: 'Convert an improper fraction to a mixed number', question: 'Convert $\\frac{17}{5}$ to a mixed number.', solution: '$17 \\div 5 = 3 \\dots 2$, so the whole-number part is 3, the numerator is 2, and the denominator stays 5: $3\\frac{2}{5}$.' },
+  'g4-1-2': { title: 'Equivalent fractions', question: 'In $\\frac{2}{3} = \\frac{?}{6}$, what number replaces the question mark?', solution: 'The denominator 3 is multiplied by 2 to make 6, so multiply the numerator by 2 as well: $2 \\times 2 = 4$. Thus $\\frac{2}{3} = \\frac{4}{6}$.' },
+  'g4-1-3': { title: 'Proper fractions', question: 'Which is a proper fraction?', solution: 'A proper fraction has a numerator smaller than its denominator. $\\frac{5}{2}$ and $\\frac{7}{7}$ are improper fractions, and $3\\frac{1}{4}$ is a mixed number.' },
+  'g4-2-1': { title: 'Column subtraction with decimals', question: 'Calculate $5.2 - 2.85$. Enter a decimal.', solution: 'Align the decimal points: $5.20 - 2.85 = 2.35$.' },
+  'g4-2-2': { title: 'Trailing zeros in decimals', question: 'How do $3.40$ and $3.4$ compare?', options: ['They are equal', '$3.40$ is greater because it has an extra zero', '$3.4$ is greater because it has fewer digits', 'They cannot be compared'], solution: '$3.40$ is 3 and 40 hundredths; $3.4$ is 3 and 4 tenths. Both equal $3.4$. A trailing zero does not change the value.' },
+  'g4-2-3': { title: 'Hundredths place', question: 'What is $0.01$?', options: ['One hundredth', 'One tenth', '1', 'One hundred hundredths'], solution: 'The first digit after the decimal point is tenths and the second is hundredths. $0.01$ is one hundredth; $0.1$ is one tenth.' },
+  'g4-3-1': { title: 'Sum of angles in a triangle', question: 'Two interior angles of a triangle are 65° and 45°. What is the third angle?', solution: 'The interior angles total $180^\\circ$. The third angle is $180^\\circ - 65^\\circ - 45^\\circ = 70^\\circ$.' },
+  'g4-3-2': { title: 'Perpendicular lines', question: 'Two lines intersect at 90°. What is their relationship?', options: ['They are perpendicular', 'They must be parallel', 'They must be the same line', 'Their angle must be obtuse'], solution: 'Lines that meet at a right angle are perpendicular. Parallel lines do not intersect.' },
+  'g4-3-3': { title: 'Obtuse angles', question: 'What type of angle is $120^\\circ$?', options: ['Obtuse angle', 'Acute angle', 'Right angle', 'Straight angle'], solution: 'An angle greater than $90^\\circ$ and less than $180^\\circ$ is obtuse. $90^\\circ$ is right, $180^\\circ$ is straight, and an angle below $90^\\circ$ is acute.' },
+  'g5-1-1': { title: 'Find the greatest common divisor', question: 'Find the greatest common divisor of $24$ and $36$.', solution: 'The factors of 24 are 1, 2, 3, 4, 6, 8, 12, 24; the factors of 36 are 1, 2, 3, 4, 6, 9, 12, 18, 36. The greatest shared factor is 12.' },
+  'g5-1-2': { title: 'LCM in a recurring schedule', question: 'Bus A leaves every 12 minutes and bus B every 18 minutes. Both leave at 8:00 a.m. After how many minutes will they next leave together?', solution: 'Find the least common multiple of 12 and 18: $[12,18]=36$ minutes.' },
+  'g5-1-3': { title: 'A prime has two positive factors', question: 'Which number is prime?', solution: 'A prime has exactly two positive factors: 1 and itself. 11 is prime. 9 is divisible by 3, 15 by 3 and 5, and 1 has only one positive factor.' },
+  'g5-2-1': { title: 'Adding unlike fractions', question: 'Calculate $\\frac{1}{3} + \\frac{2}{5}$.', solution: 'Use denominator 15: $\\frac{1}{3}=\\frac{5}{15}$ and $\\frac{2}{5}=\\frac{6}{15}$. Then $\\frac{5+6}{15}=\\frac{11}{15}$.' },
+  'g5-2-2': { title: 'Multiplying fractions', question: 'Calculate $\\frac{1}{2} \\times \\frac{3}{4}$.', solution: 'Multiply numerators and denominators: $\\frac{1\\times3}{2\\times4}=\\frac{3}{8}$. This is multiplication, not addition with a common denominator.' },
+  'g5-2-3': { title: 'Multiply a fraction by an integer', question: 'Calculate $\\frac{2}{5} \\times 3$.', solution: 'Write 3 as $\\frac{3}{1}$. The numerator is $2\\times3=6$ and the denominator remains 5, giving $\\frac{6}{5}$. Do not multiply the denominator by 3.' },
+  'g5-3-1': { title: 'Volume of a rectangular prism', question: 'A rectangular tank is 20 cm long, 15 cm wide, and 10 cm high. What is its volume in cubic centimeters?', solution: 'Volume = $20 \\times 15 \\times 10 = 3000\\text{ cm}^3$.' },
+  'g5-3-2': { title: 'Volume of a cube', question: 'A cube has side length 3 cm. What is its volume?', solution: 'Cube volume = side × side × side = $3 \\times 3 \\times 3 = 27\\text{ cm}^3$.' },
+  'g5-3-3': { title: 'Surface area of a rectangular prism', question: 'A rectangular prism is 2 cm long, 3 cm wide, and 4 cm high. What is its surface area?', solution: '$(2\\times3+2\\times4+3\\times4)\\times2=(6+8+12)\\times2=52$. The volume, $2\\times3\\times4=24$, is not requested.' },
+  'g6-1-1': { title: 'Dividing fractions', question: 'Calculate $\\frac{4}{9} \\div \\frac{2}{3}$.', solution: 'Dividing by $\\frac{2}{3}$ means multiplying by $\\frac{3}{2}$: $\\frac{4}{9}\\times\\frac{3}{2}=\\frac{12}{18}=\\frac{2}{3}$.' },
+  'g6-1-2': { title: 'Reciprocals', question: 'What is the reciprocal of $\\frac{3}{4}$?', solution: 'Reciprocals multiply to 1: $\\frac{3}{4}\\times\\frac{4}{3}=1$. Adding a negative sign or changing only the numerator does not give the reciprocal.' },
+  'g6-1-3': { title: 'Convert a mixed number before dividing', question: 'Calculate $1\\frac{1}{2} \\div \\frac{1}{2}$.', solution: 'First convert $1\\frac{1}{2}$ to $\\frac{3}{2}$, then multiply by the reciprocal $\\frac{2}{1}$ to get 3. Do not divide only the whole-number part.' },
+  'g6-2-1': { title: 'Solve a proportion', question: 'Given $4:7=12:x$, find $x$.', solution: 'The product of the extremes equals the product of the means: $4x=7\\times12$, so $4x=84$ and $x=21$.' },
+  'g6-2-2': { title: 'Simplest integer ratio', question: 'Write $6:9$ as a simplest integer ratio.', solution: 'Divide both terms by their GCD, 3: $6:9=2:3$. The integers 2 and 3 are relatively prime.' },
+  'g6-2-3': { title: 'A ratio value is a number', question: 'What is the value of the ratio $6:3$?', solution: 'Divide the antecedent by the consequent: $6\\div3=2$. The simplest integer ratio is $2:1$, but the requested ratio value is the number 2.' },
+  'g6-3-1': { title: 'Area of a circle', question: 'A circular pizza has radius 10 cm. Using $\\pi=3.14$, what is its area in square centimeters?', solution: 'Area $=\\pi r^2=3.14\\times10\\times10=314\\text{ cm}^2$.' },
+  'g6-3-2': { title: 'Circumference of a circle', question: 'A circle has radius 5 cm. Using $\\pi=3.14$, what is its circumference?', solution: 'Circumference $=2\\pi r=2\\times3.14\\times5=31.4$ cm. This is not the area $3.14\\times25$.' },
+  'g6-3-3': { title: 'A sector is part of a circle', question: 'A sector has radius 10 cm and central angle $90^\\circ$. Using $\\pi=3.14$, what is its area?', solution: 'The full circle has area $3.14\\times10\\times10=314$. Since $90^\\circ$ is one fourth of $360^\\circ$, the sector area is $314\\div4=78.5$.' },
+  'g7-1-1': { title: 'Mixed operations with negative numbers', question: 'Calculate $(-18) \\div 3 - (-4) \\times (-5)$.', solution: 'Multiply and divide first: $(-18)\\div3=-6$ and $(-4)\\times(-5)=20$. Then $-6-20=-26$.' },
+  'g7-1-2': { title: 'Absolute value is distance', question: 'Evaluate $|-7|$.', solution: 'Absolute value is distance from zero on the number line, not another negative sign. Therefore $|-7|=7$.' },
+  'g7-1-3': { title: 'Adding numbers with the same sign', question: 'Calculate $(-3)+(-5)$.', solution: 'Add the absolute values and keep the negative sign: $3+5=8$, so the result is $-8$, not 2 or 8.' },
+  'g7-2-1': { title: 'Solve a linear equation', question: 'Solve $3(2x-5)=4x+7$ for $x$.', solution: 'Expand: $6x-15=4x+7$. Rearrange to get $6x-4x=7+15$, so $2x=22$ and $x=11$.' },
+  'g7-2-2': { title: 'Representing change with an equation', question: 'One pen costs $x$ dollars. Four pens are bought with 100 dollars and the change is 20 dollars. Solve $4x+20=100$.', solution: '$4x=100-20=80$, so $x=20$. The 20 dollars of change belongs on the same side as the cost in the original total.' },
+  'g7-2-3': { title: 'Clear the denominator', question: 'Solve $\\frac{x}{2}+3=7$ for $x$.', solution: 'Subtract 3 from both sides to get $\\frac{x}{2}=4$, then multiply both sides by 2: $x=8$. Do not simply discard the denominator.' },
+  'g7-3-1': { title: 'Solve a system of linear equations', question: 'Solve $\\begin{cases}2x+y=7\\\\x-y=2\\end{cases}$ for $(x,y)$.', solution: 'Add the equations: $3x=9$, so $x=3$. Substitute into $x-y=2$ to get $y=1$. The solution is $(3,1)$.' },
+  'g7-3-2': { title: 'Eliminate by substitution', question: 'Given $y=x+1$ and $x+y=5$, find $(x,y)$.', solution: 'Substitute $y=x+1$: $x+(x+1)=5$, so $2x=4$, $x=2$, and $y=3$.' },
+  'g7-3-3': { title: 'Parallel lines do not intersect', question: 'Two lines are parallel and distinct. How many solutions does their system have?', options: ['No solution', 'Exactly one solution', 'Infinitely many solutions', 'Exactly two solutions'], solution: 'Distinct parallel lines have no intersection, so the system has no solution. Coincident lines have infinitely many solutions; intersecting lines have one.' },
+  'g8-1-1': { title: 'Mental calculation with an identity', question: 'Use an algebraic identity to calculate $103^2-97^2$.', solution: 'Use $a^2-b^2=(a+b)(a-b)$: $(103+97)(103-97)=200\\times6=1200$.' },
+  'g8-1-2': { title: 'Square of a sum', question: 'Which expression is the expansion of $(x+3)^2$?', solution: '$(a+b)^2=a^2+2ab+b^2$. Here $2ab=2\\cdot x\\cdot3=6x$; squaring only the 3 omits the middle term.' },
+  'g8-1-3': { title: 'Square of a difference', question: 'Which expression is the expansion of $(x-4)^2$?', solution: '$(a-b)^2=a^2-2ab+b^2$, so the middle term is $-8x$. Writing only $x^2+16$ omits it; $+8x$ belongs to a sum.' },
+  'g8-2-1': { title: 'Find a hypotenuse with the Pythagorean theorem', question: 'A right triangle has legs 5 cm and 12 cm. What is the hypotenuse length?', solution: '$c=\\sqrt{5^2+12^2}=\\sqrt{25+144}=\\sqrt{169}=13$ cm.' },
+  'g8-2-2': { title: 'Simplify a radical', question: 'Write $\\sqrt{50}$ in simplest radical form.', solution: '$50=25\\times2$, so $\\sqrt{50}=\\sqrt{25}\\times\\sqrt2=5\\sqrt2$, not $25\\sqrt2$.' },
+  'g8-2-3': { title: 'Find a leg from the hypotenuse', question: 'A right triangle has hypotenuse 10 cm and one leg 6 cm. What is the other leg?', solution: '$6^2+b^2=10^2$, so $b^2=100-36=64$. Length is positive, so $b=8$. The hypotenuse is the longest side.' },
+  'g8-3-1': { title: 'Solve a quadratic by factoring', question: 'Find both roots of $x^2-5x+6=0$.', options: ['$x=2$ or $x=3$', '$x=-2$ or $x=-3$', '$x=1$ or $x=6$', '$x=-1$ or $x=-6$'], solution: 'Factor to get $(x-2)(x-3)=0$, so $x=2$ or $x=3$.' },
+  'g8-3-2': { title: 'Discriminant equal to zero', question: 'How many distinct real solutions does $x^2+2x+1=0$ have?', options: ['One distinct value (a repeated root)', 'Two distinct real values', 'No real solution', 'Infinitely many values'], solution: '$D=2^2-4\\cdot1\\cdot1=0$, so the root is repeated. $(x+1)^2=0$ gives only $x=-1$.' },
+  'g8-3-3': { title: 'Discriminant less than zero', question: 'What are the real solutions of $x^2+1=0$?', options: ['There is no real solution', 'There are two distinct real solutions', 'There is one real solution, $1$', 'There is one real solution, $-1$'], solution: '$D=0-4\\cdot1\\cdot1=-4<0$, so there is no real solution. $x^2=-1$ is impossible over the reals; this differs from a repeated root.' },
+  'g9-1-1': { title: 'Area ratio of similar triangles', question: 'Given $\\triangle ABC\\sim\\triangle DEF$ with corresponding side ratio $2:3$, if the area of $\\triangle ABC$ is 20 cm², what is the area of $\\triangle DEF$?', solution: 'Area ratio equals the square of the side ratio: $\\frac{\\text{Area}_{ABC}}{\\text{Area}_{DEF}}=(\\frac{2}{3})^2=\\frac{4}{9}$. Thus $\\text{Area}_{DEF}=20\\times\\frac{9}{4}=45\\text{ cm}^2$.' },
+  'g9-1-2': { title: 'Two pairs of equal corresponding angles', question: 'Two triangles have two pairs of equal corresponding angles. What can be concluded?', options: ['The triangles are similar', 'The triangles are congruent', 'The triangles have equal areas', 'No relationship can be determined'], solution: 'Two equal corresponding angles establish AA similarity. Similarity does not imply congruence or equal area.' },
+  'g9-1-3': { title: 'A centroid divides a median in a 2:1 ratio', question: 'A median has length 9. What is the distance from the centroid to the vertex?', solution: 'A centroid divides the median in a $2:1$ ratio, with the longer part toward the vertex. $9\\times\\frac{2}{3}=6$; the other segment has length 3.' },
+  'g9-2-1': { title: 'Inscribed and central angles', question: 'In circle $O$, arc $\\widehat{AB}$ measures $80^\\circ$. What is the inscribed angle $\\angle APB$ subtending the same arc?', solution: 'An inscribed angle is half its intercepted arc: $\\angle APB=\\frac12\\times80^\\circ=40^\\circ$.' },
+  'g9-2-2': { title: 'Distance from the circumcenter to the vertices', question: 'How do the distances from a triangle’s circumcenter to its three vertices compare?', options: ['All three distances are equal', 'The distances are always in a $2:1$ ratio', 'The circumcenter is always inside the triangle', 'The distances from the circumcenter to the three sides are equal'], solution: 'The circumcenter is the center of the circumscribed circle and is equidistant from the vertices. The incenter is equidistant from the sides. An obtuse triangle’s circumcenter lies outside.' },
+  'g9-2-3': { title: 'Distance from the incenter to the sides', question: 'Which property does a triangle’s incenter have?', options: ['It is equidistant from the three sides', 'It is equidistant from the three vertices', 'It always divides a median in a $2:1$ ratio', 'It lies outside every obtuse triangle'], solution: 'The incenter is the center of the inscribed circle and is equidistant from the three sides. The circumcenter is equidistant from the vertices; the centroid divides medians $2:1$.' },
+  'g9-3-1': { title: 'Find the extremum of a quadratic', question: 'For $y=-2(x-3)^2+8$, at what $x$ is the maximum attained, and what is the maximum?', options: ['Maximum 8 at $x=3$', 'Maximum 8 at $x=-3$', 'Minimum -8 at $x=3$', 'Maximum -10 at $x=0$'], solution: 'Since $a=-2<0$, the parabola opens downward. Its vertex is $(3,8)$, so the maximum is 8 at $x=3$.' },
+  'g9-3-2': { title: 'Minimum of an upward-opening parabola', question: 'What is the minimum value of $y=(x-1)^2+4$?', options: ['4', '1', '-1', 'There is no minimum'], solution: 'Since $a=1>0$, the parabola opens upward and the vertex $(1,4)$ gives minimum 4. The value $x=1$ is where it occurs, not the minimum itself.' },
+  'g9-3-3': { title: 'The axis of symmetry is a line', question: 'What is the axis of symmetry of $y=3(x+2)^2-5$?', options: ['The line $x=-2$', 'The line $x=2$', 'The line $y=-5$', 'The line $y=3$'], solution: 'Write the function as $y=3(x-(-2))^2-5$. The axis is $x=-2$. The value $y=-5$ is the minimum, not the axis.' },
+  'g10-1-1': { title: 'Use AM-GM to find an extremum', question: 'For $x>0$, find the minimum of $f(x)=x+\\frac{9}{x}$.', solution: 'By AM-GM, $\\frac{x+9/x}{2}\\ge\\sqrt{x\\cdot9/x}=3$, so $x+9/x\\ge6$. Equality holds when $x=9/x$, namely $x=3$, so the minimum is 6.' },
+  'g10-1-2': { title: 'Absolute value represents an interval of distances', question: 'Which interval solves $|x-3|\\le2$?', options: ['$1\\le x\\le5$', '$x\\le1$ or $x\\ge5$', 'Only $x=3$', '$3\\le x\\le5$'], solution: '$|x-3|$ is the distance from 3. A distance no greater than 2 gives the interval from 1 through 5, not two separate outer rays.' },
+  'g10-1-3': { title: 'Nested radicals', question: 'Which expression equals $\\sqrt{5+2\\sqrt6}$?', solution: '$(\\sqrt3+\\sqrt2)^2=3+2\\sqrt6+2=5+2\\sqrt6$, so the positive square root is $\\sqrt3+\\sqrt2$.' },
+  'g10-2-1': { title: 'Use the remainder theorem', question: 'Let $f(x)=2x^4-5x^3+3x^2-4x+7$. Find the remainder when $f(x)$ is divided by $x-2$.', solution: 'By the remainder theorem, the remainder is $f(2)=2(16)-5(8)+3(4)-4(2)+7=11$.' },
+  'g10-2-2': { title: 'The factor theorem', question: 'Let $f(x)=x^2-5x+6$. What does $f(2)=0$ imply?', options: ['$x-2$ is a factor of $f(x)$', '$x-2$ is not a factor', 'The remainder is 2', 'There is no real root'], solution: 'The remainder upon division by $x-2$ is $f(2)$. Since it is 0, $x-2$ is a factor; the remainder is not 2.' },
+  'g10-2-3': { title: 'Root bracketing guarantees a root in an interval', question: 'Given $f(1)=2$ and $f(2)=-1$, what is guaranteed?', options: ['At least one real root lies in $(1,2)$', 'The root must be $1.5$', '$f(1.5)$ must be 0', 'There is no real root'], solution: 'A polynomial is continuous. Opposite signs at the endpoints guarantee at least one real root between them, but not necessarily at the midpoint.' },
+  'g10-3-1': { title: 'Simplify with logarithm laws', question: 'Calculate $\\log_2 24+\\log_2 6-\\log_2 9$.', solution: '$\\log_2(\\frac{24\\times6}{9})=\\log_2 16=4$, because $2^4=16$.' },
+  'g10-3-2': { title: 'A logarithm is an exponent', question: 'Calculate $\\log_4 8$. Enter a decimal such as 1.5.', solution: '$4^{3/2}=(2^2)^{3/2}=2^3=8$, so $\\log_4 8=\\frac32=1.5$. Change of base gives the same value.' },
+  'g10-3-3': { title: 'Bring an exponent in front of a logarithm', question: 'Calculate $\\log_2(8^2)$.', solution: '$2\\log_2 8=2\\times3=6$. Equivalently, $8^2=64=2^6$. Do not square 3 to get 9.' },
+  'g11-1-1': { title: 'Use the cosine law to find a side', question: 'In $\\triangle ABC$, let $a=5$, $b=8$, and $\\angle C=60^\\circ$. Find $c$.', solution: '$c^2=5^2+8^2-2(5)(8)\\cos60^\\circ=25+64-40=49$, so $c=7$.' },
+  'g11-1-2': { title: 'Circumradius in the sine law', question: 'A triangle has $a=6$ and $A=30^\\circ$. What is its circumradius $R$?', solution: '$\\frac{a}{\\sin A}=2R$. Since $\\sin30^\\circ=\\frac12$, $6/(1/2)=12=2R$, so $R=6$.' },
+  'g11-1-3': { title: 'Amplitude of a combined sinusoid', question: 'What is the maximum value of $3\\sin x+4\\cos x$?', solution: 'Write it as $\\sqrt{3^2+4^2}\\sin(x+\\phi)$. The amplitude is $\\sqrt{9+16}=5$, not $3+4$ or $3\\times4$.' },
+  'g11-2-1': { title: 'Perpendicular vectors have zero dot product', question: 'Vectors $\\vec u=(2,k,-3)$ and $\\vec v=(3,4,2)$ are perpendicular. Find the real value of $k$.', solution: '$\\vec u\\cdot\\vec v=2(3)+4k+(-3)(2)=4k=0$, so $k=0$.' },
+  'g11-2-2': { title: 'A point and normal determine a plane', question: 'A plane passes through $(1,2,3)$ and has normal $(1,0,-1)$. Which equation represents it?', solution: '$1(x-1)+0(y-2)-1(z-3)=0$, which simplifies to $x-z+2=0$ and contains $(1,2,3)$.' },
+  'g11-2-3': { title: 'A cross product is perpendicular to both vectors', question: 'What is $(1,0,0)\\times(0,1,0)$?', solution: 'The cross product is perpendicular to both vectors and equals $(0,0,1)$. The vector $(1,1,0)$ is their sum, not their cross product.' },
+  'g11-3-1': { title: 'Calculate conditional probability', question: 'Given $P(A)=0.6$, $P(B)=0.5$, and $P(A\\cap B)=0.3$, find $P(A|B)$.', solution: '$P(A|B)=\\frac{P(A\\cap B)}{P(B)}=\\frac{0.3}{0.5}=0.6$.' },
+  'g11-3-2': { title: 'Independent does not mean mutually exclusive', question: 'If $P(A\\cap B)=P(A)P(B)$, which description applies?', options: ['$A$ and $B$ are independent', '$A$ and $B$ are mutually exclusive', '$P(A|B)$ must be 0', 'This is already reverse inference by Bayes theorem'], solution: 'The equality defines independence. Mutually exclusive events have intersection probability 0. No cause-and-result information is given for a Bayes inference.' },
+  'g11-3-3': { title: 'Reversing a condition changes the denominator', question: 'Given $P(A)=0.4$ and $P(A\\cap B)=0.2$, calculate $P(B|A)$. Enter a decimal.', solution: '$P(B|A)=\\frac{P(A\\cap B)}{P(A)}=\\frac{0.2}{0.4}=0.5$. Computing $P(A|B)$ would require $P(B)$ instead.' },
+  'g12-1-1': { title: 'Sum an infinite geometric series', question: 'Find the sum of $4+2+1+\\frac12+\\dots$.', solution: 'The first term is $a_1=4$ and the ratio is $r=\\frac12$. Since $|r|<1$, $S=\\frac{4}{1-1/2}=8$.' },
+  'g12-1-2': { title: 'Do not use the sum formula when the ratio is not below 1 in magnitude', question: 'An infinite geometric series has first term 3 and ratio 2. What is its sum?', options: ['The formula $S=\\frac{a}{1-r}$ does not apply because $|r|$ is not less than 1', 'The sum is $-3$', 'The sum is 3', 'The sum is 1.5'], solution: '$|r|=2$ is not less than 1, so the convergence condition fails. Substituting into the formula to get $-3$ is invalid.' },
+  'g12-1-3': { title: 'The squeeze theorem gives a limit, not the function', question: 'Suppose $-x^2\\le f(x)\\le x^2$, and both bounds approach 0 as $x$ approaches 0. What is the limit of $f(x)$?', options: ['0', '1', 'It cannot be determined', '$f(x)$ must equal $x^2$'], solution: 'Both bounds approach the same value, so the squeeze theorem gives limit 0. This does not imply that $f(x)=x^2$.' },
+  'g12-2-1': { title: 'Tangent slope and tangent line', question: 'What is the tangent slope of $f(x)=x^3-3x+2$ at $(2,4)$?', solution: "$f'(x)=3x^2-3$. At $x=2$, $m=f'(2)=3(2^2)-3=9$." },
+  'g12-2-2': { title: 'A critical point is not automatically a maximum', question: "$f(x)=x^2$ satisfies $f'(0)=0$. What kind of point is $x=0$?", options: ['A critical point and a local minimum', 'It must be a maximum because the derivative is zero', 'It is not a critical point', 'The derivative does not exist there'], solution: "$f'(x)=2x$, so $f'(0)=0$ and the point is critical. Since $f''(x)=2>0$, it is a minimum. A zero derivative alone does not imply a maximum." },
+  'g12-2-3': { title: 'The derivative of a constant is zero', question: 'What is the derivative of the constant function $f(x)=5$?', options: ['0', '5', '$x$', 'It does not exist'], solution: 'A constant has rate of change 0. The function value is 5, but its slope is 0.' },
+  'g12-3-1': { title: 'Evaluate a definite integral', question: 'Evaluate $\\int_0^3(3x^2-2x+1)\\,dx$.', solution: 'An antiderivative is $F(x)=x^3-x^2+x$. Thus $F(3)-F(0)=(27-9+3)-0=21$.' },
+  'g12-3-2': { title: 'A definite integral below the x-axis is signed', question: 'Evaluate $\\int_0^1(-2)\\,dx$.', solution: 'An antiderivative is $-2x$, so the result is $(-2)-0=-2$. The graph is below the x-axis, so the signed integral is negative; the geometric area is 2.' },
+  'g12-3-3': { title: 'Identify the upper curve first', question: 'The line $y=4$ lies above $y=x$ from $x=0$ to $x=2$. What is the enclosed area?', solution: '$\\int_0^2(4-x)\\,dx=[4x-\\frac{x^2}{2}]_0^2=8-2=6$. Integrating only one curve does not give the area between them.' },
+  'elem-m-1': { title: 'Large numbers and multi-digit operations', question: 'Calculate $4500 \\times 600$.', options: ['270000', '2700000 ($2.7\\times10^6$)', '27000000', '27000'], solution: '$45\\times6=270$, followed by four zeros: $2,700,000$.' },
+  'elem-m-2': { title: 'Multiplication of unlike fractions', question: 'Calculate $\\frac56\\times\\frac3{10}$. Give the answer in simplest decimal form, such as 0.25.', solution: '$\\frac{5\\times3}{6\\times10}=\\frac{15}{60}=\\frac14=0.25$.' },
+  'elem-m-3': { title: 'Area of a circle', question: 'A circular clock face has radius 20 cm. Using $\\pi=3.14$, what is its area in square centimeters?', solution: 'Area $=3.14\\times20\\times20=1256\\text{ cm}^2$.' },
+  'elem-m-4': { title: 'Rate and time', question: 'Ming cycles at 15 km/h and rides for 24 minutes from home to school. How far is the trip in kilometers?', solution: '24 minutes $=\\frac{24}{60}=0.4$ hour. Distance $=15\\times0.4=6$ km.' },
+  'elem-m-5': { title: 'Simplest integer ratio', question: 'Simplify $12:18$ to a simplest integer ratio.', solution: 'Divide both terms by 6: $12:18=2:3$. Do not subtract the two terms.' },
+  'elem-m-6': { title: 'Volume of a rectangular prism', question: 'A rectangular prism is 5 cm long, 4 cm wide, and 3 cm high. What is its volume in cubic centimeters?', solution: 'Volume $=5\\times4\\times3=60$. Surface area would add the areas of all six faces and is not requested.' },
+  'cap-m-1': { title: 'Integer operations and exponents', question: 'Calculate $(-2)^3\\times5-(-12)\\div(-4)$.', solution: '$(-2)^3=-8$, so $(-8)\\times5=-40$, and $(-12)\\div(-4)=3$. The result is $-40-3=-43$.' },
+  'cap-m-2': { title: 'Algebraic identities and radical simplification', question: 'Simplify $(\\sqrt7+\\sqrt3)(\\sqrt7-\\sqrt3)$.', solution: 'By the difference of squares, $(\\sqrt7)^2-(\\sqrt3)^2=7-3=4$.' },
+  'cap-m-3': { title: 'Graph of a linear equation', question: 'In the coordinate plane, which quadrant does the line $L:3x-4y=12$ not pass through?', options: ['Quadrant I', 'Quadrant II', 'Quadrant III', 'Quadrant IV'], solution: 'The intercepts are $(4,0)$ and $(0,-3)$. The line passes through Quadrants I, III, and IV, but not Quadrant II.' },
+  'cap-m-4': { title: 'Triangle centers and the centroid', question: 'In $\\triangle ABC$, $G$ is the centroid. If median $AD=12$ cm, what is the length of $AG$?', solution: 'The centroid divides a median in a $2:1$ ratio: $AG=\\frac23AD=\\frac23\\times12=8$ cm.' },
+  'cap-m-5': { title: 'Minimum of a quadratic function', question: 'For $y=x^2-6x+13$, what is the y-coordinate of the minimum point?', solution: 'Complete the square: $y=(x^2-6x+9)-9+13=(x-3)^2+4$. The vertex is $(3,4)$, so the minimum y-value is 4.' },
+  'cap-m-6': { title: 'Discriminant less than zero', question: 'What are the real solutions of $x^2+x+1=0$?', options: ['There is no real solution', 'There are two distinct real solutions', 'There is one real solution, $1$', 'There is one real solution, $-1$'], solution: '$D=1^2-4\\cdot1\\cdot1=-3<0$, so there is no real solution. This is not a repeated root.' },
+  'cap-m-7': { title: 'Area ratio is the square of the side ratio', question: 'Two similar triangles have corresponding side ratio $2:3$. If the smaller area is 8, what is the larger area?', solution: 'The area ratio is $2^2:3^2=4:9$, so the larger area is $8\\times\\frac94=18$, not $8\\times\\frac32$.' },
+  'gsat-m-1': { title: 'AM-GM and extrema', question: 'Let $a>0$, $b>0$, and $ab=16$. What is the minimum value of $a+b$?', solution: 'By AM-GM, $\\frac{a+b}{2}\\ge\\sqrt{ab}=4$, so $a+b\\ge8$. Equality holds when $a=b=4$.' },
+  'gsat-m-2': { title: 'Trigonometry and the sine law', question: 'In $\\triangle ABC$, $\\angle A=30^\\circ$ and the circumradius is $R=6$. Find the opposite side $a=BC$.', solution: 'By the sine law, $\\frac{a}{\\sin A}=2R$, so $a=2R\\sin30^\\circ=2(6)(0.5)=6$.' },
+  'gsat-m-3': { title: 'Dot product of spatial vectors', question: 'Let $\\vec u=(1,2,2)$ and $\\vec v=(2,-1,2)$. Find $\\vec u\\cdot\\vec v$.', solution: '$\\vec u\\cdot\\vec v=1(2)+2(-1)+2(2)=2-2+4=4$.' },
+  'gsat-m-4': { title: 'Larger root of a derivative equation', question: "Let $f(x)=x^3-6x^2+9x+2$. Find the larger real root of $f'(x)=0$.", solution: "$f'(x)=3x^2-12x+9=3(x-1)(x-3)$. The roots are 1 and 3, so the larger root is 3." },
+  'gsat-m-5': { title: 'Sum only when the ratio has magnitude below 1', question: 'An infinite geometric series has first term 6 and ratio $\\frac13$. What is its sum?', solution: 'Since $|r|<1$, $S=\\frac{6}{1-1/3}=9$. The formula does not apply when the convergence condition fails.' },
+  'gsat-m-6': { title: 'A logarithm is an exponent', question: 'Calculate $\\log_8 4$.', solution: '$8^{2/3}=(2^3)^{2/3}=4$, so $\\log_8 4=\\frac23$. It is not $8\\div4$.' },
+}
+
+type ExamCopy = { title: string; subtitle: string; targetGrade: string; gradingScale: string }
+
+const EXAM_EN: Record<MockExamType, ExamCopy> = {
+  elementary: { title: 'Upper Elementary Practice', subtitle: 'Operations, fractions, area, rate, ratio, and volume. This is not an official assessment.', targetGrade: 'Grades 5-6', gradingScale: 'Records only the number correct; no official level is assigned' },
+  cap: { title: 'Junior High Mathematics Practice', subtitle: 'Integers, identities, lines, centroids, quadratics, discriminants, and area ratios. This is not an official CAP paper.', targetGrade: 'Grades 7-9', gradingScale: 'Records only the number correct; no CAP level is assigned' },
+  gsat: { title: 'Senior High Mathematics Practice', subtitle: 'AM-GM, sine law, dot products, derivatives, infinite series, and logarithms. This is not an official admissions paper.', targetGrade: 'Grades 10-12', gradingScale: 'Records only the number correct; no official level is assigned' },
+}
+
+function requireEnglish(source: string, translated: string | undefined, label: string): string {
+  if (HAN.test(source) && !translated) throw new Error(`Missing English math translation: ${label}`)
+  const result = translated ?? source
+  if (HAN.test(result)) throw new Error(`English math translation still contains Han characters: ${label}`)
+  return result
+}
+
+export function localizeMathQuestion(question: MathQuestion, locale: UiLocale): MathQuestion {
+  if (locale !== 'en') return question
+  const copy = QUESTION_EN[question.id]
+  if (!copy) throw new Error(`Missing English math question: ${question.id}`)
+  if (question.options && copy.options && copy.options.length !== question.options.length) {
+    throw new Error(`English math options do not match source: ${question.id}`)
+  }
+  return {
+    ...question,
+    title: requireEnglish(question.title, copy.title, `${question.id}.title`),
+    question: requireEnglish(question.question, copy.question, `${question.id}.question`),
+    options: question.options?.map((option, index) => requireEnglish(option, copy.options?.[index], `${question.id}.options[${index}]`)),
+    solution: requireEnglish(question.solution, copy.solution, `${question.id}.solution`),
+    hint: question.hint === undefined ? undefined : requireEnglish(question.hint, copy.hint, `${question.id}.hint`),
+    competency: question.competency === undefined ? undefined : requireEnglish(question.competency, copy.competency, `${question.id}.competency`),
+  }
+}
+
+export function localizeMathUnit(unit: MathUnit, locale: UiLocale, gradeId: MathGradeId): MathUnit {
+  if (locale !== 'en') return unit
+  const copy = UNIT_EN[`${gradeId}:${unit.id}`]
+  if (!copy) throw new Error(`Missing English math unit: ${gradeId}:${unit.id}`)
+  if (copy.concepts.length !== unit.concepts.length) throw new Error(`English math concepts do not match source: ${gradeId}:${unit.id}`)
+  return {
+    ...unit,
+    title: requireEnglish(unit.title, copy.title, `${gradeId}:${unit.id}.title`),
+    subtitle: requireEnglish(unit.subtitle, copy.subtitle, `${gradeId}:${unit.id}.subtitle`),
+    concepts: unit.concepts.map((concept, index) => requireEnglish(concept, copy.concepts[index], `${gradeId}:${unit.id}.concepts[${index}]`)),
+    questions: unit.questions.map((question) => localizeMathQuestion(question, locale)),
+  }
+}
+
+export function localizeMathGrade(grade: MathGradeInfo, locale: UiLocale): MathGradeInfo {
+  if (locale !== 'en') return grade
+  const copy = GRADE_EN[grade.id]
+  return {
+    ...grade,
+    name: grade.nameEn,
+    band: requireEnglish(grade.band, BAND_EN[grade.band], `${grade.id}.band`),
+    description: requireEnglish(grade.description, copy.description, `${grade.id}.description`),
+    targetExam: grade.targetExam === undefined ? undefined : requireEnglish(grade.targetExam, copy.targetExam, `${grade.id}.targetExam`),
+    units: grade.units.map((unit) => localizeMathUnit(unit, locale, grade.id)),
+    labs: grade.labs.map((lab) => {
+      const labCopy = copy.labs[lab.id]
+      if (!labCopy) throw new Error(`Missing English math lab: ${grade.id}.${lab.id}`)
+      return { ...lab, name: requireEnglish(lab.name, labCopy.name, `${grade.id}.${lab.id}.name`), description: requireEnglish(lab.description, labCopy.description, `${grade.id}.${lab.id}.description`) }
+    }),
+  }
+}
+
+export function localizeMathExam(exam: MathMockExamDefinition, locale: UiLocale): MathMockExamDefinition {
+  if (locale !== 'en') return exam
+  const copy = EXAM_EN[exam.type]
+  return {
+    ...exam,
+    title: requireEnglish(exam.title, copy.title, `${exam.type}.title`),
+    subtitle: requireEnglish(exam.subtitle, copy.subtitle, `${exam.type}.subtitle`),
+    targetGrade: requireEnglish(exam.targetGrade, copy.targetGrade, `${exam.type}.targetGrade`),
+    gradingScale: requireEnglish(exam.gradingScale, copy.gradingScale, `${exam.type}.gradingScale`),
+    questions: exam.questions.map((question) => localizeMathQuestion(question, locale)),
+  }
+}
+
+export function localizeMathStrand(strand: MathStrand, locale: UiLocale): string {
+  return locale === 'en' ? STRAND_EN[strand] : strand
 }
 
 export function mathTeachingCopy(locale: UiLocale, text: string): string {
   if (locale !== 'en' || !text) return text
-  if (!Object.hasOwn(MATH_TEACHING_EN, text)) throw new Error('缺少數學教材英文翻譯：' + text)
-  const translated = MATH_TEACHING_EN[text]
-  if (!translated.trim() || /[\u3040-\u30ff\u3400-\u9fff\uf900-\ufaff]/.test(translated)) {
-    throw new Error('數學教材英文翻譯無效：' + text)
-  }
-  return translated
+  const translated = Object.hasOwn(MATH_TEACHING_EN, text)
+    ? MATH_TEACHING_EN[text]
+    : Object.hasOwn(BAND_EN, text)
+      ? BAND_EN[text]
+      : undefined
+  if (translated === undefined) throw new Error(`缺少數學教材英文翻譯：${text}`)
+  return requireEnglish(text, translated, `text:${text}`)
 }

@@ -1,11 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { TOEIC_ACCENTS, type ToeicAccentCode, findBestVoiceForAccent } from '../data/accents'
+import { useMemo } from 'react'
+import { useI18n } from '../../i18n/i18n'
+import { localizeToeicData, toeicSupportLang } from '../teachingCopy'
 
 type Props = {
   text: string
   translation?: string
   phoneticOrRhythm?: string
   onPlaybackComplete?: () => void
+  instructionLang?: 'zh' | 'ja'
 }
 
 /**
@@ -17,7 +21,15 @@ export const ToeicAudioPlayer: React.FC<Props> = ({
   translation,
   phoneticOrRhythm,
   onPlaybackComplete,
+  instructionLang = 'zh',
 }) => {
+  const { locale } = useI18n()
+  const supportLang = toeicSupportLang(locale, instructionLang)
+  const accents = useMemo(
+    () => localizeToeicData(TOEIC_ACCENTS, locale, instructionLang),
+    [instructionLang, locale],
+  )
+  const pick = (copy: { zh: string; ja: string; en: string }) => copy[supportLang]
   const [selectedAccent, setSelectedAccent] = useState<ToeicAccentCode>('en-US')
   const [playbackRate, setPlaybackRate] = useState<number>(1.0)
   const [isPlaying, setIsPlaying] = useState<boolean>(false)
@@ -102,15 +114,17 @@ export const ToeicAudioPlayer: React.FC<Props> = ({
     setCurrentWordIndex(-1)
   }
 
-  const currentAccentInfo = TOEIC_ACCENTS.find((a) => a.code === selectedAccent) ?? TOEIC_ACCENTS[0]
+  const currentAccentInfo = accents.find((a) => a.code === selectedAccent) ?? accents[0]
 
   return (
     <div className="toeic-audio-player-card">
       {/* 口音切換標籤列 */}
       <div className="accent-picker-row">
-        <span className="picker-label">🎧 多益官方指定口音：</span>
+        <span className="picker-label">
+          🎧 {pick({ zh: '多益聽力口音：', ja: 'TOEICリスニングのアクセント：', en: 'TOEIC listening accents:' })}
+        </span>
         <div className="accent-buttons-group">
-          {TOEIC_ACCENTS.map((accent) => {
+          {accents.map((accent) => {
             const isSelected = accent.code === selectedAccent
             return (
               <button
@@ -154,14 +168,18 @@ export const ToeicAudioPlayer: React.FC<Props> = ({
 
         {phoneticOrRhythm && (
           <div className="rhythm-hint-row">
-            <span className="rhythm-tag">節奏與重音：</span>
+            <span className="rhythm-tag">
+              {pick({ zh: '節奏與重音：', ja: 'リズムと強勢：', en: 'Rhythm and stress: ' })}
+            </span>
             <code>{phoneticOrRhythm}</code>
           </div>
         )}
 
         {translation && (
           <div className="translation-row">
-            <span>中文語意：{translation}</span>
+            <span>
+              {pick({ zh: '中文語意：', ja: '意味：', en: 'Meaning: ' })}{translation}
+            </span>
           </div>
         )}
       </div>
@@ -171,11 +189,11 @@ export const ToeicAudioPlayer: React.FC<Props> = ({
         <div className="playback-buttons">
           {!isPlaying ? (
             <button type="button" className="btn-play-primary" onClick={handlePlay}>
-              ▶ 播放聽力音訊
+              ▶ {pick({ zh: '播放聽力音訊', ja: 'リスニング音声を再生', en: 'Play audio' })}
             </button>
           ) : (
             <button type="button" className="btn-stop" onClick={handleStop}>
-              ⏹ 停止播放
+              ⏹ {pick({ zh: '停止播放', ja: '再生を停止', en: 'Stop' })}
             </button>
           )}
 
@@ -184,12 +202,17 @@ export const ToeicAudioPlayer: React.FC<Props> = ({
             className={`btn-shadowing-toggle ${isShadowingMode ? 'active' : ''}`}
             onClick={() => setIsShadowingMode((prev) => !prev)}
           >
-            🔁 影子跟讀循環 {isShadowingMode ? '(開啟中)' : '(關閉)'}
+            🔁 {pick({ zh: '影子跟讀循環', ja: 'シャドーイング・ループ', en: 'Shadowing loop' })}{' '}
+            {isShadowingMode
+              ? pick({ zh: '(開啟中)', ja: '（オン）', en: '(on)' })
+              : pick({ zh: '(關閉)', ja: '（オフ）', en: '(off)' })}
           </button>
         </div>
 
         <div className="speed-controls">
-          <span className="speed-label">語速：</span>
+          <span className="speed-label">
+            {pick({ zh: '語速：', ja: '速度：', en: 'Speed: ' })}
+          </span>
           {[0.8, 1.0, 1.2, 1.5].map((rate) => (
             <button
               key={rate}

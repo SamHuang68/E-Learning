@@ -1,4 +1,5 @@
 import type { ASTNode } from './ast'
+import type { UiLocale } from '../../../../i18n/locale'
 
 export class MathParseError extends Error {
   constructor(message: string) {
@@ -183,13 +184,31 @@ export function parseMathExpression(exprStr: string): ASTNode {
 
 export function tryParseMathExpression(
   exprStr: string,
+  locale: UiLocale = 'zh-Hant',
 ): { ok: true; ast: ASTNode } | { ok: false; error: string } {
   try {
     return { ok: true, ast: parseMathExpression(exprStr) }
   } catch (err) {
     return {
       ok: false,
-      error: err instanceof Error ? err.message : '無法解析表達式',
+      error: locale === 'en'
+        ? localizeMathParseError(err instanceof Error ? err.message : '無法解析表達式')
+        : err instanceof Error ? err.message : '無法解析表達式',
     }
   }
+}
+
+export function localizeMathParseError(message: string): string {
+  if (message === '空表達式') return 'The expression is empty.'
+  if (message === '括號未閉合') return 'A closing parenthesis is missing.'
+  if (message === '數字格式無效') return 'A number has an invalid format.'
+  if (message === '表達式不完整') return 'The expression is incomplete.'
+  if (message === '無法解析表達式') return 'The expression cannot be parsed.'
+  const trailing = message.match(/^多餘字元「(.+)」$/u)
+  if (trailing) return `Unexpected trailing characters: “${trailing[1]}”.`
+  const missingArgument = message.match(/^函數 (.+) 缺少引數$/u)
+  if (missingArgument) return `Function ${missingArgument[1]} is missing an argument.`
+  const token = message.match(/^無法解析「(.+)」$/u)
+  if (token) return `Cannot parse “${token[1]}”.`
+  return 'The expression cannot be parsed.'
 }

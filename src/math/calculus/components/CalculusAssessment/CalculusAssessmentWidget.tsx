@@ -1,7 +1,8 @@
-import { useCalculusCopy } from '../../../../i18n/calculusCopy'
 import React, { useState } from 'react'
 import { CALCULUS_PROBLEMS } from '../../data/calculusProblems'
+import { localizeCalculusProblem } from '../../data/calculusProblemEnglish'
 import type { CalculusProblem } from '../../types'
+import { useI18n } from '../../../../i18n/i18n'
 
 interface Props {
   currentTheta: number
@@ -14,12 +15,14 @@ export const CalculusAssessmentWidget: React.FC<Props> = ({
   onSolveProblem,
   onSelectProblem,
 }) => {
-  const c = useCalculusCopy()
+  const { locale } = useI18n()
+  const copy = (zh: string, en: string) => locale === 'en' ? en : zh
+  const problems = locale === 'en' ? CALCULUS_PROBLEMS.map(localizeCalculusProblem) : CALCULUS_PROBLEMS
   const [activeProblemId, setActiveProblemId] = useState<string>(CALCULUS_PROBLEMS[0].id)
   const [selectedOpt, setSelectedOpt] = useState<number | null>(null)
   const [isAnswered, setIsAnswered] = useState<boolean>(false)
 
-  const activeProblem = CALCULUS_PROBLEMS.find((p) => p.id === activeProblemId) ?? CALCULUS_PROBLEMS[0]
+  const activeProblem = problems.find((p) => p.id === activeProblemId) ?? problems[0]
 
   const handleSelectProblem = (p: CalculusProblem) => {
     setActiveProblemId(p.id)
@@ -41,23 +44,27 @@ export const CalculusAssessmentWidget: React.FC<Props> = ({
       {/* 頂部能力與階梯標題 */}
       <div className="assessment-topbar">
         <div className="theta-gauge-box">
-          <span className="gauge-label">{c("本機 2PL IRT 估計 θ（非正式鑑定）：")}</span>
+          <span className="gauge-label">{copy('本機 2PL IRT 估計 θ（非正式鑑定）：', 'Local 2PL IRT estimate θ (informal):')}</span>
           <strong className="gauge-value">{currentTheta >= 0 ? `+${currentTheta.toFixed(2)}` : currentTheta.toFixed(2)}</strong>
-          <span className="gauge-tag">{currentTheta >= 1.0 ? c('作答估計帶：偏難') : currentTheta >= 0 ? c('作答估計帶：中間') : c('作答估計帶：偏易')}</span>
+          <span className="gauge-tag">{currentTheta >= 1.0
+            ? copy('作答估計帶：偏難', 'Estimated response band: advanced')
+            : currentTheta >= 0
+              ? copy('作答估計帶：中間', 'Estimated response band: intermediate')
+              : copy('作答估計帶：偏易', 'Estimated response band: foundational')}</span>
         </div>
 
         <div className="tier-pills-row">
-          {CALCULUS_PROBLEMS.map((prob) => (
+          {problems.map((prob) => (
             <button
               key={prob.id}
               type="button"
               className={`btn-tier-pill ${prob.id === activeProblemId ? 'active' : ''}`}
-              aria-label={`${prob.tier} ${c(prob.tierLabel)} — ${c(prob.title)}`}
+              aria-label={`${prob.tier} ${prob.tierLabel} — ${prob.title}`}
               aria-pressed={prob.id === activeProblemId}
               onClick={() => handleSelectProblem(prob)}
             >
               <span className="tier-badge">{prob.tier}</span>
-              <span>{c(prob.tierLabel)}</span>
+              <span>{prob.tierLabel}</span>
             </button>
           ))}
         </div>
@@ -66,11 +73,11 @@ export const CalculusAssessmentWidget: React.FC<Props> = ({
       {/* 題目主要卡片 */}
       <div className="problem-challenge-card">
         <div className="problem-header-row">
-          <span className="tier-label-badge">{activeProblem.tier} · {c(activeProblem.tierLabel)}</span>
-          <h4>{c(activeProblem.title)}</h4>
+          <span className="tier-label-badge">{activeProblem.tier} · {activeProblem.tierLabel}</span>
+          <h4>{activeProblem.title}</h4>
         </div>
 
-        <p className="problem-question-text">{c(activeProblem.questionText)}</p>
+        <p className="problem-question-text">{activeProblem.questionText}</p>
 
         {activeProblem.options && (
           <div className="problem-options-list">
@@ -93,7 +100,7 @@ export const CalculusAssessmentWidget: React.FC<Props> = ({
                   aria-pressed={isSelected}
                 >
                   <span className="opt-letter">{String.fromCharCode(65 + idx)}</span>
-                  <span>{c(opt)}</span>
+                  <span>{opt}</span>
                 </button>
               )
             })}
@@ -104,8 +111,10 @@ export const CalculusAssessmentWidget: React.FC<Props> = ({
           <div className={`answer-feedback-box ${selectedOpt === activeProblem.correctIndex ? 'success' : 'warn'}`} role="status" aria-atomic="true">
             <div className="feedback-icon">{selectedOpt === activeProblem.correctIndex ? '🎉' : '💡'}</div>
             <div>
-              <strong>{selectedOpt === activeProblem.correctIndex ? c('回答正確！') : c('解析與幾何破題引導：')}</strong>
-              <p>{c(activeProblem.explanation)}</p>
+              <strong>{selectedOpt === activeProblem.correctIndex
+                ? copy('回答正確！', 'Correct!')
+                : copy('解析與幾何破題引導：', 'Explanation and geometric strategy:')}</strong>
+              <p>{activeProblem.explanation}</p>
             </div>
           </div>
         )}

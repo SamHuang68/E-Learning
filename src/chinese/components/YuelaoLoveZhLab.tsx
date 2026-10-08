@@ -1,6 +1,9 @@
 ﻿import React, { useState } from 'react'
-import { YUELAO_LOVE_DIALOGUES, type YuelaoLoveDialogueItem } from '../data/yuelaoLoveZhDialogues'
+import { CHINESE_SUPPORT_EN, YUELAO_LOVE_DIALOGUES, type YuelaoLoveDialogueItem } from '../data/yuelaoLoveZhDialogues'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
+import type { UiLocale } from '../../i18n/locale'
+import { localizeChineseData } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
@@ -22,16 +25,36 @@ const YUELAO_OFFERINGS: YuelaoOffering[] = [
   { id: 'ribbon-coin', nameZh: '姻緣紅線與鉛錢', nameJa: '赤い糸＆鉛銭（結縁のお守り）', icon: '🧧', symbolZh: '過香爐順時針三圈收進皮夾隨身攜帶！', symbolJa: '香炉の上で時計回りに3周回して財布に納める！' },
 ]
 
+const YUELAO_OFFERING_EN: Record<string, { name: string; symbol: string }> = {
+  'red-dates': { name: 'Red dates and goji berries', symbol: 'A wordplay-based wish for finding a good match soon, along with health and popularity.' },
+  longan: { name: 'Dried longan', symbol: 'A wish for completeness, helpful benefactors, and a harmonious relationship.' },
+  candy: { name: 'Double-happiness chocolate and candy', symbol: 'A sweet offering for Yuelao and a wish for a loving relationship.' },
+  'ribbon-coin': { name: 'Red relationship thread and lead coin', symbol: 'Circle them clockwise over the incense burner three times, then carry them in a wallet.' },
+}
+
+function formatAffirmativeJiaobeiResult(locale: UiLocale): string {
+  return locale === 'en'
+    ? 'An affirmative jiaobei result: one block face up and one face down. Yuelao grants the request.'
+    : '聖筊 (一正一反)！月老微笑應允，牽起命中注定的紅線！'
+}
+
 export const YuelaoLoveZhLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { locale } = useI18n()
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [activeOffId, setActiveOffId] = useState<string>('ribbon-coin')
   const [isPassingFurnace, setIsPassingFurnace] = useState(false)
-  const [jiaobeiResult, setJiaobeiResult] = useState<string | null>(null)
+  const [jiaobeiResult, setJiaobeiResult] = useState<'affirmative' | null>(null)
 
   const activeItem: YuelaoLoveDialogueItem =
     YUELAO_LOVE_DIALOGUES[selectedIdx % YUELAO_LOVE_DIALOGUES.length]
+  const localizedItem = localizeChineseData(activeItem, locale, CHINESE_SUPPORT_EN)
+  const localizedDialogues = localizeChineseData(YUELAO_LOVE_DIALOGUES, locale, CHINESE_SUPPORT_EN)
+  const jiaobeiResultCopy = jiaobeiResult === 'affirmative'
+    ? formatAffirmativeJiaobeiResult(locale)
+    : null
 
   const currentOffering = YUELAO_OFFERINGS.find((o) => o.id === activeOffId) || YUELAO_OFFERINGS[0]
+  const currentOfferingEn = YUELAO_OFFERING_EN[currentOffering.id]
 
   function speakChinese(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -50,7 +73,7 @@ export const YuelaoLoveZhLab: React.FC<Props> = ({ onEarnXp }) => {
   }
 
   function handleCastJiaobei() {
-    setJiaobeiResult('聖筊 (一正一反)！月老微笑應允，牽起命中注定的紅線！')
+    setJiaobeiResult('affirmative')
     playCorrectSound()
     onEarnXp(15)
   }
@@ -61,10 +84,12 @@ export const YuelaoLoveZhLab: React.FC<Props> = ({ onEarnXp }) => {
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>🏮</span> 台灣七夕霞海城隍廟月老求紅線實驗室 (Yuelao Love Lab)
+            <span>🏮</span> {locale === 'en' ? 'Taiwan Qixi Yuelao Matchmaking Lab' : '台灣七夕霞海城隍廟月老求紅線實驗室 (Yuelao Love Lab)'}
           </h3>
-          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            台湾のロマンチックな伝統信仰「七夕・月下老人」！「迪化街霞海城隍廟・求紅線鉛錢過香爐・擲筊聖筊求良緣」を徹底マスター！
+          <p lang={locale === 'en' ? 'en' : 'ja'} className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+            {locale === 'en'
+              ? 'Practise Mandarin through Qixi and Yuelao worship at Taipei Xia-Hai City God Temple: present offerings, pass a red thread over incense, and cast jiaobei.'
+              : '台湾のロマンチックな伝統信仰「七夕・月下老人」！「迪化街霞海城隍廟・求紅線鉛錢過香爐・擲筊聖筊求良緣」を徹底マスター！'}
           </p>
         </div>
       </div>
@@ -88,14 +113,14 @@ export const YuelaoLoveZhLab: React.FC<Props> = ({ onEarnXp }) => {
           <div style={{ fontSize: '1.8rem' }}>{isPassingFurnace ? '✨🧧' : jiaobeiResult ? '🎉🙏' : '🏮 ❤️'}</div>
           <div>
             <strong style={{ fontSize: '0.9rem', display: 'block' }}>
-              月老供品靈驗祈願：{currentOffering.nameZh}
+              {locale === 'en' ? `Yuelao Offering: ${currentOffering.nameZh}` : `月老供品靈驗祈願：${currentOffering.nameZh}`}
             </strong>
             <span style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
               {isPassingFurnace
-                ? '✨ 紅線與鉛錢在香爐香煙上方順時針繞三圈！神明加持靈氣充沛，隨身攜帶！(+15 XP)'
+                ? locale === 'en' ? '✨ The red thread and lead coin circle clockwise over the incense burner three times, then are kept close at hand. (+15 XP)' : '✨ 紅線與鉛錢在香爐香煙上方順時針繞三圈！神明加持靈氣充沛，隨身攜帶！(+15 XP)'
                 : jiaobeiResult
-                ? `🎉 ${jiaobeiResult} (+15 XP)`
-                : `${currentOffering.symbolZh}`}
+                ? `🎉 ${jiaobeiResultCopy} (+15 XP)`
+                : locale === 'en' ? currentOfferingEn.symbol : currentOffering.symbolZh}
             </span>
           </div>
         </div>
@@ -111,7 +136,9 @@ export const YuelaoLoveZhLab: React.FC<Props> = ({ onEarnXp }) => {
             }}
             onClick={handlePassFurnace}
           >
-            {isPassingFurnace ? '✨ 順時針過香爐中' : '🧧 紅線過香爐繞三圈 (+15 XP)'}
+            {isPassingFurnace
+              ? locale === 'en' ? '✨ Circling clockwise over incense' : '✨ 順時針過香爐中'
+              : locale === 'en' ? '🧧 Pass the red thread over incense three times (+15 XP)' : '🧧 紅線過香爐繞三圈 (+15 XP)'}
           </button>
           <button
             type="button"
@@ -123,7 +150,9 @@ export const YuelaoLoveZhLab: React.FC<Props> = ({ onEarnXp }) => {
             }}
             onClick={handleCastJiaobei}
           >
-            {jiaobeiResult ? '✓ 聖筊求得良緣' : '🙏 向月老擲筊求良緣 (+15 XP)'}
+            {jiaobeiResult
+              ? locale === 'en' ? '✓ Affirmative jiaobei result' : '✓ 聖筊求得良緣'
+              : locale === 'en' ? '🙏 Cast jiaobei and ask Yuelao for a match (+15 XP)' : '🙏 向月老擲筊求良緣 (+15 XP)'}
           </button>
         </div>
       </div>
@@ -152,7 +181,7 @@ export const YuelaoLoveZhLab: React.FC<Props> = ({ onEarnXp }) => {
             >
               <span style={{ fontSize: '1.4rem' }}>{off.icon}</span>
               <strong style={{ fontSize: '0.78rem' }}>{off.nameZh.split('與')[0]}</strong>
-              <span style={{ fontSize: '0.66rem', color: 'var(--muted)' }}>{off.nameJa.split('（')[0]}</span>
+              <span style={{ fontSize: '0.66rem', color: 'var(--muted)' }}>{locale === 'en' ? YUELAO_OFFERING_EN[off.id].name : off.nameJa.split('（')[0]}</span>
             </button>
           )
         })}
@@ -160,14 +189,14 @@ export const YuelaoLoveZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
       {/* 場景切換膠囊 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
-        {YUELAO_LOVE_DIALOGUES.map((item, idx) => (
+        {localizedDialogues.map((item, idx) => (
           <button aria-pressed={selectedIdx === idx}
             key={item.id}
             type="button"
             className={`pill-btn ${selectedIdx === idx ? 'active' : ''}`}
             onClick={() => setSelectedIdx(idx)}
           >
-            <span>{item.icon}</span> {item.title.split('：')[0]}
+            <span>{item.icon}</span> {locale === 'en' ? item.title : item.title.split('：')[0]}
           </button>
         ))}
       </div>
@@ -178,12 +207,12 @@ export const YuelaoLoveZhLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(236, 72, 153, 0.15)', color: '#ec4899', fontWeight: 700 }}>
-              {activeItem.locationZh} (<span lang="ja">{activeItem.locationJa}</span>)
+              {localizedItem.locationZh} (<span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.locationJa}</span>)
             </span>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem', marginTop: '0.3rem' }}>
-            {activeItem.dialogueLines.map((line, lIdx) => (
+            {localizedItem.dialogueLines.map((line, lIdx) => (
               <div
                 key={lIdx}
                 style={{
@@ -198,9 +227,9 @@ export const YuelaoLoveZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#ec4899' }}>
-                    <span lang="ja">{line.speakerJa}</span>：
+                    <span lang={locale === 'en' ? 'en' : 'ja'}>{line.speakerJa}</span>:
                   </span>
-                  <button aria-label={`朗讀：${line.zh}`}
+                  <button aria-label={locale === 'en' ? `Read aloud: ${line.zh}` : `朗讀：${line.zh}`}
                     type="button"
                     style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
                     onClick={() => speakChinese(line.zh)}
@@ -210,7 +239,7 @@ export const YuelaoLoveZhLab: React.FC<Props> = ({ onEarnXp }) => {
                 </div>
                 <strong style={{ fontSize: '0.86rem', color: 'var(--text)' }}>{line.zh}</strong>
                 <span lang="zh-Latn" style={{ fontSize: '0.72rem', color: '#d97706' }}>{line.pinyin}</span>
-                <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
+                <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
                   {line.ja}
                 </span>
               </div>
@@ -220,12 +249,12 @@ export const YuelaoLoveZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
         {/* 右側：月老民俗名詞 */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          <span lang="ja" style={{ fontSize: '0.74rem', color: '#ec4899', fontWeight: 700, display: 'block' }}>
-            💡 台湾月下老人・縁結び豆知識（Yuelao Tips）
+          <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: '#ec4899', fontWeight: 700, display: 'block' }}>
+            {locale === 'en' ? '💡 Taiwan Yuelao matchmaking tips' : '💡 台湾月下老人・縁結び豆知識（Yuelao Tips）'}
           </span>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginTop: '0.3rem' }}>
-            {activeItem.yuelaoGlossary.map((vocab, vIdx) => (
+            {localizedItem.yuelaoGlossary.map((vocab, vIdx) => (
               <div
                 key={vIdx}
                 style={{
@@ -237,9 +266,9 @@ export const YuelaoLoveZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <strong style={{ fontSize: '0.88rem', color: '#ec4899' }}>{vocab.termZh}</strong>
-                  <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
+                  <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
                 </div>
-                <p lang="ja" style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+                <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
                   {vocab.tipJa}
                 </p>
               </div>

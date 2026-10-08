@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useI18n } from '../../i18n/i18n'
 import type { MessageKey } from '../../i18n/messages'
+import { toeicSupportLang } from '../teachingCopy'
 import {
   ASPECT_DRILLS,
   CAPITAL_DRILLS,
@@ -150,7 +151,7 @@ function ChoiceCheck({
 
 export function ToeicSynthesisSeries({ instructionLang = 'zh' }: Props) {
   const { t, locale } = useI18n()
-  const lang: Lang = instructionLang === 'ja' ? 'ja' : locale === 'en' ? 'en' : 'zh'
+  const lang: Lang = toeicSupportLang(locale, instructionLang)
   const [activeId, setActiveId] = useState(SYNTHESIS_SERIES[0].id)
   const active = SYNTHESIS_SERIES.find((item) => item.id === activeId) ?? SYNTHESIS_SERIES[0]
   const lead = lang === 'ja' ? active.jaLead : lang === 'en' ? active.enLead : active.zhLead

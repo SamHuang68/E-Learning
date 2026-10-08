@@ -3,7 +3,7 @@ import { renderToString } from 'react-dom/server'
 import * as fs from 'fs'
 import * as path from 'path'
 import ts from 'typescript'
-import { LocaleProvider } from '../../i18n/i18n'
+import { LocaleProvider } from '../../i18n/LocaleComponents'
 
 // Guards the secondary CS Reader regression: test code must never execute in app modules.
 function testRunnerCalls(source: string, file: string): string[] {

@@ -1,10 +1,14 @@
 import React, { useState } from 'react'
+import { useI18n } from '../../i18n/i18n'
+import { pickUi } from '../../i18n/pickUi'
 
 /**
  * 化學動態實驗室：理想氣體定律與分子動力學 (GasLawLab)
  * 探討 PV = nRT、波以耳定律 (等溫 P∝1/V)、查理定律 (等壓 V∝T)、給呂薩克定律 (等容 P∝T) 與分子平均動能。
  */
 export const GasLawLab: React.FC = () => {
+  const { locale } = useI18n()
+  const copy = (zhHant: string, en: string) => pickUi(locale, zhHant, en)
   const [tempK, setTempK] = useState<number>(300) // 溫度 (K)
   const [volL, setVolL] = useState<number>(24.5) // 體積 (L)
   const [molN, setMolN] = useState<number>(1.0) // 莫耳數 (mol)
@@ -60,15 +64,18 @@ export const GasLawLab: React.FC = () => {
   const chamberH = cylY + cylH - pistonY
 
   return (
-    <div className="math-lab chemistry-lab gas-law-lab" style={{ width: '100%', maxWidth: '100%', minWidth: 0 }}>
+    <div lang={locale} className="math-lab chemistry-lab gas-law-lab" style={{ width: '100%', maxWidth: '100%', minWidth: 0 }}>
       {/* 頂部標題 */}
       <div className="lab-header" style={{ marginBottom: '0.6rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.05rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>🎈</span> 理想氣體定律與分子動力學實驗室 (Ideal Gas Law)
+            <span>🎈</span> {copy('理想氣體定律與分子動力學實驗室', 'Ideal Gas Law and Molecular Kinetics Lab')}
           </h3>
           <p className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            狀態方程式：$PV = nRT$。氣體壓力源自無數分子對器壁碰撞產生的動量變化，平均動能僅與絕對溫度 $T$ 成正比。
+            {copy(
+              '狀態方程式：$PV = nRT$。氣體壓力源自無數分子對器壁碰撞產生的動量變化，平均動能僅與絕對溫度 $T$ 成正比。',
+              'Equation of state: $PV = nRT$. Gas pressure arises from momentum changes as countless molecules collide with the container walls, and average kinetic energy is proportional only to absolute temperature $T$.',
+            )}
           </p>
         </div>
       </div>
@@ -81,7 +88,7 @@ export const GasLawLab: React.FC = () => {
           style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', background: tempK === 273.15 && volL === 22.4 ? 'rgba(56, 189, 248, 0.2)' : undefined }}
           onClick={() => { setTempK(273.15); setVolL(22.4); setMolN(1.0); }}
         >
-          ❄️ 標準狀態 STP (0°C, 22.4L)
+          ❄️ {copy('標準狀態 STP（0°C，22.4L）', 'Standard Conditions, STP (0°C, 22.4 L)')}
         </button>
         <button
           type="button"
@@ -89,7 +96,7 @@ export const GasLawLab: React.FC = () => {
           style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', background: tempK === 298.15 && volL === 24.5 ? 'rgba(56, 189, 248, 0.2)' : undefined }}
           onClick={() => { setTempK(298.15); setVolL(24.5); setMolN(1.0); }}
         >
-          🌡️ 常溫常壓 NTP (25°C, 24.5L)
+          🌡️ {copy('常溫常壓 NTP（25°C，24.5L）', 'Normal Conditions, NTP (25°C, 24.5 L)')}
         </button>
         <button
           type="button"
@@ -97,7 +104,7 @@ export const GasLawLab: React.FC = () => {
           style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', background: volL === 12.25 ? 'rgba(250, 204, 21, 0.2)' : undefined }}
           onClick={() => { setTempK(298.15); setVolL(12.25); setMolN(1.0); }}
         >
-          🗜️ 波以耳加壓 (體積減半 ➜ 2atm)
+          🗜️ {copy('波以耳加壓（體積減半 ➜ 2atm）', 'Boyle Compression (Half the Volume ➜ 2 atm)')}
         </button>
         <button
           type="button"
@@ -105,7 +112,7 @@ export const GasLawLab: React.FC = () => {
           style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', background: tempK === 600 ? 'rgba(239, 68, 68, 0.2)' : undefined }}
           onClick={() => { setTempK(600); setVolL(24.5); setMolN(1.0); }}
         >
-          🔥 等容升溫 (600K ➜ 2atm)
+          🔥 {copy('等容升溫（600K ➜ 2atm）', 'Isochoric Heating (600 K ➜ 2 atm)')}
         </button>
       </div>
 
@@ -134,8 +141,8 @@ export const GasLawLab: React.FC = () => {
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem', fontSize: '0.72rem', color: '#94a3b8' }}>
-            <span>氣體活塞微觀模擬</span>
-            <span style={{ color: '#f59e0b', fontWeight: 600 }}>壓力 P = {pressureAtm.toFixed(2)} atm</span>
+            <span>{copy('氣體活塞微觀模擬', 'Microscopic Gas-Piston Simulation')}</span>
+            <span style={{ color: '#f59e0b', fontWeight: 600 }}>{copy('壓力', 'Pressure')} P = {pressureAtm.toFixed(2)} atm</span>
           </div>
 
           <svg
@@ -176,7 +183,7 @@ export const GasLawLab: React.FC = () => {
 
             {/* 體積標籤 */}
             <text x={cylX + cylW / 2} y={cylY + cylH + 16} fill="#38bdf8" fontSize="8.5" fontWeight="bold" textAnchor="middle">
-              當前體積 V = {volL.toFixed(1)} L
+              {copy('當前體積', 'Current volume')} V = {volL.toFixed(1)} L
             </text>
 
             {/* 圓形壓力錶 (右側) */}
@@ -228,7 +235,7 @@ export const GasLawLab: React.FC = () => {
           {/* 經典氣體定律快照 */}
           <div>
             <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--muted)', display: 'block', marginBottom: '0.25rem' }}>
-              ⚡ 經典氣體定律情境快照：
+              ⚡ {copy('經典氣體定律情境快照：', 'Classic Gas-Law Snapshots:')}
             </span>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.3rem' }}>
               <button
@@ -251,7 +258,7 @@ export const GasLawLab: React.FC = () => {
                   textAlign: 'left',
                 }}
               >
-                🧊 <strong>STP 標準溫壓 (22.4L)</strong>
+                🧊 <strong>{copy('STP 標準溫壓（22.4L）', 'STP Standard Conditions (22.4 L)')}</strong>
                 <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>0°C · 1.00 atm · 1 mol</div>
               </button>
               <button
@@ -274,7 +281,7 @@ export const GasLawLab: React.FC = () => {
                   textAlign: 'left',
                 }}
               >
-                🌡️ <strong>NTP 常溫常壓 (24.5L)</strong>
+                🌡️ <strong>{copy('NTP 常溫常壓（24.5L）', 'NTP Normal Conditions (24.5 L)')}</strong>
                 <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>25°C · 1.00 atm · 1 mol</div>
               </button>
               <button
@@ -297,8 +304,8 @@ export const GasLawLab: React.FC = () => {
                   textAlign: 'left',
                 }}
               >
-                📉 <strong>等溫壓縮 (壓力加倍)</strong>
-                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>定溫 300K · V=12L ➜ P=2.05 atm</div>
+                📉 <strong>{copy('等溫壓縮（壓力加倍）', 'Isothermal Compression (Pressure Doubles)')}</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>{copy('定溫 300K · V=12L ➜ P=2.05 atm', 'Constant T = 300 K · V = 12 L ➜ P = 2.05 atm')}</div>
               </button>
               <button
                 type="button"
@@ -320,8 +327,8 @@ export const GasLawLab: React.FC = () => {
                   textAlign: 'left',
                 }}
               >
-                🔥 <strong>查理定律 (等壓膨脹)</strong>
-                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>加熱 400K · 體積膨脹至 32.8L</div>
+                🔥 <strong>{copy('查理定律（等壓膨脹）', "Charles's Law (Isobaric Expansion)")}</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>{copy('加熱至 400K · 體積膨脹至 32.8L', 'Heat to 400 K · volume expands to 32.8 L')}</div>
               </button>
             </div>
           </div>
@@ -329,7 +336,7 @@ export const GasLawLab: React.FC = () => {
           {/* 實驗定律模式切換 */}
           <div>
             <label style={{ fontSize: '0.74rem', fontWeight: 600, display: 'block', marginBottom: '0.2rem' }}>
-              氣體定律模式：
+              {copy('氣體定律模式：', 'Gas-law mode:')}
             </label>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.2rem' }}>
               <button
@@ -349,7 +356,7 @@ export const GasLawLab: React.FC = () => {
                   setTempK(300)
                 }}
               >
-                波以耳 (定溫)
+                {copy('波以耳（定溫）', 'Boyle (Constant T)')}
               </button>
               <button
                 type="button"
@@ -359,7 +366,7 @@ export const GasLawLab: React.FC = () => {
                   setLawMode('charles')
                 }}
               >
-                查理 (定壓)
+                {copy('查理（定壓）', 'Charles (Constant P)')}
               </button>
               <button
                 type="button"
@@ -370,7 +377,7 @@ export const GasLawLab: React.FC = () => {
                   setVolL(24.5)
                 }}
               >
-                給呂薩克 (定容)
+                {copy('給呂薩克（定容）', 'Gay-Lussac (Constant V)')}
               </button>
             </div>
           </div>
@@ -378,13 +385,13 @@ export const GasLawLab: React.FC = () => {
           {/* 容器體積滑桿 */}
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem', fontWeight: 600, marginBottom: '0.15rem' }}>
-              <span>容器體積 $V$：</span>
+              <span>{copy('容器體積 $V$：', 'Container Volume $V$:')}</span>
               <strong style={{ color: '#2563eb', fontFamily: 'monospace' }}>{volL.toFixed(1)} L</strong>
             </div>
             <input
               type="range"
-              aria-label="氣體容器體積"
-              aria-valuetext={`${volL.toFixed(1)} 公升`}
+              aria-label={copy('氣體容器體積', 'Gas container volume')}
+              aria-valuetext={copy(`${volL.toFixed(1)} 公升`, `${volL.toFixed(1)} liters`)}
               min="10"
               max="40"
               step="0.5"
@@ -398,13 +405,13 @@ export const GasLawLab: React.FC = () => {
           {/* 絕對溫度滑桿 */}
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem', fontWeight: 600, marginBottom: '0.15rem' }}>
-              <span>絕對溫度 $T$：</span>
+              <span>{copy('絕對溫度 $T$：', 'Absolute Temperature $T$:')}</span>
               <strong style={{ color: '#ef4444', fontFamily: 'monospace' }}>{tempK} K ({(tempK - 273.15).toFixed(0)}°C)</strong>
             </div>
             <input
               type="range"
-              aria-label="氣體絕對溫度"
-              aria-valuetext={`${tempK} 開爾文，${(tempK - 273.15).toFixed(0)} 攝氏度`}
+              aria-label={copy('氣體絕對溫度', 'Absolute gas temperature')}
+              aria-valuetext={copy(`${tempK} 開爾文，${(tempK - 273.15).toFixed(0)} 攝氏度`, `${tempK} kelvin, ${(tempK - 273.15).toFixed(0)} degrees Celsius`)}
               min="150"
               max="600"
               step="10"
@@ -418,13 +425,13 @@ export const GasLawLab: React.FC = () => {
           {/* 莫耳數滑桿 */}
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem', fontWeight: 600, marginBottom: '0.15rem' }}>
-              <span>氣體莫耳數 $n$：</span>
+              <span>{copy('氣體莫耳數 $n$：', 'Amount of Gas $n$:')}</span>
               <strong style={{ color: '#10b981', fontFamily: 'monospace' }}>{molN.toFixed(1)} mol</strong>
             </div>
             <input
               type="range"
-              aria-label="氣體莫耳數"
-              aria-valuetext={`${molN.toFixed(1)} 莫耳`}
+              aria-label={copy('氣體莫耳數', 'Amount of gas')}
+              aria-valuetext={copy(`${molN.toFixed(1)} 莫耳`, `${molN.toFixed(1)} moles`)}
               min="0.5"
               max="3.0"
               step="0.1"
@@ -449,15 +456,15 @@ export const GasLawLab: React.FC = () => {
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: 'var(--muted)' }}>氣體壓力 P = nRT / V：</span>
+              <span style={{ color: 'var(--muted)' }}>{copy('氣體壓力 P = nRT / V：', 'Gas pressure P = nRT / V:')}</span>
               <strong style={{ color: '#f59e0b', fontFamily: 'monospace' }}>{pressureAtm.toFixed(2)} atm ({(pressureAtm * 101.3).toFixed(1)} kPa)</strong>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: 'var(--muted)' }}>分子平均平動動能 Ek = (3/2)RT：</span>
+              <span style={{ color: 'var(--muted)' }}>{copy('分子平均平動動能 Ek = (3/2)RT：', 'Average molecular translational energy Ek = (3/2)RT:')}</span>
               <strong style={{ fontFamily: 'monospace' }}>{avgKeJoules.toFixed(0)} J/mol</strong>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: 'var(--muted)' }}>氦分子方均根速率 v(rms)：</span>
+              <span style={{ color: 'var(--muted)' }}>{copy('氦分子方均根速率 v(rms)：', 'Helium root-mean-square speed v(rms):')}</span>
               <strong style={{ color: '#38bdf8', fontFamily: 'monospace' }}>{vRms.toFixed(0)} m/s</strong>
             </div>
           </div>

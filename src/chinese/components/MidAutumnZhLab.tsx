@@ -1,6 +1,8 @@
 ﻿import React, { useState } from 'react'
-import { MID_AUTUMN_DIALOGUES, type MidAutumnDialogueItem } from '../data/midAutumnZhDialogues'
+import { CHINESE_SUPPORT_EN, MID_AUTUMN_DIALOGUES, type MidAutumnDialogueItem } from '../data/midAutumnZhDialogues'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
+import { localizeChineseData } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
@@ -22,7 +24,15 @@ const BBQ_INGREDIENTS: BbqIngredient[] = [
   { id: 'tempura', nameZh: '炭烤甜不辣與米血糕', nameJa: 'さつま揚げ＆豚の血もち（米血糕）', icon: '🍢', descZh: '甜不辣烤到膨脹金黃酥脆，米血糕外酥內軟Q彈！', descJa: 'ぷっくり膨らんださつま揚げと外カリ中モチの米血糕！' },
 ]
 
+const BBQ_INGREDIENT_EN: Record<string, { name: string; description: string }> = {
+  'pork-toast': { name: 'Barbecued pork in white toast', description: 'Charcoal-grilled pork brushed with sweet-savory barbecue sauce and tucked into soft white toast.' },
+  sausage: { name: 'Garlic black-pork sausage', description: 'Charcoal-grilled until crisp and juicy, then eaten with a slice of raw garlic.' },
+  corn: { name: 'Charcoal-grilled sweet corn', description: 'Brushed in layers with satay sauce, thick soy sauce, and peanut powder.' },
+  tempura: { name: 'Grilled tempura and rice-blood cake', description: 'Fish cake grilled until golden and puffed, paired with rice-blood cake that is crisp outside and chewy inside.' },
+}
+
 export const MidAutumnZhLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { locale } = useI18n()
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [activeBbqId, setActiveBbqId] = useState<string>('pork-toast')
   const [isSizzling, setIsSizzling] = useState(false)
@@ -30,8 +40,11 @@ export const MidAutumnZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
   const activeItem: MidAutumnDialogueItem =
     MID_AUTUMN_DIALOGUES[selectedIdx % MID_AUTUMN_DIALOGUES.length]
+  const localizedItem = localizeChineseData(activeItem, locale, CHINESE_SUPPORT_EN)
+  const localizedDialogues = localizeChineseData(MID_AUTUMN_DIALOGUES, locale, CHINESE_SUPPORT_EN)
 
   const currentBbq = BBQ_INGREDIENTS.find((b) => b.id === activeBbqId) || BBQ_INGREDIENTS[0]
+  const currentBbqEn = BBQ_INGREDIENT_EN[currentBbq.id]
 
   function speakChinese(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -61,10 +74,12 @@ export const MidAutumnZhLab: React.FC<Props> = ({ onEarnXp }) => {
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>🌕</span> 台灣中秋節騎樓烤肉與柚子帽實驗室 (Mid-Autumn BBQ Lab)
+            <span>🌕</span> {locale === 'en' ? 'Taiwan Mid-Autumn Barbecue Lab' : '台灣中秋節騎樓烤肉與柚子帽實驗室 (Mid-Autumn BBQ Lab)'}
           </h3>
-          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            台湾の秋の風物詩「中秋節」！「騎樓炭火烤肉夾吐司・麻豆文旦戴柚子帽求保佑・彰化排隊蛋黃酥」を徹底マスター！
+          <p lang={locale === 'en' ? 'en' : 'ja'} className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+            {locale === 'en'
+              ? 'Practise Mandarin through Taiwan’s Mid-Autumn Festival: barbecue under the arcade, make a pomelo-peel hat, and learn about pomelos and yolk pastries.'
+              : '台湾の秋の風物詩「中秋節」！「騎樓炭火烤肉夾吐司・麻豆文旦戴柚子帽求保佑・彰化排隊蛋黃酥」を徹底マスター！'}
           </p>
         </div>
       </div>
@@ -88,14 +103,16 @@ export const MidAutumnZhLab: React.FC<Props> = ({ onEarnXp }) => {
           <div style={{ fontSize: '1.8rem' }}>{pomeloHatWorn ? '🍈👑' : '🔥 🥩'}</div>
           <div>
             <strong style={{ fontSize: '0.9rem', display: 'block' }}>
-              騎樓炭烤：{currentBbq.nameZh} {pomeloHatWorn && '＋ 戴上綠色文旦柚子帽！'}
+              {locale === 'en'
+                ? `Arcade Barbecue: ${currentBbq.nameZh}${pomeloHatWorn ? ' + pomelo-peel hat' : ''}`
+                : <>騎樓炭烤：{currentBbq.nameZh} {pomeloHatWorn && '＋ 戴上綠色文旦柚子帽！'}</>}
             </strong>
             <span style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
               {isSizzling
-                ? '🔥 炭火滋滋作響！烤肉醬香氣撲鼻，肉片焦香夾入吐司大口咬下！(+15 XP)'
+                ? locale === 'en' ? '🔥 The charcoal is sizzling. Grill the sauced pork and tuck it into toast. (+15 XP)' : '🔥 炭火滋滋作響！烤肉醬香氣撲鼻，肉片焦香夾入吐司大口咬下！(+15 XP)'
                 : pomeloHatWorn
-                ? '👑 文旦皮剪成尖頂帽子戴在頭上，保佑整年吉祥健康又可愛！(+15 XP)'
-                : `${currentBbq.descZh}`}
+                ? locale === 'en' ? '👑 The pomelo peel is cut into a pointed hat, a playful wish for health and good fortune. (+15 XP)' : '👑 文旦皮剪成尖頂帽子戴在頭上，保佑整年吉祥健康又可愛！(+15 XP)'
+                : locale === 'en' ? currentBbqEn.description : currentBbq.descZh}
             </span>
           </div>
         </div>
@@ -111,7 +128,9 @@ export const MidAutumnZhLab: React.FC<Props> = ({ onEarnXp }) => {
             }}
             onClick={handleGrillBbq}
           >
-            {isSizzling ? '🔥 炭火翻烤中...' : '🔥 刷烤肉醬・炭火翻烤 (+15 XP)'}
+            {isSizzling
+              ? locale === 'en' ? '🔥 Grilling over charcoal…' : '🔥 炭火翻烤中...'
+              : locale === 'en' ? '🔥 Brush with sauce and grill (+15 XP)' : '🔥 刷烤肉醬・炭火翻烤 (+15 XP)'}
           </button>
           <button
             type="button"
@@ -123,7 +142,9 @@ export const MidAutumnZhLab: React.FC<Props> = ({ onEarnXp }) => {
             }}
             onClick={handleWearPomeloHat}
           >
-            {pomeloHatWorn ? '✓ 柚子帽戴好保佑' : '🍈 剝文旦・戴柚子帽 (+15 XP)'}
+            {pomeloHatWorn
+              ? locale === 'en' ? '✓ Pomelo-peel hat on' : '✓ 柚子帽戴好保佑'
+              : locale === 'en' ? '🍈 Peel a pomelo and make a hat (+15 XP)' : '🍈 剝文旦・戴柚子帽 (+15 XP)'}
           </button>
         </div>
       </div>
@@ -152,7 +173,7 @@ export const MidAutumnZhLab: React.FC<Props> = ({ onEarnXp }) => {
             >
               <span style={{ fontSize: '1.4rem' }}>{bbq.icon}</span>
               <strong style={{ fontSize: '0.78rem' }}>{bbq.nameZh.split(' ')[0]}</strong>
-              <span style={{ fontSize: '0.66rem', color: 'var(--muted)' }}>{bbq.nameJa.split('（')[0]}</span>
+              <span style={{ fontSize: '0.66rem', color: 'var(--muted)' }}>{locale === 'en' ? BBQ_INGREDIENT_EN[bbq.id].name : bbq.nameJa.split('（')[0]}</span>
             </button>
           )
         })}
@@ -160,14 +181,14 @@ export const MidAutumnZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
       {/* 場景切換膠囊 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
-        {MID_AUTUMN_DIALOGUES.map((item, idx) => (
+        {localizedDialogues.map((item, idx) => (
           <button aria-pressed={selectedIdx === idx}
             key={item.id}
             type="button"
             className={`pill-btn ${selectedIdx === idx ? 'active' : ''}`}
             onClick={() => setSelectedIdx(idx)}
           >
-            <span>{item.icon}</span> {item.title.split('：')[0]}
+            <span>{item.icon}</span> {locale === 'en' ? item.title : item.title.split('：')[0]}
           </button>
         ))}
       </div>
@@ -178,12 +199,12 @@ export const MidAutumnZhLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(245, 158, 11, 0.15)', color: '#d97706', fontWeight: 700 }}>
-              {activeItem.locationZh} (<span lang="ja">{activeItem.locationJa}</span>)
+              {localizedItem.locationZh} (<span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.locationJa}</span>)
             </span>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem', marginTop: '0.3rem' }}>
-            {activeItem.dialogueLines.map((line, lIdx) => (
+            {localizedItem.dialogueLines.map((line, lIdx) => (
               <div
                 key={lIdx}
                 style={{
@@ -198,9 +219,9 @@ export const MidAutumnZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#f59e0b' }}>
-                    <span lang="ja">{line.speakerJa}</span>：
+                    <span lang={locale === 'en' ? 'en' : 'ja'}>{line.speakerJa}</span>:
                   </span>
-                  <button aria-label={`朗讀：${line.zh}`}
+                  <button aria-label={locale === 'en' ? `Read aloud: ${line.zh}` : `朗讀：${line.zh}`}
                     type="button"
                     style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
                     onClick={() => speakChinese(line.zh)}
@@ -210,7 +231,7 @@ export const MidAutumnZhLab: React.FC<Props> = ({ onEarnXp }) => {
                 </div>
                 <strong style={{ fontSize: '0.86rem', color: 'var(--text)' }}>{line.zh}</strong>
                 <span lang="zh-Latn" style={{ fontSize: '0.72rem', color: '#d97706' }}>{line.pinyin}</span>
-                <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
+                <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
                   {line.ja}
                 </span>
               </div>
@@ -220,12 +241,12 @@ export const MidAutumnZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
         {/* 右側：中秋民俗名詞 */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          <span lang="ja" style={{ fontSize: '0.74rem', color: '#d97706', fontWeight: 700, display: 'block' }}>
-            💡 台湾中秋節・路上バーベキュー文化豆知識（BBQ Tips）
+          <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: '#d97706', fontWeight: 700, display: 'block' }}>
+            {locale === 'en' ? '💡 Taiwan Mid-Autumn barbecue tips' : '💡 台湾中秋節・路上バーベキュー文化豆知識（BBQ Tips）'}
           </span>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginTop: '0.3rem' }}>
-            {activeItem.midAutumnGlossary.map((vocab, vIdx) => (
+            {localizedItem.midAutumnGlossary.map((vocab, vIdx) => (
               <div
                 key={vIdx}
                 style={{
@@ -237,9 +258,9 @@ export const MidAutumnZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <strong style={{ fontSize: '0.88rem', color: '#d97706' }}>{vocab.termZh}</strong>
-                  <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
+                  <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
                 </div>
-                <p lang="ja" style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+                <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
                   {vocab.tipJa}
                 </p>
               </div>

@@ -4,6 +4,7 @@ import { CsTopNav, type CsNavSection } from './components/CsTopNav'
 import { CsHierarchyTree } from './components/CsHierarchyTree'
 import { CsToday } from './components/CsToday'
 import { loadCsProgress, saveCsProgress, type CsProgress } from './utils/csStorage'
+import { useI18n } from '../i18n/i18n'
 
 const CsPractice = React.lazy(() =>
   import('./components/CsPractice').then((m) => ({ default: m.CsPractice }))
@@ -42,6 +43,7 @@ interface Props {
 }
 
 export const CsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
+  const { locale } = useI18n()
   const [activeSection, setActiveSection] = useState<CsNavSection>('today')
   const [practiceUnitId, setPracticeUnitId] = useState<string | undefined>(undefined)
   const [progress, setProgress] = useState<CsProgress>(() => loadCsProgress())
@@ -145,7 +147,7 @@ export const CsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
       {/* 核心主視窗 (零拉頁，單屏適配) */}
       <main
         id="main-content"
-        lang="zh-Hant"
+        lang={locale}
         tabIndex={-1}
         className="content cs-main-viewport"
         style={{
@@ -158,7 +160,7 @@ export const CsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         <Suspense
           fallback={
             <div className="module-fallback" role="status">
-              載入計算機概論…
+              {locale === 'en' ? 'Loading computer science…' : '載入計算機概論…'}
             </div>
           }
         >

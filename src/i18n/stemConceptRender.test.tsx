@@ -16,6 +16,8 @@ import { loadStemConceptCopy, stemConceptCopy } from './stemConceptCopy'
 import { CHEMISTRY_CONCEPT_CONTENT_EN } from './chemistryConceptContentEn'
 import { PHYSICS_CONCEPT_CONTENT_EN } from './physicsConceptContentEn'
 import { UI_LOCALE_KEY, type UiLocale } from './locale'
+import { localizeChemistryGrade } from '../chemistry/locale/content'
+import { localizePhysicsGrade } from '../physics/locale/content'
 
 const CJK = /[\u3040-\u30ff\u3400-\u9fff\uf900-\ufaff]/
 const noop = () => {}
@@ -42,18 +44,24 @@ afterEach(() => vi.unstubAllGlobals())
 describe('理化全部年級概念卡的真實渲染', () => {
   for (const grade of Object.values(CHEMISTRY_GRADES)) {
     for (const unit of grade.units) {
-      for (const [surface, node] of [
-        ['Today', createElement(ChemistryToday, { gradeInfo: grade, currentUnit: unit, progress: defaultChemistryProgress(), ...actions })],
-        ['Practice', createElement(ChemistryPractice, { unit, completedQuestions: [], errorQuestions: [], ...actions })],
-      ] as const) {
+      for (const surface of ['Today', 'Practice'] as const) {
         it(`chemistry ${unit.key} ${surface} 英文無 CJK 且繁中概念不變`, async () => {
-          const en = await render(node, 'en')
+          const localizedGrade = localizeChemistryGrade(grade, 'en')
+          const localizedUnit = localizedGrade.units.find((candidate) => candidate.key === unit.key)
+          if (!localizedUnit) throw new Error(`Missing localized chemistry unit fixture: ${unit.key}`)
+          const enNode = surface === 'Today'
+            ? createElement(ChemistryToday, { gradeInfo: localizedGrade, currentUnit: localizedUnit, progress: defaultChemistryProgress(), ...actions })
+            : createElement(ChemistryPractice, { unit: localizedUnit, completedQuestions: [], errorQuestions: [], ...actions })
+          const zhNode = surface === 'Today'
+            ? createElement(ChemistryToday, { gradeInfo: grade, currentUnit: unit, progress: defaultChemistryProgress(), ...actions })
+            : createElement(ChemistryPractice, { unit, completedQuestions: [], errorQuestions: [], ...actions })
+          const en = await render(enNode, 'en')
           expect(en).not.toMatch(CJK)
           expect(en).not.toContain('katex-error')
-          const zh = await render(node, 'zh-Hant')
-          for (const concept of unit.concepts) {
+          const zh = await render(zhNode, 'zh-Hant')
+          for (const [index, concept] of unit.concepts.entries()) {
             expect(zh).toContain(renderToStaticMarkup(<MathFormula math={concept} />))
-            expect(en).toContain(renderToStaticMarkup(<MathFormula math={stemConceptCopy('en', concept)} />))
+            expect(en).toContain(renderToStaticMarkup(<MathFormula math={localizedUnit.concepts[index]} />))
           }
         })
       }
@@ -61,18 +69,24 @@ describe('理化全部年級概念卡的真實渲染', () => {
   }
   for (const grade of Object.values(PHYSICS_GRADES)) {
     for (const unit of grade.units) {
-      for (const [surface, node] of [
-        ['Today', createElement(PhysicsToday, { gradeInfo: grade, currentUnit: unit, progress: defaultPhysicsProgress(), ...actions })],
-        ['Practice', createElement(PhysicsPractice, { unit, completedQuestions: [], errorQuestions: [], ...actions })],
-      ] as const) {
+      for (const surface of ['Today', 'Practice'] as const) {
         it(`physics ${unit.key} ${surface} 英文無 CJK 且繁中概念不變`, async () => {
-          const en = await render(node, 'en')
+          const localizedGrade = localizePhysicsGrade(grade, 'en')
+          const localizedUnit = localizedGrade.units.find((candidate) => candidate.key === unit.key)
+          if (!localizedUnit) throw new Error(`Missing localized physics unit fixture: ${unit.key}`)
+          const enNode = surface === 'Today'
+            ? createElement(PhysicsToday, { gradeInfo: localizedGrade, currentUnit: localizedUnit, progress: defaultPhysicsProgress(), ...actions })
+            : createElement(PhysicsPractice, { unit: localizedUnit, completedQuestions: [], errorQuestions: [], ...actions })
+          const zhNode = surface === 'Today'
+            ? createElement(PhysicsToday, { gradeInfo: grade, currentUnit: unit, progress: defaultPhysicsProgress(), ...actions })
+            : createElement(PhysicsPractice, { unit, completedQuestions: [], errorQuestions: [], ...actions })
+          const en = await render(enNode, 'en')
           expect(en).not.toMatch(CJK)
           expect(en).not.toContain('katex-error')
-          const zh = await render(node, 'zh-Hant')
-          for (const concept of unit.concepts) {
+          const zh = await render(zhNode, 'zh-Hant')
+          for (const [index, concept] of unit.concepts.entries()) {
             expect(zh).toContain(renderToStaticMarkup(<MathFormula math={concept} />))
-            expect(en).toContain(renderToStaticMarkup(<MathFormula math={stemConceptCopy('en', concept)} />))
+            expect(en).toContain(renderToStaticMarkup(<MathFormula math={localizedUnit.concepts[index]} />))
           }
         })
       }

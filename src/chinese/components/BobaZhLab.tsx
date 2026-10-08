@@ -1,12 +1,15 @@
 import React, { useState } from 'react'
-import { BOBA_DIALOGUES, type BobaDialogueItem } from '../data/bobaZhDialogues'
+import { BOBA_DIALOGUES, CHINESE_SUPPORT_EN, type BobaDialogueItem } from '../data/bobaZhDialogues'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
+import { localizeChineseData } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
 }
 
 export const BobaZhLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { locale } = useI18n()
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [teaBase, setTeaBase] = useState('四季春青茶')
   const [sweetness, setSweetness] = useState('微糖 (三分糖)')
@@ -17,6 +20,8 @@ export const BobaZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
   const activeItem: BobaDialogueItem =
     BOBA_DIALOGUES[selectedIdx % BOBA_DIALOGUES.length]
+  const localizedItem = localizeChineseData(activeItem, locale, CHINESE_SUPPORT_EN)
+  const localizedDialogues = localizeChineseData(BOBA_DIALOGUES, locale, CHINESE_SUPPORT_EN)
 
   function speakChinese(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -40,10 +45,12 @@ export const BobaZhLab: React.FC<Props> = ({ onEarnXp }) => {
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>🧋</span> 台灣手搖飲極致客製化實驗室 (Taiwan Boba Customization Lab)
+            <span>🧋</span> {locale === 'en' ? 'Taiwan Boba Customization Lab' : '台灣手搖飲極致客製化實驗室 (Taiwan Boba Customization Lab)'}
           </h3>
-          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            台湾手搖茶の神髄！「微糖微冰（3分糖・氷少なめ）・波霸大粒タピオカ・自備環保杯現折5元・封膜ストローの刺し方」を直感マスター！
+          <p lang={locale === 'en' ? 'en' : 'ja'} className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+            {locale === 'en'
+              ? 'Practise Mandarin for ordering Taiwan bubble tea: choose the tea base, sweetness, ice level, toppings, and a reusable-cup discount.'
+              : '台湾手搖茶の神髄！「微糖微冰（3分糖・氷少なめ）・波霸大粒タピオカ・自備環保杯現折5元・封膜ストローの刺し方」を直感マスター！'}
           </p>
         </div>
       </div>
@@ -66,20 +73,24 @@ export const BobaZhLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <div style={{ fontSize: '1.8rem' }}>🧋 🏷️</div>
           <div>
-            <strong style={{ fontSize: '0.9rem', display: 'block' }}>杯身貼紙標籤 (Customized Tea Label)</strong>
+            <strong style={{ fontSize: '0.9rem', display: 'block' }}>{locale === 'en' ? 'Customized Tea Label' : '杯身貼紙標籤 (Customized Tea Label)'}</strong>
             <span style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
               {ordered
-                ? `✓ 點單完成！「${teaBase}・${sweetness}・${iceLevel}・加${topping}」已折5元！(+10 XP)`
-                : `${teaBase} / ${sweetness} / ${iceLevel} / ${topping}${useEcoCup ? ' (環保杯折5元)' : ''}`}
+                ? locale === 'en'
+                  ? `✓ Order placed: ${teaBase} · ${sweetness} · ${iceLevel} · ${topping}${useEcoCup ? ' · NT$5 reusable-cup discount' : ''}. (+10 XP)`
+                  : `✓ 點單完成！「${teaBase}・${sweetness}・${iceLevel}・加${topping}」已折5元！(+10 XP)`
+                : locale === 'en'
+                  ? `${teaBase} / ${sweetness} / ${iceLevel} / ${topping}${useEcoCup ? ' · NT$5 reusable-cup discount' : ''}`
+                  : `${teaBase} / ${sweetness} / ${iceLevel} / ${topping}${useEcoCup ? ' (環保杯折5元)' : ''}`}
             </span>
           </div>
         </div>
 
         <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center', flexWrap: 'wrap' }}>
-          <label htmlFor="boba-tea-base" className="sr-only">茶底</label>
+          <label htmlFor="boba-tea-base" className="sr-only">{locale === 'en' ? 'Tea base' : '茶底'}</label>
           <select
             id="boba-tea-base"
-            aria-label="茶底"
+            aria-label={locale === 'en' ? 'Tea base' : '茶底'}
             value={teaBase}
             onChange={(e) => setTeaBase(e.target.value)}
             style={{ padding: '0.3rem 0.45rem', borderRadius: '6px', border: '1px solid var(--line)', background: 'var(--surface)', color: 'var(--text)', fontSize: '0.74rem' }}
@@ -90,10 +101,10 @@ export const BobaZhLab: React.FC<Props> = ({ onEarnXp }) => {
             <option value="珍珠奶茶">珍珠奶茶</option>
           </select>
 
-          <label htmlFor="boba-sweetness" className="sr-only">甜度</label>
+          <label htmlFor="boba-sweetness" className="sr-only">{locale === 'en' ? 'Sweetness' : '甜度'}</label>
           <select
             id="boba-sweetness"
-            aria-label="甜度"
+            aria-label={locale === 'en' ? 'Sweetness' : '甜度'}
             value={sweetness}
             onChange={(e) => setSweetness(e.target.value)}
             style={{ padding: '0.3rem 0.45rem', borderRadius: '6px', border: '1px solid var(--line)', background: 'var(--surface)', color: 'var(--text)', fontSize: '0.74rem' }}
@@ -105,10 +116,10 @@ export const BobaZhLab: React.FC<Props> = ({ onEarnXp }) => {
             <option value="全糖 (十分糖)">全糖 (十分)</option>
           </select>
 
-          <label htmlFor="boba-ice-level" className="sr-only">冰量</label>
+          <label htmlFor="boba-ice-level" className="sr-only">{locale === 'en' ? 'Ice level' : '冰量'}</label>
           <select
             id="boba-ice-level"
-            aria-label="冰量"
+            aria-label={locale === 'en' ? 'Ice level' : '冰量'}
             value={iceLevel}
             onChange={(e) => setIceLevel(e.target.value)}
             style={{ padding: '0.3rem 0.45rem', borderRadius: '6px', border: '1px solid var(--line)', background: 'var(--surface)', color: 'var(--text)', fontSize: '0.74rem' }}
@@ -121,10 +132,10 @@ export const BobaZhLab: React.FC<Props> = ({ onEarnXp }) => {
             <option value="溫熱">溫熱</option>
           </select>
 
-          <label htmlFor="boba-topping" className="sr-only">加料</label>
+          <label htmlFor="boba-topping" className="sr-only">{locale === 'en' ? 'Topping' : '加料'}</label>
           <select
             id="boba-topping"
-            aria-label="加料"
+            aria-label={locale === 'en' ? 'Topping' : '加料'}
             value={topping}
             onChange={(e) => setTopping(e.target.value)}
             style={{ padding: '0.3rem 0.45rem', borderRadius: '6px', border: '1px solid var(--line)', background: 'var(--surface)', color: 'var(--text)', fontSize: '0.74rem' }}
@@ -143,7 +154,9 @@ export const BobaZhLab: React.FC<Props> = ({ onEarnXp }) => {
             style={{ padding: '0.3rem 0.55rem', fontSize: '0.74rem' }}
             onClick={() => setUseEcoCup((prev) => !prev)}
           >
-            {useEcoCup ? '✓ 折5元' : '免自備杯'}
+            {useEcoCup
+              ? locale === 'en' ? '✓ Save NT$5' : '✓ 折5元'
+              : locale === 'en' ? 'No reusable cup' : '免自備杯'}
           </button>
 
           <button
@@ -156,21 +169,23 @@ export const BobaZhLab: React.FC<Props> = ({ onEarnXp }) => {
             }}
             onClick={handlePlaceOrder}
           >
-            {ordered ? '製作中...' : '🥤 向店員點單'}
+            {ordered
+              ? locale === 'en' ? 'Preparing…' : '製作中...'
+              : locale === 'en' ? '🥤 Place the order' : '🥤 向店員點單'}
           </button>
         </div>
       </div>
 
       {/* 場景切換膠囊 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
-        {BOBA_DIALOGUES.map((item, idx) => (
+        {localizedDialogues.map((item, idx) => (
           <button aria-pressed={selectedIdx === idx}
             key={item.id}
             type="button"
             className={`pill-btn ${selectedIdx === idx ? 'active' : ''}`}
             onClick={() => setSelectedIdx(idx)}
           >
-            <span>{item.icon}</span> {item.title.split('：')[0]}
+            <span>{item.icon}</span> {locale === 'en' ? item.title : item.title.split('：')[0]}
           </button>
         ))}
       </div>
@@ -181,12 +196,12 @@ export const BobaZhLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(245, 158, 11, 0.15)', color: '#d97706', fontWeight: 700 }}>
-              {activeItem.locationZh} (<span lang="ja">{activeItem.locationJa}</span>)
+              {localizedItem.locationZh} (<span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.locationJa}</span>)
             </span>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem', marginTop: '0.3rem' }}>
-            {activeItem.dialogueLines.map((line, lIdx) => (
+            {localizedItem.dialogueLines.map((line, lIdx) => (
               <div
                 key={lIdx}
                 style={{
@@ -201,9 +216,9 @@ export const BobaZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#38bdf8' }}>
-                    <span lang="ja">{line.speakerJa}</span>：
+                    <span lang={locale === 'en' ? 'en' : 'ja'}>{line.speakerJa}</span>:
                   </span>
-                  <button aria-label={`朗讀：${line.zh}`}
+                  <button aria-label={locale === 'en' ? `Read aloud: ${line.zh}` : `朗讀：${line.zh}`}
                     type="button"
                     style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
                     onClick={() => speakChinese(line.zh)}
@@ -213,7 +228,7 @@ export const BobaZhLab: React.FC<Props> = ({ onEarnXp }) => {
                 </div>
                 <strong style={{ fontSize: '0.86rem', color: 'var(--text)' }}>{line.zh}</strong>
                 <span lang="zh-Latn" style={{ fontSize: '0.72rem', color: '#f59e0b' }}>{line.pinyin}</span>
-                <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
+                <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
                   {line.ja}
                 </span>
               </div>
@@ -223,12 +238,12 @@ export const BobaZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
         {/* 右側：手搖飲茶文化重要單詞 */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          <span lang="ja" style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
-            💡 台湾手搖茶・カスタム虎の巻（Boba Ordering Tips）
+          <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
+            {locale === 'en' ? '💡 Bubble-tea ordering tips' : '💡 台湾手搖茶・カスタム虎の巻（Boba Ordering Tips）'}
           </span>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginTop: '0.3rem' }}>
-            {activeItem.bobaGlossary.map((vocab, vIdx) => (
+            {localizedItem.bobaGlossary.map((vocab, vIdx) => (
               <div
                 key={vIdx}
                 style={{
@@ -240,9 +255,9 @@ export const BobaZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <strong style={{ fontSize: '0.88rem', color: '#d97706' }}>{vocab.termZh}</strong>
-                  <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
+                  <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
                 </div>
-                <p lang="ja" style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+                <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
                   {vocab.tipJa}
                 </p>
               </div>

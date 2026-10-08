@@ -1,6 +1,9 @@
 ﻿import React, { useState } from 'react'
 import { EMAIL_TEMPLATES, type EmailTemplateItem } from '../data/emailTemplates'
 import { playCorrectSound, playWrongSound } from '../../engine/audioSynthesizer'
+import { useMemo } from 'react'
+import { useI18n } from '../../i18n/i18n'
+import { localizeToeicData, toeicSupportLang } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
@@ -8,14 +11,22 @@ interface Props {
 }
 
 export const EmailMasterLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'zh' }) => {
-  const isJa = instructionLang === 'ja'
+  const { locale } = useI18n()
+  const supportLang = toeicSupportLang(locale, instructionLang)
+  const isJa = supportLang === 'ja'
+  const isEn = supportLang === 'en'
+  const copy = (zh: string, ja: string, en: string) => isEn ? en : isJa ? ja : zh
+  const templates = useMemo(
+    () => EMAIL_TEMPLATES.map((item) => localizeToeicData(item, locale, instructionLang)),
+    [instructionLang, locale],
+  )
   const [selectedEmailIdx, setSelectedEmailIdx] = useState(0)
   const [styleMode, setStyleMode] = useState<'formal' | 'semiFormal'>('formal')
   const [selectedQuizAnswers, setSelectedQuizAnswers] = useState<Record<string, number>>({})
   const [submittedQuiz, setSubmittedQuiz] = useState<Record<string, boolean>>({})
 
   const activeEmail: EmailTemplateItem =
-    EMAIL_TEMPLATES[selectedEmailIdx % EMAIL_TEMPLATES.length]
+    templates[selectedEmailIdx % templates.length]
 
   function speakEnglish(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -45,19 +56,21 @@ export const EmailMasterLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'z
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>✉️</span> {isJa ? 'TOEIC ビジネスメール・文体変換ラボ' : 'TOEIC 商務電子郵件經典句型與寫作實驗室'}
+            <span>✉️</span> {copy('TOEIC 商務電子郵件經典句型與寫作實驗室', 'TOEIC ビジネスメール・文体変換ラボ', 'TOEIC Business-Email Style and Writing Lab')}
           </h3>
           <p className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            {isJa
-              ? 'Part 7読解の最重要テーマ！フォーマル（公式・対顧客）とセミフォーマル（社内・同僚）の文体変換と頻出構文を習得！'
-              : '訓練 Part 7 高頻詢價、道歉補償、會議邀請等商務電郵，掌握正式 (Formal) 與半正式 (Semi-formal) 語氣切換！'}
+            {copy(
+              '訓練 Part 7 高頻詢價、道歉補償、會議邀請等商務電郵，掌握正式 (Formal) 與半正式 (Semi-formal) 語氣切換！',
+              'Part 7読解の最重要テーマ！フォーマル（公式・対顧客）とセミフォーマル（社内・同僚）の文体変換と頻出構文を習得！',
+              'Practise high-frequency Part 7 inquiry and apology emails while comparing formal client-facing style with semi-formal internal style.',
+            )}
           </p>
         </div>
       </div>
 
       {/* 類別切換膠囊 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
-        {EMAIL_TEMPLATES.map((item, idx) => (
+        {templates.map((item, idx) => (
           <button
             key={item.id}
             type="button"
@@ -94,7 +107,7 @@ export const EmailMasterLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'z
                 }}
                 onClick={() => setStyleMode('formal')}
               >
-                Formal (對外/客戶)
+                {copy('Formal（對外／客戶）', 'Formal（社外・顧客向け）', 'Formal (external/client)')}
               </button>
               <button
                 type="button"
@@ -110,13 +123,13 @@ export const EmailMasterLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'z
                 }}
                 onClick={() => setStyleMode('semiFormal')}
               >
-                Semi-formal (社內/同僚)
+                {copy('Semi-formal（社內／同事）', 'Semi-formal（社内・同僚向け）', 'Semi-formal (internal/colleague)')}
               </button>
             </div>
           </div>
 
           <div style={{ background: 'var(--surface-soft)', padding: '0.5rem 0.7rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
-            <span style={{ fontSize: '0.68rem', color: 'var(--muted)', display: 'block' }}>Subject (件名)：</span>
+            <span style={{ fontSize: '0.68rem', color: 'var(--muted)', display: 'block' }}>{copy('主旨：', '件名：', 'Subject:')}</span>
             <strong style={{ fontSize: '0.82rem', color: 'var(--text)' }}>
               {isJa ? activeEmail.subjectLineJa : activeEmail.subjectLine}
             </strong>
@@ -133,7 +146,7 @@ export const EmailMasterLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'z
             style={{ alignSelf: 'flex-start', padding: '0.35rem 0.75rem', fontSize: '0.76rem' }}
             onClick={() => speakEnglish(styleMode === 'formal' ? activeEmail.formalBody : activeEmail.semiFormalBody)}
           >
-            🔊 全文朗讀 (Listen Email)
+            🔊 {copy('朗讀全文', '全文を読み上げる', 'Listen to email')}
           </button>
         </div>
 
@@ -142,7 +155,7 @@ export const EmailMasterLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'z
           {/* 必背句型 */}
           <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             <span style={{ fontSize: '0.74rem', color: '#38bdf8', fontWeight: 700 }}>
-              📌 {isJa ? 'Part 7 必須キーフレーズ：' : 'Part 7 核心必背句型：'}
+              📌 {copy('Part 7 核心必背句型：', 'Part 7 必須キーフレーズ：', 'Essential Part 7 phrases:')}
             </span>
             {activeEmail.keyPhrases.map((kp, kIdx) => (
               <div key={kIdx} style={{ background: 'var(--surface-soft)', padding: '0.5rem 0.65rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
@@ -159,7 +172,7 @@ export const EmailMasterLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'z
           <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
             <div>
               <span style={{ fontSize: '0.72rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
-                🎯 {isJa ? '句型判定チャレンジ：' : '電郵句型速答實戰：'}
+                🎯 {copy('電郵句型速答實戰：', '句型判定チャレンジ：', 'Email phrase challenge:')}
               </span>
               <h4 style={{ margin: '0.3rem 0 0.5rem', fontSize: '0.88rem' }}>
                 {isJa ? activeEmail.quiz.questionJa : activeEmail.quiz.questionZh}
@@ -203,7 +216,7 @@ export const EmailMasterLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'z
                     onClick={() => handleSelectQuiz(optIdx)}
                   >
                     <span style={{ fontSize: '0.82rem' }}>{opt}</span>
-                    {isDone && isCorrect && <span style={{ color: '#10b981', fontWeight: 700 }}>✓ 正解 (+15 XP)</span>}
+                    {isDone && isCorrect && <span style={{ color: '#10b981', fontWeight: 700 }}>✓ {copy('答對', '正解', 'Correct')} (+15 XP)</span>}
                   </button>
                 )
               })}
@@ -211,7 +224,7 @@ export const EmailMasterLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'z
 
             {submittedQuiz[activeEmail.id] && (
               <div style={{ marginTop: '0.4rem', padding: '0.6rem', borderRadius: '8px', background: 'var(--surface-soft)', fontSize: '0.76rem', color: 'var(--muted)', lineHeight: 1.45 }}>
-                💡 <strong>解説：</strong>{activeEmail.quiz.clueExplanationJa}
+                💡 <strong>{copy('解析：', '解説：', 'Explanation:')}</strong>{activeEmail.quiz.clueExplanationJa}
               </div>
             )}
           </div>

@@ -1,6 +1,9 @@
 ﻿import React, { useState } from 'react'
 import { CHART_QUESTIONS, type ChartQuestionItem } from '../data/chartQuestions'
 import { playCorrectSound, playWrongSound } from '../../engine/audioSynthesizer'
+import { useMemo } from 'react'
+import { useI18n } from '../../i18n/i18n'
+import { localizeToeicData, toeicSupportLang } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
@@ -8,12 +11,20 @@ interface Props {
 }
 
 export const ChartAnalysisLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'zh' }) => {
-  const isJa = instructionLang === 'ja'
+  const { locale } = useI18n()
+  const supportLang = toeicSupportLang(locale, instructionLang)
+  const isJa = supportLang === 'ja'
+  const isEn = supportLang === 'en'
+  const copy = (zh: string, ja: string, en: string) => isEn ? en : isJa ? ja : zh
+  const chartQuestions = useMemo(
+    () => CHART_QUESTIONS.map((item) => localizeToeicData(item, locale, instructionLang)),
+    [instructionLang, locale],
+  )
   const [selectedChartIdx, setSelectedChartIdx] = useState(0)
   const [selectedOptions, setSelectedOptions] = useState<Record<string, number>>({})
   const [submitted, setSubmitted] = useState<Record<string, boolean>>({})
 
-  const activeItem: ChartQuestionItem = CHART_QUESTIONS[selectedChartIdx % CHART_QUESTIONS.length]
+  const activeItem: ChartQuestionItem = chartQuestions[selectedChartIdx % chartQuestions.length]
 
   function handleSelectOption(qId: string, optIdx: number, correctIdx: number) {
     if (submitted[qId]) return
@@ -34,19 +45,21 @@ export const ChartAnalysisLab: React.FC<Props> = ({ onEarnXp, instructionLang = 
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>📊</span> {isJa ? 'TOEIC 図表問題・ビジュアルデータ読解ラボ' : 'TOEIC 商務圖表題與視覺數據分析實驗室'}
+            <span>📊</span> {copy('TOEIC 商務圖表題與視覺數據分析實驗室', 'TOEIC 図表問題・ビジュアルデータ読解ラボ', 'TOEIC Business Charts and Visual-Data Analysis Lab')}
           </h3>
           <p className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            {isJa
-              ? 'リスニングPart 3/4やリーディングPart 7に頻出する長条図・円グラフ・スケジュール表の高速照合スキルを特訓！'
-              : '訓練 Part 3/4 聽力與 Part 7 閱讀高頻圖表題：長條圖、圓餅圖與排程表的關鍵數值秒殺定位！'}
+            {copy(
+              '訓練 Part 3/4 聽力與 Part 7 閱讀高頻圖表題：長條圖、圓餅圖與排程表的關鍵數值秒殺定位！',
+              'リスニングPart 3/4やリーディングPart 7に頻出する長条図・円グラフ・スケジュール表の高速照合スキルを特訓！',
+              'Practise the rapid chart matching used in TOEIC Parts 3, 4, and 7 for bar charts, pie charts, schedules, and key figures.',
+            )}
           </p>
         </div>
       </div>
 
       {/* 題目切換膠囊 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem' }}>
-        {CHART_QUESTIONS.map((item, idx) => (
+        {chartQuestions.map((item, idx) => (
           <button
             key={item.id}
             type="button"
@@ -119,7 +132,7 @@ export const ChartAnalysisLab: React.FC<Props> = ({ onEarnXp, instructionLang = 
 
           <div style={{ background: 'var(--surface-soft)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)', marginTop: '0.4rem' }}>
             <span style={{ fontSize: '0.7rem', color: '#f59e0b', fontWeight: 700, display: 'block' }}>
-              📝 Context Passage (問題文・会話抜粋)：
+              📝 {copy('情境題文與對話節錄：', '問題文・会話抜粋：', 'Context passage:')}
             </span>
             <p style={{ margin: '0.2rem 0 0', fontSize: '0.78rem', lineHeight: 1.45, color: 'var(--text)' }}>
               {activeItem.scenarioPassage}
@@ -175,7 +188,7 @@ export const ChartAnalysisLab: React.FC<Props> = ({ onEarnXp, instructionLang = 
                       onClick={() => handleSelectOption(q.id, optIdx, q.correctIndex)}
                     >
                       <span style={{ fontSize: '0.82rem' }}>{opt}</span>
-                      {isDone && isCorrect && <span style={{ color: '#10b981', fontWeight: 700 }}>✓ 正解 (+15 XP)</span>}
+                      {isDone && isCorrect && <span style={{ color: '#10b981', fontWeight: 700 }}>✓ {copy('答對', '正解', 'Correct')} (+15 XP)</span>}
                     </button>
                   )
                 })}
@@ -183,7 +196,7 @@ export const ChartAnalysisLab: React.FC<Props> = ({ onEarnXp, instructionLang = 
 
               {submitted[q.id] && (
                 <div style={{ marginTop: '0.6rem', padding: '0.6rem', borderRadius: '8px', background: 'var(--surface-soft)', fontSize: '0.76rem', color: 'var(--muted)', lineHeight: 1.45 }}>
-                  💡 <strong>{isJa ? '正解の根拠：' : '破題解析：'}</strong> {isJa ? q.explanationJa : q.explanationZh}
+                  💡 <strong>{copy('破題解析：', '正解の根拠：', 'Answer evidence:')}</strong> {isJa ? q.explanationJa : q.explanationZh}
                 </div>
               )}
             </div>

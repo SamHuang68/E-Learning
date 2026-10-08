@@ -1,12 +1,15 @@
 ﻿import React, { useState } from 'react'
-import { YOUBIKE_DIALOGUES, type YouBikeDialogueItem } from '../data/youbikeZhDialogues'
+import { CHINESE_SUPPORT_EN, YOUBIKE_DIALOGUES, type YouBikeDialogueItem } from '../data/youbikeZhDialogues'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
+import { localizeChineseData } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
 }
 
 export const YouBikeZhLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { locale } = useI18n()
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [transitDiscount, setTransitDiscount] = useState(true)
   const [seatInverted, setSeatInverted] = useState(false)
@@ -14,6 +17,8 @@ export const YouBikeZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
   const activeItem: YouBikeDialogueItem =
     YOUBIKE_DIALOGUES[selectedIdx % YOUBIKE_DIALOGUES.length]
+  const localizedItem = localizeChineseData(activeItem, locale, CHINESE_SUPPORT_EN)
+  const localizedDialogues = localizeChineseData(YOUBIKE_DIALOGUES, locale, CHINESE_SUPPORT_EN)
 
   function speakChinese(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -43,10 +48,12 @@ export const YouBikeZhLab: React.FC<Props> = ({ onEarnXp }) => {
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>🚲</span> 台灣 YouBike 微笑單車與轉乘生活實驗室 (YouBike Transit Lab)
+            <span>🚲</span> {locale === 'en' ? 'Taiwan YouBike and Transit Lab' : '台灣 YouBike 微笑單車與轉乘生活實驗室 (YouBike Transit Lab)'}
           </h3>
-          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            台湾の国民的シェアサイクル「YouBike 2.0」！「座墊反轉（故障サイン）・捷運公車轉乘現折5元・靠卡借車・卡榫入柱還車」を完全制覇！
+          <p lang={locale === 'en' ? 'en' : 'ja'} className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+            {locale === 'en'
+              ? 'Practise Mandarin for YouBike 2.0: recognizing an inverted-seat fault signal, receiving a transit discount, renting by card, and docking the bicycle correctly.'
+              : '台湾の国民的シェアサイクル「YouBike 2.0」！「座墊反轉（故障サイン）・捷運公車轉乘現折5元・靠卡借車・卡榫入柱還車」を完全制覇！'}
           </p>
         </div>
       </div>
@@ -69,13 +76,15 @@ export const YouBikeZhLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <div style={{ fontSize: '1.8rem' }}>🚲 🟡</div>
           <div>
-            <strong style={{ fontSize: '0.9rem', display: 'block' }}>YouBike 2.0 智慧車機螢幕 (Smart Solar On-Bike Console)</strong>
+            <strong style={{ fontSize: '0.9rem', display: 'block' }}>{locale === 'en' ? 'YouBike 2.0 Smart On-Bike Console' : 'YouBike 2.0 智慧車機螢幕 (Smart Solar On-Bike Console)'}</strong>
             <span style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
               {rentState === 'rented'
-                ? '騎乘中：捷運轉乘扣抵 5 元已啟動！租借前 30 分鐘只需 5 元'
+                ? locale === 'en' ? 'Ride in progress: NT$5 metro-transfer discount active. The first 30 minutes cost NT$5.' : '騎乘中：捷運轉乘扣抵 5 元已啟動！租借前 30 分鐘只需 5 元'
                 : rentState === 'returned'
-                ? '✓ 嗶嗶！還車成功！扣款 5 元完成！(+15 XP)'
-                : `車況正常・${transitDiscount ? '享捷運公車轉乘折5元' : '一般費率'}${seatInverted ? ' (已手動反轉椅墊報修)' : ''}`}
+                ? locale === 'en' ? '✓ Beep! Bicycle returned and NT$5 charged. (+15 XP)' : '✓ 嗶嗶！還車成功！扣款 5 元完成！(+15 XP)'
+                : locale === 'en'
+                  ? `Bicycle ready · ${transitDiscount ? 'NT$5 transit discount' : 'standard fare'}${seatInverted ? ' (seat inverted to report a fault)' : ''}`
+                  : `車況正常・${transitDiscount ? '享捷運公車轉乘折5元' : '一般費率'}${seatInverted ? ' (已手動反轉椅墊報修)' : ''}`}
             </span>
           </div>
         </div>
@@ -87,7 +96,9 @@ export const YouBikeZhLab: React.FC<Props> = ({ onEarnXp }) => {
             style={{ padding: '0.35rem 0.6rem', fontSize: '0.75rem' }}
             onClick={() => setSeatInverted((prev) => !prev)}
           >
-            {seatInverted ? '⚠️ 椅墊反轉 (故障待修)' : '🔄 座墊反轉示範'}
+            {seatInverted
+              ? locale === 'en' ? '⚠️ Seat inverted (fault reported)' : '⚠️ 椅墊反轉 (故障待修)'
+              : locale === 'en' ? '🔄 Demonstrate the inverted-seat signal' : '🔄 座墊反轉示範'}
           </button>
 
           <button aria-pressed={transitDiscount}
@@ -96,7 +107,9 @@ export const YouBikeZhLab: React.FC<Props> = ({ onEarnXp }) => {
             style={{ padding: '0.35rem 0.6rem', fontSize: '0.75rem' }}
             onClick={() => setTransitDiscount((prev) => !prev)}
           >
-            {transitDiscount ? '✓ 捷運轉乘扣5元' : '無轉乘優惠'}
+            {transitDiscount
+              ? locale === 'en' ? '✓ NT$5 metro-transfer discount' : '✓ 捷運轉乘扣5元'
+              : locale === 'en' ? 'No transit discount' : '無轉乘優惠'}
           </button>
 
           <button
@@ -115,24 +128,24 @@ export const YouBikeZhLab: React.FC<Props> = ({ onEarnXp }) => {
             onClick={handleRentOrReturn}
           >
             {rentState === 'idle'
-              ? '💳 悠遊卡感應借車'
+              ? locale === 'en' ? '💳 Tap EasyCard to rent' : '💳 悠遊卡感應借車'
               : rentState === 'rented'
-              ? '🏁 卡榫入柱還車'
-              : '還車完畢'}
+              ? locale === 'en' ? '🏁 Dock the bicycle to return it' : '🏁 卡榫入柱還車'
+              : locale === 'en' ? 'Return complete' : '還車完畢'}
           </button>
         </div>
       </div>
 
       {/* 場景切換膠囊 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
-        {YOUBIKE_DIALOGUES.map((item, idx) => (
+        {localizedDialogues.map((item, idx) => (
           <button aria-pressed={selectedIdx === idx}
             key={item.id}
             type="button"
             className={`pill-btn ${selectedIdx === idx ? 'active' : ''}`}
             onClick={() => setSelectedIdx(idx)}
           >
-            <span>{item.icon}</span> {item.title.split('：')[0]}
+            <span>{item.icon}</span> {locale === 'en' ? item.title : item.title.split('：')[0]}
           </button>
         ))}
       </div>
@@ -143,7 +156,7 @@ export const YouBikeZhLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(234, 179, 8, 0.15)', color: '#ca8a04', fontWeight: 700 }}>
-              {activeItem.locationZh} (<span lang="ja">{activeItem.locationJa}</span>)
+              {activeItem.locationZh} (<span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.locationJa}</span>)
             </span>
           </div>
 
@@ -163,9 +176,9 @@ export const YouBikeZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#38bdf8' }}>
-                    <span lang="ja">{line.speakerJa}</span>：
+                    <span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.dialogueLines[lIdx].speakerJa}</span>:
                   </span>
-                  <button aria-label={`朗讀：${line.zh}`}
+                  <button aria-label={locale === 'en' ? `Read aloud: ${line.zh}` : `朗讀：${line.zh}`}
                     type="button"
                     style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
                     onClick={() => speakChinese(line.zh)}
@@ -175,8 +188,8 @@ export const YouBikeZhLab: React.FC<Props> = ({ onEarnXp }) => {
                 </div>
                 <strong style={{ fontSize: '0.86rem', color: 'var(--text)' }}>{line.zh}</strong>
                 <span lang="zh-Latn" style={{ fontSize: '0.72rem', color: '#f59e0b' }}>{line.pinyin}</span>
-                <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
-                  {line.ja}
+                <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
+                  {localizedItem.dialogueLines[lIdx].ja}
                 </span>
               </div>
             ))}
@@ -185,12 +198,12 @@ export const YouBikeZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
         {/* 右側：YouBike 綠色生活重要單詞 */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          <span lang="ja" style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
-            💡 台湾 YouBike・シェアサイクル文化（YouBike Tips）
+          <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
+            {locale === 'en' ? '💡 YouBike and bike-sharing tips' : '💡 台湾 YouBike・シェアサイクル文化（YouBike Tips）'}
           </span>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginTop: '0.3rem' }}>
-            {activeItem.youbikeGlossary.map((vocab, vIdx) => (
+            {localizedItem.youbikeGlossary.map((vocab, vIdx) => (
               <div
                 key={vIdx}
                 style={{
@@ -202,9 +215,9 @@ export const YouBikeZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <strong style={{ fontSize: '0.88rem', color: '#ca8a04' }}>{vocab.termZh}</strong>
-                  <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
+                  <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
                 </div>
-                <p lang="ja" style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+                <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
                   {vocab.tipJa}
                 </p>
               </div>

@@ -1,11 +1,14 @@
 import React, { useState } from 'react'
-import { FALSE_FRIENDS_DATA, type FalseFriendItem } from '../data/falseFriends'
+import { CHINESE_SUPPORT_EN, FALSE_FRIENDS_DATA, type FalseFriendItem } from '../data/falseFriends'
+import { useI18n } from '../../i18n/i18n'
+import { localizeChineseData } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
 }
 
 export const FalseFriendsLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { locale } = useI18n()
   const [selectedItem, setSelectedItem] = useState<FalseFriendItem>(FALSE_FRIENDS_DATA[0])
   const [selectedTag, setSelectedTag] = useState<string>('all')
 
@@ -13,6 +16,14 @@ export const FalseFriendsLab: React.FC<Props> = ({ onEarnXp }) => {
     if (selectedTag === 'all') return true
     return item.tag === selectedTag
   })
+  const localizedItem = localizeChineseData(selectedItem, locale, CHINESE_SUPPORT_EN)
+  const tagLabels: Readonly<Record<string, string>> = {
+    all: locale === 'en' ? 'All words' : '全部單字',
+    日常生活: locale === 'en' ? 'Everyday life' : '日常生活',
+    交通飲食: locale === 'en' ? 'Travel and food' : '交通飲食',
+    職場商務: locale === 'en' ? 'Work and business' : '職場商務',
+    感情社交: locale === 'en' ? 'Feelings and social life' : '感情社交',
+  }
 
   function speakChinese(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -29,10 +40,12 @@ export const FalseFriendsLab: React.FC<Props> = ({ onEarnXp }) => {
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>⛩️</span> 日中同形異義語・偽友詞實驗室 (False Friends & Kanji Pitfalls)
+            <span>⛩️</span> {locale === 'en' ? 'Shared-Character False Friends Lab' : '日中同形異義語・偽友詞實驗室 (False Friends & Kanji Pitfalls)'}
           </h3>
-          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            同じ漢字でも日中で意味がまったく異なる要注意単語！「手紙・汽車・勉強・愛人・大丈夫」などの大誤解を完全防止。
+          <p lang={locale === 'en' ? 'en' : 'ja'} className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+            {locale === 'en'
+              ? 'Compare familiar-looking characters whose meanings differ sharply between Japanese and Taiwan Mandarin.'
+              : '同じ漢字でも日中で意味がまったく異なる要注意単語！「手紙・汽車・勉強・愛人・大丈夫」などの大誤解を完全防止。'}
           </p>
         </div>
       </div>
@@ -46,7 +59,7 @@ export const FalseFriendsLab: React.FC<Props> = ({ onEarnXp }) => {
             className={`pill-btn ${selectedTag === tag ? 'active' : ''}`}
             onClick={() => setSelectedTag(tag)}
           >
-            {tag === 'all' ? '全部單字' : tag}
+            {tagLabels[tag] ?? tag}
           </button>
         ))}
       </div>
@@ -56,6 +69,7 @@ export const FalseFriendsLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', maxHeight: '420px', overflowY: 'auto' }}>
           {filteredItems.map((item) => {
             const isSelected = selectedItem.id === item.id
+            const displayItem = localizeChineseData(item, locale, CHINESE_SUPPORT_EN)
             return (
               <button aria-pressed={isSelected}
                 key={item.id}
@@ -88,11 +102,11 @@ export const FalseFriendsLab: React.FC<Props> = ({ onEarnXp }) => {
                     HSK{item.hskLevel}
                   </span>
                   <div style={{ fontSize: '0.7rem', color: '#ef4444', marginTop: '0.15rem' }}>
-                    中：{item.meaningZhInJa.replace(/【|】/g, '')}
+                    {locale === 'en' ? 'Mandarin: ' : '中：'}{displayItem.meaningZhInJa.replace(/【|】/g, '')}
                   </div>
                 </div>
                 <span style={{ fontSize: '0.65rem', padding: '0.1rem 0.35rem', borderRadius: '4px', background: 'var(--surface-soft)', color: 'var(--muted)' }}>
-                  {item.tag}
+                  {displayItem.tag}
                 </span>
               </button>
             )
@@ -119,7 +133,7 @@ export const FalseFriendsLab: React.FC<Props> = ({ onEarnXp }) => {
                   <span lang="zh-Latn">{selectedItem.pinyin}</span> ({selectedItem.bopomofo})
                 </span>
                 <span style={{ fontSize: '0.75rem', color: '#10b981', background: 'rgba(16,185,129,0.1)', padding: '0.1rem 0.4rem', borderRadius: '4px' }}>
-                  HSK {selectedItem.hskLevel} 等級 / Level
+                  HSK {selectedItem.hskLevel} {locale === 'en' ? 'level' : '等級 / Level'}
                 </span>
               </div>
             </div>
@@ -131,47 +145,47 @@ export const FalseFriendsLab: React.FC<Props> = ({ onEarnXp }) => {
                 onEarnXp(5)
               }}
             >
-              🔊 單字朗讀
+              {locale === 'en' ? '🔊 Play word' : '🔊 單字朗讀'}
             </button>
           </div>
 
           {/* 日中對比矩陣 */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
             <div style={{ background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.25)', padding: '0.6rem', borderRadius: '8px' }}>
-              <span lang="ja" style={{ fontSize: '0.7rem', color: '#ef4444', fontWeight: 700, display: 'block' }}>🇹🇼 中国語の意味</span>
-              <strong lang="ja" style={{ fontSize: '0.85rem', color: '#ef4444' }}>{selectedItem.meaningZhInJa}</strong>
+              <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.7rem', color: '#ef4444', fontWeight: 700, display: 'block' }}>{locale === 'en' ? '🇹🇼 Meaning in Mandarin' : '🇹🇼 中国語の意味'}</span>
+              <strong lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.85rem', color: '#ef4444' }}>{localizedItem.meaningZhInJa}</strong>
             </div>
             <div style={{ background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.25)', padding: '0.6rem', borderRadius: '8px' }}>
-              <span style={{ fontSize: '0.7rem', color: '#3b82f6', fontWeight: 700, display: 'block' }}><span lang="ja">🇯🇵 日本語の「</span><span lang="ja">{selectedItem.wordJa}</span>」</span>
-              <strong lang="ja" style={{ fontSize: '0.85rem', color: '#3b82f6' }}>{selectedItem.meaningJaInJa}</strong>
+              <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.7rem', color: '#3b82f6', fontWeight: 700, display: 'block' }}>{locale === 'en' ? `🇯🇵 The Japanese word “${localizedItem.wordJa}”` : `🇯🇵 日本語の「${selectedItem.wordJa}」`}</span>
+              <strong lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.85rem', color: '#3b82f6' }}>{localizedItem.meaningJaInJa}</strong>
             </div>
           </div>
 
           {/* 避坑地雷警示 */}
           <div style={{ background: 'var(--surface-soft)', padding: '0.65rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
-            <span lang="ja" style={{ fontSize: '0.74rem', color: '#f59e0b', fontWeight: 700, display: 'block' }}>
-              ⚠️ ネイティブの避坑アドバイス：
+            <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: '#f59e0b', fontWeight: 700, display: 'block' }}>
+              {locale === 'en' ? '⚠️ Avoid this mix-up:' : '⚠️ ネイティブの避坑アドバイス：'}
             </span>
-            <p lang="ja" style={{ margin: '0.2rem 0 0', fontSize: '0.78rem', lineHeight: 1.45 }}>{selectedItem.pitfallAlertJa}</p>
+            <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.2rem 0 0', fontSize: '0.78rem', lineHeight: 1.45 }}>{localizedItem.pitfallAlertJa}</p>
           </div>
 
           {/* 情境例句與發音跟讀 */}
           <div style={{ background: 'var(--surface-soft)', padding: '0.65rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.3rem' }}>
-              <span lang="ja" style={{ fontSize: '0.72rem', color: 'var(--muted)', fontWeight: 600 }}>📝 リアル例文：</span>
+              <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.72rem', color: 'var(--muted)', fontWeight: 600 }}>{locale === 'en' ? '📝 Target example:' : '📝 リアル例文：'}</span>
               <button
                 type="button"
                 className="pill-btn"
                 style={{ fontSize: '0.7rem', padding: '0.15rem 0.45rem' }}
                 onClick={() => speakChinese(selectedItem.exampleSentenceZh)}
               >
-                🔊 聽句子
+                {locale === 'en' ? '🔊 Play sentence' : '🔊 聽句子'}
               </button>
             </div>
             <strong style={{ fontSize: '0.9rem', display: 'block' }}>{selectedItem.exampleSentenceZh}</strong>
             <div lang="zh-Latn" style={{ fontSize: '0.72rem', color: '#f59e0b' }}>{selectedItem.examplePinyin}</div>
-            <div lang="ja" style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.2rem' }}>
-              {selectedItem.exampleTranslationJa}
+            <div lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.2rem' }}>
+              {localizedItem.exampleTranslationJa}
             </div>
           </div>
         </div>

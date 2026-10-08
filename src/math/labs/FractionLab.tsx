@@ -1,5 +1,5 @@
-import { useMathLabCopy } from '../../i18n/mathLabCopy'
 import React, { useState } from 'react'
+import { useI18n } from '../../i18n/i18n'
 
 type Props = {
   onXp?: (amount: number) => void
@@ -10,7 +10,8 @@ type Props = {
  * 提供動態圓形切片 (Pie Chart) 與數線 (Number Line) 視覺化，探索真假分數、等值擴分與加法。
  */
 export const FractionLab: React.FC<Props> = () => {
-  const ml = useMathLabCopy()
+  const { locale } = useI18n()
+  const copy = (zhHant: string, en: string) => locale === 'en' ? en : zhHant
   const [numerator, setNumerator] = useState(3)
   const [denominator, setDenominator] = useState(4)
 
@@ -60,8 +61,10 @@ export const FractionLab: React.FC<Props> = () => {
     <div className="math-lab fraction-lab">
       <div className="lab-header">
         <div>
-          <h3>{ml("分數切餅與數線實驗室 (Fractions Lab)")}</h3>
-          <p className="lab-desc">{ml("調節分子與分母，直觀觀察圓形披薩切片與數線位置，理解真分數、假分數與帶分數。")}</p>
+          <h3>{copy('分數切餅與數線實驗室', 'Fraction Circles and Number-Line Lab')}</h3>
+          <p className="lab-desc">
+            {copy('調節分子與分母，觀察圓形切片與數線位置，理解真分數、假分數與帶分數。', 'Adjust the numerator and denominator to compare a fraction circle with its number-line position and distinguish proper, improper, and mixed fractions.')}
+          </p>
         </div>
       </div>
 
@@ -74,12 +77,20 @@ export const FractionLab: React.FC<Props> = () => {
           </div>
 
           <div className="fraction-info-text">
-            <p>{ml("數值：")}<strong>{value.toFixed(3)}</strong>
+            <p>
+              {copy('數值：', 'Value:')}<strong>{value.toFixed(3)}</strong>
             </p>
-            <p>{ml("類型：")}{isImproper ? (
-                <span className="badge-improper">{ml("假分數（可化為帶分數：")}{mixedWhole}{ml(" 又 ")}{mixedRemainder}/{denominator}{ml("）")}</span>
+            <p>
+              {copy('類型：', 'Type:')}
+              {isImproper ? (
+                <span className="badge-improper">
+                  {copy(
+                    `假分數（可化為帶分數：${mixedWhole} 又 ${mixedRemainder}/${denominator}）`,
+                    `Improper fraction; mixed form: ${mixedWhole} ${mixedRemainder}/${denominator}`,
+                  )}
+                </span>
               ) : (
-                <span className="badge-proper">{ml("真分數（小於 1）")}</span>
+                <span className="badge-proper">{copy('真分數（小於 1）', 'Proper fraction (less than 1)')}</span>
               )}
             </p>
           </div>
@@ -90,11 +101,11 @@ export const FractionLab: React.FC<Props> = () => {
             <svg viewBox="0 0 220 220" className="pie-svg" style={{ width: '100%', maxWidth: '220px', height: 'auto' }}>
               {renderPieSlices()}
             </svg>
-            <span className="visual-caption">{ml("圓盤切分成 ")}{denominator}{ml(" 等份，選取 ")}{numerator}{ml(" 份")}</span>
+            <span className="visual-caption">{copy(`圓盤切分成 ${denominator} 等份，選取 ${numerator} 份`, `Circle divided into ${denominator} equal parts; ${numerator} selected`)}</span>
           </div>
 
           <div className="number-line-box">
-            <h4>{ml("數線位置 (0 ~ 2)")}</h4>
+            <h4>{copy('數線位置', 'Number-line position')} (0–2)</h4>
             <div className="num-line-track">
               <div
                 className="num-line-marker"
@@ -119,12 +130,13 @@ export const FractionLab: React.FC<Props> = () => {
 
       <div className="lab-sliders-row">
         <div className="slider-control">
-          <label htmlFor="fraction-numerator">{ml("分子 (Numerator): ")}<strong>{numerator}</strong>
+          <label htmlFor="fraction-numerator">
+            {copy('分子', 'Numerator')}: <strong>{numerator}</strong>
           </label>
           <input
             id="fraction-numerator"
             type="range"
-            aria-valuetext={ml("{v0}，分數 {v1} 分之 {v2}", [numerator, denominator, numerator])}
+            aria-valuetext={copy(`${numerator}，分數 ${denominator} 分之 ${numerator}`, `${numerator}; fraction ${numerator} over ${denominator}`)}
             min="0"
             max="12"
             value={numerator}
@@ -133,12 +145,13 @@ export const FractionLab: React.FC<Props> = () => {
         </div>
 
         <div className="slider-control">
-          <label htmlFor="fraction-denominator">{ml("分母 (Denominator): ")}<strong>{denominator}</strong>
+          <label htmlFor="fraction-denominator">
+            {copy('分母', 'Denominator')}: <strong>{denominator}</strong>
           </label>
           <input
             id="fraction-denominator"
             type="range"
-            aria-valuetext={ml("{v0}，分數 {v1} 分之 {v2}", [denominator, denominator, numerator])}
+            aria-valuetext={copy(`${denominator}，分數 ${denominator} 分之 ${numerator}`, `${denominator}; fraction ${numerator} over ${denominator}`)}
             min="1"
             max="12"
             value={denominator}

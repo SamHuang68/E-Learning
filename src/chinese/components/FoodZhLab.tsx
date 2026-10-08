@@ -1,12 +1,15 @@
 ﻿import React, { useState } from 'react'
-import { FOOD_DIALOGUES, type FoodDialogueItem } from '../data/foodZhDialogues'
+import { CHINESE_SUPPORT_EN, FOOD_DIALOGUES, type FoodDialogueItem } from '../data/foodZhDialogues'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
+import { localizeChineseData } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
 }
 
 export const FoodZhLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { locale } = useI18n()
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [sweetness, setSweetness] = useState('微糖 (30%)')
   const [iceLevel, setIceLevel] = useState('微冰 (30%)')
@@ -14,6 +17,8 @@ export const FoodZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
   const activeItem: FoodDialogueItem =
     FOOD_DIALOGUES[selectedIdx % FOOD_DIALOGUES.length]
+  const localizedItem = localizeChineseData(activeItem, locale, CHINESE_SUPPORT_EN)
+  const localizedDialogues = localizeChineseData(FOOD_DIALOGUES, locale, CHINESE_SUPPORT_EN)
 
   function speakChinese(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -37,10 +42,12 @@ export const FoodZhLab: React.FC<Props> = ({ onEarnXp }) => {
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>🧋</span> 台灣夜市小吃與手搖茶飲點餐實驗室 (Night Market & Food Lab)
+            <span>🧋</span> {locale === 'en' ? 'Taiwan Night Market and Boba Tea Ordering Lab' : '台灣夜市小吃與手搖茶飲點餐實驗室 (Night Market & Food Lab)'}
           </h3>
-          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            台湾旅行の醍醐味！「タピオカミルクティーの甘さ・氷カスタマイズ（微糖微冰）・ジーパイ（炸雞排）要不要切？要不要辣？」を完全攻略！
+          <p lang={locale === 'en' ? 'en' : 'ja'} className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+            {locale === 'en'
+              ? 'Practise essential Mandarin for boba tea sweetness and ice levels, night-market snacks, spice preferences, and whether food should be cut.'
+              : '台湾旅行の醍醐味！「タピオカミルクティーの甘さ・氷カスタマイズ（微糖微冰）・ジーパイ（炸雞排）要不要切？要不要辣？」を完全攻略！'}
           </p>
         </div>
       </div>
@@ -63,16 +70,16 @@ export const FoodZhLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <div style={{ fontSize: '1.8rem' }}>🧋 🥤</div>
           <div>
-            <strong style={{ fontSize: '0.9rem', display: 'block' }}>手搖杯客製配方 (Boba Customizer)</strong>
-            <span style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
-              波霸奶茶：{sweetness} / {iceLevel}
+            <strong style={{ fontSize: '0.9rem', display: 'block' }}>{locale === 'en' ? 'Boba drink customizer' : '手搖杯客製配方 (Boba Customizer)'}</strong>
+            <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
+              {locale === 'en' ? <>Boba milk tea: {sweetness} / {iceLevel}</> : <>波霸奶茶：{sweetness} / {iceLevel}</>}
             </span>
           </div>
         </div>
 
         <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
           <select
-            aria-label="甜度"
+            aria-label={locale === 'en' ? 'Sweetness level' : '甜度'}
             value={sweetness}
             onChange={(e) => setSweetness(e.target.value)}
             style={{
@@ -92,7 +99,7 @@ export const FoodZhLab: React.FC<Props> = ({ onEarnXp }) => {
           </select>
 
           <select
-            aria-label="冰量"
+            aria-label={locale === 'en' ? 'Ice level' : '冰量'}
             value={iceLevel}
             onChange={(e) => setIceLevel(e.target.value)}
             style={{
@@ -121,21 +128,23 @@ export const FoodZhLab: React.FC<Props> = ({ onEarnXp }) => {
             }}
             onClick={handleOrderBoba}
           >
-            {orderDone ? '✓ 點單完成！出杯中 (+10 XP)' : '🥤 模擬點單喊單'}
+            {orderDone
+              ? locale === 'en' ? '✓ Order placed · Preparing drink (+10 XP)' : '✓ 點單完成！出杯中 (+10 XP)'
+              : locale === 'en' ? '🥤 Simulate placing the order' : '🥤 模擬點單喊單'}
           </button>
         </div>
       </div>
 
       {/* 場景切換膠囊 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
-        {FOOD_DIALOGUES.map((item, idx) => (
+        {localizedDialogues.map((item, idx) => (
           <button aria-pressed={selectedIdx === idx}
             key={item.id}
             type="button"
             className={`pill-btn ${selectedIdx === idx ? 'active' : ''}`}
             onClick={() => setSelectedIdx(idx)}
           >
-            <span>{item.icon}</span> {item.title.split('（')[0]}
+            <span>{item.icon}</span> {locale === 'en' ? item.title : item.title.split('（')[0]}
           </button>
         ))}
       </div>
@@ -146,7 +155,7 @@ export const FoodZhLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(236, 72, 153, 0.15)', color: '#ec4899', fontWeight: 700 }}>
-              {activeItem.locationZh} (<span lang="ja">{activeItem.locationJa}</span>)
+              {activeItem.locationZh} (<span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.locationJa}</span>)
             </span>
           </div>
 
@@ -166,9 +175,9 @@ export const FoodZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#38bdf8' }}>
-                    <span lang="ja">{line.speakerJa}</span>：
+                    <span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.dialogueLines[lIdx].speakerJa}</span>:
                   </span>
-                  <button aria-label={`朗讀：${line.zh}`}
+                  <button aria-label={locale === 'en' ? `Read aloud: ${line.zh}` : `朗讀：${line.zh}`}
                     type="button"
                     style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
                     onClick={() => speakChinese(line.zh)}
@@ -178,8 +187,8 @@ export const FoodZhLab: React.FC<Props> = ({ onEarnXp }) => {
                 </div>
                 <strong style={{ fontSize: '0.86rem', color: 'var(--text)' }}>{line.zh}</strong>
                 <span lang="zh-Latn" style={{ fontSize: '0.72rem', color: '#f59e0b' }}>{line.pinyin}</span>
-                <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
-                  {line.ja}
+                <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
+                  {localizedItem.dialogueLines[lIdx].ja}
                 </span>
               </div>
             ))}
@@ -188,12 +197,12 @@ export const FoodZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
         {/* 右側：台灣夜市點餐常用單詞 */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          <span lang="ja" style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
-            💡 台湾夜市・グルメ注文豆知識（Food Tips）
+          <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
+            {locale === 'en' ? '💡 Night-market food and ordering tips' : '💡 台湾夜市・グルメ注文豆知識（Food Tips）'}
           </span>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginTop: '0.3rem' }}>
-            {activeItem.foodGlossary.map((vocab, vIdx) => (
+            {localizedItem.foodGlossary.map((vocab, vIdx) => (
               <div
                 key={vIdx}
                 style={{
@@ -205,9 +214,9 @@ export const FoodZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <strong style={{ fontSize: '0.88rem', color: '#f59e0b' }}>{vocab.termZh}</strong>
-                  <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
+                  <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
                 </div>
-                <p lang="ja" style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+                <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
                   {vocab.tipJa}
                 </p>
               </div>

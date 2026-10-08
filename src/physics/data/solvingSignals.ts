@@ -26,6 +26,20 @@ export type PhysicsSolvingSignal = {
 export const PHYSICS_SOLVING_SIGNALS: PhysicsSolvingSignal[] = [
   // ===================== 國中物理階段 =====================
   {
+    id: 'sig-j-measurement-scale',
+    stage: 'junior',
+    gradeBand: '國中七年級',
+    strand: 'mechanics',
+    topic: '測量與誤差 · 最小刻度與估計位',
+    problemSignal: '測量值記錄到小數末位，題目詢問儀器的「最小刻度」或哪一位是估計值',
+    threeSecondRule: '【最後一位是估計位】儀器最小刻度在最後記錄位數的前一位，也就是最後一位位值的 10 倍。',
+    firstStepFormula: '\\Delta_{\\min}=10\\,\\Delta_{\\text{last recorded place}}',
+    exampleProblem: {
+      question: '直尺讀數記為 $15.48\\text{ cm}$，最小刻度為何？',
+      quickSolve: '末位 $8$ 是 $0.01\\text{ cm}$ 的估計位，所以最小刻度為 $0.1\\text{ cm}=1\\text{ mm}$。',
+    },
+  },
+  {
     id: 'sig-j-density',
     stage: 'junior',
     gradeBand: '國中七年級',

@@ -1,17 +1,22 @@
 ﻿import React, { useState } from 'react'
-import { HOUSING_DIALOGUES, type HousingDialogueItem } from '../data/housingDialogues'
+import { CHINESE_SUPPORT_EN, HOUSING_DIALOGUES, type HousingDialogueItem } from '../data/housingDialogues'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
+import { localizeChineseData } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
 }
 
 export const HousingLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { locale } = useI18n()
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [playedMelody, setPlayedMelody] = useState(false)
 
   const activeItem: HousingDialogueItem =
     HOUSING_DIALOGUES[selectedIdx % HOUSING_DIALOGUES.length]
+  const localizedItem = localizeChineseData(activeItem, locale, CHINESE_SUPPORT_EN)
+  const localizedDialogues = localizeChineseData(HOUSING_DIALOGUES, locale, CHINESE_SUPPORT_EN)
 
   function speakChinese(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -35,10 +40,12 @@ export const HousingLab: React.FC<Props> = ({ onEarnXp }) => {
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>🏠</span> 台灣租屋看房與生活日常實驗室 (Renting & Living Lab)
+            <span>🏠</span> {locale === 'en' ? 'Taiwan Renting and Everyday Living Lab' : '台灣租屋看房與生活日常實驗室 (Renting & Living Lab)'}
           </h3>
-          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            台湾現地での「ワンルーム内見・敷金・光熱費支払い・ゴミ収集車（エリーゼのために）」など生活直結の会話と文化をマスター！
+          <p lang={locale === 'en' ? 'en' : 'ja'} className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+            {locale === 'en'
+              ? 'Practise apartment viewings, deposits, utility bills, and Taiwan’s musical rubbish-truck routine.'
+              : '台湾現地での「ワンルーム内見・敷金・光熱費支払い・ゴミ収集車（エリーゼのために）」など生活直結の会話と文化をマスター！'}
           </p>
         </div>
       </div>
@@ -61,9 +68,11 @@ export const HousingLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <div style={{ fontSize: '1.8rem' }}>🚛 🎵</div>
           <div>
-            <strong lang="ja" style={{ fontSize: '0.9rem', display: 'block' }}>台湾の日常名物：音楽ゴミ収集車</strong>
-            <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
-              夕方街に響くベートーヴェン『エリーゼのために』が聞こえたらゴミ出しの合図！
+            <strong style={{ fontSize: '0.9rem', display: 'block' }}>{locale === 'en' ? 'An everyday Taiwan sound: the musical rubbish truck' : '台湾の日常名物：音楽ゴミ収集車'}</strong>
+            <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
+              {locale === 'en'
+                ? 'When Beethoven’s “Für Elise” sounds in the evening, residents bring their rubbish outside.'
+                : '夕方街に響くベートーヴェン『エリーゼのために』が聞こえたらゴミ出しの合図！'}
             </span>
           </div>
         </div>
@@ -78,20 +87,22 @@ export const HousingLab: React.FC<Props> = ({ onEarnXp }) => {
           }}
           onClick={simulateGarbageTruckSound}
         >
-          {playedMelody ? '🎵 垃圾車抵達！(+10 XP)' : '🔔 模擬垃圾車到站音效'}
+          {playedMelody
+            ? locale === 'en' ? '🎵 Rubbish truck arriving! (+10 XP)' : '🎵 垃圾車抵達！(+10 XP)'
+            : locale === 'en' ? '🔔 Simulate the arrival melody' : '🔔 模擬垃圾車到站音效'}
         </button>
       </div>
 
       {/* 場景切換膠囊 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
-        {HOUSING_DIALOGUES.map((item, idx) => (
+        {localizedDialogues.map((item, idx) => (
           <button aria-pressed={selectedIdx === idx}
             key={item.id}
             type="button"
             className={`pill-btn ${selectedIdx === idx ? 'active' : ''}`}
             onClick={() => setSelectedIdx(idx)}
           >
-            <span>{item.icon}</span> {item.title.split('與')[0]}
+            <span>{item.icon}</span> {locale === 'en' ? item.title : item.title.split('與')[0]}
           </button>
         ))}
       </div>
@@ -102,7 +113,7 @@ export const HousingLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', fontWeight: 700 }}>
-              {activeItem.locationZh} (<span lang="ja">{activeItem.locationJa}</span>)
+              {activeItem.locationZh} (<span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.locationJa}</span>)
             </span>
           </div>
 
@@ -122,9 +133,9 @@ export const HousingLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#38bdf8' }}>
-                    <span lang="ja">{line.speakerJa}</span>：
+                    <span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.dialogueLines[lIdx].speakerJa}</span>:
                   </span>
-                  <button aria-label={`朗讀：${line.zh}`}
+                  <button aria-label={locale === 'en' ? `Read aloud: ${line.zh}` : `朗讀：${line.zh}`}
                     type="button"
                     style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
                     onClick={() => speakChinese(line.zh)}
@@ -134,8 +145,8 @@ export const HousingLab: React.FC<Props> = ({ onEarnXp }) => {
                 </div>
                 <strong style={{ fontSize: '0.86rem', color: 'var(--text)' }}>{line.zh}</strong>
                 <span lang="zh-Latn" style={{ fontSize: '0.72rem', color: '#f59e0b' }}>{line.pinyin}</span>
-                <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
-                  {line.ja}
+                <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
+                  {localizedItem.dialogueLines[lIdx].ja}
                 </span>
               </div>
             ))}
@@ -144,12 +155,12 @@ export const HousingLab: React.FC<Props> = ({ onEarnXp }) => {
 
         {/* 右側：台灣生活實用語彙 */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          <span lang="ja" style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
-            💡 台湾暮らし重要単語＆生活ルール（Living Tips）
+          <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
+            {locale === 'en' ? '💡 Everyday living terms and local rules' : '💡 台湾暮らし重要単語＆生活ルール（Living Tips）'}
           </span>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginTop: '0.3rem' }}>
-            {activeItem.usefulVocabulary.map((vocab, vIdx) => (
+            {localizedItem.usefulVocabulary.map((vocab, vIdx) => (
               <div
                 key={vIdx}
                 style={{
@@ -161,9 +172,9 @@ export const HousingLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <strong style={{ fontSize: '0.88rem', color: '#f59e0b' }}>{vocab.termZh}</strong>
-                  <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
+                  <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
                 </div>
-                <p lang="ja" style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+                <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
                   {vocab.tipJa}
                 </p>
               </div>

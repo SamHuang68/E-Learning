@@ -1,6 +1,7 @@
 /**
  * 微積分概念圖譜與 2PL IRT 參數配置
  */
+import type { UiLocale } from '../../../i18n/locale'
 
 export interface CalculusConceptItem {
   id: string
@@ -186,17 +187,37 @@ export type CatalogPrereqRow = {
   prereqs: CatalogPrereqRef[]
 }
 
+export const CALCULUS_CATALOG_ENGLISH_NAMES: Readonly<Record<string, string>> = {
+  'calc-secant-limit': 'Secant Limits and the Definition of the Derivative',
+  'calc-power-rule': 'Power Rule and Polynomial Differentiation',
+  'calc-chain-rule': 'Chain Rule for Composite Functions',
+  'calc-riemann-sum': 'Riemann Sums and Definite-Integral Partitions',
+  'calc-ftc-accumulation': 'Fundamental Theorem of Calculus (FTC)',
+  'calc-newton-raphson': 'Newton’s Method for Root Finding',
+  'calc-product-rule': 'Product Rule',
+  'calc-u-substitution': 'u-Substitution',
+  'calc-series-convergence': 'Series Convergence Tests (Teaching)',
+  'calc-implicit-diff': 'Implicit Differentiation (Teaching)',
+}
+
 /** Resolve catalog prerequisite ids to names. Unknown ids stay visible, not invented. */
 export function catalogPrerequisiteRows(
+  locale: UiLocale = 'zh-Hant',
   catalog: CalculusConceptItem[] = CALCULUS_CATALOG,
 ): CatalogPrereqRow[] {
   const byId = new Map(catalog.map((item) => [item.id, item]))
+  const nameOf = (item: CalculusConceptItem): string => {
+    if (locale !== 'en') return item.name
+    const name = CALCULUS_CATALOG_ENGLISH_NAMES[item.id]
+    if (!name) throw new Error(`Missing exact English calculus catalog name: ${item.id}`)
+    return name
+  }
   return catalog.map((item) => ({
     id: item.id,
-    name: item.name,
+    name: nameOf(item),
     prereqs: item.prerequisites.map((id) => {
       const found = byId.get(id)
-      return found ? { id, name: found.name, known: true } : { id, name: id, known: false }
+      return found ? { id, name: nameOf(found), known: true } : { id, name: id, known: false }
     }),
   }))
 }

@@ -8,6 +8,14 @@ const CJK = /[\u3040-\u30ff\u3400-\u9fff\uf900-\ufaff]/
 const sampleValues = ['2', '3', '4']
 const interpolate = (text: string) => text.replace(/\{v(\d+)\}/g, (_, index: string) => sampleValues[Number(index)])
 
+function staticText(node: ts.Node): string | undefined {
+  if (ts.isStringLiteralLike(node)) return node.text
+  if (ts.isTemplateExpression(node)) {
+    return [node.head.text, ...node.templateSpans.map((span) => span.literal.text)].join('')
+  }
+  return undefined
+}
+
 describe('數學教具英文文案', () => {
   it('每一筆文案均有無 CJK 英譯，插值參數完整，繁中保持原樣', () => {
     expect(Object.keys(MATH_LAB_EN).length).toBeGreaterThan(230)
@@ -44,11 +52,23 @@ describe('數學教具英文文案', () => {
         if (ts.isJsxAttribute(node) && node.initializer && ts.isStringLiteral(node.initializer) && CJK.test(node.initializer.text)) {
           leaks.push(path + ': ' + node.getText(source))
         }
-        if (ts.isCallExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === 'ml') {
-          const argument = node.arguments[0]
-          if (argument && ts.isStringLiteralLike(argument)) {
-            expect(Object.hasOwn(MATH_LAB_EN, argument.text), argument.text).toBe(true)
+        if (ts.isCallExpression(node) && ts.isIdentifier(node.expression)) {
+          const [sourceArgument, englishArgument] = node.arguments
+          if (node.expression.text === 'ml' && sourceArgument && ts.isStringLiteralLike(sourceArgument)) {
+            expect(Object.hasOwn(MATH_LAB_EN, sourceArgument.text), sourceArgument.text).toBe(true)
             calls++
+          }
+          if (
+            node.expression.text === 'copy'
+            && sourceArgument
+            && englishArgument
+          ) {
+            const sourceText = staticText(sourceArgument)
+            const englishText = staticText(englishArgument)
+            if (sourceText !== undefined && englishText !== undefined) {
+              if (CJK.test(sourceText)) expect(englishText, sourceText).not.toMatch(CJK)
+              calls++
+            }
           }
         }
         ts.forEachChild(node, visit)

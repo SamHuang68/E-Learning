@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
 import { DOUBLE_PASSAGE_SETS, type DoublePassageSet } from '../data/doublePassages'
 import { playCorrectSound, playWrongSound } from '../../engine/audioSynthesizer'
+import { useMemo } from 'react'
+import { useI18n } from '../../i18n/i18n'
+import { localizeToeicData, toeicSupportLang } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
@@ -8,13 +11,21 @@ interface Props {
 }
 
 export const DoublePassageLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'zh' }) => {
-  const isJa = instructionLang === 'ja'
+  const { locale } = useI18n()
+  const supportLang = toeicSupportLang(locale, instructionLang)
+  const isJa = supportLang === 'ja'
+  const isEn = supportLang === 'en'
+  const copy = (zh: string, ja: string, en: string) => isEn ? en : isJa ? ja : zh
+  const passageSets = useMemo(
+    () => DOUBLE_PASSAGE_SETS.map((item) => localizeToeicData(item, locale, instructionLang)),
+    [instructionLang, locale],
+  )
   const [selectedSetId] = useState<string>(DOUBLE_PASSAGE_SETS[0].id)
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, number>>({})
   const [submitted, setSubmitted] = useState<Record<string, boolean>>({})
 
   const activeSet: DoublePassageSet =
-    DOUBLE_PASSAGE_SETS.find((s) => s.id === selectedSetId) ?? DOUBLE_PASSAGE_SETS[0]
+    passageSets.find((set) => set.id === selectedSetId) ?? passageSets[0]
 
   function handleSelectOption(qId: string, optIdx: number, correctIdx: number) {
     if (submitted[qId]) return
@@ -35,12 +46,14 @@ export const DoublePassageLab: React.FC<Props> = ({ onEarnXp, instructionLang = 
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>📑</span> {isJa ? 'TOEIC Part 7 複数文書・クロス読解ラボ' : 'TOEIC Part 7 雙篇閱讀交叉推論實驗室'}
+            <span>📑</span> {copy('TOEIC Part 7 雙篇閱讀交叉推論實驗室', 'TOEIC Part 7 複数文書・クロス読解ラボ', 'TOEIC Part 7 Double-Passage Cross-Reference Lab')}
           </h3>
           <p className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            {isJa
-              ? '2つの文書（契約書＋メール等）の情報を照合して正解を導く多益最難関Part 7の速読＆同義語言い換えスキルをマスター！'
-              : '訓練橫跨契約條款與往來電子郵件之交叉定位比對與同義替換 (Paraphrase) 破題技巧！'}
+            {copy(
+              '訓練橫跨契約條款與往來電子郵件之交叉定位比對與同義替換 (Paraphrase) 破題技巧！',
+              '2つの文書（契約書＋メール等）の情報を照合して正解を導く多益最難関Part 7の速読＆同義語言い換えスキルをマスター！',
+              'Cross-reference a contract and a related email, then use paraphrases and linked details to answer demanding Part 7 questions.',
+            )}
           </p>
         </div>
       </div>
@@ -77,7 +90,7 @@ export const DoublePassageLab: React.FC<Props> = ({ onEarnXp, instructionLang = 
       {/* 同義替換線索卡 */}
       <div style={{ background: 'var(--surface-soft)', border: '1px solid var(--line)', borderRadius: '10px', padding: '0.65rem 0.85rem', marginBottom: '1rem', display: 'flex', gap: '0.8rem', alignItems: 'center', flexWrap: 'wrap' }}>
         <span style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700 }}>
-          💡 {isJa ? '言い換え（Paraphrase）の発見：' : '高頻同義替換線索：'}
+          💡 {copy('高頻同義替換線索：', '言い換え（Paraphrase）の発見：', 'High-frequency paraphrase clues:')}
         </span>
         {activeSet.synonymMatches.map((syn, idx) => (
           <div key={idx} style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
@@ -147,7 +160,7 @@ export const DoublePassageLab: React.FC<Props> = ({ onEarnXp, instructionLang = 
             {submitted[q.id] && (
               <div style={{ marginTop: '0.6rem', padding: '0.6rem', borderRadius: '8px', background: 'var(--surface-soft)', fontSize: '0.76rem', color: 'var(--muted)', lineHeight: 1.45 }}>
                 <div style={{ color: '#38bdf8', fontWeight: 700, marginBottom: '0.2rem' }}>
-                  🔍 {isJa ? 'クロス参照の根拠：' : '交叉比對定位點：'} {q.clueLocation}
+                  🔍 {copy('交叉比對定位點：', 'クロス参照の根拠：', 'Cross-reference evidence:')} {q.clueLocation}
                 </div>
                 <div>{isJa ? q.explanationJa : q.explanationZh}</div>
               </div>

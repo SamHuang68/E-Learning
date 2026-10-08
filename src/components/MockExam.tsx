@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { enMockQuestions } from '../data/mock/en'
 import { jaMockQuestions } from '../data/mock/ja'
+import { useI18n } from '../i18n/i18n'
 
 export type MockExamQuestion = {
   id: string
@@ -57,12 +58,17 @@ export function MockExam({
   onComplete,
   onExit,
 }: Props) {
+  const { locale } = useI18n()
+  const isEn = locale === 'en'
+  const trackLabel = isEn
+    ? lang === 'ja' ? 'Japanese' : 'English'
+    : lang === 'ja' ? '日語' : '英語'
   const bank = useMemo<MockExamQuestion[]>(
     () => questions ?? (lang === 'ja' ? jaMockQuestions : enMockQuestions),
     [lang, questions],
   )
   const [index, setIndex] = useState(0)
-  const [answers, setAnswers] = useState<Record<string, string>>({})
+  const [answers, setAnswers] = useState<Record<string, number>>({})
   const [elapsed, setElapsed] = useState(0)
   const [summary, setSummary] = useState<{
     score: number
@@ -84,7 +90,8 @@ export function MockExam({
 
   function finish() {
     const results = bank.map((item): MockExamResult => {
-      const selected = answers[item.id] ?? null
+      const selectedIndex = answers[item.id]
+      const selected = selectedIndex === undefined ? null : (item.choices[selectedIndex] ?? null)
       return {
         id: item.id,
         tag: item.tag,
@@ -100,27 +107,27 @@ export function MockExam({
 
   if (summary) {
     return (
-      <section className="practice-view mock-exam">
+      <section className="practice-view mock-exam" lang={locale}>
         <p className="eyebrow">MOCK RESULT</p>
-        <h1>{lang === 'ja' ? '模擬測驗結果' : 'Mock Exam Result'}</h1>
+        <h1>{isEn ? `${trackLabel} Mock Exam Result` : `${trackLabel}模擬測驗結果`}</h1>
         <div className="practice-card">
           <div className="flash-face">
             <strong>
               {summary.score} / {bank.length}
             </strong>
             <span className="flash-meaning">
-              Weak tags: {summary.weakTags.join(', ') || 'none'}
+              {isEn ? 'Weak tags' : '弱項標籤'}: {summary.weakTags.join(', ') || (isEn ? 'none' : '無')}
             </span>
             <p>
-              {lang === 'ja'
-                ? '請針對弱項標籤回到練習區複習。'
-                : 'Use weak tags to choose your next review set.'}
+              {isEn
+                ? 'Use weak tags to choose your next review set.'
+                : '請依弱項標籤回到練習區複習。'}
             </p>
           </div>
           <div className="flash-actions">
             {onExit ? (
               <button type="button" className="primary-btn inline" onClick={onExit}>
-                完成
+                {isEn ? 'Done' : '完成'}
               </button>
             ) : null}
           </div>
@@ -131,11 +138,11 @@ export function MockExam({
 
   if (!question) {
     return (
-      <section className="practice-view mock-exam">
+      <section className="practice-view mock-exam" lang={locale}>
         <p className="eyebrow">MOCK</p>
         <div className="practice-card">
           <div className="flash-face">
-            <strong>沒有題目</strong>
+            <strong>{isEn ? 'No questions available' : '沒有題目'}</strong>
             <p>No mock questions are available.</p>
           </div>
         </div>
@@ -144,40 +151,44 @@ export function MockExam({
   }
 
   return (
-    <section className="practice-view mock-exam">
+    <section className="practice-view mock-exam" lang={locale}>
       {onExit ? (
         <button type="button" className="ghost back" onClick={onExit}>
-          ← 返回
+          {isEn ? '← Back' : '← 返回'}
         </button>
       ) : null}
       <p className="eyebrow">MOCK · {lang.toUpperCase()}</p>
       <h1>
-        {lang === 'ja' ? '短版模擬測驗' : 'Short Mock Exam'}
+        {isEn ? `${trackLabel} Short Mock Exam` : `${trackLabel}短版模擬測驗`}
         <span>
           {index + 1} / {bank.length}
         </span>
       </h1>
       {remaining !== null ? (
         <p className={isOverSoftLimit ? 'status-line warn' : 'status-line'}>
-          Soft timer: {formatClock(remaining)}
-          {isOverSoftLimit ? ' · 建議完成目前題目後交卷' : ''}
+          {isEn ? 'Soft timer' : '彈性計時'}: {formatClock(remaining)}
+          {isOverSoftLimit
+            ? isEn
+              ? ' · Finish the current question, then submit.'
+              : ' · 建議完成目前題目後交卷'
+            : ''}
         </p>
       ) : null}
 
       <div className="practice-card">
         <div className="flash-face">
           <span className="scenario-chip">{question.tag}</span>
-          <strong>{question.prompt}</strong>
+          <strong lang={lang}>{question.prompt}</strong>
         </div>
         <div className="choice-grid">
-          {question.choices.map((choice) => (
+          {question.choices.map((choice, choiceIndex) => (
             <button
               type="button"
               key={choice}
-              className={answers[question.id] === choice ? 'choice-btn selected' : 'choice-btn'}
-              aria-pressed={answers[question.id] === choice}
+              className={answers[question.id] === choiceIndex ? 'choice-btn selected' : 'choice-btn'}
+              aria-pressed={answers[question.id] === choiceIndex}
               onClick={() =>
-                setAnswers((previous) => ({ ...previous, [question.id]: choice }))
+                setAnswers((previous) => ({ ...previous, [question.id]: choiceIndex }))
               }
             >
               {choice}
@@ -191,7 +202,7 @@ export function MockExam({
             disabled={index <= 0}
             onClick={() => setIndex((current) => Math.max(0, current - 1))}
           >
-            ← 上一題
+            {isEn ? '← Previous' : '← 上一題'}
           </button>
           <button
             type="button"
@@ -199,10 +210,10 @@ export function MockExam({
             disabled={index >= bank.length - 1}
             onClick={() => setIndex((current) => Math.min(bank.length - 1, current + 1))}
           >
-            下一題 →
+            {isEn ? 'Next →' : '下一題 →'}
           </button>
           <button type="button" className="primary-btn inline" onClick={finish}>
-            交卷
+            {isEn ? 'Submit exam' : '交卷'}
           </button>
         </div>
       </div>

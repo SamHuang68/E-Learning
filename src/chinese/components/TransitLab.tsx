@@ -1,18 +1,28 @@
 ﻿import React, { useState } from 'react'
-import { TRANSIT_SCENARIOS, type TransitScenarioItem } from '../data/transitDialogues'
+import { CHINESE_SUPPORT_EN, TRANSIT_SCENARIOS, type TransitScenarioItem } from '../data/transitDialogues'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
+import { localizeChineseData } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
 }
 
 export const TransitLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { locale } = useI18n()
   const [selectedScenarioIdx, setSelectedScenarioIdx] = useState(0)
   const [easyCardBalance, setEasyCardBalance] = useState<number>(100)
-  const [chargeSuccessMsg, setChargeSuccessMsg] = useState<string | null>(null)
+  const [lastChargeAmount, setLastChargeAmount] = useState<number | null>(null)
 
   const activeScenario: TransitScenarioItem =
     TRANSIT_SCENARIOS[selectedScenarioIdx % TRANSIT_SCENARIOS.length]
+  const localizedScenario = localizeChineseData(activeScenario, locale, CHINESE_SUPPORT_EN)
+  const localizedScenarios = localizeChineseData(TRANSIT_SCENARIOS, locale, CHINESE_SUPPORT_EN)
+  const chargeSuccessMsg = lastChargeAmount === null
+    ? null
+    : locale === 'en'
+      ? `🎉 Top-up complete: NT$ ${lastChargeAmount} added to the EasyCard.`
+      : `🎉 加值成功！已為悠遊卡充入 NT$ ${lastChargeAmount} 元！`
 
   function speakChinese(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -25,10 +35,10 @@ export const TransitLab: React.FC<Props> = ({ onEarnXp }) => {
 
   function handleCharge(amount: number) {
     setEasyCardBalance((prev) => prev + amount)
-    setChargeSuccessMsg(`🎉 加值成功！已為悠遊卡充入 NT$ ${amount} 元！`)
+    setLastChargeAmount(amount)
     onEarnXp(10)
     playCorrectSound()
-    setTimeout(() => setChargeSuccessMsg(null), 3500)
+    setTimeout(() => setLastChargeAmount(null), 3500)
   }
 
   return (
@@ -37,10 +47,12 @@ export const TransitLab: React.FC<Props> = ({ onEarnXp }) => {
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>🚇</span> 台灣交通出行與悠遊卡捷運實驗室 (Transit & Metro Lab)
+            <span>🚇</span> {locale === 'en' ? 'Taiwan Transit, Metro, and EasyCard Lab' : '台灣交通出行與悠遊卡捷運實驗室 (Transit & Metro Lab)'}
           </h3>
-          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            台湾旅行・生活で毎日使う「MRT（捷運）・悠遊カード・タクシー（運將）」のリアルな会話と現地交通用語を体感！
+          <p lang={locale === 'en' ? 'en' : 'ja'} className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+            {locale === 'en'
+              ? 'Practise practical language for the MRT, EasyCard top-ups, buses, and taxi rides in Taiwan.'
+              : '台湾旅行・生活で毎日使う「MRT（捷運）・悠遊カード・タクシー（運將）」のリアルな会話と現地交通用語を体感！'}
           </p>
         </div>
       </div>
@@ -63,24 +75,24 @@ export const TransitLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
           <div style={{ fontSize: '2rem' }}>💳</div>
           <div>
-            <strong style={{ fontSize: '0.95rem', display: 'block' }}>悠遊卡 (EasyCard) 虛擬感應卡</strong>
-            <span style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>目前可用餘額：</span>
+            <strong style={{ fontSize: '0.95rem', display: 'block' }}>{locale === 'en' ? 'Virtual EasyCard' : '悠遊卡 (EasyCard) 虛擬感應卡'}</strong>
+            <span style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>{locale === 'en' ? 'Available balance:' : '目前可用餘額：'}</span>
             <strong style={{ fontSize: '1.1rem', color: '#10b981', marginLeft: '0.3rem' }}>
-              NT$ {easyCardBalance} 元
+              NT$ {easyCardBalance} {locale === 'en' ? 'TWD' : '元'}
             </strong>
           </div>
         </div>
 
         <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
-          <span style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>模擬加值：</span>
+          <span style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>{locale === 'en' ? 'Simulate a top-up:' : '模擬加值：'}</span>
           <button type="button" className="pill-btn" onClick={() => handleCharge(100)}>
-            +100 元
+            +100 {locale === 'en' ? 'TWD' : '元'}
           </button>
           <button type="button" className="pill-btn" onClick={() => handleCharge(500)}>
-            +500 元
+            +500 {locale === 'en' ? 'TWD' : '元'}
           </button>
           <button type="button" className="pill-btn" onClick={() => handleCharge(1000)}>
-            +1000 元
+            +1000 {locale === 'en' ? 'TWD' : '元'}
           </button>
         </div>
       </div>
@@ -93,7 +105,7 @@ export const TransitLab: React.FC<Props> = ({ onEarnXp }) => {
 
       {/* 場景切換膠囊 */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginBottom: '0.8rem' }}>
-        {TRANSIT_SCENARIOS.map((item, idx) => (
+        {localizedScenarios.map((item, idx) => (
           <button aria-pressed={selectedScenarioIdx === idx}
             key={item.id}
             type="button"
@@ -111,7 +123,7 @@ export const TransitLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(2, 132, 199, 0.15)', color: '#0284c7', fontWeight: 700 }}>
-              {activeScenario.locationZh} (<span lang="ja">{activeScenario.locationJa}</span>)
+              {activeScenario.locationZh} (<span lang={locale === 'en' ? 'en' : 'ja'}>{localizedScenario.locationJa}</span>)
             </span>
           </div>
 
@@ -131,9 +143,9 @@ export const TransitLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#38bdf8' }}>
-                    <span lang="ja">{line.speakerJa}</span>：
+                    <span lang={locale === 'en' ? 'en' : 'ja'}>{localizedScenario.dialogueLines[lIdx].speakerJa}</span>:
                   </span>
-                  <button aria-label={`朗讀：${line.zh}`}
+                  <button aria-label={locale === 'en' ? `Read aloud: ${line.zh}` : `朗讀：${line.zh}`}
                     type="button"
                     style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
                     onClick={() => speakChinese(line.zh)}
@@ -143,8 +155,8 @@ export const TransitLab: React.FC<Props> = ({ onEarnXp }) => {
                 </div>
                 <strong style={{ fontSize: '0.86rem', color: 'var(--text)' }}>{line.zh}</strong>
                 <span lang="zh-Latn" style={{ fontSize: '0.72rem', color: '#f59e0b' }}>{line.pinyin}</span>
-                <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
-                  {line.ja}
+                <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
+                  {localizedScenario.dialogueLines[lIdx].ja}
                 </span>
               </div>
             ))}
@@ -153,12 +165,12 @@ export const TransitLab: React.FC<Props> = ({ onEarnXp }) => {
 
         {/* 右側：台灣交通實用語彙指南 */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          <span lang="ja" style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
-            💡 台湾交通実用単語と豆知識（Culture Tips）
+          <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
+            {locale === 'en' ? '💡 Practical transit terms and culture tips' : '💡 台湾交通実用単語と豆知識（Culture Tips）'}
           </span>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginTop: '0.3rem' }}>
-            {activeScenario.usefulVocabulary.map((vocab, vIdx) => (
+            {localizedScenario.usefulVocabulary.map((vocab, vIdx) => (
               <div
                 key={vIdx}
                 style={{
@@ -170,9 +182,9 @@ export const TransitLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <strong style={{ fontSize: '0.88rem', color: '#f59e0b' }}>{vocab.termZh}</strong>
-                  <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
+                  <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
                 </div>
-                <p lang="ja" style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+                <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
                   {vocab.tipJa}
                 </p>
               </div>

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { renderToString } from 'react-dom/server'
-import { LocaleProvider } from '../../i18n/i18n'
+import { LocaleProvider } from '../../i18n/LocaleComponents'
 import { AuthProvider } from '../../auth/AuthProvider'
 
 describe('All Track Modules Import & SSR Gate', { timeout: 60000 }, () => {

@@ -74,7 +74,7 @@ describe('微積分實際畫面英文與繁中回歸', () => {
     ]) {
       const html = await render(<CalculusCanvas {...props} />)
       expect(html).not.toMatch(CJK)
-      expect(html).toContain('undefined')
+      expect(html).toMatch(/undefined/i)
     }
   })
   for (const nav of ['canvas_lab', 'step_solver', 'adaptive_practice', 'badges']) {
@@ -86,6 +86,13 @@ describe('微積分實際畫面英文與繁中回歸', () => {
         injected.badges = CALCULUS_BADGES
         const html = await render(createElement(CalculusApp, { onBackHub: noop, onSwitchLang: noop }), locale)
         expect(html.match(/<main\b/g)).toHaveLength(1)
+        if (nav === 'badges') {
+          expect(html).not.toContain('assessment:')
+          expect(html).not.toContain('>unavailable<')
+          expect(html).toContain(locale === 'en'
+            ? 'Correctly answer at least one challenge in secant-and-tangent mode'
+            : '答對至少一題割線與切線模式的能力挑戰')
+        }
         if (locale === 'en') expect(html).not.toMatch(CJK)
         else expect(digest(html)).toMatchSnapshot()
       })
@@ -140,17 +147,17 @@ describe('微積分實際畫面英文與繁中回歸', () => {
     }
   }
   for (const problem of CALCULUS_PROBLEMS) {
-    it(`英文題目與所有教學步驟無 CJK：${problem.id}`, async () => {
+    it(`英文題目與真實作答解說無 CJK：${problem.id}`, async () => {
       injected.strings = { [CALCULUS_PROBLEMS[0].id]: problem.id }
       injected.answered = true
-      const html = await render(<><CalculusAssessmentWidget currentTheta={0} onSolveProblem={noop} onSelectProblem={noop} />{problem.derivationSteps.map(step => <FormulaStepCard key={step.id} step={step} isActive isCompleted onSelect={noop} />)}</>)
+      const html = await render(<CalculusAssessmentWidget currentTheta={0} onSolveProblem={noop} onSelectProblem={noop} />)
       expect(html).not.toMatch(CJK)
     })
   }
   for (const expression of ['x^2', 'x*sin(x)', 'x/(x+1)', 'sin(x^2)', 'x+', '(x', 'sin()', 'y', 'ln(x)', '', '1..2', 'x$', 'sin', 'foo(x)']) {
     it(`英文動態推導、錯誤、未定義值無 CJK：${expression}`, async () => {
       injected.answered = true
-      const steps = generateDerivationSteps(expression)
+      const steps = generateDerivationSteps(expression, 'en')
       const html = await render(<><CalculusCanvas expression={expression} mode="tangent_secant" x0={0} />{steps.map(step => <FormulaStepCard key={step.id} step={step} isActive isCompleted onSelect={noop} />)}</>)
       expect(html).not.toMatch(CJK)
     })

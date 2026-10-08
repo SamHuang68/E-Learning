@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { loadHubSnapshot, selectHubDerived } from '../Hub'
+import { loadHubSnapshot, selectHubDerived } from '../hubModel'
 import { calculateLevel, calculateLevelProgress } from './gamification'
 import { clampPct, rollupEightTrackXp, safeIdList, safeXp } from './trackProgressRollup'
 
