@@ -242,5 +242,8 @@ describe('CS teaching content in English mode', () => {
     expect(() => localizeCsQuestion('en', { ...CS_CURRICULUM[0].questions[0], id: 'cs-new-question' })).toThrow(
       'Missing CS question English translation',
     )
+    expect(() => localizeCsUnit('en', { ...CS_CURRICULUM[0], id: 'cs-unit-8-untranslated' })).toThrow(
+      'Missing CS unit English translation: cs-unit-8-untranslated',
+    )
   })
 })

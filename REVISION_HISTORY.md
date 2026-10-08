@@ -206,3 +206,33 @@ Validation and state:
 ### 狀態與追溯
 
 本條目建立時的狀態為本機候選，`commit=false`、`push=false`、`deploy=false`。完成後以完整 release commit SHA、實際整合至 `main` 的 SHA、GitHub Actions Pages workflow run 與線上驗收紀錄，作為同一候選的發布憑證；PR #130 只代表本次補完工作的原始範圍，不代表這份候選已經發布。
+
+### 發布結果（2026-10-08）
+
+- Release commit `2f7b85a8539ea02c21ce3285be4b2a931e883b3c` 已推送，並由 PR #138 合併為 `main` commit `150c3da7cc8e4ae61e800a9041420fc7b90abd8c`；兩者 tree 均為 `15f2deda718d16610bd4908b4ad0f2bf7ea4f449`。
+- GitHub Pages workflow run `37748439254` 的 build 與 deploy 均成功；線上 manifest build ID 為 `aea147c33856cf38`，共 298 個檔案。
+- Cloudflare Pages check run `113215728288` 成功；綁定同一 `main` commit 的公開 preview manifest build ID 為 `9a61348b0176d9a5`，共 298 個檔案。
+- 實際狀態：`commit=true`、`push=true`、`merge=true`、`deploy=true`。GitHub Pages 與 Cloudflare commit preview 的 root、manifest 與代表性互動路由均已驗收；未建立 tag 或 GitHub Release。
+
+## cs-consumer-render-regression.1 — 2026-10-08 — 發布候選
+
+沿用內容衍生 precache `buildId` 與 npm package `0.0.0` 的既有版本策略。本次只加強自動化回歸與修訂追溯，不修改應用程式執行碼或使用者資料。
+
+### 修改原因與內容
+
+- 將舊 checkout commit `101499e8bab8bb18c4830fab426222e99bc334eb` 中仍有價值的計概 consumer 渲染意圖移植到最新 `main`；不直接 cherry-pick 落後八個 commit 的舊基線。
+- 擴充既有 `localeContainerLanguage` gate，實際 SSR 渲染 `CsApp`，驗證 Today 使用目前 `localizeCsUnit` 的 canonical 英文標題、HTTP/TCP 卡片使用 `csTeachingCopy`、四筆教學對照存在、英文主內容無漢字，繁中仍保留原始單元一與單元五標題。
+- 在既有 fail-closed 測試補上未知單元 ID，防止新課程缺少 canonical 英文資料時靜默退回中文。
+- 不帶入舊 commit 的平行 `docs/修訂紀錄.md`、過時 `EXPECTED_TITLES` 或已退出 production consumer 的 `csUnitTitle` 額外契約；修訂紀錄只沿用本檔。
+
+### 根因與驗證結果
+
+- 第一輪舊測試重播為 15/18 失敗，TypeScript 同時回報 TS2305；根因是 `LocaleProvider` 已依 Fast Refresh 邊界移至 `LocaleComponents.tsx`。只修正匯入後仍有 13/18 失敗，證明舊英文標題與繁中前綴已落後目前 canonical 文案，沒有把產品改回舊字串。
+- 最終針對性測試：`localeContainerLanguage.test.tsx`、`csTeachingCopy.test.ts`、`cs.test.ts`、`hierarchyTree.test.ts` 共 4 個測試檔、32 個測試全數通過。
+- 兩個修改測試檔的 scoped oxlint 通過；`tsc -b` 通過；Supabase schema 靜態契約 56 項通過。
+- 正式建置完成 529 個模組，precache build ID 仍為 `09945517718f7350`；`verify:dist` 通過，包含 298 個檔案、99 個必要 public 檔案、8 個延遲載入路由區塊與 8,055,097 bytes precache。產物識別未變，符合本次沒有 runtime 變更的預期。
+
+### 已知限制與發布狀態
+
+- 依完整測試／掃描的既有確認規則，本機未重跑全庫 Vitest；最新 `main` 的前一輪完整基線為 342 個測試檔、1,609 個測試。正式部署仍須由本候選的遠端 CI 全庫 lint、測試、schema、build 與 dist gate 通過後才能完成。
+- Sam 已於 2026-10-08 明確指示 `git commit push deploy`。本條目建立時為未提交候選，`commit=false`、`push=false`、`merge=false`、`deploy=false`；最終完整 SHA、PR、CI／部署 run 與 live manifest 由同版本 PR 發布紀錄補齊，未取得成功證據前不得稱為已發布。
