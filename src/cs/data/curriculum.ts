@@ -1,3 +1,5 @@
+import { CS_LAB_ID, type CsLabId } from '../csLabRegistry'
+
 /**
  * 計算機概論核心課綱資料庫 (Computer Science Curriculum Data)
  * 涵蓋從軟硬體本質定義、系統抽象階層，延伸至馮紐曼五大功能單元（CU, ALU, MU, IU, OU）、
@@ -34,7 +36,7 @@ export interface CsUnit {
   strand: CsStrand
   band: '基礎核心' | '系統架構' | '前沿AI'
   concepts: string[]
-  suggestedLab?: string
+  suggestedLab?: CsLabId
   questions: CsQuestion[]
 }
 
@@ -84,7 +86,7 @@ export const CS_CURRICULUM: CsUnit[] = [
       '電腦系統抽象階層 (Abstraction Layers)：應用程式 ➜ 演算法與高階語言 ➜ 編譯器/直譯器 ➜ 指令集架構 (ISA: x86-64, ARM, RISC-V) ➜ 微架構 (Microarchitecture: 管線化流水線) ➜ 數位邏輯閘 ➜ CMOS 電晶體物理層。',
       '編譯器 (Compiler) vs 直譯器 (Interpreter)：編譯器預先將源代碼一次性翻譯為目標機器碼執行（高執行效率，如 C/C++, Rust）；直譯器則逐行讀取、解碼並即時執行（除錯直觀靈活，如 Python, JavaScript）。',
     ],
-    suggestedLab: 'von-neumann',
+    suggestedLab: CS_LAB_ID.VON_NEUMANN,
     questions: [
       {
         id: 'cs-q-101',
@@ -438,7 +440,7 @@ export const CS_CURRICULUM: CsUnit[] = [
       '輸入與輸出單元 (IU & OU)：輸入單元（鍵盤、滑鼠、感測器、麥克風 ADC）接收外部訊號；輸出單元（螢幕 GPU Framebuffer、音訊 DAC、印表機）將運算結果傳遞給人類或外界。',
       '系統匯流排 (System Bus) 與馮紐曼瓶頸 (Von Neumann Bottleneck)：由控制匯流排、位址匯流排 ($2^k$ 位址空間) 與資料匯流排組成。由於 CPU 運算速度成長幅度遠超 CPU-RAM 匯流排資料傳輸頻寬，產生了嚴重的記憶體存取瓶頸。',
     ],
-    suggestedLab: 'von-neumann',
+    suggestedLab: CS_LAB_ID.VON_NEUMANN,
     questions: [
       {
         id: 'cs-q-201',
@@ -791,7 +793,7 @@ export const CS_CURRICULUM: CsUnit[] = [
       '溢位 (Overflow) 判別：當兩個同號數相加，結果符號與運算元相反時發生溢位；由最高進位輸入與輸出決定：$V = C_{\\text{in}} \\oplus C_{\\text{out}}$。',
       '基本邏輯閘與萬用閘：AND, OR, NOT, XOR ($A \\oplus B = A\\bar{B} + \\bar{A}B$)。NAND 與 NOR 為「萬用邏輯閘 (Universal Gates)」，單憑 NAND 即可組合成任意布林邏輯電路。',
     ],
-    suggestedLab: 'von-neumann',
+    suggestedLab: CS_LAB_ID.VON_NEUMANN,
     questions: [
       {
         id: 'cs-q-301',
@@ -1145,7 +1147,7 @@ export const CS_CURRICULUM: CsUnit[] = [
       '死結 (Deadlock) 四大必要條件 (Coffman Conditions)：1. 互斥 (Mutual Exclusion)；2. 持有並等待 (Hold and Wait)；3. 不可搶奪 (No Preemption)；4. 循環等待 (Circular Wait)。四大條件同時成立才會發生死結。',
       '虛擬記憶體與分頁機制 (Paging)：透過分頁表 (Page Table) 與轉譯後備緩衝區 (TLB 快表) 將邏輯位址轉譯為實體位址。若存取未載入實體 RAM 的分頁，觸發分頁缺失中斷 (Page Fault Interrupt)，由 OS 載入並使用 LRU 等演算法置換。',
     ],
-    suggestedLab: 'von-neumann',
+    suggestedLab: CS_LAB_ID.VON_NEUMANN,
     questions: [
       {
         id: 'cs-q-401',
@@ -1497,7 +1499,7 @@ export const CS_CURRICULUM: CsUnit[] = [
       '網域名稱系統 (DNS) 解析階層：本機快取 ➜ 遞迴 DNS 伺服器 ➜ 根網域名稱伺服器 (Root) ➜ 頂級網域名稱伺服器 (TLD: .com, .tw) ➜ 授權權威伺服器 (Authoritative)。',
       'HTTPS 與 TLS 1.3 握手加密：結合非對稱密碼學（RSA / ECC 橢圓曲線金鑰交換）驗證伺服器身分並協商會話密鑰，隨後採用對稱加密（AES-GCM / ChaCha20）進行高吞吐數據加密傳輸。',
     ],
-    suggestedLab: 'von-neumann',
+    suggestedLab: CS_LAB_ID.VON_NEUMANN,
     questions: [
       {
         id: 'cs-q-501',
@@ -1850,7 +1852,7 @@ export const CS_CURRICULUM: CsUnit[] = [
       '專用 AI 加速晶片 (ASIC)：Google TPU (張量處理單元) 採用「脈動陣列 (Systolic Array)」架構，資料在相鄰處理單元 (PE) 間像心臟脈搏般流動，無需每次運算都重複讀寫主暫存器，大幅降低功耗並提升矩陣吞吐量。NPU (神經處理單元) 則針對智慧手機與邊緣終端提供超低功耗 AI 推論。',
       '本地端 AI 部署與硬體整合最佳化：高規格本機硬體配置（如大容量 96GB 系統記憶體、RTX 5080 16GB VRAM）結合 Ollama 本地端服務 (`http://localhost:11434`)，推論開源大語言模型（如非中系 Llama 3.3, Mistral NeMo 等）。利用模型權重量化 (INT4 / AWQ / GGUF) 將數百億參數模型壓縮進有限顯存中極速推論。',
     ],
-    suggestedLab: 'ai-transformer',
+    suggestedLab: CS_LAB_ID.AI_TRANSFORMER,
     questions: [
       {
         id: 'cs-q-601',
@@ -2204,7 +2206,7 @@ export const CS_CURRICULUM: CsUnit[] = [
       'LLM 推論關鍵最佳化——KV Cache (鍵值快取)：在自回歸逐詞生成 (Autoregressive Generation) 時，歷史 token 產生的 Key 與 Value 向量保持不變；將其暫存在顯存中，避免每產出一個新詞就重複計算全部歷史 token，將時間複雜度降至 $O(1)$。',
       '前沿 Multi-Agent 蜂群協同 (Hive Agent Architecture)：將龐大複雜任務分解為多個專責特化代理（研究員、架構師、審查員、測試工程師），結合單一寫入者整合 (Single-Writer Integration) 與最嚴格 Review Gate，徹底解決大模型幻覺與長任務飄移問題。',
     ],
-    suggestedLab: 'ai-transformer',
+    suggestedLab: CS_LAB_ID.AI_TRANSFORMER,
     questions: [
       {
         id: 'cs-q-701',

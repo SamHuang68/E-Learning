@@ -23,6 +23,7 @@ import { defaultChemistryProgress, loadChemistryProgress, saveChemistryProgress 
 import { DEFAULT_CS_PROGRESS, loadCsProgress, saveCsProgress } from '../cs/utils/csStorage'
 import { defaultChineseProgress, loadChineseProgress, saveChineseProgress } from '../chinese/utils/chineseStorage'
 import { LOCAL_PREFERENCE_KEYS, PROGRESS_STORAGE_KEYS } from '../utils/progressKeys'
+import { CS_SOLVING_SIGNALS } from '../cs/data/solvingSignals'
 
 class MemoryStorage {
   private store = new Map<string, string>()
@@ -237,13 +238,14 @@ describe('local user_progress table', () => {
 describe('progress sync via cloudProgress (offline)', () => {
   it('migrates local progress on first login, then restores it on next login', async () => {
     const userId = 'sync-user'
+    const csQuestionId = 'cs-q-101'
 
     // Seed some local progress (as if earned while signed out).
     saveToeicProgress({ ...defaultToeicProgress(), xp: 50, vocabDone: 4 })
     saveMathProgress({ ...defaultMathProgress(), xp: 31 })
     savePhysicsProgress({ ...defaultPhysicsProgress(), xp: 32 })
     saveChemistryProgress({ ...defaultChemistryProgress(), xp: 33 })
-    saveCsProgress({ ...DEFAULT_CS_PROGRESS, xp: 34, completedQuestions: ['cs-1'] })
+    saveCsProgress({ ...DEFAULT_CS_PROGRESS, xp: 34, completedQuestions: [csQuestionId] })
     saveChineseProgress({ ...defaultChineseProgress(), xp: 35, masteredPinyin: ['bo'] })
     expect(loadToeicProgress().xp).toBe(50)
 
@@ -286,7 +288,7 @@ describe('progress sync via cloudProgress (offline)', () => {
     expect(loadChemistryProgress().xp).toBe(33)
     expect(loadCsProgress().xp).toBe(34)
     expect(loadChineseProgress().xp).toBe(35)
-    expect(loadCsProgress().completedQuestions).toEqual(['cs-1'])
+    expect(loadCsProgress().completedQuestions).toEqual([csQuestionId])
     expect(loadChineseProgress().masteredPinyin).toEqual(['bo'])
   })
 
@@ -333,10 +335,16 @@ describe('progress sync via cloudProgress (offline)', () => {
 
   it('round-trips STEM/CS signal mastery through cloud hydrate', async () => {
     const userId = 'signals-user'
+    const signalId = CS_SOLVING_SIGNALS[0].id
+    const nonBooleanSignalId = CS_SOLVING_SIGNALS[1].id
     localStorage.setItem(PROGRESS_STORAGE_KEYS.mathSignals, JSON.stringify({ algebra: 'mastered' }))
     localStorage.setItem(PROGRESS_STORAGE_KEYS.physicsSignals, JSON.stringify({ force: true }))
     localStorage.setItem(PROGRESS_STORAGE_KEYS.chemistrySignals, JSON.stringify({ mole: 'review' }))
-    localStorage.setItem(PROGRESS_STORAGE_KEYS.csSignals, JSON.stringify({ cache: true }))
+    localStorage.setItem(PROGRESS_STORAGE_KEYS.csSignals, JSON.stringify({
+      [signalId]: true,
+      [nonBooleanSignalId]: 'false',
+      'retired-signal': true,
+    }))
 
     expect(await hydrateFromCloud(userId)).toBe('migrated')
     expect(getSyncStatus()).toBe('synced')
@@ -348,6 +356,69 @@ describe('progress sync via cloudProgress (offline)', () => {
     expect(JSON.parse(localStorage.getItem(PROGRESS_STORAGE_KEYS.mathSignals) ?? '{}')).toEqual({ algebra: 'mastered' })
     expect(JSON.parse(localStorage.getItem(PROGRESS_STORAGE_KEYS.physicsSignals) ?? '{}')).toEqual({ force: true })
     expect(JSON.parse(localStorage.getItem(PROGRESS_STORAGE_KEYS.chemistrySignals) ?? '{}')).toEqual({ mole: 'review' })
-    expect(JSON.parse(localStorage.getItem(PROGRESS_STORAGE_KEYS.csSignals) ?? '{}')).toEqual({ cache: true })
+    expect(JSON.parse(localStorage.getItem(PROGRESS_STORAGE_KEYS.csSignals) ?? '{}')).toEqual({
+      [signalId]: true,
+    })
+  })
+
+  it('canonicalizes dirty remote CS signal mastery before storing and re-uploading it', async () => {
+    const userId = 'dirty-remote-cs-signals'
+    const signalId = CS_SOLVING_SIGNALS[0].id
+    const nonBooleanSignalId = CS_SOLVING_SIGNALS[1].id
+    const sb = getSupabase()
+    await sb!.from('user_progress').upsert({
+      user_id: userId,
+      aoba: { levelId: 'n5n4', unitId: 1, xp: 0, vocabDone: 0, readingDone: 0, grammarStarted: false },
+      kana: defaultKanaProgress(),
+      toeic: defaultToeicProgress(),
+      math: defaultMathProgress(),
+      physics: defaultPhysicsProgress(),
+      chemistry: defaultChemistryProgress(),
+      cs: DEFAULT_CS_PROGRESS,
+      chinese: defaultChineseProgress(),
+      cs_signals: {
+        [signalId]: true,
+        [nonBooleanSignalId]: 'false',
+        'retired-signal': true,
+      },
+      lang: 'hub',
+      meta: defaultLearningMeta(),
+      updated_at: new Date().toISOString(),
+    })
+
+    expect(await hydrateFromCloud(userId)).toBe('pulled')
+    expect(JSON.parse(localStorage.getItem(PROGRESS_STORAGE_KEYS.csSignals) ?? '{}')).toEqual({
+      [signalId]: true,
+    })
+    const stored = await sb!.from('user_progress').select('*').eq('user_id', userId).maybeSingle()
+    expect((stored.data as { cs_signals?: unknown } | null)?.cs_signals).toEqual({
+      [signalId]: true,
+    })
+  })
+
+  it('preserves local CS signal mastery when the remote row omits that field', async () => {
+    const userId = 'missing-remote-cs-signals'
+    const signalId = CS_SOLVING_SIGNALS[0].id
+    localStorage.setItem(PROGRESS_STORAGE_KEYS.csSignals, JSON.stringify({ [signalId]: true }))
+    const sb = getSupabase()
+    await sb!.from('user_progress').upsert({
+      user_id: userId,
+      aoba: { levelId: 'n5n4', unitId: 1, xp: 0, vocabDone: 0, readingDone: 0, grammarStarted: false },
+      kana: defaultKanaProgress(),
+      toeic: defaultToeicProgress(),
+      math: defaultMathProgress(),
+      physics: defaultPhysicsProgress(),
+      chemistry: defaultChemistryProgress(),
+      cs: DEFAULT_CS_PROGRESS,
+      chinese: defaultChineseProgress(),
+      lang: 'hub',
+      meta: defaultLearningMeta(),
+      updated_at: new Date().toISOString(),
+    })
+
+    expect(await hydrateFromCloud(userId)).toBe('merged')
+    expect(JSON.parse(localStorage.getItem(PROGRESS_STORAGE_KEYS.csSignals) ?? '{}')).toEqual({
+      [signalId]: true,
+    })
   })
 })

@@ -336,7 +336,7 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
                           </span>
                           <button
                             type="button"
-                            onClick={() => onNavigate(unit.suggestedLab as CsNavSection)}
+                            onClick={() => onNavigate(unit.suggestedLab!)}
                             style={{
                               padding: '0.25rem 0.65rem',
                               fontSize: '0.72rem',
@@ -456,7 +456,7 @@ export const CsHierarchyTree: React.FC<Props> = ({ completedQuestions, onNavigat
                   {unit.suggestedLab && (
                     <button
                       type="button"
-                      onClick={() => onNavigate(unit.suggestedLab as CsNavSection)}
+                      onClick={() => onNavigate(unit.suggestedLab!)}
                       style={{
                         padding: '0.35rem 0.65rem',
                         fontSize: '0.74rem',

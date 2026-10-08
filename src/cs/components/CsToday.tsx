@@ -9,6 +9,7 @@ import type { CsNavSection } from './CsTopNav'
 import { CsBigOCard } from './CsBigOCard'
 import { CsHttpTcpCard } from './CsHttpTcpCard'
 import { WhyThisNext } from '../../components/WhyThisNext'
+import { CS_LAB_ID } from '../csLabRegistry'
 
 interface Props {
   progress: CsProgress
@@ -18,7 +19,13 @@ interface Props {
 export const CsToday: React.FC<Props> = ({ progress, onNavigate }) => {
   const { locale, t } = useI18n()
   const [showProgress, setShowProgress] = useState(false)
+  const coreUnits = CS_CURRICULUM.filter((unit) => !isCsAdvancedUnit(unit))
+  const coreQuestions = coreUnits.flatMap((unit) => unit.questions)
+  const completedQuestionIds = new Set(progress.completedQuestions)
+  const completedCoreCount = coreQuestions.filter((question) => completedQuestionIds.has(question.id)).length
+  const hasCompletedCorePath = coreQuestions.length > 0 && completedCoreCount === coreQuestions.length
   const nextUnit = getNextCsUnit(progress.completedQuestions)
+  const reviewUnit = coreUnits[0] ?? nextUnit
   const localizedNextUnit = localizeCsUnit(locale, nextUnit)
   const unitIndex = CS_CURRICULUM.findIndex((unit) => unit.id === nextUnit.id) + 1
   const remaining = nextUnit.questions.filter((q) => !progress.completedQuestions.includes(q.id)).length
@@ -26,8 +33,8 @@ export const CsToday: React.FC<Props> = ({ progress, onNavigate }) => {
   const totalQuestions = getCsQuestionCount()
   const completedCount = progress.completedQuestions.length
   const hasProgress = completedCount > 0 || progress.xp > 0
-  const labId = nextUnit.suggestedLab as CsNavSection | undefined
-  const showAdvancedLab = labId === 'ai-transformer' && isCsAdvancedUnit(nextUnit)
+  const labId = nextUnit.suggestedLab
+  const showAdvancedLab = labId === CS_LAB_ID.AI_TRANSFORMER && isCsAdvancedUnit(nextUnit)
 
   const radar = localizeTrackRadar(
     computeCsRadar(
@@ -41,31 +48,43 @@ export const CsToday: React.FC<Props> = ({ progress, onNavigate }) => {
   return (
     <div className="cs-today" lang={locale}>
       <header className="cs-today-hero">
-        <p className="eyebrow">{t('cs.today.unitOf', { n: unitIndex, total: CS_CURRICULUM.length })}</p>
-        <h1>{t('cs.today.next', { title: localizedNextUnit.title.replace(/^Unit \d+:\s*/, '') })}</h1>
-        <WhyThisNext kind="unit" />
-        <p className="lede">{localizedNextUnit.subtitle}</p>
+        <p className="eyebrow">
+          {hasCompletedCorePath
+            ? t('cs.today.coreCompleteEyebrow')
+            : t('cs.today.unitOf', { n: unitIndex, total: CS_CURRICULUM.length })}
+        </p>
+        <h1>
+          {hasCompletedCorePath
+            ? t('cs.today.coreCompleteTitle')
+            : t('cs.today.next', { title: localizedNextUnit.title.replace(/^Unit \d+:\s*/, '') })}
+        </h1>
+        {hasCompletedCorePath ? null : <WhyThisNext kind="unit" />}
+        <p className="lede">
+          {hasCompletedCorePath ? t('cs.today.coreCompleteBody') : localizedNextUnit.subtitle}
+        </p>
         <p className="cs-today-progress-line">
-          {t('cs.today.unitItems', { done: doneInUnit, total: nextUnit.questions.length })}
-          {hasProgress ? ` · ${completedCount}/${totalQuestions}` : ''}
+          {hasCompletedCorePath
+            ? t('cs.today.coreItems', { done: completedCoreCount, total: coreQuestions.length })
+            : t('cs.today.unitItems', { done: doneInUnit, total: nextUnit.questions.length })}
+          {!hasCompletedCorePath && hasProgress ? ` · ${completedCount}/${totalQuestions}` : ''}
         </p>
         <div className="hub-hero-actions">
           <button
             type="button"
             className="hub-primary-cta"
-            onClick={() => onNavigate('practice', nextUnit.id)}
+            onClick={() => onNavigate('practice', hasCompletedCorePath ? reviewUnit.id : nextUnit.id)}
           >
-            {t('cs.today.practice')}
+            {hasCompletedCorePath ? t('cs.today.reviewCore') : t('cs.today.practice')}
           </button>
-          {labId && !showAdvancedLab ? (
+          {!hasCompletedCorePath && labId && !showAdvancedLab ? (
             <button type="button" className="hub-secondary-cta" onClick={() => onNavigate(labId)}>
               {t('cs.today.labFirst')}
             </button>
-          ) : (
+          ) : !hasCompletedCorePath ? (
             <button type="button" className="hub-secondary-cta" onClick={() => onNavigate('textbook')}>
               {t('cs.today.readerCh', { n: unitIndex })}
             </button>
-          )}
+          ) : null}
         </div>
         <div className="cs-today-secondary">
           <button type="button" onClick={() => onNavigate('hierarchy')}>

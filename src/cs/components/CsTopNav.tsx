@@ -3,6 +3,7 @@ import { TrackSwitcher } from '../../components/TrackSwitcher'
 import { useI18n } from '../../i18n/i18n'
 import type { MessageKey } from '../../i18n/messages'
 import type { LangId } from '../../utils/storage'
+import { CS_LAB_ID, type CsLabId } from '../csLabRegistry'
 import './CsNavigation.css'
 
 export type CsNavSection =
@@ -11,13 +12,9 @@ export type CsNavSection =
   | 'today'
   | 'practice'
   | 'signals'
-  | 'arch-map'
-  | 'von-neumann'
-  | 'pipeline-hazard'
-  | 'cache-mapping'
-  | 'ai-transformer'
   | 'mock'
   | 'errors'
+  | CsLabId
 
 interface Props {
   activeSection: CsNavSection
@@ -33,12 +30,12 @@ const PRIMARY: Array<{ id: CsNavSection; labelKey: MessageKey }> = [
   { id: 'textbook', labelKey: 'cs.top.textbook' },
 ]
 
-const LABS: Array<{ id: CsNavSection; titleKey: MessageKey; descKey: MessageKey; advanced?: boolean }> = [
-  { id: 'von-neumann', titleKey: 'cs.lab.von', descKey: 'cs.lab.vonDesc' },
-  { id: 'pipeline-hazard', titleKey: 'cs.lab.pipe', descKey: 'cs.lab.pipeDesc' },
-  { id: 'cache-mapping', titleKey: 'cs.lab.cache', descKey: 'cs.lab.cacheDesc' },
-  { id: 'arch-map', titleKey: 'cs.lab.arch', descKey: 'cs.lab.archDesc' },
-  { id: 'ai-transformer', titleKey: 'cs.lab.ai', descKey: 'cs.lab.aiDesc', advanced: true },
+const LABS: Array<{ id: CsLabId; titleKey: MessageKey; descKey: MessageKey; advanced?: boolean }> = [
+  { id: CS_LAB_ID.VON_NEUMANN, titleKey: 'cs.lab.von', descKey: 'cs.lab.vonDesc' },
+  { id: CS_LAB_ID.PIPELINE_HAZARD, titleKey: 'cs.lab.pipe', descKey: 'cs.lab.pipeDesc' },
+  { id: CS_LAB_ID.CACHE_MAPPING, titleKey: 'cs.lab.cache', descKey: 'cs.lab.cacheDesc' },
+  { id: CS_LAB_ID.ARCH_MAP, titleKey: 'cs.lab.arch', descKey: 'cs.lab.archDesc' },
+  { id: CS_LAB_ID.AI_TRANSFORMER, titleKey: 'cs.lab.ai', descKey: 'cs.lab.aiDesc', advanced: true },
 ]
 
 const PRACTICE: Array<{ id: CsNavSection; titleKey: MessageKey; descKey: MessageKey }> = [

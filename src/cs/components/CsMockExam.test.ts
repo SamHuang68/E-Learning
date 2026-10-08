@@ -17,4 +17,23 @@ describe('CsMockExam locale-reactive session contract', () => {
     expect(resetEffect?.[1].trim()).toBe('selectedExamKey')
     expect(resetEffect?.[1]).not.toContain('locale')
   })
+
+  it('keeps the countdown updater pure and submits once outside it', () => {
+    const timerCallback = source.match(
+      /const timer = setInterval\(\(\) => \{([\s\S]*?)\n\s*\}, 1000\)/,
+    )?.[1]
+
+    expect(timerCallback).toBeDefined()
+    expect(timerCallback).not.toContain('handleSubmitExam()')
+    expect(source).toContain('if (submitGuardRef.current) return')
+    expect(source).toMatch(
+      /if \(isTimerRunning && !isSubmitted && secondsRemaining === 0\) \{\s*handleSubmitExam\(\)/,
+    )
+  })
+
+  it('uses locale-appropriate parentheses in the submitted score line', () => {
+    expect(source).toContain("copy('（', ' (')")
+    expect(source).toContain("copy('）', ')')")
+    expect(source).not.toContain("points')}（")
+  })
 })

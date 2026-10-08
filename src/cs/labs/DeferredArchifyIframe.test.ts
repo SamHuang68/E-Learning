@@ -55,4 +55,11 @@ describe('DeferredArchifyIframe', () => {
     expect(observer).toContain('IntersectionObserver')
     expect(slot).toContain("t('cs.archify.iframe.pending')")
   })
+
+  it('remounts the embedded diagram when the active locale changes', () => {
+    const lab = readFileSync(join(process.cwd(), 'src/cs/labs/ArchifyHardwareMap.tsx'), 'utf8')
+
+    expect(lab).toContain('key={`${selectedDiagram}-${locale}`}')
+    expect(lab).not.toContain('key={selectedDiagram} src={diagramMeta.file}')
+  })
 })

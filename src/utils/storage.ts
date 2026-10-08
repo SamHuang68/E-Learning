@@ -11,6 +11,10 @@ import {
   type LearningEventV1,
 } from './progressSchema'
 import { parseTopViewHash } from './topRoute'
+import {
+  normalizeCsProgress,
+  normalizeCsSignalsMastery,
+} from '../cs/utils/csProgressSchema'
 
 /** Late-bound write-through hook (wired by cloudProgress to avoid circular imports). */
 let progressChangeHook: (() => void) | null = null
@@ -557,6 +561,24 @@ function writeProgressJson(key: string, value: unknown) {
   localStorage.setItem(key, JSON.stringify(value))
 }
 
+function writeCsProgressJson(value: unknown) {
+  if (value === undefined || value === null) return
+  writeProgressJson(PROGRESS_STORAGE_KEYS.cs, normalizeCsProgress(value))
+}
+
+function writeCsSignalsJson(value: unknown) {
+  if (value === undefined || value === null) return
+  writeProgressJson(PROGRESS_STORAGE_KEYS.csSignals, normalizeCsSignalsMastery(value))
+}
+
+function normalizePresentCsProgress(value: unknown): unknown {
+  return value === undefined || value === null ? value : normalizeCsProgress(value)
+}
+
+function normalizePresentCsSignals(value: unknown): unknown {
+  return value === undefined || value === null ? value : normalizeCsSignalsMastery(value)
+}
+
 /** Progress-only export. Never includes Groq API key or builder presets. */
 export function exportProgressBundle(): ProgressExportBundle {
   return {
@@ -568,12 +590,12 @@ export function exportProgressBundle(): ProgressExportBundle {
     math: readProgressJson(PROGRESS_STORAGE_KEYS.math),
     physics: readProgressJson(PROGRESS_STORAGE_KEYS.physics),
     chemistry: readProgressJson(PROGRESS_STORAGE_KEYS.chemistry),
-    cs: readProgressJson(PROGRESS_STORAGE_KEYS.cs),
+    cs: normalizePresentCsProgress(readProgressJson(PROGRESS_STORAGE_KEYS.cs)),
     chinese: readProgressJson(PROGRESS_STORAGE_KEYS.chinese),
     mathSignals: readProgressJson(PROGRESS_STORAGE_KEYS.mathSignals),
     physicsSignals: readProgressJson(PROGRESS_STORAGE_KEYS.physicsSignals),
     chemistrySignals: readProgressJson(PROGRESS_STORAGE_KEYS.chemistrySignals),
-    csSignals: readProgressJson(PROGRESS_STORAGE_KEYS.csSignals),
+    csSignals: normalizePresentCsSignals(readProgressJson(PROGRESS_STORAGE_KEYS.csSignals)),
     lang: loadLang(),
     meta: loadLearningMeta(),
   }
@@ -635,12 +657,12 @@ export function applyCloudBundle(bundle: {
   writeProgressJson(PROGRESS_STORAGE_KEYS.math, bundle.math)
   writeProgressJson(PROGRESS_STORAGE_KEYS.physics, bundle.physics)
   writeProgressJson(PROGRESS_STORAGE_KEYS.chemistry, bundle.chemistry)
-  writeProgressJson(PROGRESS_STORAGE_KEYS.cs, bundle.cs)
+  writeCsProgressJson(bundle.cs)
   writeProgressJson(PROGRESS_STORAGE_KEYS.chinese, bundle.chinese)
   writeProgressJson(PROGRESS_STORAGE_KEYS.mathSignals, bundle.mathSignals)
   writeProgressJson(PROGRESS_STORAGE_KEYS.physicsSignals, bundle.physicsSignals)
   writeProgressJson(PROGRESS_STORAGE_KEYS.chemistrySignals, bundle.chemistrySignals)
-  writeProgressJson(PROGRESS_STORAGE_KEYS.csSignals, bundle.csSignals)
+  writeCsSignalsJson(bundle.csSignals)
   localStorage.setItem(
     LEARNING_META_KEY,
     JSON.stringify(normalizeLearningMeta(bundle.meta)),

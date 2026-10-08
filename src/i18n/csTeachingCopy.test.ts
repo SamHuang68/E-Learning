@@ -198,6 +198,24 @@ describe('CS teaching content in English mode', () => {
     expect(broken).toEqual([])
   })
 
+  it('以 44 筆 exact contract 保留原公式，只明確翻譯兩筆漢字內容', () => {
+    const translatedFormula: Readonly<Record<string, string>> = {
+      'sig-cs-vector-clock-causality':
+        'V_A \\le V_B \\iff \\forall i, V_A[i] \\le V_B[i] \\quad (\\text{otherwise concurrent: } V_A \\parallel V_B)',
+      'sig-cs-percolator-primary-anchor':
+        '\\text{Check Primary Row} \\implies \\begin{cases} \\text{write}[commit\\_ts] \\text{ exists} \\implies \\text{Roll Forward} \\\\ lock \\text{ stale or absent} \\implies \\text{Roll Back} \\end{cases}',
+    }
+
+    expect(CS_SOLVING_SIGNALS).toHaveLength(44)
+    for (const signal of CS_SOLVING_SIGNALS) {
+      const localized = localizeCsSignal('en', signal)
+      expect(localized.firstStepFormula, signal.id).toBe(
+        translatedFormula[signal.id] ?? signal.firstStepFormula,
+      )
+      expect(localized.firstStepFormula, signal.id).not.toContain('\\text{term}')
+    }
+  })
+
   it('covers both mock exams, all signals, and all textbook display fields', () => {
     const exams = Object.values(CS_MOCK_EXAMS)
     expect(exams).toHaveLength(2)
@@ -245,5 +263,9 @@ describe('CS teaching content in English mode', () => {
     expect(() => localizeCsUnit('en', { ...CS_CURRICULUM[0], id: 'cs-unit-8-untranslated' })).toThrow(
       'Missing CS unit English translation: cs-unit-8-untranslated',
     )
+    expect(() => localizeCsSignal('en', {
+      ...CS_SOLVING_SIGNALS[0],
+      firstStepFormula: '\\text{未登錄公式}',
+    })).toThrow('Missing CS solving-signal English formula: sig-cs-two-complement')
   })
 })

@@ -134,6 +134,18 @@ describe('計算機概論次要畫面語系消費端契約', () => {
     expect(html).not.toMatch(HAN)
   })
 
+  it('英文單元練習的切換膠囊只顯示短單元標籤', () => {
+    const html = renderWithLocale(
+      englishLocale,
+      <CsPractice onCompleteQuestion={noop} onRecordError={noop} />,
+    )
+
+    for (let unitNumber = 1; unitNumber <= 7; unitNumber += 1) {
+      expect(html).toContain(`<span>Unit ${unitNumber}</span>`)
+    }
+    expect(html).not.toMatch(/<span>Unit \d+: [^<]+<\/span>/)
+  })
+
   it('課綱在繁中介面保留權威繁中單元與核心概念', () => {
     const html = renderWithLocale(
       traditionalLocale,

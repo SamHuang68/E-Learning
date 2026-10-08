@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { CS_SOLVING_SIGNALS, type CsSolvingSignal } from '../data/solvingSignals'
 import { CS_STRAND_IDS, csStrandMessageKey, type CsStrand } from '../data/curriculum'
 import { MathFormula } from '../../math/components/MathFormula'
@@ -16,6 +16,16 @@ export const CsSignalsView: React.FC = () => {
   const [isRevealed, setIsRevealed] = useState(false)
   const [mastery, setMastery] = useState<Record<string, boolean>>(() => loadCsSignalsMastery())
   const [selectedStrand, setSelectedStrand] = useState<'all' | CsStrand>('all')
+
+  useEffect(() => {
+    const refreshMastery = () => setMastery(loadCsSignalsMastery())
+    window.addEventListener('e-learning:progress-hydrated', refreshMastery)
+    window.addEventListener('cs:signals-mastery-updated', refreshMastery)
+    return () => {
+      window.removeEventListener('e-learning:progress-hydrated', refreshMastery)
+      window.removeEventListener('cs:signals-mastery-updated', refreshMastery)
+    }
+  }, [])
 
   const filteredSignals = signals.filter((sig) => {
     if (selectedStrand === 'all') return true

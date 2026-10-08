@@ -14,7 +14,67 @@ import { CS_TEXTBOOK_COPY_EN } from './csTextbookCopyData'
 import type { UiLocale } from './locale'
 
 const HAN = /[\u3400-\u9fff\uf900-\ufaff]/u
-const HAN_GLOBAL = /[\u3400-\u9fff\uf900-\ufaff]+/gu
+
+type SignalFormulaCopy = readonly [source: string, english?: string]
+
+/**
+ * Exact source/formula contract for every CS signal. Most formulas already use
+ * language-neutral notation; entries with Han text provide an explicit English
+ * value. A changed or newly added source formula must be reviewed here instead
+ * of being silently rewritten into a generic placeholder.
+ */
+const CS_SIGNAL_FORMULA_EN: Readonly<Record<string, SignalFormulaCopy>> = {
+  'sig-cs-two-complement': ['N_{\\text{2\'s comp}} = \\text{NOT}(N_{\\text{positive}}) + 1'],
+  'sig-cs-amat-cache': ['\\text{AMAT} = T_{\\text{hit}} + (1 - H) \\times T_{\\text{penalty}}'],
+  'sig-cs-bus-address-space': ['\\text{Addressable Space} = 2^k \\text{ Bytes}'],
+  'sig-cs-deadlock-conditions': ['\\text{Deadlock} \\iff \\text{Mutual Exclusion} \\land \\text{Hold \\& Wait} \\land \\text{No Preemption} \\land \\text{Circular Wait}'],
+  'sig-cs-tcp-handshake': ['\\text{Client: } \\text{SYN}(x) \\to \\text{Server: } \\text{SYN}(y), \\text{ACK}(x+1) \\to \\text{Client: } \\text{ACK}(y+1)'],
+  'sig-cs-gpu-matrix-gemm': ['\\text{GEMM: } D = \\alpha (A \\times B) + \\beta C \\quad [\\text{SIMT Parallel Throughput}]'],
+  'sig-cs-self-attention': ['\\text{Attention}(Q, K, V) = \\text{softmax}\\left(\\frac{QK^T}{\\sqrt{d_k}}\\right)V'],
+  'sig-cs-kv-cache': ['\\text{Inference Step } t: Q_t \\times [K_{1:t-1}, K_t]^T \\to \\text{Reuse Cached } K, V'],
+  'sig-cs-pipeline-speedup': ['S = \\frac{k \\cdot n}{k + n - 1} \\xrightarrow{n \\to \\infty} k'],
+  'sig-cs-cache-tag-index': ['\\text{Offset} = \\log_2(B), \\quad \\text{Index} = \\log_2\\left(\\frac{C}{N \\cdot B}\\right), \\quad \\text{Tag} = 32 - \\text{Index} - \\text{Offset}'],
+  'sig-cs-tpu-systolic': ['T_{\\text{systolic}} = 3N - 2 \\quad [O(N^3) \\to O(N)]'],
+  'sig-cs-quantization-int4': ['\\text{VRAM (Bytes)} = \\text{Param Count} \\times \\frac{\\text{bits}}{8}'],
+  'sig-cs-tlb-emat': ['\\text{EMAT} = T_{\\text{TLB}} + (2 - \\alpha) \\cdot T_{\\text{RAM}}'],
+  'sig-cs-moe-routing': ['G(x) = \\text{Softmax}(\\text{TopK}(x \\cdot W_g, k))'],
+  'sig-cs-raft-quorum': ['\\text{Quorum} = \\lfloor N / 2 \\rfloor + 1'],
+  'sig-cs-csma-cd-minframe': ['L_{\\min} = 2\\tau \\times \\text{Bandwidth}'],
+  'sig-cs-lora-reduction': ['\\text{Ratio} = \\frac{(d + k) \\cdot r}{d \\cdot k}'],
+  'sig-cs-shunting-yard': ['\\text{Precedence: } ^ > *, / > +, - \\quad \\& \\quad \\text{Parentheses Match}'],
+  'sig-cs-ieee754-bias': ['E = e + 127 \\quad (\\text{Single Precision } 32\\text{-bit})'],
+  'sig-cs-vit-patches': ['N = \\frac{H \\times W}{P^2} \\implies \\text{Total} = N + 1'],
+  'sig-cs-speculative-speedup': ['\\mathbb{E}[N] = \\frac{1 - \\alpha^{K+1}}{1 - \\alpha} = \\sum_{j=0}^K \\alpha^j'],
+  'sig-cs-mux-select': ['n = \\log_2 N \\iff 2^n = N'],
+  'sig-cs-bplus-height': ['h = \\lceil \\log_M N \\rceil'],
+  'sig-cs-roofline-knee': ['I_{\\text{knee}} = \\frac{P_{\\text{peak}}}{\\text{Bandwidth}} \\implies I < I_{\\text{knee}} \\to \\text{Memory-Bound}'],
+  'sig-cs-tp-allreduce': ['\\text{Ops} = 2 \\times \\text{All-Reduce} \\implies \\text{Bytes} = 2 \\times \\left[2 \\times \\frac{N-1}{N} M\\right]'],
+  'sig-cs-kvcache-mem': ['\\text{Size} = 2 \\times b \\times s \\times L \\times h \\times 2\\text{ Bytes}'],
+  'sig-cs-moe-balance-loss': ['\\mathcal{L}_{\\text{balance}} = \\alpha \\cdot E \\sum_{i=1}^E f_i P_i \\implies \\min = \\alpha'],
+  'sig-cs-pagedattention-blocks': ['N_{\\text{blocks}} = \\left\\lceil \\frac{S}{B} \\right\\rceil'],
+  'sig-cs-pp-bubble-rate': ['F_{\\text{bubble}} = \\frac{p - 1}{m + p - 1}'],
+  'sig-cs-rsa-euler-inv': ['e \\cdot d \\equiv 1 \\pmod{(p-1)(q-1)}'],
+  'sig-cs-zero3-comm-ratio': ['\\frac{\\text{Comm}_{\\text{ZeRO-3}}}{\\text{Comm}_{\\text{DP}}} = \\frac{3 \\times \\frac{N-1}{N} M}{2 \\times \\frac{N-1}{N} M} = 1.5'],
+  'sig-cs-hbm-interposer': ['\\text{Bandwidth} = \\text{BusWidth} \\times \\text{DataRate} \\approx 1024\\text{ bits} \\times \\text{Rate} \\to 8\\text{ TB/s}'],
+  'sig-cs-lsm-waf': ['\\text{WAF} \\approx 1 + 1 + T \\times (L - 1)'],
+  'sig-cs-dpo-closed-form': ['r(x, y) = \\beta \\log \\frac{\\pi_\\theta(y|x)}{\\pi_{\\text{ref}}(y|x)} + C'],
+  'sig-cs-consistent-hashing': ['\\Delta \\text{Migration} \\approx \\frac{1}{N} \\times \\text{TotalKeys}'],
+  'sig-cs-cordic-shifts': ['x_{i+1} = x_i - d_i y_i 2^{-i}, \\quad y_{i+1} = y_i + d_i x_i 2^{-i}'],
+  'sig-cs-saga-pattern': ['T_1 \\dots T_k (\\text{Fail}) \\implies C_{k-1} \\dots C_1'],
+  'sig-cs-epoll-redblack': ['O(1) \\text{ Event-Driven Dispatch} \\quad (\\text{Ready List})'],
+  'sig-cs-vector-clock-causality': [
+    'V_A \\le V_B \\iff \\forall i, V_A[i] \\le V_B[i] \\quad (\\text{若互有大小即 } V_A \\parallel V_B)',
+    'V_A \\le V_B \\iff \\forall i, V_A[i] \\le V_B[i] \\quad (\\text{otherwise concurrent: } V_A \\parallel V_B)',
+  ],
+  'sig-cs-speculative-decoding': ['E[\\tau] = \\frac{1 - \\alpha^{K+1}}{1 - \\alpha}, \\quad \\text{Speedup} = \\frac{E[\\tau] T_{\\text{target}}}{K T_{\\text{draft}} + T_{\\text{target}}}'],
+  'sig-cs-multipaxos-fastpath': ['\\text{Stable Leader} \\implies \\text{Skip Phase 1} \\implies \\text{Phase 2 (Accept)} = 1\\text{ RTT}'],
+  'sig-cs-moe-capacity-factor': ['\\text{Capacity} = \\left\\lceil \\frac{T}{E} \\cdot C \\right\\rceil, \\quad \\mathcal{L}_{\\text{aux}} = \\alpha E \\sum_{e=1}^E f_e P_e'],
+  'sig-cs-percolator-primary-anchor': [
+    '\\text{Check Primary Row} \\implies \\begin{cases} \\text{write}[commit\\_ts] \\text{ 存在} \\implies \\text{Roll Forward} \\\\ lock \\text{ 殘留或無記錄} \\implies \\text{Roll Back} \\end{cases}',
+    '\\text{Check Primary Row} \\implies \\begin{cases} \\text{write}[commit\\_ts] \\text{ exists} \\implies \\text{Roll Forward} \\\\ lock \\text{ stale or absent} \\implies \\text{Roll Back} \\end{cases}',
+  ],
+  'sig-cs-rope-ntk-scaling': ['\\langle R_m q, R_n k \\rangle = q^T R_{n-m} k, \\quad \\text{Base}_{\\text{new}} = \\text{Base} \\cdot \\alpha^{\\frac{d}{d-2}}'],
+}
 
 const EN: Readonly<Record<string, string>> = {
   '單元 1：軟體與硬體之本質定義與電腦系統階層':
@@ -68,15 +128,12 @@ function assertEnglish(value: unknown, context: string): void {
   visit(value, context)
 }
 
-function englishFormula(value: string): string {
-  return value
-    .replace(/正規化數/g, 'normalized number')
-    .replace(/在網路分區發生時/g, 'during a network partition')
-    .replace(/若互有大小則/g, 'otherwise concurrent')
-    .replace(/若互有大小即/g, 'otherwise concurrent')
-    .replace(/存在/g, 'exists')
-    .replace(/殘留或無記錄/g, 'stale or absent')
-    .replace(HAN_GLOBAL, 'term')
+function englishFormula(source: CsSolvingSignal): string {
+  const formula = CS_SIGNAL_FORMULA_EN[source.id]
+  if (!formula || formula[0] !== source.firstStepFormula) {
+    throw new Error(`Missing CS solving-signal English formula: ${source.id}`)
+  }
+  return formula[1] ?? formula[0]
 }
 
 function localizeQuestionEnglish(source: CsQuestion): CsQuestion {
@@ -172,7 +229,7 @@ export function localizeCsSignal(locale: UiLocale, source: CsSolvingSignal): CsS
     topic,
     problemSignal: copy.problemSignal,
     threeSecondRule: copy.threeSecondRule,
-    firstStepFormula: englishFormula(source.firstStepFormula),
+    firstStepFormula: englishFormula(source),
     exampleProblem: {
       question: copy.exampleQuestion,
       quickSolve: copy.quickSolve,
