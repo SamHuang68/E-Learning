@@ -1,6 +1,8 @@
 ﻿import React, { useState } from 'react'
-import { TANGYUAN_DIALOGUES, type TangyuanDialogueItem } from '../data/tangyuanZhDialogues'
+import { CHINESE_SUPPORT_EN, TANGYUAN_DIALOGUES, type TangyuanDialogueItem } from '../data/tangyuanZhDialogues'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
+import { localizeChineseData } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
@@ -22,7 +24,15 @@ const TANGYUAN_FLAVORS: TangyuanFlavor[] = [
   { id: 'savory', nameZh: '客家鹹湯圓 (茼蒿香菇香)', nameJa: '客家風塩味スープ湯圓（春菊＆椎茸）', color: '#10b981', descZh: '香菇、蝦米、肉絲爆香，加入冬至茼蒿最鮮美！', descJa: '干し椎茸・桜エビ・豚肉の旨味と春菊の香りが絶品！' },
 ]
 
+const TANGYUAN_FLAVOR_EN: Record<string, { name: string; description: string }> = {
+  'red-white': { name: 'Red and white mini tangyuan', description: 'Red symbolizes good fortune; white symbolizes peace and reunion, served in a classic sweet soup.' },
+  sesame: { name: 'Black sesame tangyuan', description: 'A large tangyuan filled with rich, molten black sesame paste.' },
+  peanut: { name: 'Peanut tangyuan', description: 'A large tangyuan with a fragrant, slightly textured peanut filling.' },
+  savory: { name: 'Hakka savory tangyuan', description: 'A savory soup with mushrooms, dried shrimp, pork, and winter chrysanthemum greens.' },
+}
+
 export const TangyuanZhLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { locale } = useI18n()
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [activeFlavorId, setActiveFlavorId] = useState<string>('sesame')
   const [isBoiling, setIsBoiling] = useState(false)
@@ -30,8 +40,11 @@ export const TangyuanZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
   const activeItem: TangyuanDialogueItem =
     TANGYUAN_DIALOGUES[selectedIdx % TANGYUAN_DIALOGUES.length]
+  const localizedItem = localizeChineseData(activeItem, locale, CHINESE_SUPPORT_EN)
+  const localizedDialogues = localizeChineseData(TANGYUAN_DIALOGUES, locale, CHINESE_SUPPORT_EN)
 
   const currentFlavor = TANGYUAN_FLAVORS.find((f) => f.id === activeFlavorId) || TANGYUAN_FLAVORS[0]
+  const currentFlavorEn = TANGYUAN_FLAVOR_EN[currentFlavor.id]
 
   function speakChinese(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -56,10 +69,12 @@ export const TangyuanZhLab: React.FC<Props> = ({ onEarnXp }) => {
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>🥣</span> 台灣冬至吃湯圓添歲數生活實驗室 (Dongzhi Tangyuan Lab)
+            <span>🥣</span> {locale === 'en' ? 'Taiwan Winter-Solstice Tangyuan Lab' : '台灣冬至吃湯圓添歲數生活實驗室 (Dongzhi Tangyuan Lab)'}
           </h3>
-          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            台湾の二十四節気「冬至」！「吃了長一歲・紅白小湯圓（開運團圓）・爆漿黑芝麻花生・客家鹹湯圓」を徹底マスター！
+          <p lang={locale === 'en' ? 'en' : 'ja'} className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+            {locale === 'en'
+              ? 'Practise Mandarin through Taiwan’s winter-solstice customs: “growing a year older” after eating tangyuan, red-and-white mini tangyuan, filled tangyuan, and Hakka savory tangyuan.'
+              : '台湾の二十四節気「冬至」！「吃了長一歲・紅白小湯圓（開運團圓）・爆漿黑芝麻花生・客家鹹湯圓」を徹底マスター！'}
           </p>
         </div>
       </div>
@@ -83,12 +98,12 @@ export const TangyuanZhLab: React.FC<Props> = ({ onEarnXp }) => {
           <div style={{ fontSize: '1.8rem' }}>🥣 ♨️</div>
           <div>
             <strong style={{ fontSize: '0.9rem', display: 'block' }}>
-              冬至滾水煮湯圓 ({currentFlavor.nameZh})
+              {locale === 'en' ? `Boil Winter-Solstice Tangyuan (${currentFlavor.nameZh})` : `冬至滾水煮湯圓 (${currentFlavor.nameZh})`}
             </strong>
             <span style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
               {isBoiling
-                ? '♨️ 湯圓浮上水面滾熟啦！熱騰騰咬開流沙，暖心又暖胃！恭喜吃了冬至圓又長了一歲！(+15 XP)'
-                : `${currentFlavor.descZh} 吃過冬節圓，長歲數又圓滿！目前已吃過 ${ageCount} 碗溫暖冬至圓！`}
+                ? locale === 'en' ? '♨️ The tangyuan are floating and cooked. Enjoy them warm and mark another year of growth. (+15 XP)' : '♨️ 湯圓浮上水面滾熟啦！熱騰騰咬開流沙，暖心又暖胃！恭喜吃了冬至圓又長了一歲！(+15 XP)'
+                : locale === 'en' ? `${currentFlavorEn.description} Bowls enjoyed: ${ageCount}.` : `${currentFlavor.descZh} 吃過冬節圓，長歲數又圓滿！目前已吃過 ${ageCount} 碗溫暖冬至圓！`}
             </span>
           </div>
         </div>
@@ -104,7 +119,9 @@ export const TangyuanZhLab: React.FC<Props> = ({ onEarnXp }) => {
             }}
             onClick={handleCookTangyuan}
           >
-            {isBoiling ? '♨️ 湯圓浮起煮熟囉！' : '🥣 滾水沸煮・添歲數 (+15 XP)'}
+            {isBoiling
+              ? locale === 'en' ? '♨️ Tangyuan are floating and cooked' : '♨️ 湯圓浮起煮熟囉！'
+              : locale === 'en' ? '🥣 Boil tangyuan and add a year (+15 XP)' : '🥣 滾水沸煮・添歲數 (+15 XP)'}
           </button>
         </div>
       </div>
@@ -133,7 +150,7 @@ export const TangyuanZhLab: React.FC<Props> = ({ onEarnXp }) => {
             >
               <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: flavor.color }} />
               <strong style={{ fontSize: '0.78rem' }}>{flavor.nameZh.split(' ')[0]}</strong>
-              <span style={{ fontSize: '0.66rem', color: 'var(--muted)' }}>{flavor.nameJa.split('（')[0]}</span>
+              <span style={{ fontSize: '0.66rem', color: 'var(--muted)' }}>{locale === 'en' ? TANGYUAN_FLAVOR_EN[flavor.id].name : flavor.nameJa.split('（')[0]}</span>
             </button>
           )
         })}
@@ -141,14 +158,14 @@ export const TangyuanZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
       {/* 場景切換膠囊 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
-        {TANGYUAN_DIALOGUES.map((item, idx) => (
+        {localizedDialogues.map((item, idx) => (
           <button aria-pressed={selectedIdx === idx}
             key={item.id}
             type="button"
             className={`pill-btn ${selectedIdx === idx ? 'active' : ''}`}
             onClick={() => setSelectedIdx(idx)}
           >
-            <span>{item.icon}</span> {item.title.split('：')[0]}
+            <span>{item.icon}</span> {locale === 'en' ? item.title : item.title.split('：')[0]}
           </button>
         ))}
       </div>
@@ -159,12 +176,12 @@ export const TangyuanZhLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(244, 63, 94, 0.15)', color: '#f43f5e', fontWeight: 700 }}>
-              {activeItem.locationZh} (<span lang="ja">{activeItem.locationJa}</span>)
+              {localizedItem.locationZh} (<span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.locationJa}</span>)
             </span>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem', marginTop: '0.3rem' }}>
-            {activeItem.dialogueLines.map((line, lIdx) => (
+            {localizedItem.dialogueLines.map((line, lIdx) => (
               <div
                 key={lIdx}
                 style={{
@@ -179,9 +196,9 @@ export const TangyuanZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#f43f5e' }}>
-                    <span lang="ja">{line.speakerJa}</span>：
+                    <span lang={locale === 'en' ? 'en' : 'ja'}>{line.speakerJa}</span>:
                   </span>
-                  <button aria-label={`朗讀：${line.zh}`}
+                  <button aria-label={locale === 'en' ? `Read aloud: ${line.zh}` : `朗讀：${line.zh}`}
                     type="button"
                     style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
                     onClick={() => speakChinese(line.zh)}
@@ -191,7 +208,7 @@ export const TangyuanZhLab: React.FC<Props> = ({ onEarnXp }) => {
                 </div>
                 <strong style={{ fontSize: '0.86rem', color: 'var(--text)' }}>{line.zh}</strong>
                 <span lang="zh-Latn" style={{ fontSize: '0.72rem', color: '#d97706' }}>{line.pinyin}</span>
-                <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
+                <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
                   {line.ja}
                 </span>
               </div>
@@ -201,12 +218,12 @@ export const TangyuanZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
         {/* 右側：冬至民俗名詞 */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          <span lang="ja" style={{ fontSize: '0.74rem', color: '#f43f5e', fontWeight: 700, display: 'block' }}>
-            💡 台湾冬至・冬節圓カルチャー豆知識（Tangyuan Tips）
+          <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: '#f43f5e', fontWeight: 700, display: 'block' }}>
+            {locale === 'en' ? '💡 Taiwan winter-solstice and tangyuan tips' : '💡 台湾冬至・冬節圓カルチャー豆知識（Tangyuan Tips）'}
           </span>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginTop: '0.3rem' }}>
-            {activeItem.tangyuanGlossary.map((vocab, vIdx) => (
+            {localizedItem.tangyuanGlossary.map((vocab, vIdx) => (
               <div
                 key={vIdx}
                 style={{
@@ -218,9 +235,9 @@ export const TangyuanZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <strong style={{ fontSize: '0.88rem', color: '#f43f5e' }}>{vocab.termZh}</strong>
-                  <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
+                  <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
                 </div>
-                <p lang="ja" style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+                <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
                   {vocab.tipJa}
                 </p>
               </div>

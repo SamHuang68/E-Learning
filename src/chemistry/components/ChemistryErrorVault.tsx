@@ -1,26 +1,80 @@
-import { stemCatalogCopy } from '../../i18n/stemCatalogCopy'
-import { loadStemVaultContentCopy, localizeStemVaultQuestion, stemVaultCopy } from '../../i18n/stemVaultCopy'
 /**
  * 臺灣 108 課綱化學 · 錯題弱點診斷與實驗室直通筆記本 (Chemistry Error Vault & Lab Teleportation)
  *
  * 核心升級：
  * 1. 雙軌全域題庫檢索池：全面納入單元練習題庫 (G7~G12) 與大考模擬試卷題庫 (會考 CAP / 學測 GSAT / 分科 AST)。
- * 2. 動態實驗室智慧導航：自動識別題目領域並掛載「🔬 立即前往關聯動態實驗室」按鈕，直通 5 大化學實驗室。
+ * 2. 動態實驗室導航：僅依明確題目契約掛載「🔬 立即前往關聯動態實驗室」按鈕，直通 5 大化學實驗室。
  * 3. 5 大維度步驟深度診斷：整合「3 秒破題訊號」、「關鍵反應方程式與定量公式」、「嚴密推導步驟」、「易錯盲點警示」與「選項逐項辨析」。
  * 4. 零溢出與平滑滾動：KaTeX 化學與數學算式具備平滑滾動保護，卡片極致緊湊排版，手機端 0 橫向溢出。
  */
 
-import React, { use, useState, useMemo, useEffect, useRef, useId } from 'react'
+import React, { useState, useMemo, useEffect, useRef, useId } from 'react'
 import {
   getAllChemistryUnits,
   chemistryStrandMessageKey,
   type ChemistryQuestion,
 } from '../data/curriculum'
 import { CHEMISTRY_MOCK_EXAMS } from '../data/mockExams'
-import { findMatchingChemistrySignal } from '../utils/vaultSignal'
 import { MathFormula } from '../../math/components/MathFormula'
 import { exportErrorVaultToAnki } from '../../utils/ankiExporter'
 import { useI18n } from '../../i18n/i18n'
+import type { UiLocale } from '../../i18n/locale'
+import {
+  localizeChemistryMockExam,
+  localizeChemistryUnit,
+} from '../locale/content'
+import {
+  resolveChemistryLab,
+  type ChemistryLabDefinition,
+} from './chemistryErrorVaultLabResolver'
+import { findMatchingChemistrySignal } from './chemistryErrorVaultSignalMatcher'
+
+const CHEMISTRY_LAB_EN: Readonly<Record<string, string>> = {
+  '酸鹼滴定與 pH 曲線實驗室': 'Acid-base titration and pH-curve lab',
+  '酸鹼中和與滴定曲線': 'Acid-base neutralization and titration curves',
+  '即時模擬強弱酸鹼滴定過程，觀測指示劑顏色漸變與 pH 突變滴定曲線。':
+    'Simulate strong- and weak-acid/base titrations while observing indicator color changes and the sharp pH transition.',
+  '元素週期表探測器': 'Interactive periodic-table explorer',
+  '元素週期規律性': 'Periodic trends',
+  '全景互動探索 1~36 號元素之電子組態、原子半徑、電負度與週期性變化。':
+    'Explore electron configurations, atomic radii, electronegativity, and periodic trends for elements 1 through 36.',
+  'VSEPR 分子空間幾何實驗室': 'VSEPR molecular-geometry lab',
+  '分子幾何與混成軌域': 'Molecular geometry and hybrid orbitals',
+  '立體旋轉探索價殼層電子對互斥理論、AXE 型態、混成軌域與空間幾何鍵角。':
+    'Rotate models to explore VSEPR theory, AXE notation, hybrid orbitals, molecular shapes, and bond angles.',
+  '理想氣體定律 PV=nRT 實驗室': 'Ideal-gas-law PV=nRT lab',
+  '氣體狀態與定律': 'Gas states and laws',
+  '動態調節容器體積、溫度與氣體莫耳數，即時量測壓力變化並驗證氣體定律。':
+    'Adjust volume, temperature, and gas amount to measure pressure changes and test the gas laws.',
+  '溶解度與結晶析出實驗室': 'Solubility and crystallization lab',
+  '溶液飽和與結晶平衡': 'Solution saturation and crystallization equilibrium',
+  '升降溫動態調控水溶液飽和度，計算高低溫溶解度差異與晶體析出量。':
+    'Change temperature to control saturation and calculate solubility differences and the mass crystallized.',
+  '酸鹼與電化學': 'Acids, bases, and electrochemistry',
+  '沉浸式檢驗酸鹼解離與滴定曲線。': 'Explore acid-base dissociation and titration curves.',
+  '物質結構與週期表': 'Matter structure and the periodic table',
+  '探索元素規律與原子結構。': 'Explore periodic trends and atomic structure.',
+  '平衡與動力學': 'Equilibrium and kinetics',
+  '動態驗證氣體與平衡定律。': 'Interactively test gas and equilibrium laws.',
+  '有機分子立體結構': 'Organic-molecule geometry',
+  '觀察有機化合物與碳原子混成幾何。': 'Examine organic compounds and carbon hybridization geometry.',
+  '化學反應與計量': 'Chemical reactions and stoichiometry',
+  '觀察化學反應物沉澱與析出變化。': 'Observe precipitation and crystallization in chemical reactions.',
+}
+
+function localizeChemistryLab(
+  lab: ChemistryLabDefinition,
+  locale: UiLocale,
+): ChemistryLabDefinition {
+  if (locale !== 'en') return lab
+  const name = CHEMISTRY_LAB_EN[lab.name]
+  const badge = CHEMISTRY_LAB_EN[lab.badge]
+  const description = CHEMISTRY_LAB_EN[lab.description]
+  if (!name || !badge || !description) {
+    throw new Error(`Missing chemistry error-vault lab copy: ${lab.id}`)
+  }
+  return { ...lab, name, badge, description }
+}
 
 export type ChemistryErrorVaultProps = {
   /** 答錯題目 ID 清單 (自 LocalStorage progress 載入) */
@@ -37,208 +91,10 @@ export interface EnrichedChemistryError {
   sourceType: 'unit' | 'mock'
   sourceLabel: string
   strandName: string
-  matchedLab: {
-    id: string
-    name: string
-    icon: string
-    badge: string
-    description: string
-  }
+  matchedLab?: ChemistryLabDefinition
 }
 
 
-
-/**
- * 智慧匹配題目所屬之化學互動實驗室
- *
- * @param q 化學題目物件
- * @param unitSuggestedLab 單元建議實驗室代碼
- * @returns 實驗室詳細定義 (包含 ID、名稱、圖標、特徵與說明)
- */
-function resolveChemistryLab(
-  q: ChemistryQuestion,
-  unitSuggestedLab?: string,
-): { id: string; name: string; icon: string; badge: string; description: string } {
-  const textToScan = `${q.title} ${q.question} ${q.solution} ${q.hint || ''} ${unitSuggestedLab || ''}`.toLowerCase()
-
-  // 1. 酸鹼滴定與 pH 曲線實驗室 (TitrationLab)
-  if (
-    textToScan.includes('titration') ||
-    textToScan.includes('acid') ||
-    textToScan.includes('滴定') ||
-    textToScan.includes('酸鹼') ||
-    textToScan.includes('ph') ||
-    textToScan.includes('中和') ||
-    textToScan.includes('指示劑') ||
-    textToScan.includes('酚酞') ||
-    textToScan.includes('鹽酸') ||
-    textToScan.includes('氫氧化鈉') ||
-    textToScan.includes('緩衝') ||
-    textToScan.includes('解離') ||
-    textToScan.includes('當量點') ||
-    textToScan.includes('水解')
-  ) {
-    return {
-      id: 'titration',
-      name: '酸鹼滴定與 pH 曲線實驗室',
-      icon: '🧪',
-      badge: '酸鹼中和與滴定曲線',
-      description: '即時模擬強弱酸鹼滴定過程，觀測指示劑顏色漸變與 pH 突變滴定曲線。',
-    }
-  }
-
-  // 2. 元素週期表探測器 (PeriodicTableLab)
-  if (
-    textToScan.includes('periodic') ||
-    textToScan.includes('element') ||
-    textToScan.includes('週期表') ||
-    textToScan.includes('週期') ||
-    textToScan.includes('族') ||
-    textToScan.includes('原子序') ||
-    textToScan.includes('電子組態') ||
-    textToScan.includes('游離能') ||
-    textToScan.includes('電負度') ||
-    textToScan.includes('金屬性') ||
-    textToScan.includes('價電子') ||
-    textToScan.includes('原子半徑') ||
-    textToScan.includes('同位素') ||
-    textToScan.includes('金屬活性')
-  ) {
-    return {
-      id: 'periodic',
-      name: '元素週期表探測器',
-      icon: '🔬',
-      badge: '元素週期規律性',
-      description: '全景互動探索 1~36 號元素之電子組態、原子半徑、電負度與週期性變化。',
-    }
-  }
-
-  // 3. VSEPR 分子空間幾何實驗室 (VseprGeometryLab)
-  if (
-    textToScan.includes('vsepr') ||
-    textToScan.includes('geometry') ||
-    textToScan.includes('幾何') ||
-    textToScan.includes('混成') ||
-    textToScan.includes('分子形狀') ||
-    textToScan.includes('鍵角') ||
-    textToScan.includes('四面體') ||
-    textToScan.includes('直線型') ||
-    textToScan.includes('雙三角錐') ||
-    textToScan.includes('極性') ||
-    textToScan.includes('路易斯') ||
-    textToScan.includes('共價鍵') ||
-    textToScan.includes('孤對電子') ||
-    textToScan.includes('八面體')
-  ) {
-    return {
-      id: 'vsepr',
-      name: 'VSEPR 分子空間幾何實驗室',
-      icon: '📐',
-      badge: '分子幾何與混成軌域',
-      description: '立體旋轉探索價殼層電子對互斥理論、AXE 型態、混成軌域與空間幾何鍵角。',
-    }
-  }
-
-  // 4. 理想氣體定律 PV=nRT 實驗室 (GasLawLab)
-  if (
-    textToScan.includes('gas') ||
-    textToScan.includes('pressure') ||
-    textToScan.includes('volume') ||
-    textToScan.includes('氣體') ||
-    textToScan.includes('理想氣體') ||
-    textToScan.includes('pv=nrt') ||
-    textToScan.includes('波以耳') ||
-    textToScan.includes('查理') ||
-    textToScan.includes('分壓') ||
-    textToScan.includes('大氣壓') ||
-    textToScan.includes('道耳吞') ||
-    textToScan.includes('莫耳數') ||
-    textToScan.includes('擴散')
-  ) {
-    return {
-      id: 'gas',
-      name: '理想氣體定律 PV=nRT 實驗室',
-      icon: '🎈',
-      badge: '氣體狀態與定律',
-      description: '動態調節容器體積、溫度與氣體莫耳數，即時量測壓力變化並驗證氣體定律。',
-    }
-  }
-
-  // 5. 溶解度與結晶析出實驗室 (SolubilityLab)
-  if (
-    textToScan.includes('solubility') ||
-    textToScan.includes('solution') ||
-    textToScan.includes('precipitate') ||
-    textToScan.includes('溶解度') ||
-    textToScan.includes('飽和') ||
-    textToScan.includes('結晶') ||
-    textToScan.includes('析出') ||
-    textToScan.includes('沉澱') ||
-    textToScan.includes('溶解') ||
-    textToScan.includes('重量百分濃度') ||
-    textToScan.includes('容度積') ||
-    textToScan.includes('ksp') ||
-    textToScan.includes('過飽和') ||
-    textToScan.includes('水溶液')
-  ) {
-    return {
-      id: 'solubility',
-      name: '溶解度與結晶析出實驗室',
-      icon: '🧊',
-      badge: '溶液飽和與結晶平衡',
-      description: '升降溫動態調控水溶液飽和度，計算高低溫溶解度差異與晶體析出量。',
-    }
-  }
-
-  // 預設依據主軸分派
-  switch (q.strand) {
-    case 'electrochemistry':
-      return {
-        id: 'titration',
-        name: '酸鹼滴定與 pH 曲線實驗室',
-        icon: '🧪',
-        badge: '酸鹼與電化學',
-        description: '沉浸式檢驗酸鹼解離與滴定曲線。',
-      }
-    case 'matter_structure':
-      return {
-        id: 'periodic',
-        name: '元素週期表探測器',
-        icon: '🔬',
-        badge: '物質結構與週期表',
-        description: '探索元素規律與原子結構。',
-      }
-    case 'equilibrium_kinetics':
-      return {
-        id: 'gas',
-        name: '理想氣體定律 PV=nRT 實驗室',
-        icon: '🎈',
-        badge: '平衡與動力學',
-        description: '動態驗證氣體與平衡定律。',
-      }
-    case 'organic':
-      return {
-        id: 'vsepr',
-        name: 'VSEPR 分子空間幾何實驗室',
-        icon: '📐',
-        badge: '有機分子立體結構',
-        description: '觀察有機化合物與碳原子混成幾何。',
-      }
-    case 'reactions':
-    default:
-      return {
-        id: 'solubility',
-        name: '溶解度與結晶析出實驗室',
-        icon: '🧊',
-        badge: '化學反應與計量',
-        description: '觀察化學反應物沉澱與析出變化。',
-      }
-  }
-}
-
-/**
- * 取得與化學題目最匹配的 3 秒破題訊號資料
- */
 
 /**
  * 化學弱點錯題筆記本元件
@@ -249,7 +105,6 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
   onOpenLab,
 }) => {
   const { t, locale } = useI18n()
-  if (locale === 'en') use(loadStemVaultContentCopy())
   // 狀態：展開步驟診斷的卡片 ID 集合
   const [expandedSteps, setExpandedSteps] = useState<Record<string, boolean>>({})
   // 狀態：領域篩選
@@ -281,8 +136,7 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
     onRemoveError(question.id)
   }
 
-  const removedTitle = removedQuestion === null ? ''
-    : stemVaultCopy(locale, removedQuestion.title).replace(/\{id\}/g, () => removedQuestion.id)
+  const removedTitle = removedQuestion?.title ?? ''
   const removalNotice = removedQuestion === null ? '' : locale === 'en'
     ? `Removed “${removedTitle}” from the error notebook. ${errorQuestionIds.length} items remain.`
     : `已將「${removedTitle}」移出錯題本，還有 ${errorQuestionIds.length} 題待複習。`
@@ -294,13 +148,15 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
 
     // (A) 單元練習題庫 (G7~G12 所有單元)
     const allUnits = getAllChemistryUnits()
-    allUnits.forEach((unit) => {
+    allUnits.forEach((rawUnit) => {
+      const unit = localizeChemistryUnit(rawUnit, locale)
       unit.questions.forEach((q) => {
-        const labInfo = resolveChemistryLab(q, unit.suggestedLab)
+        const labInfo = resolveChemistryLab(q)
         map.set(q.id, {
           question: q,
           sourceType: 'unit',
-          sourceLabel: locale === 'en' ? `${stemVaultCopy(locale, unit.band)} · Unit ${unit.id} : ${stemCatalogCopy(locale, unit.title)}` : `${unit.band} · 單元 ${unit.id}: ${stemCatalogCopy(locale, unit.title)}`,
+          sourceLabel: `${unit.band} · ${locale === 'en' ? 'Unit' : '單元'} ${unit.id}: ${unit.title}`,
+
           strandName: t(chemistryStrandMessageKey(q.strand)),
           matchedLab: labInfo,
         })
@@ -308,7 +164,8 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
     })
 
     // (B) 大考模擬試卷題庫 (CAP / GSAT / AST)
-    Object.values(CHEMISTRY_MOCK_EXAMS).forEach((exam) => {
+    Object.values(CHEMISTRY_MOCK_EXAMS).forEach((rawExam) => {
+      const exam = localizeChemistryMockExam(rawExam, locale)
       exam.questions.forEach((q) => {
         const labInfo = resolveChemistryLab(q)
         map.set(q.id, {
@@ -322,7 +179,8 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
     })
 
     return map
-  }, [t, locale])
+  }, [locale, t])
+
 
   // 2. 檢索出所有待複習錯題（具備未知 ID 容錯機制）
   const errorQuestions = useMemo(() => {
@@ -334,29 +192,36 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
         // 容錯備援：若 ID 未能在標準池中找到，動態建構基礎物件避免渲染中斷
         const fallbackQ: ChemistryQuestion = {
           id,
-          title: '化學進階複習題目 ({id})',
+          title: locale === 'en' ? `Advanced chemistry review item (${id})` : `化學進階複習題目 (${id})`,
+
           strand: 'reactions',
           type: 'choice',
           difficulty: 3,
-          question: '本題為歷次練習之重點錯題，請檢視化學反應式與計量推導並前往實驗室重溫觀念。',
+          question: locale === 'en'
+            ? 'Review the governing chemical equation and stoichiometric relationships for this saved item.'
+            : '本題為歷次練習之重點錯題，請檢視化學反應式與計量推導。',
           answer: 'A',
-          solution: '請回顧化學反應式配平、莫耳數計量守恆與平衡常數定義進行推導。',
+          solution: locale === 'en'
+            ? 'Balance the chemical equation, conserve amount of substance, and apply the relevant equilibrium definition step by step.'
+            : '請回顧化學反應式配平、莫耳數計量守恆與平衡常數定義進行推導。',
         }
         return {
           question: fallbackQ,
           sourceType: 'unit' as const,
-          sourceLabel: stemVaultCopy(locale, '化學綜合強化題庫'),
+          sourceLabel: locale === 'en' ? 'Chemistry review bank' : '化學綜合強化題庫',
+
           strandName: t(chemistryStrandMessageKey('reactions')),
           matchedLab: resolveChemistryLab(fallbackQ),
         }
       })
       .filter(Boolean)
-  }, [errorQuestionIds, allEnrichedQuestionsMap, t, locale])
+  }, [errorQuestionIds, allEnrichedQuestionsMap, locale, t])
+
 
   // 3. 依據篩選條件過濾錯題列表
   const filteredQuestions = useMemo(() => {
     return errorQuestions.filter((item) => {
-      const q = localizeStemVaultQuestion(locale, item.question)
+      const q = item.question
 
       // 領域篩選
       if (selectedStrand !== 'all' && q.strand !== selectedStrand) {
@@ -387,7 +252,7 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
 
       return true
     })
-  }, [errorQuestions, selectedStrand, selectedSource, selectedDifficulty, searchQuery, locale])
+  }, [errorQuestions, selectedStrand, selectedSource, selectedDifficulty, searchQuery])
 
   // 展開 / 收起指定題目步驟拆解
   function toggleStep(qId: string) {
@@ -412,8 +277,11 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
       <div className="practice-card compact-vault-card" style={{ textAlign: 'center', padding: '2.5rem 1.5rem' }}>
         {removalStatus}
         <div style={{ fontSize: '2.8rem', marginBottom: '0.6rem' }}>🎉</div>
-        <h3 ref={emptyTitleRef} tabIndex={-1} style={{ margin: '0 0 0.4rem', color: '#059669' }}>{stemVaultCopy(locale, "太棒了！化學錯題本目前空空如也")}</h3>
-        <p style={{ color: 'var(--muted)', fontSize: '0.86rem', maxWidth: '460px', margin: '0 auto' }}>{stemVaultCopy(locale, "你在單元基礎練習與大考模擬試卷中答錯的化學考題都會自動歸納在此。隨時歡迎透過模擬考或單元練習挑戰自我！")}</p>
+        <h3 ref={emptyTitleRef} tabIndex={-1} style={{ margin: '0 0 0.4rem', color: '#059669' }}>{t('vault.chemistryEmptyTitle')}</h3>
+        <p style={{ color: 'var(--muted)', fontSize: '0.86rem', maxWidth: '460px', margin: '0 auto' }}>
+          {t('vault.chemistryEmptyBody')}
+        </p>
+
       </div>
     )
   }
@@ -428,24 +296,27 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
         <div className="vault-stat-card">
           <span className="vault-stat-icon">📖</span>
           <div className="vault-stat-meta">
-            <span className="vault-stat-label">{stemVaultCopy(locale, "待強化錯題總數")}</span>
-            <span className="vault-stat-value">{errorQuestions.length} {locale === 'en' ? 'items' : '題'}</span>
+            <span className="vault-stat-label">{t('vault.openTotal')}</span>
+            <span className="vault-stat-value">{t('vault.itemsCount', { count: errorQuestions.length })}</span>
+
           </div>
         </div>
 
         <div className="vault-stat-card">
           <span className="vault-stat-icon">🧪</span>
           <div className="vault-stat-meta">
-            <span className="vault-stat-label">{stemVaultCopy(locale, "可直通實驗室")}</span>
-            <span className="vault-stat-value">{stemVaultCopy(locale, "5 大動態模擬")}</span>
+            <span className="vault-stat-label">{t('vault.labsAvailable')}</span>
+            <span className="vault-stat-value">{t('vault.dynamicLabsCount', { count: 5 })}</span>
+
           </div>
         </div>
 
         <div className="vault-stat-card">
           <span className="vault-stat-icon">🎯</span>
           <div className="vault-stat-meta">
-            <span className="vault-stat-label">{stemVaultCopy(locale, "目前篩選顯示")}</span>
-            <span className="vault-stat-value">{filteredQuestions.length} {locale === 'en' ? 'items' : '題'}</span>
+            <span className="vault-stat-label">{t('vault.filteredCount')}</span>
+            <span className="vault-stat-value">{t('vault.itemsCount', { count: filteredQuestions.length })}</span>
+
           </div>
         </div>
       </div>
@@ -457,37 +328,42 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
             ref={searchRef}
             type="search"
             className="vault-search-input"
-            aria-label={stemVaultCopy(locale, "搜尋化學錯題")}
-            placeholder={stemVaultCopy(locale, "🔍 搜尋化學錯題關鍵字、反應式或考點...")}
+            aria-label={t('vault.chemistrySearchAria')}
+            placeholder={t('vault.chemistrySearchPlaceholder')}
+
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
 
           <select
             className="vault-select-filter"
-            aria-label={stemVaultCopy(locale, "錯題來源篩選")}
+            aria-label={t('vault.sourceFilterAria')}
+
             id="chemistry-vault-source"
             value={selectedSource}
             onChange={(e) => setSelectedSource(e.target.value)}
           >
-            <option value="all">{stemVaultCopy(locale, "全部來源 (單元練習 + 模擬考)")}</option>
-            <option value="unit">{stemVaultCopy(locale, "僅單元練習題目")}</option>
-            <option value="mock">{stemVaultCopy(locale, "僅大考模擬試卷")}</option>
+            <option value="all">{t('vault.sourceAll')}</option>
+            <option value="unit">{t('vault.sourceUnit')}</option>
+            <option value="mock">{t('vault.sourceMock')}</option>
+
           </select>
 
           <select
             className="vault-select-filter"
-            aria-label={stemVaultCopy(locale, "錯題難度篩選")}
+            aria-label={t('vault.difficultyFilterAria')}
+
             id="chemistry-vault-difficulty"
             value={selectedDifficulty}
             onChange={(e) => setSelectedDifficulty(e.target.value)}
           >
-            <option value="all">{stemVaultCopy(locale, "全難度星級")}</option>
-            <option value="1">{stemVaultCopy(locale, "★ 難度 1 (基礎題)")}</option>
-            <option value="2">{stemVaultCopy(locale, "★★ 難度 2 (會考標準)")}</option>
-            <option value="3">{stemVaultCopy(locale, "★★★ 難度 3 (學測素養)")}</option>
-            <option value="4">{stemVaultCopy(locale, "★★★★ 難度 4 (分科進階)")}</option>
-            <option value="5">{stemVaultCopy(locale, "★★★★★ 難度 5 (競賽挑戰)")}</option>
+            <option value="all">{t('vault.difficultyAll')}</option>
+            <option value="1">{t('vault.difficulty1')}</option>
+            <option value="2">{t('vault.difficulty2')}</option>
+            <option value="3">{t('vault.difficulty3')}</option>
+            <option value="4">{t('vault.difficulty4')}</option>
+            <option value="5">{t('vault.difficulty5')}</option>
+
           </select>
 
           <button
@@ -496,17 +372,19 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
             style={{ marginLeft: 'auto', background: 'var(--surface-soft)' }}
             onClick={() => toggleAllSteps(!allExpanded)}
           >
-            {allExpanded ? stemVaultCopy(locale, "🔼 全部收起步驟") : stemVaultCopy(locale, "📖 全部展開步驟")}
+            {allExpanded ? t('vault.collapseAll') : t('vault.expandAll')}
+
           </button>
 
           <button
             type="button"
             className="vault-chip-btn"
             style={{ background: 'rgba(16, 185, 129, 0.12)', color: '#10b981', borderColor: '#10b981' }}
-            onClick={() => exportErrorVaultToAnki(locale === 'en' ? 'Chemistry' : '化學', filteredQuestions.map((item) => localizeStemVaultQuestion(locale, item.question)))}
-            title={stemVaultCopy(locale, "一鍵匯出當前篩選化學錯題至 Anki 記憶牌組")}
+            onClick={() => exportErrorVaultToAnki(t('vault.chemistryTrack'), filteredQuestions.map((q) => q.question))}
+            title={t('vault.exportCurrentTitle')}
           >
-            {stemVaultCopy(locale, '📑 匯出 Anki 牌組')}
+            {t('vault.exportCurrent')}
+
           </button>
         </div>
 
@@ -518,7 +396,8 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
             aria-pressed={selectedStrand === 'all'}
             onClick={() => setSelectedStrand('all')}
           >
-            {stemVaultCopy(locale, '全部主軸')} ({errorQuestions.length})
+            {t('vault.allStrands', { count: errorQuestions.length })}
+
           </button>
           <button
             type="button"
@@ -566,16 +445,22 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
       {/* 錯題卡片清單 */}
       {filteredQuestions.length === 0 ? (
         <div className="practice-card" style={{ textAlign: 'center', padding: '1.75rem' }}>
-          <p style={{ color: 'var(--muted)', margin: 0, fontSize: '0.86rem' }}>{stemVaultCopy(locale, "沒有符合當前篩選條件的化學錯題項目。")}</p>
+          <p style={{ color: 'var(--muted)', margin: 0, fontSize: '0.86rem' }}>
+            {t('vault.chemistryNoFilterMatches')}
+          </p>
+
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
           {filteredQuestions.map((item, index) => {
-            const q = localizeStemVaultQuestion(locale, item.question)
+            const q = item.question
             const isStepOpen = Boolean(expandedSteps[q.id])
             const stepsId = `${stepsIdPrefix}-${index}`
-            const matchedSignal = findMatchingChemistrySignal(item.question)
+            const matchedSignal = findMatchingChemistrySignal(q, locale)
+
             const lab = item.matchedLab
+              ? localizeChemistryLab(item.matchedLab, locale)
+              : undefined
 
             return (
               <article key={q.id} className="vault-card-item">
@@ -590,10 +475,11 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
                   <button
                     type="button"
                     className="vault-btn-mastered"
-                    title={stemVaultCopy(locale, "移出錯題筆記本")}
+                    title={t('vault.removeTitle')}
                     onClick={() => removeQuestion(item.question)}
                   >
-                    {stemVaultCopy(locale, '✓ 我已掌握 (移出)')}
+                    {t('vault.remove')}
+
                   </button>
                 </div>
 
@@ -627,7 +513,8 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
                             <div className="katex-scroll-protection" style={{ flex: 1 }}>
                               <MathFormula math={opt.replace(/^[A-D]\.\s*/, '')} />
                             </div>
-                            {isCorrectOption && <span style={{ marginLeft: 'auto' }}>{stemVaultCopy(locale, "✓ 正確")}</span>}
+                            {isCorrectOption && <span style={{ marginLeft: 'auto' }}>{t('vault.correctOption')}</span>}
+
                           </div>
                         )
                       })}
@@ -638,7 +525,8 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
                 {/* 正確解析與公式推導區 */}
                 <div className="vault-solution-wrapper">
                   <div className="vault-solution-header">
-                    <span className="vault-solution-title chemistry">{stemVaultCopy(locale, "💡 正確解析與化學步驟推導")}</span>
+                    <span className="vault-solution-title chemistry">{t('vault.chemistrySolution')}</span>
+
                     <button
                       type="button"
                       className="vault-toggle-steps-btn"
@@ -646,7 +534,8 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
                       aria-controls={isStepOpen ? stepsId : undefined}
                       onClick={() => toggleStep(q.id)}
                     >
-                      {isStepOpen ? stemVaultCopy(locale, "🔼 收起深度拆解") : stemVaultCopy(locale, "📖 展開 5 步深度拆解與盲點診斷 ▾")}
+                      {isStepOpen ? t('vault.collapseDetails') : t('vault.expandDetails')}
+
                     </button>
                   </div>
 
@@ -661,17 +550,19 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
                       <div className="vault-step-card">
                         <div className="vault-step-title-line chemistry">
                           <span className="vault-step-num chemistry">1</span>
-                          <span>{stemVaultCopy(locale, "🎯 審題與 3 秒破題訊號 (Diagnosis)")}</span>
+                          <span>{t('vault.stepDiagnosis')}</span>
+
                         </div>
                         <div className="vault-step-content-text">
                           {matchedSignal ? (
                             <p style={{ margin: 0, color: '#065f46', fontWeight: 600 }}>
-                              {stemVaultCopy(locale, '【破題特徵】')}{stemVaultCopy(locale, matchedSignal.problemSignal)} ➜{' '}
-                              <span style={{ color: '#059669' }}>{stemVaultCopy(locale, matchedSignal.threeSecondRule)}</span>
+                              {t('vault.cue')} {matchedSignal.problemSignal} ➜{' '}
+                              <span style={{ color: '#059669' }}>{matchedSignal.threeSecondRule}</span>
                             </p>
                           ) : (
                             <p style={{ margin: 0 }}>
-                              <MathFormula math={q.hint || stemVaultCopy(locale, '鎖定本題主軸【{strand}】，辨認題目條件、物質性質與待求量。', { strand: item.strandName })} />
+                              <MathFormula math={q.hint || t('vault.chemistryDiagnosisDefault', { strand: item.strandName })} />
+
                             </p>
                           )}
                         </div>
@@ -681,13 +572,15 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
                       <div className="vault-step-card">
                         <div className="vault-step-title-line chemistry">
                           <span className="vault-step-num chemistry">2</span>
-                          <span>{stemVaultCopy(locale, "📐 關鍵反應方程式與定量公式 (Chemical Formulas)")}</span>
+                          <span>{t('vault.chemistryFormulaStep')}</span>
+
                         </div>
                         <div className="vault-step-content-text katex-scroll-protection">
                           {matchedSignal?.firstStepFormula ? (
-                            <MathFormula math={`$$${stemVaultCopy(locale, matchedSignal.firstStepFormula)}$$`} block />
+                            <MathFormula math={`$$${matchedSignal.firstStepFormula}$$`} block />
                           ) : (
-                            <MathFormula math={stemVaultCopy(locale, '依據本題主軸【{strand}】選擇適用的定義或關係式，逐一對照題目已知條件與單位。', { strand: item.strandName })} />
+                            <MathFormula math={t('vault.chemistryFormulaDefault')} />
+
                           )}
                         </div>
                       </div>
@@ -696,7 +589,8 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
                       <div className="vault-step-card">
                         <div className="vault-step-title-line chemistry">
                           <span className="vault-step-num chemistry">3</span>
-                          <span>{stemVaultCopy(locale, "🔍 步驟推導與化學計量 (Step-by-Step Derivation)")}</span>
+                          <span>{t('vault.chemistryDerivationStep')}</span>
+
                         </div>
                         <div className="vault-step-content-text katex-scroll-protection">
                           <MathFormula math={q.solution} />
@@ -707,14 +601,15 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
                       <div className="vault-step-card">
                         <div className="vault-step-title-line chemistry">
                           <span className="vault-step-num chemistry">4</span>
-                          <span>{stemVaultCopy(locale, "💡 易錯盲點與概念辨析 (Pitfall Warnings)")}</span>
+                          <span>{t('vault.chemistryPitfallStep')}</span>
                         </div>
                         <div className="vault-pitfall-box">
                           {q.hint ? (
-                            <div><strong>{stemVaultCopy(locale, "⚠️ 考點提示：")}</strong>{q.hint}</div>
+                            <div><strong>{t('vault.chemistryWarning')}</strong>{q.hint}</div>
                           ) : (
                             <div>
-                              <strong>{stemVaultCopy(locale, "⚠️ 常見盲區：")}</strong>{stemVaultCopy(locale, "核對本題主軸【{strand}】的適用條件、符號定義與單位，勿直接套用其他情境的結論。", { strand: item.strandName })}
+                              {t('vault.chemistryPitfallDefault')}
+
                             </div>
                           )}
                         </div>
@@ -725,7 +620,8 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
                         <div className="vault-step-card">
                           <div className="vault-step-title-line chemistry">
                             <span className="vault-step-num chemistry">5</span>
-                            <span>{stemVaultCopy(locale, "📝 108 課綱核心素養指引 (Competency)")}</span>
+                            <span>{t('vault.competency')}</span>
+
                           </div>
                           <div className="vault-step-content-text" style={{ color: 'var(--muted)' }}>
                             {q.competency}
@@ -737,20 +633,23 @@ export const ChemistryErrorVault: React.FC<ChemistryErrorVaultProps> = ({
                 </div>
 
                 {/* 底部：動態關聯實驗室直通按鈕 */}
-                <div className="vault-teleport-footer">
-                  <div className="vault-teleport-hint">
-                    <span>{stemVaultCopy(locale, "💡 觀念仍不清楚？透過動態化學教具模擬驗證：")}</span>
-                  </div>
+                {lab && (
+                  <div className="vault-teleport-footer">
+                    <div className="vault-teleport-hint">
+                      <span>{t('vault.chemistryLabHint')}</span>
+                    </div>
 
-                  <button
-                    type="button"
-                    className="vault-lab-teleport-btn chemistry"
-                    onClick={() => onOpenLab?.(lab.id)}
-                    disabled={!onOpenLab}
-                  >
-                    <span>{lab.icon} {locale === 'en' ? `Explore ${stemVaultCopy(locale, lab.name)} ➔` : `前往「${lab.name}」即時驗證 ➔`}</span>
-                  </button>
-                </div>
+                    <button
+                      type="button"
+                      className="vault-lab-teleport-btn chemistry"
+                      onClick={() => onOpenLab?.(lab.id)}
+                      disabled={!onOpenLab}
+                    >
+                      <span>{t('vault.openLab', { icon: lab.icon, name: lab.name })}</span>
+                    </button>
+                  </div>
+                )}
+
               </article>
             )
           })}

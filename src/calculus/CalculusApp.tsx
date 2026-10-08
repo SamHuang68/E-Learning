@@ -51,7 +51,7 @@ const LazyCalculusCanvas = lazyWithRetry(
  */
 export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
   const c = useCalculusCopy()
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const [activeNav, setActiveNav] = useState<CalculusNavId>('canvas_lab')
   const [mode, setMode] = useState<CalculusLabMode>('tangent_secant')
   const [expression, setExpression] = useState<string>('x^2 - 2*x + 2')
@@ -76,7 +76,10 @@ export const CalculusApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
   } = useCalculusLearningCoordinator()
 
   // 自動為當前表達式產生推導步驟
-  const dynamicSteps = useMemo(() => generateDerivationSteps(expression), [expression])
+  const dynamicSteps = useMemo(
+    () => generateDerivationSteps(expression, locale),
+    [expression, locale],
+  )
 
   const handleSelectProblem = (p: CalculusProblem) => {
     setExpression(p.defaultExpr)

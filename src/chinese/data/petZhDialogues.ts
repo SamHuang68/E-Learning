@@ -85,3 +85,23 @@ export const PET_DIALOGUES: PetDialogueItem[] = [
     ],
   },
 ]
+
+export const CHINESE_SUPPORT_EN = {
+  "台北動物醫院毛小孩初診：植入晶片、狂犬病疫苗與健檢": "A Pet's First Taipei Vet Visit: Microchipping, Rabies Vaccination, and Health Check",
+  "動物病院での初診：マイクロチップ装着・狂犬病ワクチン接種と健康診断": "A First Veterinary Visit: Microchipping, Rabies Vaccination, and a Health Check",
+  "台北の動物病院（獸醫診所）の診察室": "An examination room at a Taipei veterinary clinic",
+  "日本人飼い主": "Japanese pet owner",
+  "先生こんにちは！うちの柴犬がちょうど生後6ヶ月になったので、ペット登録・マイクロチップ装着・狂犬病予防接種・混合ワクチンをお願いしたいです。": "Hello, doctor. My Shiba Inu has just turned six months old, so I would like pet registration, a microchip, a rabies vaccination, and the combination vaccine.",
+  "獣医師（獸醫）": "Veterinarian",
+  "素晴らしいですね！まず体重測定、聴診、検温（直腸温）をしますね。狂犬病ワクチン接種後、今年度の金属製注射済票プレートをお渡ししますので、お散歩時は首輪につけてくださいね！": "Excellent. First we will check the dog's weight, listen to the heart and lungs, and take a rectal temperature. After the rabies vaccination, I will give you this year's metal vaccination tag; please attach it to the collar for walks.",
+  "飼い主": "Pet owner",
+  "わかりました！あと台湾で犬をペット同伴カフェに連れて行ったりMRTに乗せる場合、何か特別なルールはありますか？": "Understood. Are there special rules for taking a dog to a pet-friendly cafe or on the MRT in Taiwan?",
+  "獣医師": "Veterinarian",
+  "台北MRTでは規定サイズのキャリーバッグやペットカートに入れ、頭や尾を出さないことが義務付けられています。ペット可カフェではリード（牽繩）を着用し、男の子のワンちゃんはマナーベルト（禮貌帶）を着用すると安心ですよ！": "On the Taipei MRT, pets must stay fully inside an approved-size carrier or pet stroller, without their head or tail sticking out. At pet-friendly cafes, use a lead; a belly band can also help prevent marking by male dogs.",
+  "ペット（家族同然の愛犬・愛猫を愛情込めて呼ぶ台湾華語）": "A loving Taiwan Mandarin term for a family pet, literally a 'furry child'",
+  "台湾では「毛寶貝（毛ベイビー）」とも呼ばれ、ペットへの愛情表現として広く浸透。": "The related term maobaobei, or 'furry baby,' is also widely used affectionately in Taiwan.",
+  "ペット戸籍登録とマイクロチップ装着": "Pet registration and microchip implantation",
+  "台湾では法律により犬猫のマイクロチップ登録が義務化されています。": "Taiwan requires dogs and cats to be registered and microchipped under applicable pet-registration rules.",
+  "マナーベルト・マーキング防止おむつ": "A belly band or wrap used to prevent urine marking",
+  "室内カフェやホテルでの粗相やマーキングを防ぐエチケットグッズ。": "This courtesy item helps prevent accidents or marking in indoor cafes and hotels.",
+} as const

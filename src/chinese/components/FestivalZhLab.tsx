@@ -1,6 +1,8 @@
 ﻿import React, { useState } from 'react'
-import { FESTIVAL_DIALOGUES, type FestivalDialogueItem } from '../data/festivalZhDialogues'
+import { CHINESE_SUPPORT_EN, FESTIVAL_DIALOGUES, type FestivalDialogueItem } from '../data/festivalZhDialogues'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
+import { localizeChineseData } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
@@ -9,12 +11,15 @@ interface Props {
 type PoeResult = 'sheng' | 'xiao' | 'yin'
 
 export const FestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { locale } = useI18n()
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [poeResult, setPoeResult] = useState<PoeResult | null>(null)
   const [isTossing, setIsTossing] = useState(false)
 
   const activeItem: FestivalDialogueItem =
     FESTIVAL_DIALOGUES[selectedIdx % FESTIVAL_DIALOGUES.length]
+  const localizedItem = localizeChineseData(activeItem, locale, CHINESE_SUPPORT_EN)
+  const localizedDialogues = localizeChineseData(FESTIVAL_DIALOGUES, locale, CHINESE_SUPPORT_EN)
 
   function speakChinese(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -50,10 +55,12 @@ export const FestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>🏮</span> 台灣傳統節慶、廟宇拜拜與年節文化實驗室 (Festivals & Traditions Lab)
+            <span>🏮</span> {locale === 'en' ? 'Taiwan Festivals, Temples, and Traditions Lab' : '台灣傳統節慶、廟宇拜拜與年節文化實驗室 (Festivals & Traditions Lab)'}
           </h3>
-          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            台湾文化の真髄を体験！「龍山寺・行天宮のポエ占い（擲筊：聖筊・笑筊・陰筊）・迪化街年越し問屋街試食・買三送一」を直感マスター！
+          <p lang={locale === 'en' ? 'en' : 'ja'} className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+            {locale === 'en'
+              ? 'Practise essential Mandarin for temple etiquette, poe divination, traditional festivals, Dihua Street shopping, and seasonal customs.'
+              : '台湾文化の真髄を体験！「龍山寺・行天宮のポエ占い（擲筊：聖筊・笑筊・陰筊）・迪化街年越し問屋街試食・買三送一」を直感マスター！'}
           </p>
         </div>
       </div>
@@ -76,12 +83,12 @@ export const FestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <div style={{ fontSize: '1.8rem' }}>🥠 🙏</div>
           <div>
-            <strong style={{ fontSize: '0.9rem', display: 'block' }}>龍山寺・行天宮 擲筊問事互動 (Temple Poe Tossing)</strong>
+            <strong style={{ fontSize: '0.9rem', display: 'block' }}>{locale === 'en' ? 'Temple poe divination practice' : '龍山寺・行天宮 擲筊問事互動 (Temple Poe Tossing)'}</strong>
             <span style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
-              {poeResult === 'sheng' && '✨【聖筊】神明贊同！吉利順遂，心想事成！'}
-              {poeResult === 'xiao' && '😄【笑筊】神明微笑笑納，心意未定或再想清楚點！'}
-              {poeResult === 'yin' && '🛑【陰筊】神明不贊同，宜守成勿躁進！'}
-              {!poeResult && '默念心中疑問，拋下一對紅色筊杯請示神明旨意'}
+              {poeResult === 'sheng' && (locale === 'en' ? '✨ Sheng jiao 聖筊: an affirmative response.' : '✨【聖筊】神明贊同！吉利順遂，心想事成！')}
+              {poeResult === 'xiao' && (locale === 'en' ? '😄 Xiao jiao 笑筊: the question may be unclear or asked in jest.' : '😄【笑筊】神明微笑笑納，心意未定或再想清楚點！')}
+              {poeResult === 'yin' && (locale === 'en' ? '🛑 Yin jiao 陰筊: a negative response; reconsider the request.' : '🛑【陰筊】神明不贊同，宜守成勿躁進！')}
+              {!poeResult && (locale === 'en' ? 'Hold a question in mind, then toss the two red poe blocks.' : '默念心中疑問，拋下一對紅色筊杯請示神明旨意')}
             </span>
           </div>
         </div>
@@ -97,20 +104,22 @@ export const FestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
           disabled={isTossing}
           onClick={handleTossPoe}
         >
-          {isTossing ? '擲筊中...' : '🙏 虔誠擲筊請示 (+10 XP)'}
+          {isTossing
+            ? locale === 'en' ? 'Tossing poe blocks…' : '擲筊中...'
+            : locale === 'en' ? '🙏 Toss the poe blocks (+10 XP)' : '🙏 虔誠擲筊請示 (+10 XP)'}
         </button>
       </div>
 
       {/* 場景切換膠囊 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
-        {FESTIVAL_DIALOGUES.map((item, idx) => (
+        {localizedDialogues.map((item, idx) => (
           <button aria-pressed={selectedIdx === idx}
             key={item.id}
             type="button"
             className={`pill-btn ${selectedIdx === idx ? 'active' : ''}`}
             onClick={() => setSelectedIdx(idx)}
           >
-            <span>{item.icon}</span> {item.title.split('與')[0]}
+            <span>{item.icon}</span> {locale === 'en' ? item.title : item.title.split('與')[0]}
           </button>
         ))}
       </div>
@@ -121,7 +130,7 @@ export const FestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(239, 68, 68, 0.15)', color: '#ef4444', fontWeight: 700 }}>
-              {activeItem.locationZh} (<span lang="ja">{activeItem.locationJa}</span>)
+              {activeItem.locationZh} (<span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.locationJa}</span>)
             </span>
           </div>
 
@@ -141,9 +150,9 @@ export const FestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#38bdf8' }}>
-                    <span lang="ja">{line.speakerJa}</span>：
+                    <span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.dialogueLines[lIdx].speakerJa}</span>:
                   </span>
-                  <button aria-label={`朗讀：${line.zh}`}
+                  <button aria-label={locale === 'en' ? `Read aloud: ${line.zh}` : `朗讀：${line.zh}`}
                     type="button"
                     style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
                     onClick={() => speakChinese(line.zh)}
@@ -153,8 +162,8 @@ export const FestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
                 </div>
                 <strong style={{ fontSize: '0.86rem', color: 'var(--text)' }}>{line.zh}</strong>
                 <span lang="zh-Latn" style={{ fontSize: '0.72rem', color: '#f59e0b' }}>{line.pinyin}</span>
-                <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
-                  {line.ja}
+                <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
+                  {localizedItem.dialogueLines[lIdx].ja}
                 </span>
               </div>
             ))}
@@ -163,12 +172,12 @@ export const FestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
         {/* 右側：節慶民俗重要單詞 */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          <span lang="ja" style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
-            💡 台湾年中行事・寺廟参拝マナー（Festivals Tips）
+          <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
+            {locale === 'en' ? '💡 Festival customs and temple etiquette' : '💡 台湾年中行事・寺廟参拝マナー（Festivals Tips）'}
           </span>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginTop: '0.3rem' }}>
-            {activeItem.festivalGlossary.map((vocab, vIdx) => (
+            {localizedItem.festivalGlossary.map((vocab, vIdx) => (
               <div
                 key={vIdx}
                 style={{
@@ -180,9 +189,9 @@ export const FestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <strong style={{ fontSize: '0.88rem', color: '#f59e0b' }}>{vocab.termZh}</strong>
-                  <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
+                  <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
                 </div>
-                <p lang="ja" style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+                <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
                   {vocab.tipJa}
                 </p>
               </div>

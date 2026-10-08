@@ -1,13 +1,14 @@
-import { useMathLabCopy } from '../../i18n/mathLabCopy'
 import React, { useState } from 'react'
 import { MathFormula } from '../components/MathFormula'
+import { useI18n } from '../../i18n/i18n'
 
 /**
  * 國中八年級「畢氏定理幾何證明實驗室 (PythagorasLab)」
  * 透過可調節的直角三角形兩股 $a, b$，動態展示 $a^2$ 面積、$b^2$ 面積與斜邊 $c^2$ 面積之和諧相等關係。
  */
 export const PythagorasLab: React.FC = () => {
-  const ml = useMathLabCopy()
+  const { locale } = useI18n()
+  const copy = (zhHant: string, en: string) => locale === 'en' ? en : zhHant
   const [legA, setLegA] = useState(3)
   const [legB, setLegB] = useState(4)
 
@@ -30,11 +31,17 @@ export const PythagorasLab: React.FC = () => {
     <div className="math-lab pythagoras-lab">
       <div className="lab-header">
         <div>
-          <h3>{ml("畢氏定理幾何證明實驗室 (Pythagorean Theorem)")}</h3>
-          <p className="lab-desc">{ml("直角三角形中：兩股平方和等於斜邊平方（")}<MathFormula math="$a^2 + b^2 = c^2$" />{ml("）。")}</p>
+          <h3>{copy('畢氏定理幾何證明實驗室', 'Pythagorean-Theorem Geometry Lab')}</h3>
+          <p className="lab-desc">
+            {copy('直角三角形中：兩股平方和等於斜邊平方（', 'In a right triangle, the sum of the squared legs equals the squared hypotenuse: ')}
+            <MathFormula math="$a^2 + b^2 = c^2$" />
+            {copy('）。', '.')}
+          </p>
         </div>
         <div className="lab-header-actions">
-          <button type="button" className="btn-lab-reset" onClick={handleReset}>{ml("🔄 重設預設 (3-4-5)")}</button>
+          <button type="button" className="btn-lab-reset" onClick={handleReset}>
+            {copy('🔄 重設預設 (3-4-5)', '🔄 Reset to 3-4-5')}
+          </button>
         </div>
       </div>
 
@@ -86,25 +93,27 @@ export const PythagorasLab: React.FC = () => {
 
         <div className="pythagoras-calc-card">
           <div className="calc-row">
-            <span>{ml("股 ")}<MathFormula math="$a$" />{ml(" 長度：")}</span>
-            <strong>{legA}</strong>{ml(" ➜ 面積 ")}<MathFormula math={`$a^2 = ${areaA}$`} />
+            <span>{copy('股', 'Leg')} <MathFormula math="$a$" /> {copy('長度：', 'length:')}</span>
+            <strong>{legA}</strong> ➜ {copy('面積', 'area')} <MathFormula math={`$a^2 = ${areaA}$`} />
           </div>
           <div className="calc-row">
-            <span>{ml("股 ")}<MathFormula math="$b$" />{ml(" 長度：")}</span>
-            <strong>{legB}</strong>{ml(" ➜ 面積 ")}<MathFormula math={`$b^2 = ${areaB}$`} />
+            <span>{copy('股', 'Leg')} <MathFormula math="$b$" /> {copy('長度：', 'length:')}</span>
+            <strong>{legB}</strong> ➜ {copy('面積', 'area')} <MathFormula math={`$b^2 = ${areaB}$`} />
           </div>
           <div className="calc-divider" />
           <div className="calc-sum-row">
-            <span>{ml("兩股平方和 (")}<MathFormula math="$a^2 + b^2$" />{ml(")：")}</span>
+            <span>
+              {copy('兩股平方和', 'Sum of squared legs')} (<MathFormula math="$a^2 + b^2$" />){copy('）：', '):')}
+            </span>
             <strong>{areaA + areaB}</strong>
           </div>
           <div className="calc-sum-row">
-            <span>{ml("斜邊 ")}<MathFormula math="$c$" />{ml(" 長度：")}</span>
-            <strong>{hypC.toFixed(2)}</strong>{ml(" ➜ 面積 ")}<MathFormula math={`$c^2 = ${areaC}$`} />
+            <span>{copy('斜邊', 'Hypotenuse')} <MathFormula math="$c$" /> {copy('長度：', 'length:')}</span>
+            <strong>{hypC.toFixed(2)}</strong> ➜ {copy('面積', 'area')} <MathFormula math={`$c^2 = ${areaC}$`} />
           </div>
 
           <div className="quick-triples-row" style={{ marginTop: '0.75rem', display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '0.78rem', color: 'var(--muted)', alignSelf: 'center' }}>{ml("常用勾股數：")}</span>
+            <span style={{ fontSize: '0.78rem', color: 'var(--muted)', alignSelf: 'center' }}>{copy('常用勾股數：', 'Common triples:')}</span>
             <button type="button" className="btn-preset-pill" onClick={() => applyTriple(3, 4)}>3-4-5</button>
             <button type="button" className="btn-preset-pill" onClick={() => applyTriple(6, 8)}>6-8-10</button>
             <button type="button" className="btn-preset-pill" onClick={() => applyTriple(5, 12)}>5-12-13</button>
@@ -112,12 +121,12 @@ export const PythagorasLab: React.FC = () => {
 
           <div className="slider-item">
             <label>
-              <span>{ml("調整股 ")}<MathFormula math={`$a$: ${legA}`} /></span>
+              <span>{copy('調整股', 'Adjust leg')} <MathFormula math={`$a$: ${legA}`} /></span>
             </label>
             <input
               type="range"
-              aria-label={ml("畢氏定理股長 a")}
-              aria-valuetext={ml("{v0} 長度單位", [legA])}
+              aria-label={copy('畢氏定理股長 a', 'Pythagorean leg a')}
+              aria-valuetext={copy(`${legA} 長度單位`, `${legA} length units`)}
               min="2"
               max="6"
               step="1"
@@ -128,12 +137,12 @@ export const PythagorasLab: React.FC = () => {
 
           <div className="slider-item">
             <label>
-              <span>{ml("調整股 ")}<MathFormula math={`$b$: ${legB}`} /></span>
+              <span>{copy('調整股', 'Adjust leg')} <MathFormula math={`$b$: ${legB}`} /></span>
             </label>
             <input
               type="range"
-              aria-label={ml("畢氏定理股長 b")}
-              aria-valuetext={ml("{v0} 長度單位", [legB])}
+              aria-label={copy('畢氏定理股長 b', 'Pythagorean leg b')}
+              aria-valuetext={copy(`${legB} 長度單位`, `${legB} length units`)}
               min="2"
               max="6"
               step="1"

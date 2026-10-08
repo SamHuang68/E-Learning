@@ -78,3 +78,20 @@ export const LANTERN_FESTIVAL_DIALOGUES: LanternFestivalDialogueItem[] = [
     ],
   },
 ]
+
+export const CHINESE_SUPPORT_EN = {
+  "台灣元宵節：平溪天燈祈福、台南鹽水蜂炮與廟口猜燈謎": "Lantern Festival in Taiwan: Pingxi Sky Lanterns, Yanshui Beehive Fireworks, and Lantern Riddles",
+  "台湾の元宵節：平渓ランタン（天燈）飛ばし・塩水蜂砲とランタンなぞなぞ（猜燈謎）": "Lantern Festival in Taiwan: Pingxi Sky Lanterns, Yanshui Beehive Fireworks, and Lantern Riddles",
+  "平渓・十分駅の線路脇と夜空を埋め尽くすランタンの下": "Beside the tracks at Shifen Station in Pingxi, beneath a sky full of lanterns",
+  "台湾のガイド": "Taiwanese guide",
+  "今日は旧暦1月15日の元宵節、いわゆる「小正月（小過年）」です！台湾には「北の天燈、南の蜂砲」という言葉があります。平渓の十分老街では、4色のランタン（天燈）のそれぞれの面に願い事を書きます！": "Today is the Lantern Festival on the fifteenth day of the first lunar month, sometimes called the Little New Year. Taiwan has a saying: sky lanterns in the north and beehive fireworks in the south. On Shifen Old Street in Pingxi, people write wishes on every side of a four-colour sky lantern.",
+  "日本人観光客": "Japanese tourist",
+  "赤い面に毛筆で「身體健康（無病息災）」、黄色に「發大財（金運上昇）」と書きました！点火すると熱気が満ちて、夜空へふわりと舞い上がった瞬間、とても感動的でした！": "I brushed a wish for good health on the red panel and one for prosperity on the yellow panel. When the flame filled it with hot air and it rose gently into the night sky, it was moving.",
+  "南部の台南・塩水蜂砲は万発のロケット花火が飛び交う熱狂的なお祭りで、フルフェイスヘルメットと防護服で厄除けを祈願します！お寺の境内ではランタンのなぞなぞを解き、熱々の元宵団子を食べて円満を祝います！": "In southern Taiwan, the Yanshui Beehive Fireworks send thousands of rockets through the air. Participants wear full-face helmets and protective clothing while seeking to ward off misfortune. At temple grounds, people solve lantern riddles and eat hot yuanxiao dumplings to celebrate togetherness.",
+  "スカイランタン（天燈）を夜空へ飛ばす伝統祈願（平渓十分の名物）": "The Pingxi-Shifen tradition of releasing a wish-covered sky lantern",
+  "願い事を毛筆で四面に書き込み、下部の油染み金紙に火をつけて気球の原理で上空へ放つ。": "Wishes are brushed onto all four sides, then a fuel sheet underneath is lit so hot air lifts the lantern.",
+  "台南塩水蜂砲（無数のロケット花火を浴びて厄除けと開運を祈る天下の奇祭）": "Tainan's Yanshui Beehive Fireworks, where dense volleys of rockets accompany wishes for good fortune",
+  "参加者は全身耐火服・厚手ジーンズ・フルフェイスヘルメット・タオルを巻いて完全防護で挑む。": "Participants protect themselves with fire-resistant outerwear, heavy jeans, a full-face helmet, and towels.",
+  "ランタンのなぞなぞ（射灯虎／知恵とひらめきを競う元宵節の風流な遊戯）": "Lantern riddles, a traditional wordplay game testing wit and insight",
+  "赤い提灯の下に貼られた文字遊びや地名のなぞなぞを解くと、景品や賞金がもらえる。": "Solving wordplay or place-name riddles attached beneath red lanterns can earn a prize.",
+} as const

@@ -1,17 +1,22 @@
 ﻿import React, { useState } from 'react'
-import { MEDICAL_DIALOGUES, type MedicalDialogueItem } from '../data/medicalDialogues'
+import { CHINESE_SUPPORT_EN, MEDICAL_DIALOGUES, type MedicalDialogueItem } from '../data/medicalDialogues'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
+import { localizeChineseData } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
 }
 
 export const MedicalLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { locale } = useI18n()
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [checkedCard, setCheckedCard] = useState(false)
 
   const activeItem: MedicalDialogueItem =
     MEDICAL_DIALOGUES[selectedIdx % MEDICAL_DIALOGUES.length]
+  const localizedItem = localizeChineseData(activeItem, locale, CHINESE_SUPPORT_EN)
+  const localizedDialogues = localizeChineseData(MEDICAL_DIALOGUES, locale, CHINESE_SUPPORT_EN)
 
   function speakChinese(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -35,10 +40,12 @@ export const MedicalLab: React.FC<Props> = ({ onEarnXp }) => {
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>🩺</span> 台灣看病就醫與健保診所實驗室 (Medical & Clinic Lab)
+            <span>🩺</span> {locale === 'en' ? 'Taiwan Clinic and Medical-Care Lab' : '台灣看病就醫與健保診所實驗室 (Medical & Clinic Lab)'}
           </h3>
-          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            台湾現地での「クリニック受付・健保カード・医師への症状説明（発熱/喉痛/頭痛）・薬局での受け取り」を完全マスター！
+          <p lang={locale === 'en' ? 'en' : 'ja'} className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+            {locale === 'en'
+              ? 'Practise clinic registration, presenting a health card, describing symptoms, and collecting medicine from a pharmacy.'
+              : '台湾現地での「クリニック受付・健保カード・医師への症状説明（発熱/喉痛/頭痛）・薬局での受け取り」を完全マスター！'}
           </p>
         </div>
       </div>
@@ -61,9 +68,11 @@ export const MedicalLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <div style={{ fontSize: '1.8rem' }}>🪪 🏥</div>
           <div>
-            <strong style={{ fontSize: '0.9rem', display: 'block' }}>全民健康保險卡 (NHI Health Card)</strong>
-            <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
-              台湾の全国民皆保険ICカード。受付で提示して診察券と合体！
+            <strong style={{ fontSize: '0.9rem', display: 'block' }}>{locale === 'en' ? 'National Health Insurance card' : '全民健康保險卡 (NHI Health Card)'}</strong>
+            <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
+              {locale === 'en'
+                ? 'Present this national health-insurance smart card when registering at the clinic.'
+                : '台湾の全国民皆保険ICカード。受付で提示して診察券と合体！'}
             </span>
           </div>
         </div>
@@ -78,20 +87,22 @@ export const MedicalLab: React.FC<Props> = ({ onEarnXp }) => {
           }}
           onClick={handleInsertHealthCard}
         >
-          {checkedCard ? '✓ 健保卡感應過卡成功！(+10 XP)' : '📲 模擬健保卡感應插卡'}
+          {checkedCard
+            ? locale === 'en' ? '✓ Health card accepted! (+10 XP)' : '✓ 健保卡感應過卡成功！(+10 XP)'
+            : locale === 'en' ? '📲 Simulate scanning the health card' : '📲 模擬健保卡感應插卡'}
         </button>
       </div>
 
       {/* 場景切換膠囊 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
-        {MEDICAL_DIALOGUES.map((item, idx) => (
+        {localizedDialogues.map((item, idx) => (
           <button aria-pressed={selectedIdx === idx}
             key={item.id}
             type="button"
             className={`pill-btn ${selectedIdx === idx ? 'active' : ''}`}
             onClick={() => setSelectedIdx(idx)}
           >
-            <span>{item.icon}</span> {item.title.split('與')[0]}
+            <span>{item.icon}</span> {locale === 'en' ? item.title : item.title.split('與')[0]}
           </button>
         ))}
       </div>
@@ -102,7 +113,7 @@ export const MedicalLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', fontWeight: 700 }}>
-              {activeItem.locationZh} (<span lang="ja">{activeItem.locationJa}</span>)
+              {activeItem.locationZh} (<span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.locationJa}</span>)
             </span>
           </div>
 
@@ -122,9 +133,9 @@ export const MedicalLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#38bdf8' }}>
-                    <span lang="ja">{line.speakerJa}</span>：
+                    <span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.dialogueLines[lIdx].speakerJa}</span>:
                   </span>
-                  <button aria-label={`朗讀：${line.zh}`}
+                  <button aria-label={locale === 'en' ? `Read aloud: ${line.zh}` : `朗讀：${line.zh}`}
                     type="button"
                     style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
                     onClick={() => speakChinese(line.zh)}
@@ -134,8 +145,8 @@ export const MedicalLab: React.FC<Props> = ({ onEarnXp }) => {
                 </div>
                 <strong style={{ fontSize: '0.86rem', color: 'var(--text)' }}>{line.zh}</strong>
                 <span lang="zh-Latn" style={{ fontSize: '0.72rem', color: '#f59e0b' }}>{line.pinyin}</span>
-                <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
-                  {line.ja}
+                <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
+                  {localizedItem.dialogueLines[lIdx].ja}
                 </span>
               </div>
             ))}
@@ -144,12 +155,12 @@ export const MedicalLab: React.FC<Props> = ({ onEarnXp }) => {
 
         {/* 右側：台灣就醫常用單詞 */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          <span style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
-            💡 台湾病院・薬局必須単語（Medical Terms）
+          <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
+            {locale === 'en' ? '💡 Essential clinic and pharmacy terms' : '💡 台湾病院・薬局必須単語（Medical Terms）'}
           </span>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginTop: '0.3rem' }}>
-            {activeItem.symptomGlossary.map((vocab, vIdx) => (
+            {localizedItem.symptomGlossary.map((vocab, vIdx) => (
               <div
                 key={vIdx}
                 style={{
@@ -161,9 +172,9 @@ export const MedicalLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <strong style={{ fontSize: '0.88rem', color: '#f59e0b' }}>{vocab.termZh}</strong>
-                  <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
+                  <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
                 </div>
-                <p lang="ja" style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+                <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
                   {vocab.tipJa}
                 </p>
               </div>

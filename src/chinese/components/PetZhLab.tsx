@@ -1,18 +1,23 @@
 ﻿import React, { useState } from 'react'
-import { PET_DIALOGUES, type PetDialogueItem } from '../data/petZhDialogues'
+import { CHINESE_SUPPORT_EN, PET_DIALOGUES, type PetDialogueItem } from '../data/petZhDialogues'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
+import { localizeChineseData } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
 }
 
 export const PetZhLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { locale } = useI18n()
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [petService, setPetService] = useState('植入晶片與狂犬病疫苗')
   const [registered, setRegistered] = useState(false)
 
   const activeItem: PetDialogueItem =
     PET_DIALOGUES[selectedIdx % PET_DIALOGUES.length]
+  const localizedItem = localizeChineseData(activeItem, locale, CHINESE_SUPPORT_EN)
+  const localizedDialogues = localizeChineseData(PET_DIALOGUES, locale, CHINESE_SUPPORT_EN)
 
   function speakChinese(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -36,10 +41,12 @@ export const PetZhLab: React.FC<Props> = ({ onEarnXp }) => {
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>🐶</span> 台灣寵物友善與動物醫院實驗室 (Pet Friendly & Vet Lab)
+            <span>🐶</span> {locale === 'en' ? 'Taiwan Pet-Friendly and Veterinary Clinic Lab' : '台灣寵物友善與動物醫院實驗室 (Pet Friendly & Vet Lab)'}
           </h3>
-          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            台湾の毛小孩（ペット）文化！「動物病院での初診・狂犬病注射済証・マイクロチップ登録・MRT乗車マナー＆ペット可カフェ」を直感マスター！
+          <p lang={locale === 'en' ? 'en' : 'ja'} className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+            {locale === 'en'
+              ? 'Practise essential Mandarin for a first veterinary visit, microchip registration, rabies vaccination, public transport, and pet-friendly cafés.'
+              : '台湾の毛小孩（ペット）文化！「動物病院での初診・狂犬病注射済証・マイクロチップ登録・MRT乗車マナー＆ペット可カフェ」を直感マスター！'}
           </p>
         </div>
       </div>
@@ -62,15 +69,18 @@ export const PetZhLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <div style={{ fontSize: '1.8rem' }}>🐶 🩺</div>
           <div>
-            <strong style={{ fontSize: '0.9rem', display: 'block' }}>動物醫院初診登記 (Veterinary Clinic Registration)</strong>
+            <strong style={{ fontSize: '0.9rem', display: 'block' }}>{locale === 'en' ? 'Veterinary clinic registration' : '動物醫院初診登記 (Veterinary Clinic Registration)'}</strong>
             <span style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
-              {registered ? '✓ 晶片登記成功！取得防狂犬病金屬頸牌！(+10 XP)' : '看診項目：' + petService}
+              {registered
+                ? locale === 'en' ? '✓ Microchip registered and rabies tag issued (+10 XP)' : '✓ 晶片登記成功！取得防狂犬病金屬頸牌！(+10 XP)'
+                : locale === 'en' ? `Service: ${petService}` : '看診項目：' + petService}
             </span>
           </div>
         </div>
 
         <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
-          <select aria-label="寵物服務"
+          <select
+            aria-label={locale === 'en' ? 'Veterinary service' : '看診項目'}
             value={petService}
             onChange={(e) => setPetService(e.target.value)}
             style={{
@@ -98,21 +108,23 @@ export const PetZhLab: React.FC<Props> = ({ onEarnXp }) => {
             }}
             onClick={handleRegisterPet}
           >
-            {registered ? '施打登記完成' : '💉 辦理晶片與疫苗登記'}
+            {registered
+              ? locale === 'en' ? 'Registration complete' : '施打登記完成'
+              : locale === 'en' ? '💉 Register microchip and vaccination' : '💉 辦理晶片與疫苗登記'}
           </button>
         </div>
       </div>
 
       {/* 場景切換膠囊 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
-        {PET_DIALOGUES.map((item, idx) => (
+        {localizedDialogues.map((item, idx) => (
           <button aria-pressed={selectedIdx === idx}
             key={item.id}
             type="button"
             className={`pill-btn ${selectedIdx === idx ? 'active' : ''}`}
             onClick={() => setSelectedIdx(idx)}
           >
-            <span>{item.icon}</span> {item.title.split('：')[0]}
+            <span>{item.icon}</span> {locale === 'en' ? item.title : item.title.split('：')[0]}
           </button>
         ))}
       </div>
@@ -123,7 +135,7 @@ export const PetZhLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(236, 72, 153, 0.15)', color: '#ec4899', fontWeight: 700 }}>
-              {activeItem.locationZh} (<span lang="ja">{activeItem.locationJa}</span>)
+              {activeItem.locationZh} (<span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.locationJa}</span>)
             </span>
           </div>
 
@@ -143,9 +155,9 @@ export const PetZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#38bdf8' }}>
-                    <span lang="ja">{line.speakerJa}</span>：
+                    <span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.dialogueLines[lIdx].speakerJa}</span>:
                   </span>
-                  <button aria-label={`朗讀：${line.zh}`}
+                  <button aria-label={locale === 'en' ? `Read aloud: ${line.zh}` : `朗讀：${line.zh}`}
                     type="button"
                     style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
                     onClick={() => speakChinese(line.zh)}
@@ -155,8 +167,8 @@ export const PetZhLab: React.FC<Props> = ({ onEarnXp }) => {
                 </div>
                 <strong style={{ fontSize: '0.86rem', color: 'var(--text)' }}>{line.zh}</strong>
                 <span lang="zh-Latn" style={{ fontSize: '0.72rem', color: '#f59e0b' }}>{line.pinyin}</span>
-                <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
-                  {line.ja}
+                <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
+                  {localizedItem.dialogueLines[lIdx].ja}
                 </span>
               </div>
             ))}
@@ -165,12 +177,12 @@ export const PetZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
         {/* 右側：毛小孩日常重要單詞 */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          <span lang="ja" style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
-            💡 台湾ペット事情・エチケット（Pet Friendly Tips）
+          <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
+            {locale === 'en' ? '💡 Pet-friendly services and etiquette' : '💡 台湾ペット事情・エチケット（Pet Friendly Tips）'}
           </span>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginTop: '0.3rem' }}>
-            {activeItem.petGlossary.map((vocab, vIdx) => (
+            {localizedItem.petGlossary.map((vocab, vIdx) => (
               <div
                 key={vIdx}
                 style={{
@@ -182,9 +194,9 @@ export const PetZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <strong style={{ fontSize: '0.88rem', color: '#ec4899' }}>{vocab.termZh}</strong>
-                  <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
+                  <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
                 </div>
-                <p lang="ja" style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+                <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
                   {vocab.tipJa}
                 </p>
               </div>

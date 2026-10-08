@@ -1,11 +1,14 @@
 ﻿import React, { useState } from 'react'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
 
 interface Props {
   onEarnXp: (amount: number) => void
 }
 
 export const CacheMappingLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { locale } = useI18n()
+  const copy = (zhHant: string, en: string) => locale === 'en' ? en : zhHant
   const [cacheSizeKB, setCacheSizeKB] = useState<number>(32)
   const [lineSizeBytes, setLineSizeBytes] = useState<number>(64)
   const [ways, setWays] = useState<number>(8)
@@ -47,10 +50,10 @@ export const CacheMappingLab: React.FC<Props> = ({ onEarnXp }) => {
       <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
           <h3 style={{ margin: 0, fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>💾</span> 組相聯快取位址映射 (Cache Mapping) 實驗室
+            <span>💾</span> {copy('組相聯快取位址映射 (Cache Mapping) 實驗室', 'Set-Associative Cache Address-Mapping Lab')}
           </h3>
           <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.76rem', color: 'var(--muted)' }}>
-            輸入 32-bit 位址，即時分解 [Tag 標籤 | Index 組索引 | Offset 塊內位移] 並模擬比對
+            {copy('輸入 32-bit 位址，即時分解 [Tag 標籤 | Index 組索引 | Offset 塊內位移] 並模擬比對', 'Enter a 32-bit address to split it into tag, set index, and byte offset fields and simulate a lookup.')}
           </p>
         </div>
 
@@ -69,7 +72,7 @@ export const CacheMappingLab: React.FC<Props> = ({ onEarnXp }) => {
               fontWeight: 600,
             }}
           >
-            🎲 隨機位址
+            {copy('🎲 隨機位址', '🎲 Random address')}
           </button>
 
           {!hasClaimedXp ? (
@@ -87,10 +90,10 @@ export const CacheMappingLab: React.FC<Props> = ({ onEarnXp }) => {
                 fontWeight: 700,
               }}
             >
-              領取 +15 XP
+              {copy('領取 +15 XP', 'Claim +15 XP')}
             </button>
           ) : (
-            <span style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700 }}>✓ 已掌握 +15 XP</span>
+            <span style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700 }}>{copy('✓ 已掌握 +15 XP', '✓ Mastered +15 XP')}</span>
           )}
         </div>
       </div>
@@ -99,7 +102,7 @@ export const CacheMappingLab: React.FC<Props> = ({ onEarnXp }) => {
       <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
         <div>
           <label style={{ fontSize: '0.76rem', color: 'var(--muted)', display: 'block', marginBottom: '0.3rem' }}>
-            快取總容量 (Cache Size):
+            {copy('快取總容量 (Cache Size):', 'Total cache capacity:')}
           </label>
           <div style={{ display: 'flex', gap: '0.3rem' }}>
             {[16, 32, 64].map((sz) => (
@@ -127,7 +130,7 @@ export const CacheMappingLab: React.FC<Props> = ({ onEarnXp }) => {
 
         <div>
           <label style={{ fontSize: '0.76rem', color: 'var(--muted)', display: 'block', marginBottom: '0.3rem' }}>
-            關聯路數 (Associativity):
+            {copy('關聯路數 (Associativity):', 'Associativity:')}
           </label>
           <div style={{ display: 'flex', gap: '0.3rem' }}>
             {[1, 2, 4, 8].map((w) => (
@@ -147,7 +150,7 @@ export const CacheMappingLab: React.FC<Props> = ({ onEarnXp }) => {
                   fontWeight: 600,
                 }}
               >
-                {w === 1 ? '直接' : `${w}-Way`}
+                {w === 1 ? copy('直接', 'Direct') : `${w}-Way`}
               </button>
             ))}
           </div>
@@ -155,7 +158,7 @@ export const CacheMappingLab: React.FC<Props> = ({ onEarnXp }) => {
 
         <div>
           <label style={{ fontSize: '0.76rem', color: 'var(--muted)', display: 'block', marginBottom: '0.3rem' }}>
-            快取行大小 (Line Size):
+            {copy('快取行大小 (Line Size):', 'Cache-line size:')}
           </label>
           <div style={{ display: 'flex', gap: '0.3rem' }}>
             {[32, 64].map((ls) => (
@@ -183,9 +186,9 @@ export const CacheMappingLab: React.FC<Props> = ({ onEarnXp }) => {
 
         <div>
           <label style={{ fontSize: '0.76rem', color: 'var(--muted)', display: 'block', marginBottom: '0.3rem' }}>
-            32-bit 十六進位位址 (0x):
+            {copy('32-bit 十六進位位址 (0x):', '32-bit hexadecimal address (0x):')}
           </label>
-          <input aria-label="32位元記憶體位址（十六進位）"
+          <input aria-label={copy('32 位元記憶體位址（十六進位）', '32-bit memory address (hexadecimal)')}
             type="text"
             value={hexAddress}
             onChange={(e) => setHexAddress(e.target.value.toUpperCase())}
@@ -208,7 +211,7 @@ export const CacheMappingLab: React.FC<Props> = ({ onEarnXp }) => {
       {/* 位址分段長條圖與數值解析 */}
       <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         <span style={{ fontSize: '0.76rem', fontWeight: 700, color: '#2563eb' }}>
-          📐 32 位元位址欄位拆分長條圖 (Total 32 Bits)
+          {copy('📐 32 位元位址欄位拆分長條圖', '📐 32-bit address-field split')} (Total: 32 bits)
         </span>
 
         {/* 視覺化彩色分段長條 */}
@@ -227,27 +230,27 @@ export const CacheMappingLab: React.FC<Props> = ({ onEarnXp }) => {
         {/* 三大欄位詳細數值卡片 */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem' }}>
           <div style={{ background: 'var(--surface-soft)', borderLeft: '4px solid #3b82f6', borderRadius: '8px', padding: '0.6rem 0.8rem' }}>
-            <span style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block' }}>Tag (標籤位元)</span>
+            <span style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block' }}>{copy('Tag (標籤位元)', 'Tag bits')}</span>
             <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#3b82f6', fontFamily: 'monospace' }}>
               0x{tagVal.toString(16).toUpperCase()}
             </div>
-            <span style={{ fontSize: '0.7rem', color: 'var(--muted)' }}>共 {tagBits} 位元，用於組內比對</span>
+            <span style={{ fontSize: '0.7rem', color: 'var(--muted)' }}>{copy(`共 ${tagBits} 位元，用於組內比對`, `${tagBits} bits compared within the selected set`)}</span>
           </div>
 
           <div style={{ background: 'var(--surface-soft)', borderLeft: '4px solid #10b981', borderRadius: '8px', padding: '0.6rem 0.8rem' }}>
-            <span style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block' }}>Set Index (組號)</span>
+            <span style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block' }}>{copy('Set Index (組號)', 'Set index')}</span>
             <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#10b981', fontFamily: 'monospace' }}>
               Set #{indexVal} (0x{indexVal.toString(16).toUpperCase()})
             </div>
-            <span style={{ fontSize: '0.7rem', color: 'var(--muted)' }}>共 {numSets} 組 (Sets)</span>
+            <span style={{ fontSize: '0.7rem', color: 'var(--muted)' }}>{copy(`共 ${numSets} 組`, `${numSets} sets`)}</span>
           </div>
 
           <div style={{ background: 'var(--surface-soft)', borderLeft: '4px solid #f59e0b', borderRadius: '8px', padding: '0.6rem 0.8rem' }}>
-            <span style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block' }}>Byte Offset (塊內位移)</span>
+            <span style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block' }}>{copy('Byte Offset (塊內位移)', 'Byte offset')}</span>
             <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#f59e0b', fontFamily: 'monospace' }}>
               {offsetVal} Bytes (0x{offsetVal.toString(16).toUpperCase()})
             </div>
-            <span style={{ fontSize: '0.7rem', color: 'var(--muted)' }}>定位 64B 快取行內的精確位元組</span>
+            <span style={{ fontSize: '0.7rem', color: 'var(--muted)' }}>{copy('定位快取行內的精確位元組', 'Selects the exact byte within the cache line')}</span>
           </div>
         </div>
       </div>

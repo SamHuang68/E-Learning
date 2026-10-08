@@ -84,3 +84,22 @@ export const GUABAO_SISHEN_DIALOGUES: GuabaoSishenDialogueItem[] = [
     ],
   },
 ]
+
+export const CHINESE_SUPPORT_EN = {
+  "台灣傳統名物：夜市炭蒸刈包「虎咬豬」咬住財富、熱氣騰騰當歸四神湯": "Taiwan Night-Market Classics: Lucky Gua Bao and Steaming Four-Herbs Soup",
+  "台湾の伝統名物：夜市の蒸し立て刈包「虎咬猪（福を噛みしめる）」＆当帰の四神湯": "Taiwan Night-Market Classics: Fresh Gua Bao and Angelica-Flavoured Four-Herbs Soup",
+  "冬の夜、秘伝の煮込みタレと当帰薬酒の香りが漂う刈包＆四神湯の行列店": "A busy winter-night stall scented with braising sauce and angelica rice wine",
+  "台湾のグルメ通": "Taiwanese food enthusiast",
+  "この刈包の老舗は冬の夜のソウルフード！刈包は見た目がお金で膨らんだ財布に似ていて、「虎咬猪（トラが豚を噛む）」とも呼ばれるよ。白くてふわふわの蒸しパンがトラの口で、厚切りの角煮を噛みしめる姿から、厄を噛み砕き一年の福と財運を掴む縁起物なんだ！": "This long-running gua-bao shop is winter-night comfort food. The bun resembles a wallet full of money and is also called 'tiger bites pig.' Its fluffy white fold looks like a tiger's mouth around thick braised pork, symbolising biting through misfortune and holding on to a year's luck and prosperity.",
+  "日本のグルメ好き": "Japanese food enthusiast",
+  "注文のときに店主から「赤身と脂身のバランス（半肥半瘦）にする？それとも赤身多め？」と聞かれました！中には炒めた高菜漬け（酸菜）、ピーナッツ粉、刻みパクチーがぎっしり挟まれています！": "When I ordered, the owner asked whether I wanted an even balance of lean and fatty pork or more lean meat. It is packed with stir-fried pickled mustard greens, peanut powder, and chopped coriander.",
+  "一口かじると、角煮の肉汁とピーナッツシュガーの甘じょっぱい香りが完璧に調和するよ！刈包を食べるときは、熱々の「四神湯（スーシェンタン）」を合わせるのが定番。漢方の生薬（ブクリョウ・オニバス・ハスの実・山芋）と豚小腸を煮込み、仕上げの当帰酒を数滴たらせば、体の湿気を払ってぽかぽかだよ！": "One bite combines the braised pork juices with the sweet-savoury aroma of peanut sugar. Gua bao is often paired with hot four-herbs soup: poria, fox nuts, lotus seeds, and Chinese yam simmered with pork intestine, finished with a few drops of angelica rice wine.",
+  "台湾式角煮バーガー（白蒸しパンに豚角煮・酸菜・ピーナッツ粉・パクチーを挟んだ伝統食）": "A Taiwan-style braised-pork bun with pickled mustard greens, peanut powder, and coriander",
+  "外見が財布やトラの口に見えることから「福と金運を呼び込む」縁起物として親しまれる。": "Its resemblance to a full wallet or a tiger's mouth makes it an auspicious food associated with good fortune.",
+  "脂身と赤身の黄金比（もっともジューシーで人気のある角煮の部位指定）": "A popular, juicy balance of fatty and lean braised pork",
+  "脂身が苦手な人は「偏瘦（赤身多め）」や「全瘦（赤身のみ）」と注文可能。": "Diners who prefer less fat can ask for mostly lean or all-lean pork.",
+  "ピーナッツシュガー＆高菜炒め（刈包に欠かせない甘みと酸味のアクセント）": "Peanut sugar and stir-fried pickled mustard greens, the sweet and tangy accents in gua bao",
+  "酸菜の塩気と酸味が角煮の油っぽさを絶妙に中和してくれる。": "The salt and acidity of the pickled greens balance the richness of the pork.",
+  "四神スープ（茯苓・オニバス・蓮の実・山芋と豚モツを煮込んだ薬膳スープ）": "Four-herbs soup made with poria, fox nuts, lotus seeds, Chinese yam, and pork offal",
+  "卓上にある「当帰薬酒（漢方漬け米酒）」をスープに回しかけて香りを高めて飲む。": "Diners may add the angelica-infused rice wine on the table to deepen the soup's aroma.",
+} as const

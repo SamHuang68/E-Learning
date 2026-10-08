@@ -1,8 +1,8 @@
-import { useCalculusCopy } from '../../../../i18n/calculusCopy'
 import React, { useEffect, useRef, useState } from 'react'
 import { FormulaStepCard } from './FormulaStepCard'
 import type { DerivationStep } from '../../types'
 import { playCorrectSound, playBadgeUnlockedSound } from '../../../../engine/audioSynthesizer'
+import { useI18n } from '../../../../i18n/i18n'
 
 interface Props {
   // Localized by the caller; may contain an opaque user-entered expression.
@@ -21,7 +21,8 @@ export const StepByStepSolver: React.FC<Props> = ({
   onStepChange,
   onCheckpointAnswer,
 }) => {
-  const c = useCalculusCopy()
+  const { locale } = useI18n()
+  const copy = (zh: string, en: string) => locale === 'en' ? en : zh
   const [revealedCount, setRevealedCount] = useState<number>(1)
   const streamRef = useRef<HTMLDivElement>(null)
 
@@ -46,11 +47,12 @@ export const StepByStepSolver: React.FC<Props> = ({
     <div className="step-by-step-solver-panel">
       <div className="solver-header">
         <div>
-          <h4>{c("📝 步驟式代數推導與解題器")}</h4>
+          <h4>{copy('📝 步驟式代數推導與解題器', '📝 Step-by-Step Algebraic Derivation')}</h4>
           <p className="problem-title-display">{problemTitle}</p>
         </div>
         <span className="step-progress-indicator" role="status" aria-atomic="true">
-          {c("進度：")}{revealedCount} / {steps.length}{c(" 步驟")}</span>
+          {copy('進度：', 'Progress: ')}{revealedCount} / {steps.length} {copy('步驟', 'steps')}
+        </span>
       </div>
 
       <div className="steps-stream-list" ref={streamRef}>
@@ -72,7 +74,7 @@ export const StepByStepSolver: React.FC<Props> = ({
       {revealedCount < steps.length && (
         <div className="solver-actions-bar">
           <button type="button" className="btn-reveal-next-step" onClick={handleRevealNext}>
-            {c("展開下一步推導 (Step ")}{revealedCount + 1}) →
+            {copy('展開下一步推導', 'Reveal the next derivation')} (Step {revealedCount + 1}) →
           </button>
         </div>
       )}
@@ -81,8 +83,8 @@ export const StepByStepSolver: React.FC<Props> = ({
         <div className="derivation-complete-banner">
           <span>✨</span>
           <div>
-            <strong>{c("完整推導鏈已解鎖！")}</strong>
-            <small>{c("右側幾何畫布已同步更新對應的特徵切線與臨界點坐標。")}</small>
+            <strong>{copy('完整推導鏈已解鎖！', 'Complete derivation unlocked!')}</strong>
+            <small>{copy('右側幾何畫布已同步更新對應的特徵切線與臨界點坐標。', 'The geometric canvas now reflects the corresponding tangent and critical-point coordinates.')}</small>
           </div>
         </div>
       )}

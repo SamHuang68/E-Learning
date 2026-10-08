@@ -5,6 +5,7 @@ import {
   type ScenarioOption,
   type ScenarioScript,
 } from '../data/scenarios'
+import { useI18n } from '../i18n/i18n'
 
 type ScenarioResult = {
   scenarioId: string
@@ -20,27 +21,30 @@ type Props = {
 }
 
 export function ScenarioPlayer({ track, scenarios, onComplete, onExit }: Props) {
+  const { locale } = useI18n()
+  const isEn = locale === 'en'
   const bank = useMemo(
     () => scenarios ?? (track === 'ja' ? jaScenarios : enScenarios),
     [scenarios, track],
   )
   const [scenarioIndex, setScenarioIndex] = useState(0)
   const [beatIndex, setBeatIndex] = useState(0)
-  const [picked, setPicked] = useState<ScenarioOption | null>(null)
+  const [pickedText, setPickedText] = useState<string | null>(null)
   const [correctCount, setCorrectCount] = useState(0)
   const scenario = bank[scenarioIndex]
   const beat = scenario?.beats[beatIndex]
+  const picked = beat?.options.find((option) => option.text === pickedText) ?? null
 
   function reset(nextScenarioIndex: number) {
     setScenarioIndex(nextScenarioIndex)
     setBeatIndex(0)
-    setPicked(null)
+    setPickedText(null)
     setCorrectCount(0)
   }
 
   function choose(option: ScenarioOption) {
-    if (picked) return
-    setPicked(option)
+    if (pickedText) return
+    setPickedText(option.text)
     if (option.correct) setCorrectCount((count) => count + 1)
   }
 
@@ -48,7 +52,7 @@ export function ScenarioPlayer({ track, scenarios, onComplete, onExit }: Props) 
     if (!scenario) return
     if (beatIndex < scenario.beats.length - 1) {
       setBeatIndex((current) => current + 1)
-      setPicked(null)
+      setPickedText(null)
       return
     }
     onComplete({
@@ -60,12 +64,12 @@ export function ScenarioPlayer({ track, scenarios, onComplete, onExit }: Props) 
 
   if (!scenario || !beat) {
     return (
-      <section className="practice-view scenario-player" lang="zh-Hant">
+      <section className="practice-view scenario-player" lang={locale}>
         <p className="eyebrow">SCENARIO</p>
         <div className="practice-card">
           <div className="flash-face">
-            <strong>沒有情境腳本</strong>
-            <p>No scenario scripts are available.</p>
+            <strong>{isEn ? 'No scenario scripts available' : '沒有情境腳本'}</strong>
+            <p>{isEn ? 'No scenario scripts are available.' : '目前沒有可用的情境腳本。'}</p>
           </div>
         </div>
       </section>
@@ -73,10 +77,10 @@ export function ScenarioPlayer({ track, scenarios, onComplete, onExit }: Props) 
   }
 
   return (
-    <section className="practice-view scenario-player" lang="zh-Hant">
+    <section className="practice-view scenario-player" lang={locale}>
       {onExit ? (
         <button type="button" className="ghost back" onClick={onExit}>
-          ← 返回
+          {isEn ? '← Back' : '← 返回'}
         </button>
       ) : null}
       <p className="eyebrow">SCENARIO · {track.toUpperCase()}</p>
@@ -108,8 +112,8 @@ export function ScenarioPlayer({ track, scenarios, onComplete, onExit }: Props) 
         </div>
         <div className="choice-grid">
           {beat.options.map((option) => {
-            const done = picked !== null
-            const isPicked = picked?.text === option.text
+            const done = pickedText !== null
+            const isPicked = pickedText === option.text
             const className =
               done && option.correct
                 ? 'choice-btn correct'
@@ -138,8 +142,12 @@ export function ScenarioPlayer({ track, scenarios, onComplete, onExit }: Props) 
             aria-atomic="true"
           >
             {picked.correct
-              ? `語體合適：${picked.register}`
-              : `這個語體偏 ${picked.register}，請選更合適的商務／丁寧表現。`}
+              ? isEn
+                ? `Appropriate register: ${picked.register}`
+                : `語體合適：${picked.register}`
+              : isEn
+                ? `This option is ${picked.register}. Choose a more suitable business expression.`
+                : `這個語體偏 ${picked.register}，請選更合適的商務／丁寧表現。`}
           </p>
         ) : null}
         <div className="flash-actions">
@@ -149,7 +157,9 @@ export function ScenarioPlayer({ track, scenarios, onComplete, onExit }: Props) 
             disabled={!picked}
             onClick={next}
           >
-            {beatIndex >= scenario.beats.length - 1 ? '完成情境' : '下一步 →'}
+            {beatIndex >= scenario.beats.length - 1
+              ? isEn ? 'Complete scenario' : '完成情境'
+              : isEn ? 'Next step →' : '下一步 →'}
           </button>
         </div>
       </div>

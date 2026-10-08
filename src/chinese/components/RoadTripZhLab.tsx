@@ -1,12 +1,15 @@
 ﻿import React, { useState } from 'react'
-import { ROAD_TRIP_DIALOGUES, type RoadTripDialogueItem } from '../data/roadTripZhDialogues'
+import { CHINESE_SUPPORT_EN, ROAD_TRIP_DIALOGUES, type RoadTripDialogueItem } from '../data/roadTripZhDialogues'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
+import { localizeChineseData } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
 }
 
 export const RoadTripZhLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { locale } = useI18n()
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [fuelType, setFuelType] = useState('九五無鉛 (95 Octane)')
   const [fuelAmount, setFuelAmount] = useState('加滿 (Full Tank)')
@@ -14,6 +17,8 @@ export const RoadTripZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
   const activeItem: RoadTripDialogueItem =
     ROAD_TRIP_DIALOGUES[selectedIdx % ROAD_TRIP_DIALOGUES.length]
+  const localizedItem = localizeChineseData(activeItem, locale, CHINESE_SUPPORT_EN)
+  const localizedDialogues = localizeChineseData(ROAD_TRIP_DIALOGUES, locale, CHINESE_SUPPORT_EN)
 
   function speakChinese(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -37,10 +42,12 @@ export const RoadTripZhLab: React.FC<Props> = ({ onEarnXp }) => {
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>⛽</span> 台灣租車自駕與環島公路旅行實驗室 (Road Trip & Car Rental Lab)
+            <span>⛽</span> {locale === 'en' ? 'Taiwan Road Trip and Car Rental Lab' : '台灣租車自駕與環島公路旅行實驗室 (Road Trip & Car Rental Lab)'}
           </h3>
-          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            台湾一周（環島）ドライブ旅行！「中油加油站（九五加滿・載具統編）・レンタカー受け取り＆点検・蘇花改バイパス安全走行」を直感マスター！
+          <p lang={locale === 'en' ? 'en' : 'ja'} className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+            {locale === 'en'
+              ? 'Practise essential Mandarin for refuelling at CPC stations, collecting and inspecting a rental car, receipts, and safe road trips.'
+              : '台湾一周（環島）ドライブ旅行！「中油加油站（九五加滿・載具統編）・レンタカー受け取り＆点検・蘇花改バイパス安全走行」を直感マスター！'}
           </p>
         </div>
       </div>
@@ -63,15 +70,16 @@ export const RoadTripZhLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <div style={{ fontSize: '1.8rem' }}>⛽ 🚗</div>
           <div>
-            <strong style={{ fontSize: '0.9rem', display: 'block' }}>中油加油站喊單模擬 (CPC Gas Station)</strong>
-            <span style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
-              口令：{fuelType}・{fuelAmount}・發票存載具
+            <strong style={{ fontSize: '0.9rem', display: 'block' }}>{locale === 'en' ? 'CPC petrol-station order practice' : '中油加油站喊單模擬 (CPC Gas Station)'}</strong>
+            <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
+              {locale === 'en' ? <>Order: {fuelType} · {fuelAmount} · Save the receipt to a mobile barcode</> : <>口令：{fuelType}・{fuelAmount}・發票存載具</>}
             </span>
           </div>
         </div>
 
         <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
-          <select aria-label="汽油種類"
+          <select
+            aria-label={locale === 'en' ? 'Fuel type' : '油品'}
             value={fuelType}
             onChange={(e) => setFuelType(e.target.value)}
             style={{
@@ -89,7 +97,8 @@ export const RoadTripZhLab: React.FC<Props> = ({ onEarnXp }) => {
             <option value="超級柴油 (Diesel)">超級柴油 (柴油車專用)</option>
           </select>
 
-          <select aria-label="加油金額或加滿"
+          <select
+            aria-label={locale === 'en' ? 'Fuel amount' : '加油金額'}
             value={fuelAmount}
             onChange={(e) => setFuelAmount(e.target.value)}
             style={{
@@ -117,21 +126,23 @@ export const RoadTripZhLab: React.FC<Props> = ({ onEarnXp }) => {
             }}
             onClick={handlePumpGas}
           >
-            {gasPumped ? '✓ 加油完成！祝行車平安 (+10 XP)' : '⛽ 模擬喊單加油'}
+            {gasPumped
+              ? locale === 'en' ? '✓ Refuelling complete · Drive safely (+10 XP)' : '✓ 加油完成！祝行車平安 (+10 XP)'
+              : locale === 'en' ? '⛽ Simulate a fuel order' : '⛽ 模擬喊單加油'}
           </button>
         </div>
       </div>
 
       {/* 場景切換膠囊 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
-        {ROAD_TRIP_DIALOGUES.map((item, idx) => (
+        {localizedDialogues.map((item, idx) => (
           <button aria-pressed={selectedIdx === idx}
             key={item.id}
             type="button"
             className={`pill-btn ${selectedIdx === idx ? 'active' : ''}`}
             onClick={() => setSelectedIdx(idx)}
           >
-            <span>{item.icon}</span> {item.title.split('：')[0]}
+            <span>{item.icon}</span> {locale === 'en' ? item.title : item.title.split('：')[0]}
           </button>
         ))}
       </div>
@@ -142,7 +153,7 @@ export const RoadTripZhLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(14, 165, 233, 0.15)', color: '#0ea5e9', fontWeight: 700 }}>
-              {activeItem.locationZh} (<span lang="ja">{activeItem.locationJa}</span>)
+              {activeItem.locationZh} (<span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.locationJa}</span>)
             </span>
           </div>
 
@@ -162,9 +173,9 @@ export const RoadTripZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#38bdf8' }}>
-                    <span lang="ja">{line.speakerJa}</span>：
+                    <span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.dialogueLines[lIdx].speakerJa}</span>:
                   </span>
-                  <button aria-label={`朗讀：${line.zh}`}
+                  <button aria-label={locale === 'en' ? `Read aloud: ${line.zh}` : `朗讀：${line.zh}`}
                     type="button"
                     style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
                     onClick={() => speakChinese(line.zh)}
@@ -174,8 +185,8 @@ export const RoadTripZhLab: React.FC<Props> = ({ onEarnXp }) => {
                 </div>
                 <strong style={{ fontSize: '0.86rem', color: 'var(--text)' }}>{line.zh}</strong>
                 <span lang="zh-Latn" style={{ fontSize: '0.72rem', color: '#f59e0b' }}>{line.pinyin}</span>
-                <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
-                  {line.ja}
+                <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
+                  {localizedItem.dialogueLines[lIdx].ja}
                 </span>
               </div>
             ))}
@@ -184,12 +195,12 @@ export const RoadTripZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
         {/* 右側：自駕交通重要單詞 */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          <span lang="ja" style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
-            💡 台湾レンタカー・ドライブ必須知識（Road Trip Tips）
+          <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
+            {locale === 'en' ? '💡 Car-rental and road-trip tips' : '💡 台湾レンタカー・ドライブ必須知識（Road Trip Tips）'}
           </span>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginTop: '0.3rem' }}>
-            {activeItem.roadTripGlossary.map((vocab, vIdx) => (
+            {localizedItem.roadTripGlossary.map((vocab, vIdx) => (
               <div
                 key={vIdx}
                 style={{
@@ -201,9 +212,9 @@ export const RoadTripZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <strong style={{ fontSize: '0.88rem', color: '#f59e0b' }}>{vocab.termZh}</strong>
-                  <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
+                  <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
                 </div>
-                <p lang="ja" style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+                <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
                   {vocab.tipJa}
                 </p>
               </div>

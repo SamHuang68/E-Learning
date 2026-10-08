@@ -29,6 +29,10 @@ import { toeicCertificates } from './data/certificates'
 import { getToeicPractice } from './data/practiceContent'
 import { ToeicSidebar, type ToeicNavId } from './components/ToeicSidebar'
 import { ToeicToday } from './components/ToeicToday'
+import {
+  localizeToeicPractice,
+  toeicTeachingCopy,
+} from './teachingCopy'
 
 // Secondary labs and modes stay out of the ToeicApp shell chunk. Each view
 // loads on navigation, matching ChineseApp / CsApp, so the route chunk stays
@@ -162,6 +166,59 @@ const LetterOfCreditLab = lazy(() =>
 const ToeicSynthesisSeries = lazy(() =>
   import('./components/ToeicSynthesisSeries').then((m) => ({ default: m.ToeicSynthesisSeries })),
 )
+
+const TOEIC_NAV_TITLE_KEYS: Record<ToeicNavId, MessageKey> = {
+  today: 'en.nav.today',
+  synthesis: 'en.nav.synthesis',
+  chunks: 'en.nav.chunks',
+  signals: 'en.nav.signals',
+  'double-passage': 'en.nav.double',
+  charts: 'en.nav.charts',
+  negotiation: 'en.nav.negotiation',
+  'email-master': 'en.nav.email',
+  phone: 'en.nav.phone',
+  travel: 'en.nav.travel',
+  conference: 'en.nav.conference',
+  interview: 'en.nav.interview',
+  marketing: 'en.nav.marketing',
+  'supply-chain': 'en.nav.supply',
+  cybersecurity: 'en.nav.cyber',
+  trade: 'en.nav.trade',
+  'real-estate': 'en.nav.estate',
+  pr: 'en.nav.pr',
+  mna: 'en.nav.mna',
+  ip: 'en.nav.ip',
+  esg: 'en.nav.esg',
+  'ai-cloud': 'en.nav.ai',
+  'cold-chain': 'en.nav.cold',
+  'bonded-warehouse': 'en.nav.bonded',
+  'rfp-bidding': 'en.nav.rfp',
+  'force-majeure': 'en.nav.force',
+  'tech-transfer': 'en.nav.tech',
+  antitrust: 'en.nav.antitrust',
+  'conflict-minerals': 'en.nav.minerals',
+  'patent-litigation': 'en.nav.patent',
+  'gdpr-privacy': 'en.nav.gdpr',
+  'nda-trade-secrets': 'en.nav.nda',
+  'cloud-sla': 'en.nav.sla',
+  'marine-insurance': 'en.nav.marine',
+  'royalty-audit': 'en.nav.royalty',
+  'fcpa-compliance': 'en.nav.fcpa',
+  'antitrust-hhi': 'en.nav.hhi',
+  'business-interruption': 'en.nav.bii',
+  'letter-of-credit': 'en.nav.lc',
+  errors: 'en.nav.errors',
+  story: 'en.nav.story',
+  phonics: 'en.nav.phonics',
+  builder: 'en.nav.builder',
+  vocab: 'en.nav.vocab',
+  listening: 'en.nav.listening',
+  grammar: 'en.nav.grammar',
+  scenario: 'en.nav.scenario',
+  speaking: 'en.nav.speaking',
+  mock: 'en.nav.mock',
+  placement: 'en.nav.placement',
+}
 
 type Props = {
   onBackHub: () => void
@@ -357,31 +414,7 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
         : practice === 'listening'
           ? 'en.nav.listening'
           : 'en.nav.grammar'
-      : nav === 'chunks'
-        ? 'en.nav.chunks'
-        : nav === 'story'
-          ? 'chrome.storyReview'
-          : nav === 'phonics'
-            ? 'en.nav.phonics'
-            : nav === 'synthesis'
-              ? 'en.nav.synthesis'
-            : nav === 'builder'
-              ? 'en.nav.builder'
-              : nav === 'vocab'
-                ? 'en.nav.vocab'
-                : nav === 'listening'
-                  ? 'en.nav.listening'
-                  : nav === 'grammar'
-                    ? 'en.nav.grammar'
-                    : nav === 'scenario'
-                      ? 'en.nav.scenario'
-                      : nav === 'speaking'
-                        ? 'en.nav.speaking'
-                        : nav === 'mock'
-                          ? 'en.nav.mock'
-                          : nav === 'placement'
-                            ? 'en.nav.placement'
-                            : 'en.nav.today'
+      : TOEIC_NAV_TITLE_KEYS[nav]
   const title = t(titleKey)
 
   function renderContent() {
@@ -434,8 +467,9 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
     }
 
     if (nav === 'speaking') {
-      const prompts = currentPack
-        ? [...currentPack.vocab, ...currentPack.passage].slice(0, 8)
+      const localizedPack = localizeToeicPractice(currentPack, locale)
+      const prompts = localizedPack
+        ? [...localizedPack.vocab, ...localizedPack.passage].slice(0, 8)
         : []
       return withUnitGate(
         <SpeakingLab
@@ -784,6 +818,7 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
         <ToeicStoryReview
           onBack={() => setNav('today')}
           onOpenChunkLab={() => setNav('chunks')}
+          instructionLang={instructionLang}
         />
       )
     }
@@ -983,7 +1018,7 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
 
         <footer>
           <span>
-            {locale === 'en' ? 'Organized by TOEIC certificate score bands; orange and brown bands include alphabet and high-frequency vocabulary audio guides.' : '最上層以多益四色證書分數級距分級；橘／棕級含字母與高頻字語音導讀。'}
+            {toeicTeachingCopy(locale, '最上層以多益四色證書分數級距分級；橘／棕級含字母與高頻字語音導讀。')}
           </span>
           <span>
             {user

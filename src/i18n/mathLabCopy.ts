@@ -1,6 +1,12 @@
 import { useI18n } from './i18n'
 import type { UiLocale } from './locale'
 
+export const BALANCE_STEP_TEMPLATES = {
+  subtractConstant: '兩邊同時減去 {v0} ➜ {v1}',
+  subtractVariable: '兩邊各拿掉 1 個 x ➜ {v0}',
+  divideByTwo: '兩邊同時除以 2 ➜ {v0}',
+} as const
+
 export const MATH_LAB_EN: Record<string, string> = {
   "十進位積木計數器 (Base-10 Blocks)": "Base-10 Blocks",
   "十個 1 可以換成一條 10！目標湊出指定數字，掌握十位與個位的進退位原理。": "Exchange ten ones for one ten! Build the target number and explore carrying and borrowing between tens and ones.",
@@ -131,9 +137,9 @@ export const MATH_LAB_EN: Record<string, string> = {
   "$1$ 單位積木：": "$1$ unit tiles:",
   " 塊（右下角 ": " tiles (lower right: ",
   "顯示長寬邊長標註": "Show side-length labels",
-  "兩邊同時減去 {v0} ➜ {v1}": "Subtract {v0} from both sides ➜ {v1}",
-  "兩邊各拿掉 1 個 x ➜ {v0}": "Remove one x from both sides ➜ {v0}",
-  "兩邊同時除以 2 ➜ {v0}": "Divide both sides by 2 ➜ {v0}",
+  [BALANCE_STEP_TEMPLATES.subtractConstant]: "Subtract {v0} from both sides ➜ {v1}",
+  [BALANCE_STEP_TEMPLATES.subtractVariable]: "Remove one x from both sides ➜ {v0}",
+  [BALANCE_STEP_TEMPLATES.divideByTwo]: "Divide both sides by 2 ➜ {v0}",
   "⚖️ 天平平衡與等量公理解題器": "⚖️ Balance Scale Equation Solver",
   "不講死板的移項變號！操作天平兩端「同加同減同除」，直觀感受代數平衡。": "Apply the same addition, subtraction, or division to both pans to explore algebraic balance.",
   "目前狀態：": "Current equation:",

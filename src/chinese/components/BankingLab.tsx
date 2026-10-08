@@ -1,18 +1,23 @@
 ﻿import React, { useState } from 'react'
-import { BANKING_DIALOGUES, type BankingDialogueItem } from '../data/bankingDialogues'
+import { BANKING_DIALOGUES, CHINESE_SUPPORT_EN, type BankingDialogueItem } from '../data/bankingDialogues'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
+import { localizeChineseData } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
 }
 
 export const BankingLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { locale } = useI18n()
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [jpyInput, setJpyInput] = useState<number>(50000)
   const [ticketDrawn, setTicketDrawn] = useState<number | null>(null)
 
   const activeItem: BankingDialogueItem =
     BANKING_DIALOGUES[selectedIdx % BANKING_DIALOGUES.length]
+  const localizedItem = localizeChineseData(activeItem, locale, CHINESE_SUPPORT_EN)
+  const localizedDialogues = localizeChineseData(BANKING_DIALOGUES, locale, CHINESE_SUPPORT_EN)
 
   const exchangeRate = 0.215
   const estimatedTwd = Math.round(jpyInput * exchangeRate)
@@ -39,10 +44,12 @@ export const BankingLab: React.FC<Props> = ({ onEarnXp }) => {
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>🏦</span> 台灣銀行開戶與金融外幣兌換實驗室 (Banking & Finance Lab)
+            <span>🏦</span> {locale === 'en' ? 'Taiwan Banking and Currency Exchange Lab' : '台灣銀行開戶與金融外幣兌換實驗室 (Banking & Finance Lab)'}
           </h3>
-          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            台湾現地での「銀行口座開設（開戶）・日本円から台湾元への両替（換匯）・印章・ATM」など生活に必須の金融中国語を攻略！
+          <p lang={locale === 'en' ? 'en' : 'ja'} className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+            {locale === 'en'
+              ? 'Practise essential Mandarin for opening an account, exchanging Japanese yen for Taiwan dollars, using a seal, and visiting an ATM.'
+              : '台湾現地での「銀行口座開設（開戶）・日本円から台湾元への両替（換匯）・印章・ATM」など生活に必須の金融中国語を攻略！'}
           </p>
         </div>
       </div>
@@ -65,15 +72,15 @@ export const BankingLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
           <div style={{ fontSize: '1.8rem' }}>💱</div>
           <div>
-            <strong style={{ fontSize: '0.88rem', display: 'block' }}>日圓 ⇋ 新台幣即時試算 (JPY to TWD)</strong>
-            <span style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
-              參考匯率：1 JPY ≈ 0.215 TWD
+            <strong style={{ fontSize: '0.88rem', display: 'block' }}>{locale === 'en' ? 'JPY ⇋ TWD calculator' : '日圓 ⇋ 新台幣即時試算 (JPY to TWD)'}</strong>
+            <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
+              {locale === 'en' ? 'Reference rate: 1 JPY ≈ 0.215 TWD' : '參考匯率：1 JPY ≈ 0.215 TWD'}
             </span>
           </div>
         </div>
 
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
-          <input aria-label="日圓金額 (JPY)"
+          <input aria-label={locale === 'en' ? 'Japanese yen amount (JPY)' : '日圓金額 (JPY)'}
             type="number"
             value={jpyInput}
             step="10000"
@@ -90,8 +97,8 @@ export const BankingLab: React.FC<Props> = ({ onEarnXp }) => {
               fontSize: '0.8rem',
             }}
           />
-          <span style={{ fontSize: '0.78rem' }}>円 ≈ </span>
-          <strong style={{ fontSize: '0.95rem', color: '#10b981' }}>NT$ {estimatedTwd.toLocaleString()} 元</strong>
+          <span style={{ fontSize: '0.78rem' }}>{locale === 'en' ? 'JPY ≈ ' : '円 ≈ '}</span>
+          <strong style={{ fontSize: '0.95rem', color: '#10b981' }}>NT$ {estimatedTwd.toLocaleString()} {locale === 'en' ? 'TWD' : '元'}</strong>
 
           <button
             type="button"
@@ -99,21 +106,23 @@ export const BankingLab: React.FC<Props> = ({ onEarnXp }) => {
             style={{ marginLeft: '0.3rem' }}
             onClick={handleDrawTicket}
           >
-            {ticketDrawn ? `🎟️ 號碼牌 ${ticketDrawn} 號` : '🎟️ 抽取臨櫃號碼牌'}
+            {ticketDrawn
+              ? locale === 'en' ? `🎟️ Queue number ${ticketDrawn}` : `🎟️ 號碼牌 ${ticketDrawn} 號`
+              : locale === 'en' ? '🎟️ Take a queue number' : '🎟️ 抽取臨櫃號碼牌'}
           </button>
         </div>
       </div>
 
       {/* 場景切換膠囊 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
-        {BANKING_DIALOGUES.map((item, idx) => (
+        {localizedDialogues.map((item, idx) => (
           <button aria-pressed={selectedIdx === idx}
             key={item.id}
             type="button"
             className={`pill-btn ${selectedIdx === idx ? 'active' : ''}`}
             onClick={() => setSelectedIdx(idx)}
           >
-            <span>{item.icon}</span> {item.title.split('與')[0]}
+            <span>{item.icon}</span> {locale === 'en' ? item.title : item.title.split('與')[0]}
           </button>
         ))}
       </div>
@@ -124,7 +133,7 @@ export const BankingLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(14, 165, 233, 0.15)', color: '#0ea5e9', fontWeight: 700 }}>
-              {activeItem.locationZh} (<span lang="ja">{activeItem.locationJa}</span>)
+              {activeItem.locationZh} (<span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.locationJa}</span>)
             </span>
           </div>
 
@@ -144,9 +153,9 @@ export const BankingLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#38bdf8' }}>
-                    <span lang="ja">{line.speakerJa}</span>：
+                    <span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.dialogueLines[lIdx].speakerJa}</span>:
                   </span>
-                  <button aria-label={`朗讀：${line.zh}`}
+                  <button aria-label={locale === 'en' ? `Read aloud: ${line.zh}` : `朗讀：${line.zh}`}
                     type="button"
                     style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
                     onClick={() => speakChinese(line.zh)}
@@ -156,8 +165,8 @@ export const BankingLab: React.FC<Props> = ({ onEarnXp }) => {
                 </div>
                 <strong style={{ fontSize: '0.86rem', color: 'var(--text)' }}>{line.zh}</strong>
                 <span lang="zh-Latn" style={{ fontSize: '0.72rem', color: '#f59e0b' }}>{line.pinyin}</span>
-                <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
-                  {line.ja}
+                <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
+                  {localizedItem.dialogueLines[lIdx].ja}
                 </span>
               </div>
             ))}
@@ -166,12 +175,12 @@ export const BankingLab: React.FC<Props> = ({ onEarnXp }) => {
 
         {/* 右側：台灣金融實用語彙 */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          <span style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
-            💡 台湾銀行・両替豆知識（Banking Tips）
+          <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
+            {locale === 'en' ? '💡 Banking and exchange tips' : '💡 台湾銀行・両替豆知識（Banking Tips）'}
           </span>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginTop: '0.3rem' }}>
-            {activeItem.usefulVocabulary.map((vocab, vIdx) => (
+            {localizedItem.usefulVocabulary.map((vocab, vIdx) => (
               <div
                 key={vIdx}
                 style={{
@@ -183,9 +192,9 @@ export const BankingLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <strong style={{ fontSize: '0.88rem', color: '#f59e0b' }}>{vocab.termZh}</strong>
-                  <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
+                  <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
                 </div>
-                <p lang="ja" style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+                <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
                   {vocab.tipJa}
                 </p>
               </div>

@@ -1,8 +1,4 @@
-import { use } from 'react'
-import { loadStemConceptCopy, stemConceptCopy } from '../../i18n/stemConceptCopy'
-import { stemVaultCopy } from '../../i18n/stemVaultCopy'
 import { useI18n } from '../../i18n/i18n'
-import { stemCatalogCopy } from '../../i18n/stemCatalogCopy'
 import React, { useState } from 'react'
 import type { PhysicsUnit } from '../data/curriculum'
 import { MathFormula } from '../../math/components/MathFormula'
@@ -25,8 +21,7 @@ export const PhysicsPractice: React.FC<Props> = ({
   onAnswerWrong,
   onNextUnit,
 }) => {
-  const { locale, t } = useI18n()
-  if (locale === 'en') use(loadStemConceptCopy())
+  const { locale } = useI18n()
   const [viewMode, setViewMode] = useState<'textbook' | 'practice'>('textbook')
   const [currentIdx, setCurrentIdx] = useState(0)
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
@@ -97,9 +92,9 @@ export const PhysicsPractice: React.FC<Props> = ({
       {/* 頂部切換與標題 Bar */}
       <div className="practice-top-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ fontWeight: 800 }}>{t('chrome.unitNColon', { n: unit.id, title: stemCatalogCopy(locale, unit.title) })}</span>
+          <span style={{ fontWeight: 800 }}>{locale === 'en' ? 'Unit' : '單元'} {unit.id}: {unit.title}</span>
           <span style={{ fontSize: '0.72rem', background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', padding: '0.1rem 0.4rem', borderRadius: '4px' }}>
-            {stemVaultCopy(locale, unit.band)} · {stemCatalogCopy(locale, unit.targetExam)}
+            {unit.band} · {unit.targetExam}
           </span>
         </div>
 
@@ -121,7 +116,7 @@ export const PhysicsPractice: React.FC<Props> = ({
                 fontWeight: viewMode === 'textbook' ? 700 : 500,
               }}
             >
-              {locale === 'en' ? "📖 Textbook concepts" : "📖 教科書觀念導讀"}
+              📖 {locale === 'en' ? 'Textbook Concepts' : '教科書觀念導讀'}
             </button>
             <button
               type="button"
@@ -138,7 +133,9 @@ export const PhysicsPractice: React.FC<Props> = ({
                 fontWeight: viewMode === 'practice' ? 700 : 500,
               }}
             >
-              ✍️ {locale === 'en' ? `Self-assessment (${questions.length} questions)` : `自我評量 (${questions.length}題)`}
+              ✍️ {locale === 'en'
+                ? `Self-Assessment (${questions.length} questions)`
+                : `自我評量 (${questions.length}題)`}
             </button>
           </div>
 
@@ -154,7 +151,7 @@ export const PhysicsPractice: React.FC<Props> = ({
             aria-controls="physics-practice-scratchpad"
             aria-expanded={showScratchpad}
           >
-            {locale === 'en' ? "✏️ Scratchpad" : "✏️ 草稿紙"}
+            ✏️ {locale === 'en' ? 'Scratchpad' : '草稿紙'}
           </button>
         </div>
       </div>
@@ -180,17 +177,20 @@ export const PhysicsPractice: React.FC<Props> = ({
               PHYSICS TEXTBOOK MODULE · {unit.strand}
             </span>
             <h2 style={{ margin: '0.2rem 0 0.2rem', fontSize: '1.25rem', fontWeight: 800 }}>
-              {stemCatalogCopy(locale, unit.title)}
+              {unit.title}
             </h2>
             <p style={{ margin: 0, color: 'var(--muted)', fontSize: '0.82rem' }}>
-              {stemCatalogCopy(locale, unit.subtitle)}
+              {unit.subtitle}
             </p>
           </div>
 
           {/* 第一性原理與核心觀念清單 */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#34d399', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <span>📐</span> {locale === 'en' ? "First principles and core physics laws:" : "第一性原理與核心物理定律推導："}
+              <span>📐</span>{' '}
+              {locale === 'en'
+                ? 'First-Principles Reasoning and Core Physics Laws:'
+                : '第一性原理與核心物理定律推導：'}
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
@@ -207,7 +207,7 @@ export const PhysicsPractice: React.FC<Props> = ({
                     color: '#e2e8f0',
                   }}
                 >
-                  <MathFormula math={stemConceptCopy(locale, concept)} />
+                  <MathFormula math={concept} />
                 </div>
               ))}
             </div>
@@ -229,9 +229,13 @@ export const PhysicsPractice: React.FC<Props> = ({
               }}
             >
               <div>
-                <strong style={{ fontSize: '0.82rem', color: '#a5b4fc' }}>{locale === 'en' ? "🔬 Related interactive lab:" : "🔬 關聯互動動態實驗室："}</strong>
+                <strong style={{ fontSize: '0.82rem', color: '#a5b4fc' }}>
+                  🔬 {locale === 'en' ? 'Related Interactive Lab:' : '關聯互動動態實驗室：'}
+                </strong>
                 <span style={{ fontSize: '0.8rem', color: '#cbd5e1', marginLeft: '0.25rem' }}>
-                  {locale === 'en' ? `This unit has an interactive lab (${unit.suggestedLab}). Open it from the sidebar to explore.` : `本單元具備專屬動態數值模擬實驗室 (${unit.suggestedLab})，可於側邊欄即時開啟探索。`}
+                  {locale === 'en'
+                    ? `Explore this unit's interactive physics lab: ${unit.suggestedLab}. Open it from the sidebar.`
+                    : `本單元具備專屬動態數值模擬實驗室 (${unit.suggestedLab})，可於側邊欄即時開啟探索。`}
                 </span>
               </div>
             </div>
@@ -257,7 +261,9 @@ export const PhysicsPractice: React.FC<Props> = ({
                 boxShadow: '0 2px 8px rgba(2, 132, 199, 0.3)',
               }}
             >
-              <span>{locale === 'en' ? "✍️ Start self-assessment" : "✍️ 觀念已研讀通透，進入題目自我驗證"}</span>
+              <span>✍️ {locale === 'en'
+                ? 'Concepts Reviewed — Start Self-Assessment'
+                : '觀念已研讀通透，進入題目自我驗證'}</span>
               <span>➜</span>
             </button>
           </div>
@@ -265,7 +271,7 @@ export const PhysicsPractice: React.FC<Props> = ({
       ) : (
         /* 視圖 2: 題庫自我評量 (Practice View) */
         !q ? (
-          <div className="practice-empty">{locale === 'en' ? "Questions for this unit are being prepared…" : "單元題庫準備中…"}</div>
+          <div className="practice-empty">{locale === 'en' ? 'This unit question bank is being prepared…' : '單元題庫準備中…'}</div>
         ) : (
           <div className="practice-card">
             <div className="question-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -273,8 +279,10 @@ export const PhysicsPractice: React.FC<Props> = ({
                 {q.strand.toUpperCase()} · {locale === 'en' ? 'Difficulty' : '難度'} {'★'.repeat(q.difficulty)}
               </span>
               <span style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>
-                {locale === 'en' ? `Question ${currentIdx + 1} / ${questions.length}` : `第 ${currentIdx + 1} / ${questions.length} 題`}
-                {isCompleted && <span className="completed-badge" style={{ marginLeft: '0.5rem' }}>{locale === 'en' ? "✓ Mastered" : "✓ 已掌握"}</span>}
+                {locale === 'en'
+                  ? `Question ${currentIdx + 1} / ${questions.length}`
+                  : `第 ${currentIdx + 1} / ${questions.length} 題`}
+                {isCompleted && <span className="completed-badge" style={{ marginLeft: '0.5rem' }}>✓ {locale === 'en' ? 'Mastered' : '已掌握'}</span>}
               </span>
             </div>
 
@@ -324,11 +332,13 @@ export const PhysicsPractice: React.FC<Props> = ({
                   disabled={selectedOption === null}
                   onClick={handleSubmit}
                 >
-                  {locale === 'en' ? "Submit answer (Enter)" : "確認送出 (Enter)"}
+                  {locale === 'en' ? 'Submit (Enter)' : '確認送出 (Enter)'}
                 </button>
               ) : (
                 <button type="button" className="btn-primary" onClick={handleNext}>
-                  {currentIdx < questions.length - 1 ? (locale === 'en' ? "Next question (Enter)" : '下一題 (Enter)') : (locale === 'en' ? "Finish unit" : '完成本單元')}
+                  {currentIdx < questions.length - 1
+                    ? locale === 'en' ? 'Next Question (Enter)' : '下一題 (Enter)'
+                    : locale === 'en' ? 'Complete Unit' : '完成本單元'}
                 </button>
               )}
 
@@ -340,7 +350,9 @@ export const PhysicsPractice: React.FC<Props> = ({
                   aria-expanded={showHint}
                   aria-controls="physics-practice-hint"
                 >
-                  💡 {showHint ? (locale === 'en' ? "Hide hint" : '隱藏提示') : (locale === 'en' ? "Show hint" : '解題提示')}
+                  💡 {showHint
+                    ? locale === 'en' ? 'Hide Hint' : '隱藏提示'
+                    : locale === 'en' ? 'Show Hint' : '解題提示'}
                 </button>
               )}
 
@@ -350,13 +362,13 @@ export const PhysicsPractice: React.FC<Props> = ({
                 onClick={() => setViewMode('textbook')}
                 style={{ marginLeft: 'auto', fontSize: '0.78rem' }}
               >
-                {locale === 'en' ? "📖 Review textbook concepts" : "📖 回顧教科書觀念"}
+                📖 {locale === 'en' ? 'Review Textbook Concepts' : '回顧教科書觀念'}
               </button>
             </div>
 
             {q.hint && (
               <div id="physics-practice-hint" hidden={!showHint} className="hint-box" style={{ marginTop: '0.75rem' }}>
-                <strong>{locale === 'en' ? "Hint:" : "提示："}</strong>
+                <strong>{locale === 'en' ? 'Hint:' : '提示：'}</strong>
                 <MathFormula math={q.hint} />
               </div>
             )}
@@ -364,7 +376,9 @@ export const PhysicsPractice: React.FC<Props> = ({
             {isSubmitted && (
               <div className={`solution-box ${isCorrect ? 'sol-correct' : 'sol-wrong'}`} style={{ marginTop: '0.75rem' }}>
                 <div className="sol-header" role="status" aria-live="polite" aria-atomic="true">
-                  {isCorrect ? (locale === 'en' ? "🎉 Correct!" : '🎉 答對了！') : (locale === 'en' ? "❌ Incorrect. Review the explanation:" : '❌ 答錯了，請研讀解析：')}
+                  {isCorrect
+                    ? locale === 'en' ? '🎉 Correct!' : '🎉 答對了！'
+                    : locale === 'en' ? '❌ Incorrect — review the solution:' : '❌ 答錯了，請研讀解析：'}
                 </div>
                 <div className="sol-body">
                   <MathFormula math={q.solution} />

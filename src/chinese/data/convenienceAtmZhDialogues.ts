@@ -78,3 +78,20 @@ export const CONVENIENCE_ATM_DIALOGUES: ConvenienceAtmDialogueItem[] = [
     ],
   },
 ]
+
+export const CHINESE_SUPPORT_EN = {
+  '超商 ATM 跨行轉帳、零錢存款與自備環保杯省五元': 'Convenience-Store Services: ATM Transfers, Bill Payment, Parcel Pickup, and Reusable-Cup Savings',
+  'コンビニATMでの他行振込・カードレス引き出し＆マイボトル持参で5元割引': 'Convenience-Store Services: ATM Transfers, Cardless Withdrawals, and Reusable-Cup Savings',
+  '台湾のコンビニ（超商・便利商店）店内': 'Inside a Taiwan convenience store',
+  '日本人客': 'Japanese customer',
+  'すみません、レジでこの光熱費の請求書をバーコード決済できますか？あとホットカフェラテのラージサイズを1つ、マイボトル（保冷保温タンブラー）を持参しています！': 'Excuse me, can I pay this utility bill at the register by scanning its barcode? I would also like a large hot café latte, and I brought my insulated reusable cup.',
+  '超商門市店員': 'Convenience-store clerk',
+  'かしこまりました！光熱費のお支払い完了です。レシートは電子キャリア（載具）に入れますか？マイボトル割引で5元引きです！他行振込やカードレス引き出しでしたら、横のATMに日本語画面対応もありますよ！': 'Certainly. Your utility bill is paid. Shall I save the receipt to your mobile barcode carrier? Your reusable cup also saves NT$5. The ATM beside us supports Japanese for interbank transfers and cardless withdrawals.',
+  'とても便利ですね！あと通販の荷物受け取りもお願いします。携帯番号の下3桁は852、受取人は田中健一で、身分確認用の居留証（ARC）はこちらです。': 'That is very convenient. I also need to collect an online-shopping parcel. The last three digits of my phone number are 852, the recipient is Kenichi Tanaka, and here is my ARC for identification.',
+  '他行振込（ATMやモバイルバンキングでの銀行間送金）': 'Interbank transfer through an ATM or mobile banking',
+  '台湾では他行振込手数料が一律15元（約70円）と非常に安価で即時着金。': 'Interbank transfers in Taiwan usually arrive immediately and commonly cost a flat NT$15 fee.',
+  'マイボトル持参で5台湾元引き': 'NT$5 discount for bringing a reusable cup',
+  '環境保護署の政策により、超商やカフェでタンブラーを持参すると一律5元割引。': 'Taiwan policy provides a standard NT$5 discount when customers bring a reusable cup to participating convenience stores and cafés.',
+  'カードレスATM引き出し（スマホアプリのワンタイムパスワード）': 'Cardless ATM withdrawal using a one-time code from a banking app',
+  'キャッシュカードを持ち歩かなくても、銀行アプリの一時認証コードで現金を引き出せる。': 'A temporary authorization code from the banking app can be used to withdraw cash without a physical bank card.',
+} as const

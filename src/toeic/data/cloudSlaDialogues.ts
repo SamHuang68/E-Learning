@@ -7,6 +7,7 @@ export interface CloudSlaScenarioItem {
   id: string
   title: string
   titleJa: string
+  titleEn: string
   icon: string
   targetAccent: 'en-US' | 'en-GB' | 'en-AU' | 'en-CA'
   accentLabel: string
@@ -23,8 +24,10 @@ export interface CloudSlaScenarioItem {
     correctIndex: number
     explanationZh: string
     explanationJa: string
+    explanationEn: string
   }>
   cloudSlaKeywordsTipsJa: string
+  cloudSlaKeywordsTipsEn: string
 }
 
 export const CLOUD_SLA_SCENARIOS: CloudSlaScenarioItem[] = [
@@ -32,6 +35,7 @@ export const CLOUD_SLA_SCENARIOS: CloudSlaScenarioItem[] = [
     id: 'cloud-sla-outage-credits',
     title: '跨國雲端平台非計畫停機：SLA 99.99% 違約認定與 25% 服務點數折抵',
     titleJa: 'クラウドプラットフォーム障害：SLA 99.99% 違反認定と 25% サービスクレジット返金',
+    titleEn: 'Cloud Platform Outage: 99.99% SLA Breach and 25% Service Credit',
     icon: '☁️',
     targetAccent: 'en-US',
     accentLabel: '美式口音 🇺🇸',
@@ -54,6 +58,7 @@ export const CLOUD_SLA_SCENARIOS: CloudSlaScenarioItem[] = [
         correctIndex: 1,
         explanationZh: 'Derek 指出故障原因為「a fiber cut at our Frankfurt data center which delayed automated DNS failover（法蘭克福機房光纖中斷導致 DNS 自動切換備援延誤）」。',
         explanationJa: '「フランクフルトデータセンターでの光ファイバー切断（fiber cut）によるDNSフェイルオーバーの遅延」が原因でした。',
+        explanationEn: 'A fibre cut at the Frankfurt data centre delayed automated DNS failover to the Dublin availability zone.',
       },
       {
         id: 'sla-2',
@@ -68,8 +73,10 @@ export const CLOUD_SLA_SCENARIOS: CloudSlaScenarioItem[] = [
         correctIndex: 1,
         explanationZh: 'Derek 確認 Karen 的公司享有「a 25% service credit on your monthly recurring infrastructure invoice（每月常態基礎架構帳單 25% 服務抵用點數折抵）」。',
         explanationJa: '月額インフラ請求書に対する「25%のサービスクレジット（25% service credit）」が適用されます。',
+        explanationEn: 'Because availability fell below 99.9% for the billing cycle, the customer receives a 25% service credit on the monthly recurring infrastructure invoice.',
       },
     ],
     cloudSlaKeywordsTipsJa: 'TOEICでは「Service Level Agreement / SLA（サービス水準合意書）」「uptime guarantee（稼働率保証）」「unscheduled outage（予期せぬシステム停止）」「service credits（利用料金相殺クレジット）」「failover（冗長化切り替え）」が頻出です。',
+    cloudSlaKeywordsTipsEn: 'Key TOEIC terms here are service level agreement (SLA), uptime guarantee, unscheduled outage, service credits, and failover.',
   },
 ]

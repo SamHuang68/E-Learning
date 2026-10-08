@@ -1,18 +1,23 @@
 ﻿import React, { useState } from 'react'
-import { POST_DIALOGUES, type PostDialogueItem } from '../data/postDialogues'
+import { CHINESE_SUPPORT_EN, POST_DIALOGUES, type PostDialogueItem } from '../data/postDialogues'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
+import { localizeChineseData } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
 }
 
 export const PostLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { locale } = useI18n()
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [lastThreeDigits, setLastThreeDigits] = useState('582')
   const [parcelVerified, setParcelVerified] = useState(false)
 
   const activeItem: PostDialogueItem =
     POST_DIALOGUES[selectedIdx % POST_DIALOGUES.length]
+  const localizedItem = localizeChineseData(activeItem, locale, CHINESE_SUPPORT_EN)
+  const localizedDialogues = localizeChineseData(POST_DIALOGUES, locale, CHINESE_SUPPORT_EN)
 
   function speakChinese(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -36,10 +41,12 @@ export const PostLab: React.FC<Props> = ({ onEarnXp }) => {
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>📦</span> 台灣郵政包裹與超商取貨實驗室 (Post & Logistics Lab)
+            <span>📦</span> {locale === 'en' ? 'Taiwan Post and Parcel-Pickup Lab' : '台灣郵政包裹與超商取貨實驗室 (Post & Logistics Lab)'}
           </h3>
-          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            台湾生活のリアル！「コンビニ受け取り（手機末三碼）・代金引換（貨到付款）・郵便局での国際小包（EMS）」をマスター！
+          <p lang={locale === 'en' ? 'en' : 'ja'} className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+            {locale === 'en'
+              ? 'Practise convenience-store pickup with the final phone digits, cash on delivery, and international parcels at the post office.'
+              : '台湾生活のリアル！「コンビニ受け取り（手機末三碼）・代金引換（貨到付款）・郵便局での国際小包（EMS）」をマスター！'}
           </p>
         </div>
       </div>
@@ -62,7 +69,7 @@ export const PostLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <div style={{ fontSize: '1.8rem' }}>🏪 📦</div>
           <div>
-            <strong style={{ fontSize: '0.9rem', display: 'block' }}>超商取貨模擬：報「手機末三碼」</strong>
+            <strong style={{ fontSize: '0.9rem', display: 'block' }}>{locale === 'en' ? 'Convenience-store pickup: give the final three phone digits' : '超商取貨模擬：報「手機末三碼」'}</strong>
             <span style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
               「我要取貨，林大衛，末三碼 {lastThreeDigits}」
             </span>
@@ -97,21 +104,23 @@ export const PostLab: React.FC<Props> = ({ onEarnXp }) => {
             }}
             onClick={handleVerifyPickup}
           >
-            {parcelVerified ? '✓ 尋獲包裹，取件成功！(+10 XP)' : '🔍 模擬報號取件'}
+            {parcelVerified
+              ? locale === 'en' ? '✓ Parcel found and collected! (+10 XP)' : '✓ 尋獲包裹，取件成功！(+10 XP)'
+              : locale === 'en' ? '🔍 Simulate parcel pickup' : '🔍 模擬報號取件'}
           </button>
         </div>
       </div>
 
       {/* 場景切換膠囊 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
-        {POST_DIALOGUES.map((item, idx) => (
+        {localizedDialogues.map((item, idx) => (
           <button aria-pressed={selectedIdx === idx}
             key={item.id}
             type="button"
             className={`pill-btn ${selectedIdx === idx ? 'active' : ''}`}
             onClick={() => setSelectedIdx(idx)}
           >
-            <span>{item.icon}</span> {item.title.split('與')[0]}
+            <span>{item.icon}</span> {locale === 'en' ? item.title : item.title.split('與')[0]}
           </button>
         ))}
       </div>
@@ -122,7 +131,7 @@ export const PostLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', fontWeight: 700 }}>
-              {activeItem.locationZh} (<span lang="ja">{activeItem.locationJa}</span>)
+              {activeItem.locationZh} (<span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.locationJa}</span>)
             </span>
           </div>
 
@@ -142,9 +151,9 @@ export const PostLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#38bdf8' }}>
-                    <span lang="ja">{line.speakerJa}</span>：
+                    <span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.dialogueLines[lIdx].speakerJa}</span>:
                   </span>
-                  <button aria-label={`朗讀：${line.zh}`}
+                  <button aria-label={locale === 'en' ? `Read aloud: ${line.zh}` : `朗讀：${line.zh}`}
                     type="button"
                     style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
                     onClick={() => speakChinese(line.zh)}
@@ -154,8 +163,8 @@ export const PostLab: React.FC<Props> = ({ onEarnXp }) => {
                 </div>
                 <strong style={{ fontSize: '0.86rem', color: 'var(--text)' }}>{line.zh}</strong>
                 <span lang="zh-Latn" style={{ fontSize: '0.72rem', color: '#f59e0b' }}>{line.pinyin}</span>
-                <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
-                  {line.ja}
+                <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
+                  {localizedItem.dialogueLines[lIdx].ja}
                 </span>
               </div>
             ))}
@@ -164,12 +173,12 @@ export const PostLab: React.FC<Props> = ({ onEarnXp }) => {
 
         {/* 右側：物流郵務重要單詞 */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          <span style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
-            💡 台湾物流・郵便必須単語（Logistics Tips）
+          <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
+            {locale === 'en' ? '💡 Essential logistics and postal terms' : '💡 台湾物流・郵便必須単語（Logistics Tips）'}
           </span>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginTop: '0.3rem' }}>
-            {activeItem.logisticsGlossary.map((vocab, vIdx) => (
+            {localizedItem.logisticsGlossary.map((vocab, vIdx) => (
               <div
                 key={vIdx}
                 style={{
@@ -181,9 +190,9 @@ export const PostLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <strong style={{ fontSize: '0.88rem', color: '#f59e0b' }}>{vocab.termZh}</strong>
-                  <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
+                  <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
                 </div>
-                <p lang="ja" style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+                <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
                   {vocab.tipJa}
                 </p>
               </div>

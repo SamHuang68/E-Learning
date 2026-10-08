@@ -1,6 +1,6 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react'
 import { loadUiLocale, UI_LOCALE_EVENT, type UiLocale } from '../i18n/locale'
-import { LocaleToggle } from '../i18n/i18n'
+import { LocaleToggle } from '../i18n/LocaleComponents'
 import { translate } from '../i18n/messages'
 import { sanitizeClientError } from '../utils/sanitizeClientError'
 import { isChunkLoadError } from '../utils/chunkLoadError'

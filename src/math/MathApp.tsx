@@ -1,7 +1,7 @@
-import { mathTeachingCopy } from '../i18n/mathTeachingCopy'
+import { localizeMathGrade, mathTeachingCopy } from '../i18n/mathTeachingCopy'
 import React, { useState, useEffect, useMemo } from 'react'
 import type { MathGradeId } from './data/curriculum'
-import { ALL_MATH_GRADES, getGradeInfo, getGradeUnit } from './data/gradeStore'
+import { ALL_MATH_GRADES, getGradeInfo } from './data/gradeStore'
 import {
   loadMathProgress,
   saveMathProgress,
@@ -48,10 +48,14 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
     return () => window.removeEventListener('math:progress-updated', onUpdated)
   }, [])
 
-  const gradeInfo = useMemo(() => getGradeInfo(progress.gradeId), [progress.gradeId])
+  const sourceGradeInfo = useMemo(() => getGradeInfo(progress.gradeId), [progress.gradeId])
+  const gradeInfo = useMemo(
+    () => localizeMathGrade(sourceGradeInfo, locale),
+    [sourceGradeInfo, locale],
+  )
   const currentUnit = useMemo(
-    () => getGradeUnit(progress.gradeId, progress.unitId),
-    [progress.gradeId, progress.unitId],
+    () => gradeInfo.units.find((unit) => unit.id === progress.unitId) ?? gradeInfo.units[0],
+    [gradeInfo, progress.unitId],
   )
 
   function handleSelectGrade(gradeId: MathGradeId) {
@@ -152,7 +156,7 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
                 setActiveLabId(null)
               }}
             >
-              {mathTeachingCopy(locale, '← 返回課程')}
+              ← {mathTeachingCopy(locale, '返回課程')}
             </button>
             <div className="lab-switcher-pills">
               <button
@@ -246,8 +250,8 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         <Breadcrumbs
           items={[
             { label: t('math.brand'), onClick: () => setActiveNav('today') },
-            { label: `${locale === 'en' ? gradeInfo.nameEn : gradeInfo.name} (${mathTeachingCopy(locale, gradeInfo.band)})`, onClick: () => setActiveNav('today') },
-            { label: t('chrome.unitN', { n: currentUnit.id, title: mathTeachingCopy(locale, currentUnit.title) }), active: activeNav === 'today' },
+            { label: `${gradeInfo.name} (${gradeInfo.band})`, onClick: () => setActiveNav('today') },
+            { label: t('chrome.unitN', { n: currentUnit.id, title: currentUnit.title }), active: activeNav === 'today' },
             ...(activeNav !== 'today'
               ? [
                   {
@@ -273,9 +277,9 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
         <header className="topbar">
           <div>
             <p className="eyebrow">
-              {t('chrome.curriculum108')} · {mathTeachingCopy(locale, gradeInfo.band)} · {gradeInfo.nameEn}
+              {t('chrome.curriculum108')} · {gradeInfo.band} · {gradeInfo.nameEn}
             </p>
-            <h1>{locale === 'en' ? gradeInfo.nameEn : gradeInfo.name}</h1>
+            <h1>{gradeInfo.name}</h1>
           </div>
 
           <div className="header-actions">
@@ -305,7 +309,7 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
               >
                 {gradeInfo.units.map((u) => (
                   <option key={u.id} value={u.id}>
-                    {t('chrome.unitN', { n: u.id, title: mathTeachingCopy(locale, u.title) })}
+                    {t('chrome.unitN', { n: u.id, title: u.title })}
                   </option>
                 ))}
               </select>

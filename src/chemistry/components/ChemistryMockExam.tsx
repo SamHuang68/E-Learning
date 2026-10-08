@@ -11,6 +11,7 @@ import {
   type ChemistryProgressState,
 } from '../utils/chemistryStorage'
 import { useI18n } from '../../i18n/i18n'
+import { localizeChemistryMockExam } from '../locale/content'
 
 type Props = {
   onSaveScore: (examId: string, score: number) => void
@@ -18,26 +19,34 @@ type Props = {
 }
 
 /** 化學五大領域圖標與診斷建議；顯示名稱走 i18n taxonomy keys */
-const STRAND_CONFIG: Record<ChemistryStrand, { icon: string; advice: string }> = {
+const STRAND_CONFIG: Record<
+  ChemistryStrand,
+  { icon: string; advice: string; adviceEn: string }
+> = {
   matter_structure: {
     icon: '🔬',
     advice: '加強同分異構物路易斯結構、孤對電子數、分子極性與分子間作用力（氫鍵/凡得瓦力）判讀。',
+    adviceEn: 'Review Lewis structures, lone pairs, molecular polarity, isomers, and intermolecular forces.',
   },
   reactions: {
     icon: '⚗️',
     advice: '熟練反應質量守恆定律、限量試劑判斷與標準狀況 (STP: 0°C, 1atm) 氣體莫耳體積 22.4 L/mol 換算。',
+    adviceEn: 'Practise mass conservation, limiting reagents, and gas-molar-volume conversions at STP.',
   },
   equilibrium_kinetics: {
     icon: '⏱️',
     advice: '熟練初速率法聯立推導反應級數、勒沙特列平衡移動原則與平衡常數 K 運算。',
+    adviceEn: 'Practise initial-rate derivations, equilibrium constants, and Le Chatelier shifts.',
   },
   electrochemistry: {
     icon: '🔋',
     advice: '複習酸鹼緩衝溶液 pH 計算 (Henderson-Hasselbalch)、指示劑變色區間與電池能斯特電位分析。',
+    adviceEn: 'Review buffer pH, indicator ranges, cell potentials, and Nernst-equation reasoning.',
   },
   organic: {
     icon: '🌿',
     advice: '掌握酯化與加成反應機構、官能基性質鑑別與綠色化學 12 原則原子經濟性評估。',
+    adviceEn: 'Review esterification, addition, functional-group tests, and atom economy.',
   },
 }
 
@@ -137,7 +146,11 @@ export const ChemistryMockExam: React.FC<Props> = ({
   onNavigateVault,
 }) => {
   const { t, locale } = useI18n()
-  const exams = Object.values(CHEMISTRY_MOCK_EXAMS)
+  const isEnglish = locale === 'en'
+  const exams = useMemo(
+    () => Object.values(CHEMISTRY_MOCK_EXAMS).map((item) => localizeChemistryMockExam(item, locale)),
+    [locale],
+  )
   const [selectedExamId, setSelectedExamId] = useState<string>(
     exams[0]?.id || 'exam_cap_chemistry',
   )
@@ -336,13 +349,13 @@ export const ChemistryMockExam: React.FC<Props> = ({
     // 計算各考試類型對應級分或等級
     let gradeRating = ''
     if (exam.targetExam === 'CAP') {
-      if (percentage >= 90) gradeRating = 'A++ (精熟頂級)'
-      else if (percentage >= 80) gradeRating = 'A+ (精熟優等)'
-      else if (percentage >= 70) gradeRating = 'A (精熟基礎)'
-      else if (percentage >= 60) gradeRating = 'B++ (基礎前段)'
-      else if (percentage >= 50) gradeRating = 'B+ (基礎中段)'
-      else if (percentage >= 40) gradeRating = 'B (基礎後段)'
-      else gradeRating = 'C (待加強)'
+      if (percentage >= 90) gradeRating = isEnglish ? 'A++ (Advanced Mastery)' : 'A++ (精熟頂級)'
+      else if (percentage >= 80) gradeRating = isEnglish ? 'A+ (Strong Mastery)' : 'A+ (精熟優等)'
+      else if (percentage >= 70) gradeRating = isEnglish ? 'A (Mastery)' : 'A (精熟基礎)'
+      else if (percentage >= 60) gradeRating = isEnglish ? 'B++ (Upper Foundation)' : 'B++ (基礎前段)'
+      else if (percentage >= 50) gradeRating = isEnglish ? 'B+ (Mid Foundation)' : 'B+ (基礎中段)'
+      else if (percentage >= 40) gradeRating = isEnglish ? 'B (Developing Foundation)' : 'B (基礎後段)'
+      else gradeRating = isEnglish ? 'C (Needs Review)' : 'C (待加強)'
     } else if (exam.targetExam === 'GSAT') {
       const gsatScale = Math.min(
         15,
@@ -350,15 +363,15 @@ export const ChemistryMockExam: React.FC<Props> = ({
       )
       const level =
         gsatScale >= 13
-          ? '頂標'
+          ? isEnglish ? 'Top Benchmark' : '頂標'
           : gsatScale >= 11
-            ? '前標'
+            ? isEnglish ? 'Upper Benchmark' : '前標'
             : gsatScale >= 8
-              ? '均標'
+              ? isEnglish ? 'Average Benchmark' : '均標'
               : gsatScale >= 5
-                ? '後標'
-                : '底標'
-      gradeRating = `${gsatScale} 級分 (${level})`
+                ? isEnglish ? 'Lower Benchmark' : '後標'
+                : isEnglish ? 'Base Benchmark' : '底標'
+      gradeRating = isEnglish ? `${gsatScale} points (${level})` : `${gsatScale} 級分 (${level})`
     } else {
       const astScale = Math.min(
         60,
@@ -366,15 +379,15 @@ export const ChemistryMockExam: React.FC<Props> = ({
       )
       const level =
         astScale >= 50
-          ? '頂標'
+          ? isEnglish ? 'Top Benchmark' : '頂標'
           : astScale >= 42
-            ? '前標'
+            ? isEnglish ? 'Upper Benchmark' : '前標'
             : astScale >= 30
-              ? '均標'
+              ? isEnglish ? 'Average Benchmark' : '均標'
               : astScale >= 20
-                ? '後標'
-                : '底標'
-      gradeRating = `${astScale} 級分 (${level})`
+                ? isEnglish ? 'Lower Benchmark' : '後標'
+                : isEnglish ? 'Base Benchmark' : '底標'
+      gradeRating = isEnglish ? `${astScale} points (${level})` : `${astScale} 級分 (${level})`
     }
 
     const strandList = Object.values(strandMap).map((item) => {
@@ -382,12 +395,13 @@ export const ChemistryMockExam: React.FC<Props> = ({
       const info = STRAND_CONFIG[item.strand] || {
         icon: '🧪',
         advice: '持續針對核心概念進行試題演練。',
+        adviceEn: 'Continue practising questions that target the core concepts.',
       }
       return {
         strand: item.strand,
         name: t(chemistryStrandMessageKey(item.strand)),
         icon: info.icon,
-        advice: info.advice,
+        advice: isEnglish ? info.adviceEn : info.advice,
         total: item.total,
         correct: item.correct,
         rate,
@@ -401,7 +415,7 @@ export const ChemistryMockExam: React.FC<Props> = ({
       gradeRating,
       strands: strandList,
     }
-  }, [isSubmitted, exam, answers, t])
+  }, [isSubmitted, exam, answers, t, isEnglish])
 
   // 已作答題數統計
   const answeredCount = useMemo(() => {
@@ -418,7 +432,7 @@ export const ChemistryMockExam: React.FC<Props> = ({
   return (
     <div
       className="math-mock-shell chemistry-mock-shell"
-      lang="zh-Hant"
+      lang={locale}
       style={{
         maxWidth: '920px',
         margin: '0 auto',
@@ -528,7 +542,9 @@ export const ChemistryMockExam: React.FC<Props> = ({
                 type="button"
                 aria-pressed={isPaused}
                 onClick={handleTogglePause}
-                title={isPaused ? '繼續計時' : '暫停計時'}
+                title={isPaused
+                  ? isEnglish ? 'Resume timer' : '繼續計時'
+                  : isEnglish ? 'Pause timer' : '暫停計時'}
                 style={{
                   background: 'none',
                   border: 'none',
@@ -538,12 +554,14 @@ export const ChemistryMockExam: React.FC<Props> = ({
                   color: '#059669',
                 }}
               >
-                {isPaused ? '▶️ 繼續' : '⏸️ 暫停'}
+                {isPaused
+                  ? isEnglish ? '▶️ Resume' : '▶️ 繼續'
+                  : isEnglish ? '⏸️ Pause' : '⏸️ 暫停'}
               </button>
               <button
                 type="button"
                 onClick={handleResetTimer}
-                title="重設計時器"
+                title={isEnglish ? 'Reset timer' : '重設計時器'}
                 style={{
                   background: 'none',
                   border: 'none',
@@ -553,7 +571,7 @@ export const ChemistryMockExam: React.FC<Props> = ({
                   color: 'var(--muted)',
                 }}
               >
-                🔄 重設
+                🔄 {isEnglish ? 'Reset' : '重設'}
               </button>
             </>
           )}
@@ -581,14 +599,15 @@ export const ChemistryMockExam: React.FC<Props> = ({
           }}
         >
           <span>
-            📌 題號導覽 (已答 {answeredCount} / {exam.questions.length} 題)
+            📌 {isEnglish ? 'Question Navigator' : '題號導覽'} ({isEnglish ? 'answered' : '已答'}{' '}
+            {answeredCount} / {exam.questions.length} {isEnglish ? 'questions' : '題'})
           </span>
           <span role="status" aria-atomic="true" style={{ fontWeight: 600 }}>
             {isSubmitted
-              ? '考卷已批改完成'
+              ? isEnglish ? 'Exam graded' : '考卷已批改完成'
               : isPaused
-                ? '計時暫停中'
-                : '測驗進行中'}
+                ? isEnglish ? 'Timer paused' : '計時暫停中'
+                : isEnglish ? 'Exam in progress' : '測驗進行中'}
           </span>
         </div>
 
@@ -675,7 +694,9 @@ export const ChemistryMockExam: React.FC<Props> = ({
             fontSize: '0.82rem',
           }}
         >
-          ⏰ 考試時間已截止！系統已自動為您交卷並產出化學診斷成績單。
+          ⏰ {isEnglish
+            ? 'Time is up. The exam was submitted automatically and your chemistry diagnostic report is ready.'
+            : '考試時間已截止！系統已自動為您交卷並產出化學診斷成績單。'}
         </div>
       )}
 
@@ -705,7 +726,7 @@ export const ChemistryMockExam: React.FC<Props> = ({
           >
             <div>
               <h3 style={{ margin: 0, fontSize: '1.2rem', color: '#059669' }}>
-                📊 {exam.title} · 全真成績報告單
+                📊 {exam.title} · {isEnglish ? 'Diagnostic Score Report' : '全真成績報告單'}
               </h3>
               <p
                 style={{
@@ -714,10 +735,11 @@ export const ChemistryMockExam: React.FC<Props> = ({
                   color: 'var(--muted)',
                 }}
               >
-                測驗耗時：{Math.floor(timeSpentSeconds / 60)} 分{' '}
-                {timeSpentSeconds % 60} 秒 ｜ 答對{' '}
+                {isEnglish ? 'Time used:' : '測驗耗時：'} {Math.floor(timeSpentSeconds / 60)}{' '}
+                {isEnglish ? 'min' : '分'} {timeSpentSeconds % 60} {isEnglish ? 'sec' : '秒'} ｜{' '}
+                {isEnglish ? 'Correct' : '答對'}{' '}
                 {diagnosticReport.correctTotal} /{' '}
-                {diagnosticReport.totalQuestions} 題
+                {diagnosticReport.totalQuestions} {isEnglish ? 'questions' : '題'}
               </p>
             </div>
 
@@ -749,7 +771,7 @@ export const ChemistryMockExam: React.FC<Props> = ({
                   fontWeight: 700,
                 }}
               >
-                分
+                {isEnglish ? 'Score' : '分'}
               </span>
               <span
                 style={{
@@ -783,8 +805,11 @@ export const ChemistryMockExam: React.FC<Props> = ({
             }}
           >
             <span>
-              ✅ 已自動將 <strong>{syncedErrorCount}</strong>{' '}
-              題答錯題目寫入 LocalStorage 錯題筆記本 (errorQuestions)！
+              ✅ {isEnglish ? 'Automatically saved' : '已自動將'}{' '}
+              <strong>{syncedErrorCount}</strong>{' '}
+              {isEnglish
+                ? 'incorrect answers to the local Error Vault.'
+                : '題答錯題目寫入 LocalStorage 錯題筆記本 (errorQuestions)！'}
             </span>
             {onNavigateVault && (
               <button
@@ -801,7 +826,7 @@ export const ChemistryMockExam: React.FC<Props> = ({
                   cursor: 'pointer',
                 }}
               >
-                前往錯題本 📖
+                {isEnglish ? 'Open Error Vault' : '前往錯題本'} 📖
               </button>
             )}
           </div>
@@ -814,7 +839,9 @@ export const ChemistryMockExam: React.FC<Props> = ({
               color: 'var(--ink)',
             }}
           >
-            🎯 各化學主軸掌握度與備考診斷：
+            🎯 {isEnglish
+              ? 'Chemistry Strand Mastery and Review Guidance:'
+              : '各化學主軸掌握度與備考診斷：'}
           </h4>
 
           <div
@@ -858,7 +885,7 @@ export const ChemistryMockExam: React.FC<Props> = ({
                             : '#ef4444',
                     }}
                   >
-                    {st.correct}/{st.total} 題 ({st.rate}%)
+                    {st.correct}/{st.total} {isEnglish ? 'correct' : '題'} ({st.rate}%)
                   </span>
                 </div>
 
@@ -929,7 +956,7 @@ export const ChemistryMockExam: React.FC<Props> = ({
                 cursor: 'pointer',
               }}
             >
-              🔄 重新測驗此卷
+              🔄 {isEnglish ? 'Retake This Exam' : '重新測驗此卷'}
             </button>
           </div>
         </div>
@@ -990,7 +1017,7 @@ export const ChemistryMockExam: React.FC<Props> = ({
                     fontWeight: 700,
                   }}
                 >
-                  第 {idx + 1} 題
+                  {isEnglish ? `Question ${idx + 1}` : `第 ${idx + 1} 題`}
                 </span>
                 <span
                   lang={locale}
@@ -1014,7 +1041,7 @@ export const ChemistryMockExam: React.FC<Props> = ({
                     marginLeft: 'auto',
                   }}
                 >
-                  難度 {'★'.repeat(q.difficulty || 3)}
+                  {isEnglish ? 'Difficulty' : '難度'} {'★'.repeat(q.difficulty || 3)}
                   {'☆'.repeat(Math.max(0, 5 - (q.difficulty || 3)))}
                 </span>
 
@@ -1034,9 +1061,13 @@ export const ChemistryMockExam: React.FC<Props> = ({
                       fontWeight: 600,
                       transition: 'all 0.15s ease',
                     }}
-                    title={flaggedQuestions[q.id] ? '點擊取消標記' : '點擊標記此題為不確定'}
+                    title={flaggedQuestions[q.id]
+                      ? isEnglish ? 'Remove flag' : '點擊取消標記'
+                      : isEnglish ? 'Flag this question for review' : '點擊標記此題為不確定'}
                   >
-                    {flaggedQuestions[q.id] ? '🚩 已標記' : '🏳️ 標記'}
+                    {flaggedQuestions[q.id]
+                      ? isEnglish ? '🚩 Flagged' : '🚩 已標記'
+                      : isEnglish ? '🏳️ Flag' : '🏳️ 標記'}
                   </button>
                 )}
               </div>
@@ -1164,7 +1195,7 @@ export const ChemistryMockExam: React.FC<Props> = ({
                       fontWeight: 600,
                     }}
                   >
-                    📌 多選題（可勾選多個正確選項）
+                    📌 {isEnglish ? 'Multiple-select question (choose every correct option)' : '多選題（可勾選多個正確選項）'}
                   </div>
                   <div
                     className="options-grid"
@@ -1279,7 +1310,7 @@ export const ChemistryMockExam: React.FC<Props> = ({
                       marginBottom: '0.3rem',
                     }}
                   >
-                    請填入數值或精確答案：
+                    {isEnglish ? 'Enter a number or exact answer:' : '請填入數值或精確答案：'}
                   </label>
                   <input
                     id={`chemistry-answer-${q.id}`}
@@ -1288,7 +1319,7 @@ export const ChemistryMockExam: React.FC<Props> = ({
                     aria-errormessage={isSubmitted && !isCorrect ? `chemistry-answer-result-${q.id}` : undefined}
                     aria-describedby={`chemistry-question-${q.id}${isSubmitted ? ` chemistry-answer-result-${q.id}` : ''}`}
                     disabled={isSubmitted}
-                    placeholder="請輸入數值 (例如: 4.48)"
+                    placeholder={isEnglish ? 'Enter a value (for example, 4.48)' : '請輸入數值 (例如: 4.48)'}
                     value={userAns ?? ''}
                     onChange={(e) => handleFillAnswer(q.id, e.target.value)}
                     style={{
@@ -1314,7 +1345,7 @@ export const ChemistryMockExam: React.FC<Props> = ({
                         color: isCorrect ? '#10b981' : '#ef4444',
                       }}
                     >
-                      標準答案：<strong>{String(q.answer)}</strong>
+                      {isEnglish ? 'Correct answer:' : '標準答案：'} <strong>{String(q.answer)}</strong>
                     </div>
                   )}
                 </div>
@@ -1343,7 +1374,9 @@ export const ChemistryMockExam: React.FC<Props> = ({
                       marginBottom: '0.35rem',
                     }}
                   >
-                    {isCorrect ? '✓ 答對！解析推導：' : '❌ 答錯！詳細步驟解析：'}
+                    {isCorrect
+                      ? isEnglish ? '✓ Correct! Reasoning:' : '✓ 答對！解析推導：'
+                      : isEnglish ? '❌ Incorrect. Step-by-step solution:' : '❌ 答錯！詳細步驟解析：'}
                   </div>
                   <div className="solution-content">
                     <MathFormula math={q.solution} />
@@ -1359,7 +1392,7 @@ export const ChemistryMockExam: React.FC<Props> = ({
                         borderRadius: '4px',
                       }}
                     >
-                      💡 秒殺提示：<MathFormula math={q.hint} />
+                      💡 {isEnglish ? 'Quick hint:' : '秒殺提示：'} <MathFormula math={q.hint} />
                     </div>
                   )}
                   {q.competency && (
@@ -1372,7 +1405,7 @@ export const ChemistryMockExam: React.FC<Props> = ({
                         paddingTop: '0.35rem',
                       }}
                     >
-                      🎓 課綱素養對應：{q.competency}
+                      🎓 {isEnglish ? 'Curriculum competency:' : '課綱素養對應：'} {q.competency}
                     </div>
                   )}
                 </div>
@@ -1397,8 +1430,9 @@ export const ChemistryMockExam: React.FC<Props> = ({
           }}
         >
           <span style={{ fontSize: '0.8rem', color: 'var(--muted)' }}>
-            作答進度：{answeredCount} / {exam.questions.length} 題
-            {answeredCount < exam.questions.length && ' (尚有未答題目)'}
+            {isEnglish ? 'Progress:' : '作答進度：'} {answeredCount} / {exam.questions.length}{' '}
+            {isEnglish ? 'questions' : '題'}
+            {answeredCount < exam.questions.length && (isEnglish ? ' (some questions are unanswered)' : ' (尚有未答題目)')}
           </span>
 
           <button
@@ -1418,7 +1452,7 @@ export const ChemistryMockExam: React.FC<Props> = ({
             }}
             onClick={() => handleCalculateScore(false)}
           >
-            交卷計算成績 📊
+            {isEnglish ? 'Submit and Grade' : '交卷計算成績'} 📊
           </button>
         </div>
       )}

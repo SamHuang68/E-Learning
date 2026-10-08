@@ -2,6 +2,8 @@
 import { AI_CLOUD_SCENARIOS, type AiCloudScenarioItem } from '../data/aiCloudDialogues'
 import { useI18n } from '../../i18n/i18n'
 import { playCorrectSound, playWrongSound } from '../../engine/audioSynthesizer'
+import { useMemo } from 'react'
+import { localizeToeicData, toeicSupportLang } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
@@ -10,8 +12,14 @@ interface Props {
 
 export const AiCloudLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'zh' }) => {
   const { locale } = useI18n()
-  const isEn = locale === 'en'
-  const isJa = instructionLang === 'ja'
+  const supportLang = toeicSupportLang(locale, instructionLang)
+  const isJa = supportLang === 'ja'
+  const isEn = supportLang === 'en'
+  const copy = (zh: string, ja: string, en: string) => isEn ? en : isJa ? ja : zh
+  const scenarios = useMemo(
+    () => AI_CLOUD_SCENARIOS.map((item) => localizeToeicData(item, locale, instructionLang)),
+    [instructionLang, locale],
+  )
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const [showScript, setShowScript] = useState(false)
@@ -19,7 +27,7 @@ export const AiCloudLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'zh' }
   const [submitted, setSubmitted] = useState<Record<string, boolean>>({})
 
   const activeItem: AiCloudScenarioItem =
-    AI_CLOUD_SCENARIOS[selectedIdx % AI_CLOUD_SCENARIOS.length]
+    scenarios[selectedIdx % scenarios.length]
 
   function speakAiCloudAudio(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -52,19 +60,25 @@ export const AiCloudLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'zh' }
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>🤖</span> {isEn ? 'TOEIC business AI and cloud infrastructure listening lab' : isJa ? 'TOEIC AIトランスフォーメーション＆クラウド特訓' : 'TOEIC 商務 AI 轉型與雲端資料中心聽力實驗室'}
+            <span>🤖</span> {copy(
+              'TOEIC 商務 AI 轉型與雲端資料中心聽力實驗室',
+              'TOEIC AIトランスフォーメーション＆クラウド特訓',
+              'TOEIC Business AI and Cloud Data-Centre Listening Lab',
+            )}
           </h3>
           <p className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            {isEn ? 'Practice business conversations about on-premise AI inference, GPU accelerators, and cloud service uptime guarantees.' : isJa
-              ? '最先端IT・Part 3対話頻出！「オンプレミスAI推論（on-premise）・SLA稼働率保証（99.99% uptime）・フェイルオーバー冗長化」を完全制覇！'
-              : '多益高科技商務題型：企業自建本地端 AI 推論集群、GPU 加速器硬體、雲端 99.99% 正常運作保證！'}
+            {copy(
+              '多益高科技商務題型：企業自建本地端 AI 推論集群、GPU 加速器硬體、雲端 99.99% 正常運作保證！',
+              '最先端IT・Part 3対話頻出！「オンプレミスAI推論（on-premise）・SLA稼働率保証（99.99% uptime）・フェイルオーバー冗長化」を完全制覇！',
+              'Practise Part 3 technology dialogue about on-premises AI inference, GPU infrastructure, 99.99% uptime, and failover redundancy.',
+            )}
           </p>
         </div>
       </div>
 
       {/* 場景切換膠囊 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
-        {AI_CLOUD_SCENARIOS.map((item, idx) => (
+        {scenarios.map((item, idx) => (
           <button
             key={item.id}
             type="button"
@@ -106,14 +120,14 @@ export const AiCloudLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'zh' }
               }}
               onClick={() => speakAiCloudAudio(activeItem.audioScript)}
             >
-              {isEn ? (isPlaying ? 'Playing...' : '▶ Play audio') : isPlaying ? '再生中...' : '▶ 音声を聴く (Play Audio)'}
+              {isPlaying ? copy('播放中…', '再生中…', 'Playing…') : copy('▶ 播放音檔', '▶ 音声を聴く', '▶ Play audio')}
             </button>
             <button
               type="button"
               className="pill-btn"
               onClick={() => setShowScript((prev) => !prev)}
             >
-              {isEn ? (showScript ? 'Hide script' : '📝 Show script') : showScript ? '隠す' : '📝 スクリプト'}
+              {showScript ? copy('隱藏', '隠す', 'Hide') : copy('📝 逐字稿', '📝 スクリプト', '📝 Transcript')}
             </button>
           </div>
 
@@ -124,7 +138,7 @@ export const AiCloudLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'zh' }
           )}
 
           <div style={{ marginTop: 'auto', background: 'var(--surface-soft)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)', fontSize: '0.74rem', color: 'var(--muted)', textAlign: 'left', lineHeight: 1.45 }}>
-            💡 <strong>{isEn ? 'TOEIC vocabulary: ' : 'TOEIC 頻出ポイント：'}</strong>{isEn ? activeItem.aiCloudKeywordsTipsEn : activeItem.aiCloudKeywordsTipsJa}
+            💡 <strong>{copy('TOEIC 高頻重點：', 'TOEIC 頻出ポイント：', 'Key TOEIC terms: ')}</strong>{activeItem.aiCloudKeywordsTipsJa}
           </div>
         </div>
 
@@ -176,7 +190,7 @@ export const AiCloudLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'zh' }
                       onClick={() => handleSelectOption(q.id, optIdx, q.correctIndex)}
                     >
                       <span style={{ fontSize: '0.82rem' }}>{opt}</span>
-                      {isDone && isCorrect && <span style={{ color: '#10b981', fontWeight: 700 }}>{isEn ? '✓ Correct (+15 XP)' : '✓ 正解 (+15 XP)'}</span>}
+                      {isDone && isCorrect && <span style={{ color: '#10b981', fontWeight: 700 }}>{copy('✓ 正確 (+15 XP)', '✓ 正解 (+15 XP)', '✓ Correct (+15 XP)')}</span>}
                     </button>
                   )
                 })}
@@ -184,7 +198,7 @@ export const AiCloudLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'zh' }
 
               {submitted[q.id] && (
                 <div style={{ marginTop: '0.6rem', padding: '0.6rem', borderRadius: '8px', background: 'var(--surface-soft)', fontSize: '0.76rem', color: 'var(--muted)', lineHeight: 1.45 }}>
-                  💡 <strong>{isEn ? 'Explanation: ' : isJa ? '解説：' : '解析：'}</strong> {isEn ? q.explanationEn : isJa ? q.explanationJa : q.explanationZh}
+                  💡 <strong>{copy('解析：', '解説：', 'Explanation: ')}</strong> {isJa ? q.explanationJa : q.explanationZh}
                 </div>
               )}
             </div>

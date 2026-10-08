@@ -7,6 +7,7 @@ export interface BondedWarehouseScenarioItem {
   id: string
   title: string
   titleJa: string
+  titleEn: string
   icon: string
   targetAccent: 'en-US' | 'en-GB' | 'en-AU' | 'en-CA'
   accentLabel: string
@@ -23,8 +24,10 @@ export interface BondedWarehouseScenarioItem {
     correctIndex: number
     explanationZh: string
     explanationJa: string
+    explanationEn: string
   }>
   bondedWarehouseKeywordsTipsJa: string
+  bondedWarehouseKeywordsTipsEn: string
 }
 
 export const BONDED_WAREHOUSE_SCENARIOS: BondedWarehouseScenarioItem[] = [
@@ -32,6 +35,7 @@ export const BONDED_WAREHOUSE_SCENARIOS: BondedWarehouseScenarioItem[] = [
     id: 'bonded-warehouse-customs',
     title: '跨國電子零組件進口報關、HS 稅則編號與保稅倉庫關稅遞延',
     titleJa: '電子部品の税関輸入申告・HSコード分類と保税倉庫（関税繰延）',
+    titleEn: 'Electronics Import Declarations, HS Classification, and Bonded-Warehouse Tariff Deferral',
     icon: '🏛️',
     targetAccent: 'en-AU',
     accentLabel: '澳式口音 🇦🇺',
@@ -54,6 +58,7 @@ export const BONDED_WAREHOUSE_SCENARIOS: BondedWarehouseScenarioItem[] = [
         correctIndex: 1,
         explanationZh: 'Lachlan 說明保稅倉庫能「defer all import tariffs and value-added taxes until the inventory is officially withdrawn（暫緩遞延所有進口關稅與加值稅，直到貨品正式出庫用於國內配銷）」。',
         explanationJa: '「国内流通のために正式に出庫されるまで、輸入関税および付加価値税の支払いを繰り延べできる」と述べています。',
+        explanationEn: 'A bonded warehouse defers import tariffs and value-added tax until the goods are officially withdrawn for domestic distribution.',
       },
       {
         id: 'bq-2',
@@ -68,8 +73,10 @@ export const BONDED_WAREHOUSE_SCENARIOS: BondedWarehouseScenarioItem[] = [
         correctIndex: 2,
         explanationZh: 'Lachlan 指出「commercial invoices, packing lists, and country-of-origin certificates are digitally archived in our automated customs management portal（商業發票、裝箱單與原產地證明皆數位封存在報關入口網站）」。',
         explanationJa: '「インボイスや原産地証明書などの書類を税関ポータルに電子保管し、即時検証できるようにしている」ためです。',
+        explanationEn: 'Commercial invoices, packing lists, and country-of-origin certificates are archived digitally in the customs portal for immediate verification.',
       },
     ],
     bondedWarehouseKeywordsTipsJa: 'TOEICでは「bonded warehouse（保税倉庫）」「tariff deferral（関税繰延）」「Harmonized Tariff Schedule / HS code（関税分類番号）」「customs broker（通関業者・乙仲）」「declaration（申告）」が頻出です。',
+    bondedWarehouseKeywordsTipsEn: 'Key TOEIC terms here are bonded warehouse, tariff deferral, Harmonized Tariff Schedule or HS code, customs broker, and declaration.',
   },
 ]

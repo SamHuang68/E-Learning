@@ -78,3 +78,20 @@ export const TANGYUAN_DIALOGUES: TangyuanDialogueItem[] = [
     ],
   },
 ]
+
+export const CHINESE_SUPPORT_EN = {
+  '台灣冬至吃冬節圓：搓紅白小湯圓、爆漿黑芝麻大湯圓與吃了長一歲': 'Taiwan Winter Solstice Tangyuan: Red-and-White Rice Balls, Black Sesame Filling, and Growing a Year Older',
+  '台湾の冬至（トンジ）：紅白白玉団子作り・とろける黒胡麻湯圓と「1歳年を取る」伝統': 'Taiwan Winter Solstice Tangyuan: Red-and-White Rice Balls, Black Sesame Filling, and Growing a Year Older',
+  '台湾の家庭のキッチンと食卓のそば': 'A family kitchen and dining table in Taiwan',
+  '台湾のお母さん': 'Taiwanese mother',
+  '今日は二十四節気の「冬至」だよ！1年で一番夜が長い日さ。台湾のことわざで「冬至の団子（冬節圓）を食べると、1歳年を取る」と言うんだよ！さあ、一緒に紅白の小さなお団子を丸めよう！': 'Today is the winter solstice, the longest night of the year. A Taiwan saying tells us that eating winter-solstice tangyuan makes us one year older. Let\'s roll the little red and white rice balls together.',
+  '日本人留学生': 'Japanese exchange student',
+  '赤と白の2色でおめでたい雰囲気ですね！どうして湯圓は必ず赤と白があるのですか？お鍋で茹でている大きなお団子は何味ですか？': 'The red and white colors feel festive. Why do tangyuan traditionally come in both colors, and what filling is inside the large ones boiling in the pot?',
+  '赤団子は「開運とめでたさ」、白団子は「家庭円満と無事」を意味するの！お鍋で踊っているのは餡入り大湯圓で、かじると中からとろ〜り溢れ出る黒胡麻やピーナッツ餡だよ。黒糖生姜スープと一緒に食べると体がポカポカ温まるよ！': 'Red rice balls symbolize good fortune, while white ones symbolize family harmony and safety. The large tangyuan contain flowing black-sesame or peanut filling. Brown-sugar ginger syrup makes them especially warming.',
+  '冬至に食べる白玉団子（円満・団欒・長寿の象徴）': 'Glutinous-rice balls eaten at the winter solstice as symbols of harmony, reunion, and longevity',
+  '台湾では冬至に団子を食べることで太陽の復活を祝い、無事に年を越すための活力とする。': 'Eating tangyuan celebrates the sun\'s return and wishes for strength and safety through the coming year.',
+  '餡なしの小さな紅白白玉（赤＝開運、白＝家族円満）': 'Small unfilled red and white rice balls: red for good fortune and white for family harmony',
+  '両手のひらでくるくると丸め、甘いシロップや小豆スープ、あるいは塩味のスープに入れて楽しむ。': 'Roll them between both palms, then serve them in sweet syrup, red-bean soup, or a savoury broth.',
+  '餡入り大粒湯圓（黒胡麻、ピーナッツ、豚挽肉などのジューシーな具入り）': 'Large filled tangyuan with black sesame, peanut, or savoury minced-pork fillings',
+  '熱々のシロップを噛むと中から濃厚な餡が溢れ出す台湾冬の至高のスイーツ。': 'A favourite Taiwan winter dessert whose rich filling flows out when the hot tangyuan is bitten.',
+} as const

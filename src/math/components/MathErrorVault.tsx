@@ -8,6 +8,7 @@ import type { MathQuestion } from '../data/curriculum'
 import { MathFormula } from './MathFormula'
 import { exportErrorVaultToAnki } from '../../utils/ankiExporter'
 import { useI18n } from '../../i18n/i18n'
+import { localizeMathQuestion } from '../../i18n/mathTeachingCopy'
 
 type Props = {
   onBack: () => void
@@ -20,46 +21,71 @@ type Props = {
 export const MathErrorVault: React.FC<Props> = ({ onBack }) => {
   const { t, locale } = useI18n()
   const [progress, setProgress] = useState(() => loadMathProgress())
-  const [selectedQ, setSelectedQ] = useState<MathQuestion | null>(null)
+  const [selectedQuestionId, setSelectedQuestionId] = useState<string | null>(null)
   const [testInput, setTestInput] = useState('')
   const [feedback, setFeedback] = useState<string | null>(null)
   const dialogRef = useRef<HTMLDialogElement>(null)
-  const retryButtonRef = useRef<HTMLButtonElement | null>(null)
-  const backButtonRef = useRef<HTMLButtonElement>(null)
+  const retryTriggerRef = useRef<HTMLButtonElement | null>(null)
+  const vaultHeadingRef = useRef<HTMLHeadingElement>(null)
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const submittedRef = useRef(false)
 
+  // 單元及練習卷共用檢索池，避免已儲存的練習卷錯題無法訂正。
+  const rawQuestionsById = new Map<string, MathQuestion>()
+  Object.values(ALL_MATH_GRADES).forEach((g) => {
+    g.units.forEach((u) => {
+      u.questions.forEach((q) => rawQuestionsById.set(q.id, q))
+    })
+  })
+  Object.values(MOCK_EXAMS).forEach((exam) => {
+    exam.questions.forEach((q) => rawQuestionsById.set(q.id, q))
+  })
+  const errorQuestions = progress.errorQuestions
+    .map((id) => rawQuestionsById.get(id))
+    .filter((q): q is MathQuestion => Boolean(q))
+    .map((q) => localizeMathQuestion(q, locale))
+  const selectedRawQuestion = selectedQuestionId
+    ? rawQuestionsById.get(selectedQuestionId) ?? null
+    : null
+  const selectedQuestion = selectedRawQuestion
+    ? localizeMathQuestion(selectedRawQuestion, locale)
+    : null
+
   useEffect(() => {
-    if (!selectedQ) return
-    const retryButton = retryButtonRef.current
-    const backButton = backButtonRef.current
-    dialogRef.current?.showModal()
-    return () => {
-      if (closeTimerRef.current !== null) clearTimeout(closeTimerRef.current)
-      closeTimerRef.current = null
+    const dialog = dialogRef.current
+    if (!dialog) return
+    if (selectedQuestionId) {
       submittedRef.current = false
-      if (retryButton?.isConnected) retryButton.focus()
-      else backButton?.focus()
+      if (!dialog.open) dialog.showModal()
+      dialog.querySelector<HTMLElement>('button, input, [tabindex]:not([tabindex="-1"])')?.focus()
+      return
     }
-  }, [selectedQ])
+    if (dialog.open) dialog.close()
+    const retryTrigger = retryTriggerRef.current
+    if (retryTrigger) {
+      if (retryTrigger.isConnected) retryTrigger.focus()
+      else vaultHeadingRef.current?.focus()
+      retryTriggerRef.current = null
+    }
+  }, [selectedQuestionId])
+
+  useEffect(() => () => {
+    if (closeTimerRef.current !== null) clearTimeout(closeTimerRef.current)
+  }, [])
+
+  function cancelScheduledClose() {
+    if (closeTimerRef.current === null) return
+    clearTimeout(closeTimerRef.current)
+    closeTimerRef.current = null
+  }
 
   function closeReview() {
-    setSelectedQ(null)
+    cancelScheduledClose()
+    submittedRef.current = false
+    setSelectedQuestionId(null)
     setTestInput('')
     setFeedback(null)
   }
-
-  // 單元及練習卷共用檢索池，避免已儲存的練習卷錯題無法訂正。
-  const questionPool = new Map<string, MathQuestion>()
-  Object.values(ALL_MATH_GRADES).forEach((grade) => {
-    grade.units.forEach((unit) => unit.questions.forEach((q) => questionPool.set(q.id, q)))
-  })
-  Object.values(MOCK_EXAMS).forEach((exam) => {
-    exam.questions.forEach((q) => questionPool.set(q.id, q))
-  })
-  const errorQuestions = progress.errorQuestions
-    .map((id) => questionPool.get(id))
-    .filter((q): q is MathQuestion => Boolean(q))
 
   function handleRecheck(q: MathQuestion) {
     if (!testInput.trim() || submittedRef.current) return
@@ -81,7 +107,13 @@ export const MathErrorVault: React.FC<Props> = ({ onBack }) => {
       setFeedback('correct')
       const next = recordMathAnswer(q.id, true, 5)
       setProgress(next)
-      closeTimerRef.current = setTimeout(closeReview, 1000)
+      cancelScheduledClose()
+      closeTimerRef.current = setTimeout(() => {
+        closeTimerRef.current = null
+        setSelectedQuestionId(null)
+        setTestInput('')
+        setFeedback(null)
+      }, 1000)
     } else {
       setFeedback('wrong')
     }
@@ -91,7 +123,7 @@ export const MathErrorVault: React.FC<Props> = ({ onBack }) => {
     <div className="math-error-vault">
       <div className="vault-header">
         <div>
-          <h2>{t('vault.title')}</h2>
+          <h2 ref={vaultHeadingRef} tabIndex={-1}>{t('vault.title')}</h2>
           <p className="vault-desc">
             {t('vault.desc')}
           </p>
@@ -108,7 +140,7 @@ export const MathErrorVault: React.FC<Props> = ({ onBack }) => {
               📋 {t('vault.exportAnki')}
             </button>
           )}
-          <button ref={backButtonRef} type="button" className="btn-back" onClick={onBack}>
+          <button type="button" className="btn-back" onClick={onBack}>
             ← {t('vault.back')}
           </button>
         </div>
@@ -123,7 +155,8 @@ export const MathErrorVault: React.FC<Props> = ({ onBack }) => {
       ) : (
         <div className="vault-grid">
           {errorQuestions.map((q) => {
-            const text = `${q.title} ${q.question}`.toLowerCase()
+            const rawQuestion = rawQuestionsById.get(q.id) ?? q
+            const text = `${rawQuestion.title} ${rawQuestion.question}`.toLowerCase()
             let labInfo: { name: string; tab: string } | null = null
             if (text.includes('畢氏') || text.includes('勾股') || text.includes('直角')) {
               labInfo = { name: '📐 畢氏勾股定理教具', tab: 'pythagoras' }
@@ -167,8 +200,9 @@ export const MathErrorVault: React.FC<Props> = ({ onBack }) => {
                   type="button"
                   className="btn-review-item"
                   onClick={(event) => {
-                    retryButtonRef.current = event.currentTarget
-                    setSelectedQ(q)
+                    cancelScheduledClose()
+                    retryTriggerRef.current = event.currentTarget
+                    setSelectedQuestionId(q.id)
                     setTestInput('')
                     setFeedback(null)
                   }}
@@ -182,16 +216,30 @@ export const MathErrorVault: React.FC<Props> = ({ onBack }) => {
       )}
 
       {/* 訂正彈窗 */}
-      {selectedQ && (
-        <dialog ref={dialogRef} className="modal-content vault-review-dialog" aria-labelledby="vault-review-title" onCancel={closeReview}>
-            <h3 id="vault-review-title">{t('vault.reviewTitle', { title: selectedQ.title })}</h3>
+      <dialog
+        ref={dialogRef}
+        className="modal-overlay"
+        aria-modal="true"
+        aria-labelledby="math-error-review-title"
+        onCancel={(event) => {
+          event.preventDefault()
+          closeReview()
+        }}
+        onClose={closeReview}
+        onClick={(event) => {
+          if (event.target === event.currentTarget) closeReview()
+        }}
+      >
+        {selectedQuestion && selectedRawQuestion && (
+          <div className="modal-content">
+            <h3 id="math-error-review-title">{t('vault.reviewTitle', { title: selectedQuestion.title })}</h3>
             <div className="modal-q-text">
-              <MathFormula math={selectedQ.question} />
+              <MathFormula math={selectedQuestion.question} />
             </div>
 
-            {selectedQ.type === 'choice' && selectedQ.options && (
+            {selectedQuestion.type === 'choice' && selectedQuestion.options && (
               <div className="modal-options">
-                {selectedQ.options.map((opt, idx) => (
+                {selectedQuestion.options.map((opt, idx) => (
                   <button
                     key={idx}
                     type="button"
@@ -206,7 +254,7 @@ export const MathErrorVault: React.FC<Props> = ({ onBack }) => {
               </div>
             )}
 
-            {selectedQ.type === 'fill' && (
+            {selectedQuestion.type === 'fill' && (
               <div className="modal-fill">
                 <input
                   type="text"
@@ -221,12 +269,12 @@ export const MathErrorVault: React.FC<Props> = ({ onBack }) => {
             )}
 
             {feedback === 'correct' && (
-              <p role="status" className="feedback-badge correct">✅ {t('vault.correct')}</p>
+              <p className="feedback-badge correct" role="status">✅ {t('vault.correct')}</p>
             )}
             {feedback === 'wrong' && (
-              <div role="status" className="feedback-badge wrong">
+              <div className="feedback-badge wrong" role="alert">
                 <p>❌ {t('vault.wrong')}</p>
-                <MathFormula math={selectedQ.solution} block={true} />
+                <MathFormula math={selectedQuestion.solution} block={true} />
               </div>
             )}
 
@@ -235,7 +283,7 @@ export const MathErrorVault: React.FC<Props> = ({ onBack }) => {
                 type="button"
                 className="btn-primary"
                 disabled={!testInput.trim() || feedback === 'correct'}
-                onClick={() => handleRecheck(selectedQ)}
+                onClick={() => handleRecheck(selectedRawQuestion)}
               >
                 {t('vault.submit')}
               </button>
@@ -247,8 +295,9 @@ export const MathErrorVault: React.FC<Props> = ({ onBack }) => {
                 {teachingCopy(locale, '關閉')}
               </button>
             </div>
-        </dialog>
-      )}
+          </div>
+        )}
+      </dialog>
     </div>
   )
 }

@@ -6,8 +6,8 @@
 export interface AiCloudScenarioItem {
   id: string
   title: string
-  titleEn: string
   titleJa: string
+  titleEn: string
   icon: string
   targetAccent: 'en-US' | 'en-GB' | 'en-AU' | 'en-CA'
   accentLabel: string
@@ -24,8 +24,8 @@ export interface AiCloudScenarioItem {
     options: string[]
     correctIndex: number
     explanationZh: string
-    explanationEn: string
     explanationJa: string
+    explanationEn: string
   }>
   aiCloudKeywordsTipsJa: string
   aiCloudKeywordsTipsEn: string
@@ -34,14 +34,13 @@ export interface AiCloudScenarioItem {
 export const AI_CLOUD_SCENARIOS: AiCloudScenarioItem[] = [
   {
     id: 'ai-cloud-procurement',
-    titleEn: 'On-premise AI and hybrid cloud SLA negotiations',
-    accentLabelEn: 'American accent 🇺🇸',
-    aiCloudKeywordsTipsEn: 'on-premise, uptime / downtime, redundancy, and service level agreement (SLA).',
     title: '跨國金融集團自建本地端 AI 推論集群與雲端備援 SLA 談判',
     titleJa: '金融機関のオンプレミスAI推論クラスタ構築とクラウドSLA交渉',
+    titleEn: 'On-Premises AI Inference Cluster and Cloud SLA Negotiation',
     icon: '🤖',
     targetAccent: 'en-US',
     accentLabel: '美式口音 🇺🇸',
+    accentLabelEn: 'American accent 🇺🇸',
     audioScript: `Chief Technology Officer: Good afternoon, Marcus. Have we finalized the infrastructure blueprint for our proprietary enterprise AI customer service engine?\nMarcus: Yes, Beverly. To satisfy regulatory compliance and ensure zero leakage of customer financial records, we are deploying an air-gapped on-premise inference cluster with dedicated high-bandwidth GPU accelerators.\nChief Technology Officer: Excellent choice. What about our failover redundancy and hybrid cloud backup provider?\nMarcus: We negotiated an enterprise service level agreement guaranteeing 99.99 percent uptime. Any scheduled server firmware maintenance must occur strictly during off-peak weekend maintenance windows with twelve hours of advance notification.`,
     dialogueRoles: {
       chiefTechnologyOfficer: 'Beverly (Group Chief Technology Officer)',
@@ -50,7 +49,6 @@ export const AI_CLOUD_SCENARIOS: AiCloudScenarioItem[] = [
     questions: [
       {
         id: 'aq-1',
-        explanationEn: 'Marcus says the air-gapped on-premise cluster meets regulatory requirements and prevents customer financial data leakage.',
         question: 'Why did the financial group choose an air-gapped on-premise AI cluster?',
         questionJa: '金融グループが完全隔離（air-gapped）のオンプレミスAIクラスタを選択した理由は何ですか？',
         options: [
@@ -62,10 +60,10 @@ export const AI_CLOUD_SCENARIOS: AiCloudScenarioItem[] = [
         correctIndex: 1,
         explanationZh: 'Marcus 表示為了「satisfy regulatory compliance and ensure zero leakage of customer financial records（符合法規合規並確保客戶金融資料零外洩）」，採用實體隔離本地端推論集群。',
         explanationJa: '「規制遵守を満たし、顧客の金融記録のデータ漏洩を完全に防ぐため」と述べています。',
+        explanationEn: 'Marcus says the air-gapped on-premises cluster is required to satisfy regulatory compliance and prevent any leakage of customer financial records.',
       },
       {
         id: 'aq-2',
-        explanationEn: 'The SLA guarantees 99.99 percent uptime. Firmware maintenance is limited to off-peak weekend windows with twelve hours of advance notice.',
         question: 'What term is specified in the hybrid cloud service level agreement (SLA)?',
         questionJa: 'ハイブリッドクラウドのサービス品質保証（SLA）で規定されている条件は何ですか？',
         options: [
@@ -77,8 +75,10 @@ export const AI_CLOUD_SCENARIOS: AiCloudScenarioItem[] = [
         correctIndex: 1,
         explanationZh: 'Marcus 指出「agreement guaranteeing 99.99 percent uptime... maintenance must occur strictly during off-peak weekend maintenance windows（保證 99.99% 正常運作時間，維護僅限週末離峰時段）」。',
         explanationJa: '「稼働率99.99％の保証と、週末のオフピーク時間帯での計画メンテナンス」が規定されています。',
+        explanationEn: 'The SLA guarantees 99.99 percent uptime and restricts scheduled maintenance to off-peak weekend windows with advance notice.',
       },
     ],
     aiCloudKeywordsTipsJa: 'TOEICでは「on-premise（自社運用・オンプレミス）」「uptime / downtime（稼働・停止時間）」「redundancy（冗長性・バックアップ）」「service level agreement（SLA保証契約）」が頻出です。',
+    aiCloudKeywordsTipsEn: 'Key TOEIC terms here are on-premises, uptime and downtime, redundancy, and service level agreement (SLA).',
   },
 ]

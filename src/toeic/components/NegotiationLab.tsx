@@ -1,6 +1,9 @@
 ﻿import React, { useState } from 'react'
 import { NEGOTIATION_CHUNKS, type NegotiationChunkItem } from '../data/negotiationChunks'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { useMemo } from 'react'
+import { useI18n } from '../../i18n/i18n'
+import { localizeToeicData, toeicSupportLang } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
@@ -8,7 +11,15 @@ interface Props {
 }
 
 export const NegotiationLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'zh' }) => {
-  const isJa = instructionLang === 'ja'
+  const { locale } = useI18n()
+  const supportLang = toeicSupportLang(locale, instructionLang)
+  const isJa = supportLang === 'ja'
+  const isEn = supportLang === 'en'
+  const copy = (zh: string, ja: string, en: string) => isEn ? en : isJa ? ja : zh
+  const chunks = useMemo(
+    () => NEGOTIATION_CHUNKS.map((item) => localizeToeicData(item, locale, instructionLang)),
+    [instructionLang, locale],
+  )
   const [selectedCategory, setSelectedCategory] = useState<string>('All')
   const [selectedChunkId, setSelectedChunkId] = useState<string>(NEGOTIATION_CHUNKS[0].id)
 
@@ -16,11 +27,11 @@ export const NegotiationLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'z
 
   const filteredChunks =
     selectedCategory === 'All'
-      ? NEGOTIATION_CHUNKS
-      : NEGOTIATION_CHUNKS.filter((c) => c.category === selectedCategory)
+      ? chunks
+      : chunks.filter((chunk) => chunk.category === selectedCategory)
 
   const activeChunk: NegotiationChunkItem =
-    NEGOTIATION_CHUNKS.find((c) => c.id === selectedChunkId) ?? NEGOTIATION_CHUNKS[0]
+    chunks.find((chunk) => chunk.id === selectedChunkId) ?? chunks[0]
 
   function speakEnglish(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -37,12 +48,14 @@ export const NegotiationLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'z
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>🤝</span> {isJa ? 'TOEIC 交渉・ネットワーキング重要チャンクラボ' : 'TOEIC 商務談判與職場社交語塊實驗室'}
+            <span>🤝</span> {copy('TOEIC 商務談判與職場社交語塊實驗室', 'TOEIC 交渉・ネットワーキング重要チャンクラボ', 'TOEIC Negotiation and Networking Chunk Lab')}
           </h3>
           <p className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            {isJa
-              ? 'ビジネス会議、価格交渉、契約締結、スモールトークでネイティブが多用する高得点直結チャンクを習得！'
-              : '掌握商務議價、合約條件宣告與國際會議破冰社交的核心語塊，秒殺 Part 3/4 聽力與 Part 7 商務書信！'}
+            {copy(
+              '掌握商務議價、合約條件宣告與國際會議破冰社交的核心語塊，秒殺 Part 3/4 聽力與 Part 7 商務書信！',
+              'ビジネス会議、価格交渉、契約締結、スモールトークでネイティブが多用する高得点直結チャンクを習得！',
+              'Master high-value chunks for meetings, price negotiations, contracts, networking, and Part 3, 4, and 7 business contexts.',
+            )}
           </p>
         </div>
       </div>
@@ -121,20 +134,20 @@ export const NegotiationLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'z
                 playCorrectSound()
               }}
             >
-              🔊 聽發音 (+10 XP)
+              🔊 {copy('聽發音', '発音を聴く', 'Play pronunciation')} (+10 XP)
             </button>
           </div>
 
           <div style={{ background: 'var(--surface-soft)', padding: '0.65rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
             <span style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block' }}>
-              {isJa ? '日本語の意味：' : '中文釋義：'}
+              {copy('中文釋義：', '日本語の意味：', 'Meaning:')}
             </span>
             <strong style={{ fontSize: '0.9rem' }}>{isJa ? activeChunk.meaningJa : activeChunk.meaningZh}</strong>
           </div>
 
           <div style={{ background: 'rgba(56, 189, 248, 0.08)', padding: '0.65rem', borderRadius: '8px', border: '1px solid rgba(56, 189, 248, 0.25)' }}>
             <span style={{ fontSize: '0.72rem', color: '#38bdf8', fontWeight: 700, display: 'block' }}>
-              💼 {isJa ? 'ビジネスでの実践活用シーン：' : '商務情境應用剖析：'}
+              💼 {copy('商務情境應用剖析：', 'ビジネスでの実践活用シーン：', 'Business use:')}
             </span>
             <p style={{ margin: '0.2rem 0 0', fontSize: '0.78rem', lineHeight: 1.45 }}>
               {isJa ? activeChunk.businessContextJa : activeChunk.businessContextZh}
@@ -143,7 +156,7 @@ export const NegotiationLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'z
 
           <div style={{ background: 'var(--surface-soft)', padding: '0.65rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.72rem', color: 'var(--muted)' }}>Example Sentence (例文)：</span>
+              <span style={{ fontSize: '0.72rem', color: 'var(--muted)' }}>{copy('英文例句：', '英語例文：', 'Example sentence:')}</span>
               <button
                 type="button"
                 style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}

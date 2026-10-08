@@ -1,5 +1,6 @@
 ﻿import React, { useState } from 'react'
 import {
+  CHINESE_SUPPORT_EN,
   CHINESE_TONES,
   INITIALS_DATA,
   FINALS_DATA,
@@ -8,16 +9,27 @@ import {
   type PhonemeData,
 } from '../data/pinyinBopomofo'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
+import { chineseTeachingCopy, localizeChineseData } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
 }
 
 export const PinyinLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { locale } = useI18n()
   const [selectedTone, setSelectedTone] = useState<ToneData>(CHINESE_TONES[0])
   const [selectedInitial, setSelectedInitial] = useState<PhonemeData>(INITIALS_DATA[0])
   const [selectedFinal, setSelectedFinal] = useState<PhonemeData>(FINALS_DATA[0])
   const [activeTab, setActiveTab] = useState<'tones' | 'initials' | 'finals' | 'drills'>('tones')
+  const localizedTone = localizeChineseData(selectedTone, locale, CHINESE_SUPPORT_EN)
+  const localizedInitial = localizeChineseData(selectedInitial, locale, CHINESE_SUPPORT_EN)
+  const localizedFinal = localizeChineseData(selectedFinal, locale, CHINESE_SUPPORT_EN)
+  const localizedTones = localizeChineseData(CHINESE_TONES, locale, CHINESE_SUPPORT_EN)
+  const localizedInitials = localizeChineseData(INITIALS_DATA, locale, CHINESE_SUPPORT_EN)
+  const localizedFinals = localizeChineseData(FINALS_DATA, locale, CHINESE_SUPPORT_EN)
+  const localizedDrillWords = localizeChineseData(PINYIN_DRILL_WORDS, locale, CHINESE_SUPPORT_EN)
+  const copy = (text: string) => chineseTeachingCopy(locale, text)
 
   function speakChinese(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -34,10 +46,10 @@ export const PinyinLab: React.FC<Props> = ({ onEarnXp }) => {
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>🗣️</span> 拼音・注音與四聲聲調實驗室 (Pinyin, Bopomofo & Tones)
+            <span>🗣️</span> {copy('拼音・注音與四聲聲調實驗室 (Pinyin, Bopomofo & Tones)')}
           </h3>
-          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            日本語にはない「四声の高さのカーブ」と「有気音・そり舌音・鼻母音」を完全可視化。カタカナの目安と発音ポイントで攻略！
+          <p lang={locale === 'en' ? 'en' : 'ja'} className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+            {copy('日本語にはない「四声の高さのカーブ」と「有気音・そり舌音・鼻母音」を完全可視化。カタカナの目安と発音ポイントで攻略！')}
           </p>
         </div>
       </div>
@@ -49,28 +61,28 @@ export const PinyinLab: React.FC<Props> = ({ onEarnXp }) => {
           className={`pill-btn ${activeTab === 'tones' ? 'active' : ''}`}
           onClick={() => setActiveTab('tones')}
         >
-          🎵 四聲聲調曲線 (Tones)
+          {copy('🎵 四聲聲調曲線 (Tones)')}
         </button>
         <button aria-pressed={activeTab === 'initials'}
           type="button"
           className={`pill-btn ${activeTab === 'initials' ? 'active' : ''}`}
           onClick={() => setActiveTab('initials')}
         >
-          🔤 聲母 21 音 (Initials)
+          {copy('🔤 聲母 21 音 (Initials)')}
         </button>
         <button aria-pressed={activeTab === 'finals'}
           type="button"
           className={`pill-btn ${activeTab === 'finals' ? 'active' : ''}`}
           onClick={() => setActiveTab('finals')}
         >
-          🌊 韻母 16 音 (Finals)
+          {copy('🌊 韻母 16 音 (Finals)')}
         </button>
         <button aria-pressed={activeTab === 'drills'}
           type="button"
           className={`pill-btn ${activeTab === 'drills' ? 'active' : ''}`}
           onClick={() => setActiveTab('drills')}
         >
-          ⚡ 常用生活單字 (Drills)
+          {copy('⚡ 常用生活單字 (Drills)')}
         </button>
       </div>
 
@@ -90,9 +102,9 @@ export const PinyinLab: React.FC<Props> = ({ onEarnXp }) => {
             }}
           >
             <span style={{ fontSize: '0.8rem', fontWeight: 700, alignSelf: 'flex-start', marginBottom: '0.4rem' }}>
-              五度制調值座標 (5度標記法)
+              {copy('五度制調值座標 (5度標記法)')}
             </span>
-            <svg role="img" aria-label="四聲調值：第一聲55高平、第二聲35上升、第三聲214降升、第四聲51下降" viewBox="0 0 320 200" style={{ width: '100%', maxWidth: '320px', height: 'auto', background: 'var(--surface-soft)', borderRadius: '8px' }}>
+            <svg role="img" aria-label={locale === 'en' ? 'Tone contours: tone 1 high and level at 55, tone 2 rising at 35, tone 3 dipping at 214, and tone 4 falling at 51' : '四聲調值：第一聲55高平、第二聲35上升、第三聲214降升、第四聲51下降'} viewBox="0 0 320 200" style={{ width: '100%', maxWidth: '320px', height: 'auto', background: 'var(--surface-soft)', borderRadius: '8px' }}>
               {/* 五度座標網格 5(高) ~ 1(低) */}
               {[5, 4, 3, 2, 1].map((val, idx) => {
                 const y = 30 + idx * 35
@@ -113,7 +125,7 @@ export const PinyinLab: React.FC<Props> = ({ onEarnXp }) => {
                 stroke={selectedTone.tone === 1 ? '#f59e0b' : '#64748b'}
                 strokeWidth={selectedTone.tone === 1 ? '4' : '2'}
               />
-              <text x="290" y="34" fill={selectedTone.tone === 1 ? '#f59e0b' : '#64748b'} fontSize="10" fontWeight="bold">1聲(55)</text>
+              <text x="290" y="34" fill={selectedTone.tone === 1 ? '#f59e0b' : '#64748b'} fontSize="10" fontWeight="bold">{locale === 'en' ? 'Tone 1 (55)' : '1聲(55)'}</text>
 
               {/* 第二聲 35 高升 */}
               <path
@@ -122,7 +134,7 @@ export const PinyinLab: React.FC<Props> = ({ onEarnXp }) => {
                 stroke={selectedTone.tone === 2 ? '#10b981' : '#64748b'}
                 strokeWidth={selectedTone.tone === 2 ? '4' : '2'}
               />
-              <text x="290" y="48" fill={selectedTone.tone === 2 ? '#10b981' : '#64748b'} fontSize="10" fontWeight="bold">2聲(35)</text>
+              <text x="290" y="48" fill={selectedTone.tone === 2 ? '#10b981' : '#64748b'} fontSize="10" fontWeight="bold">{locale === 'en' ? 'Tone 2 (35)' : '2聲(35)'}</text>
 
               {/* 第三聲 214 降升 */}
               <path
@@ -131,7 +143,7 @@ export const PinyinLab: React.FC<Props> = ({ onEarnXp }) => {
                 stroke={selectedTone.tone === 3 ? '#3b82f6' : '#64748b'}
                 strokeWidth={selectedTone.tone === 3 ? '4' : '2'}
               />
-              <text x="290" y="70" fill={selectedTone.tone === 3 ? '#3b82f6' : '#64748b'} fontSize="10" fontWeight="bold">3聲(214)</text>
+              <text x="290" y="70" fill={selectedTone.tone === 3 ? '#3b82f6' : '#64748b'} fontSize="10" fontWeight="bold">{locale === 'en' ? 'Tone 3 (214)' : '3聲(214)'}</text>
 
               {/* 第四聲 51 全降 */}
               <line
@@ -142,23 +154,23 @@ export const PinyinLab: React.FC<Props> = ({ onEarnXp }) => {
                 stroke={selectedTone.tone === 4 ? '#ef4444' : '#64748b'}
                 strokeWidth={selectedTone.tone === 4 ? '4' : '2'}
               />
-              <text x="290" y="174" fill={selectedTone.tone === 4 ? '#ef4444' : '#64748b'} fontSize="10" fontWeight="bold">4聲(51)</text>
+              <text x="290" y="174" fill={selectedTone.tone === 4 ? '#ef4444' : '#64748b'} fontSize="10" fontWeight="bold">{locale === 'en' ? 'Tone 4 (51)' : '4聲(51)'}</text>
             </svg>
 
             {/* 四聲選單切換 */}
             <div style={{ display: 'flex', gap: '0.3rem', marginTop: '0.6rem', width: '100%' }}>
-              {CHINESE_TONES.map((t) => (
+              {localizedTones.map((t, index) => (
                 <button aria-pressed={selectedTone.tone === t.tone}
                   key={t.tone}
                   type="button"
                   className={`pill-btn ${selectedTone.tone === t.tone ? 'active' : ''}`}
                   style={{ flex: 1, padding: '0.25rem', fontSize: '0.72rem', textAlign: 'center' }}
                   onClick={() => {
-                    setSelectedTone(t)
+                    setSelectedTone(CHINESE_TONES[index])
                     speakChinese(t.exampleChar)
                   }}
                 >
-                  第{t.tone}聲
+                  {locale === 'en' ? `Tone ${t.tone}` : `第${t.tone}聲`}
                 </button>
               ))}
             </div>
@@ -178,8 +190,8 @@ export const PinyinLab: React.FC<Props> = ({ onEarnXp }) => {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <h4 lang="ja" style={{ margin: 0, fontSize: '1rem', color: '#f59e0b' }}>{selectedTone.nameJa}</h4>
-                <span style={{ fontSize: '0.72rem', color: 'var(--muted)' }}>調符：{selectedTone.mark}</span>
+                <h4 lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: 0, fontSize: '1rem', color: '#f59e0b' }}>{localizedTone.nameJa}</h4>
+                <span style={{ fontSize: '0.72rem', color: 'var(--muted)' }}>{copy('調符：')}{selectedTone.mark}</span>
               </div>
               <button
                 type="button"
@@ -191,20 +203,22 @@ export const PinyinLab: React.FC<Props> = ({ onEarnXp }) => {
                   playCorrectSound()
                 }}
               >
-                🔊 聽示範音 ({selectedTone.exampleChar})
+                {copy('🔊 聽示範音')} ({selectedTone.exampleChar})
               </button>
             </div>
 
             <div style={{ background: 'var(--surface-soft)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
-              <span lang="ja" style={{ fontSize: '0.7rem', color: 'var(--muted)', display: 'block' }}>💡 日本語ネイティブ向け発音のコツ：</span>
-              <p lang="ja" style={{ margin: '0.2rem 0 0', fontSize: '0.78rem', lineHeight: 1.45 }}>{selectedTone.pitchDescriptionJa}</p>
+              <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.7rem', color: 'var(--muted)', display: 'block' }}>{copy('💡 日本語ネイティブ向け発音のコツ：')}</span>
+              <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.2rem 0 0', fontSize: '0.78rem', lineHeight: 1.45 }}>{localizedTone.pitchDescriptionJa}</p>
             </div>
 
             <div style={{ background: 'var(--surface-soft)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
-              <span style={{ fontSize: '0.7rem', color: 'var(--muted)', display: 'block' }}>📖 代表例詞：</span>
-              <strong style={{ fontSize: '0.9rem' }}>{selectedTone.exampleZh}</strong>
-              <div style={{ fontSize: '0.74rem', color: 'var(--muted)' }}><span lang="ja">ピンイン：</span><span lang="zh-Latn">{selectedTone.examplePinyin}</span></div>
-              <div lang="ja" style={{ fontSize: '0.74rem', color: '#10b981', marginTop: '0.2rem' }}>{selectedTone.exampleJa}</div>
+              <span style={{ fontSize: '0.7rem', color: 'var(--muted)', display: 'block' }}>{copy('📖 代表例詞：')}</span>
+              <strong style={{ fontSize: '0.9rem' }}>
+                {localizedTone.exampleZh} (<span lang={locale === 'en' ? 'en' : 'ja'}>{localizedTone.exampleMeaningJa}</span>)
+              </strong>
+              <div style={{ fontSize: '0.74rem', color: 'var(--muted)' }}><span lang={locale === 'en' ? 'en' : 'ja'}>{copy('ピンイン：')}</span><span lang="zh-Latn">{selectedTone.examplePinyin}</span></div>
+              <div lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: '#10b981', marginTop: '0.2rem' }}>{localizedTone.exampleJa}</div>
             </div>
           </div>
         </div>
@@ -214,7 +228,7 @@ export const PinyinLab: React.FC<Props> = ({ onEarnXp }) => {
       {activeTab === 'initials' && (
         <div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))', gap: '0.4rem', marginBottom: '0.8rem' }}>
-            {INITIALS_DATA.map((item) => (
+            {localizedInitials.map((item, index) => (
               <button
                 key={item.id}
                 type="button"
@@ -232,7 +246,7 @@ export const PinyinLab: React.FC<Props> = ({ onEarnXp }) => {
                   borderRadius: '8px',
                 }}
                 onClick={() => {
-                  setSelectedInitial(item)
+                  setSelectedInitial(INITIALS_DATA[index])
                   speakChinese(item.exampleChar)
                 }}
               >
@@ -262,12 +276,12 @@ export const PinyinLab: React.FC<Props> = ({ onEarnXp }) => {
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <strong lang="zh-Latn" style={{ fontSize: '1.2rem' }}>{selectedInitial.pinyin}</strong>
                 <span style={{ fontSize: '0.9rem', color: '#f59e0b' }}>{selectedInitial.bopomofo}</span>
-                <span lang="ja" style={{ fontSize: '0.72rem', padding: '0.1rem 0.4rem', borderRadius: '999px', background: 'var(--surface-soft)', border: '1px solid var(--line)' }}>
-                  {selectedInitial.categoryJa}
+                <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.72rem', padding: '0.1rem 0.4rem', borderRadius: '999px', background: 'var(--surface-soft)', border: '1px solid var(--line)' }}>
+                  {localizedInitial.categoryJa}
                 </span>
               </div>
-              <p lang="ja" style={{ margin: '0.3rem 0 0', fontSize: '0.78rem', color: 'var(--muted)' }}>
-                {selectedInitial.tipsJa}
+              <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.3rem 0 0', fontSize: '0.78rem', color: 'var(--muted)' }}>
+                {localizedInitial.tipsJa}
               </p>
             </div>
             <button
@@ -278,7 +292,7 @@ export const PinyinLab: React.FC<Props> = ({ onEarnXp }) => {
                 onEarnXp(5)
               }}
             >
-              🔊 聽發音 ({selectedInitial.exampleChar} · <span lang="ja">{selectedInitial.exampleMeaningJa}</span>)
+              {copy('🔊 聽發音')} ({selectedInitial.exampleChar} · <span lang={locale === 'en' ? 'en' : 'ja'}>{localizedInitial.exampleMeaningJa}</span>)
             </button>
           </div>
         </div>
@@ -288,7 +302,7 @@ export const PinyinLab: React.FC<Props> = ({ onEarnXp }) => {
       {activeTab === 'finals' && (
         <div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))', gap: '0.4rem', marginBottom: '0.8rem' }}>
-            {FINALS_DATA.map((item) => (
+            {localizedFinals.map((item, index) => (
               <button
                 key={item.id}
                 type="button"
@@ -306,7 +320,7 @@ export const PinyinLab: React.FC<Props> = ({ onEarnXp }) => {
                   borderRadius: '8px',
                 }}
                 onClick={() => {
-                  setSelectedFinal(item)
+                  setSelectedFinal(FINALS_DATA[index])
                   speakChinese(item.exampleChar)
                 }}
               >
@@ -336,12 +350,12 @@ export const PinyinLab: React.FC<Props> = ({ onEarnXp }) => {
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <strong lang="zh-Latn" style={{ fontSize: '1.2rem' }}>{selectedFinal.pinyin}</strong>
                 <span style={{ fontSize: '0.9rem', color: '#38bdf8' }}>{selectedFinal.bopomofo}</span>
-                <span lang="ja" style={{ fontSize: '0.72rem', padding: '0.1rem 0.4rem', borderRadius: '999px', background: 'var(--surface-soft)', border: '1px solid var(--line)' }}>
-                  {selectedFinal.categoryJa}
+                <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.72rem', padding: '0.1rem 0.4rem', borderRadius: '999px', background: 'var(--surface-soft)', border: '1px solid var(--line)' }}>
+                  {localizedFinal.categoryJa}
                 </span>
               </div>
-              <p lang="ja" style={{ margin: '0.3rem 0 0', fontSize: '0.78rem', color: 'var(--muted)' }}>
-                {selectedFinal.tipsJa}
+              <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.3rem 0 0', fontSize: '0.78rem', color: 'var(--muted)' }}>
+                {localizedFinal.tipsJa}
               </p>
             </div>
             <button
@@ -352,7 +366,7 @@ export const PinyinLab: React.FC<Props> = ({ onEarnXp }) => {
                 onEarnXp(5)
               }}
             >
-              🔊 聽發音 ({selectedFinal.exampleChar} · <span lang="ja">{selectedFinal.exampleMeaningJa}</span>)
+              {copy('🔊 聽發音')} ({selectedFinal.exampleChar} · <span lang={locale === 'en' ? 'en' : 'ja'}>{localizedFinal.exampleMeaningJa}</span>)
             </button>
           </div>
         </div>
@@ -361,7 +375,7 @@ export const PinyinLab: React.FC<Props> = ({ onEarnXp }) => {
       {/* 4. 常用單字拼音實戰 */}
       {activeTab === 'drills' && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(260px, 100%), 1fr))', gap: '0.6rem' }}>
-          {PINYIN_DRILL_WORDS.map((w, idx) => (
+          {localizedDrillWords.map((w, idx) => (
             <div
               key={idx}
               style={{
@@ -377,8 +391,8 @@ export const PinyinLab: React.FC<Props> = ({ onEarnXp }) => {
               <div>
                 <strong style={{ fontSize: '1.05rem', display: 'block' }}>{w.zh}</strong>
                 <div style={{ fontSize: '0.74rem', color: '#f59e0b' }}><span lang="zh-Latn">{w.pinyin}</span> · {w.bopomofo}</div>
-                <div lang="ja" style={{ fontSize: '0.72rem', color: 'var(--muted)' }}>{w.ja}</div>
-                <div style={{ fontSize: '0.68rem', color: '#10b981', marginTop: '0.2rem' }}>💡 <span lang="ja">{w.tipJa}</span></div>
+                <div lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.72rem', color: 'var(--muted)' }}>{w.ja}</div>
+                <div style={{ fontSize: '0.68rem', color: '#10b981', marginTop: '0.2rem' }}>💡 <span lang={locale === 'en' ? 'en' : 'ja'}>{w.tipJa}</span></div>
               </div>
               <button
                 type="button"
@@ -389,7 +403,7 @@ export const PinyinLab: React.FC<Props> = ({ onEarnXp }) => {
                   onEarnXp(5)
                 }}
               >
-                🔊 跟讀
+                {copy('🔊 跟讀')}
               </button>
             </div>
           ))}

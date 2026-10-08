@@ -3,8 +3,8 @@ import type { CsProgress } from '../utils/csStorage'
 import { CS_CURRICULUM, getCsQuestionCount, getNextCsUnit, isCsAdvancedUnit } from '../data/curriculum'
 import { computeCsRadar } from '../../engine/radar'
 import { useI18n } from '../../i18n/i18n'
-import { csUnitTitle } from '../../i18n/csUnitCopy'
 import { localizeTrackRadar } from '../../i18n/radarI18n'
+import { localizeCsUnit } from '../../i18n/csTeachingCopy'
 import type { CsNavSection } from './CsTopNav'
 import { CsBigOCard } from './CsBigOCard'
 import { CsHttpTcpCard } from './CsHttpTcpCard'
@@ -19,6 +19,7 @@ export const CsToday: React.FC<Props> = ({ progress, onNavigate }) => {
   const { locale, t } = useI18n()
   const [showProgress, setShowProgress] = useState(false)
   const nextUnit = getNextCsUnit(progress.completedQuestions)
+  const localizedNextUnit = localizeCsUnit(locale, nextUnit)
   const unitIndex = CS_CURRICULUM.findIndex((unit) => unit.id === nextUnit.id) + 1
   const remaining = nextUnit.questions.filter((q) => !progress.completedQuestions.includes(q.id)).length
   const doneInUnit = nextUnit.questions.length - remaining
@@ -41,9 +42,9 @@ export const CsToday: React.FC<Props> = ({ progress, onNavigate }) => {
     <div className="cs-today" lang={locale}>
       <header className="cs-today-hero">
         <p className="eyebrow">{t('cs.today.unitOf', { n: unitIndex, total: CS_CURRICULUM.length })}</p>
-        <h1>{t('cs.today.next', { title: csUnitTitle(locale, nextUnit, false) })}</h1>
+        <h1>{t('cs.today.next', { title: localizedNextUnit.title.replace(/^Unit \d+:\s*/, '') })}</h1>
         <WhyThisNext kind="unit" />
-        <p className="lede" lang="en">{nextUnit.subtitle}</p>
+        <p className="lede">{localizedNextUnit.subtitle}</p>
         <p className="cs-today-progress-line">
           {t('cs.today.unitItems', { done: doneInUnit, total: nextUnit.questions.length })}
           {hasProgress ? ` · ${completedCount}/${totalQuestions}` : ''}

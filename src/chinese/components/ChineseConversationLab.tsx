@@ -1,18 +1,23 @@
 ﻿import React, { useState } from 'react'
-import { CONVERSATION_SCENES, type ConversationScene, type DialogueLine } from '../data/conversations'
+import { CHINESE_SUPPORT_EN, CONVERSATION_SCENES, type ConversationScene, type DialogueLine } from '../data/conversations'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
+import { localizeChineseData } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
 }
 
 export const ChineseConversationLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { locale } = useI18n()
   const [selectedSceneId, setSelectedSceneId] = useState<string>(CONVERSATION_SCENES[0].id)
   const [activeLineIdx, setActiveLineIdx] = useState<number | null>(null)
   const [isPlayingAll, setIsPlayingAll] = useState(false)
 
   const activeScene: ConversationScene =
     CONVERSATION_SCENES.find((s) => s.id === selectedSceneId) ?? CONVERSATION_SCENES[0]
+  const localizedScene = localizeChineseData(activeScene, locale, CHINESE_SUPPORT_EN)
+  const localizedScenes = localizeChineseData(CONVERSATION_SCENES, locale, CHINESE_SUPPORT_EN)
 
   function speakLine(text: string, onEnd?: () => void) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -59,17 +64,19 @@ export const ChineseConversationLab: React.FC<Props> = ({ onEarnXp }) => {
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>💬</span> <span lang="ja">台湾華語・実用シチュエーション会話 (Real-life Taiwanese Mandarin Dialogues)
-          </span></h3>
-          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            台湾旅行や出張ですぐに使えるリアルな会話表現。音声再生とピンイン・注音対照でシャドーイング！
+            <span>💬</span> {locale === 'en' ? 'Practical Taiwan Mandarin Dialogues' : '台湾華語・実用シチュエーション会話 (Real-life Taiwanese Mandarin Dialogues)'}
+          </h3>
+          <p lang={locale === 'en' ? 'en' : 'ja'} className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+            {locale === 'en'
+              ? 'Shadow practical dialogue for travel and business in Taiwan with audio, pinyin, and Bopomofo support.'
+              : '台湾旅行や出張ですぐに使えるリアルな会話表現。音声再生とピンイン・注音対照でシャドーイング！'}
           </p>
         </div>
       </div>
 
       {/* 場景切換選單 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
-        {CONVERSATION_SCENES.map((scene) => (
+        {localizedScenes.map((scene) => (
           <button aria-pressed={activeScene.id === scene.id}
             key={scene.id}
             type="button"
@@ -80,7 +87,7 @@ export const ChineseConversationLab: React.FC<Props> = ({ onEarnXp }) => {
               setIsPlayingAll(false)
             }}
           >
-            {scene.sceneCategory}：{scene.titleJa.split('（')[0]}
+            {scene.sceneCategory}: {scene.titleJa.split('（')[0]}
           </button>
         ))}
       </div>
@@ -102,10 +109,10 @@ export const ChineseConversationLab: React.FC<Props> = ({ onEarnXp }) => {
       >
         <div>
           <span style={{ fontSize: '0.7rem', color: '#f59e0b', fontWeight: 700 }}>
-            {activeScene.sceneCategory} · {activeScene.titleZh}
+            {localizedScene.sceneCategory} · {localizedScene.titleZh}
           </span>
-          <h4 lang="ja" style={{ margin: '0.2rem 0', fontSize: '0.95rem' }}>{activeScene.titleJa}</h4>
-          <p lang="ja" style={{ margin: 0, fontSize: '0.76rem', color: 'var(--muted)' }}>{activeScene.descriptionJa}</p>
+          <h4 lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.2rem 0', fontSize: '0.95rem' }}>{localizedScene.titleJa}</h4>
+          <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: 0, fontSize: '0.76rem', color: 'var(--muted)' }}>{localizedScene.descriptionJa}</p>
         </div>
         <button
           type="button"
@@ -113,13 +120,16 @@ export const ChineseConversationLab: React.FC<Props> = ({ onEarnXp }) => {
           style={{ padding: '0.4rem 0.85rem', fontSize: '0.8rem' }}
           onClick={handlePlayAll}
         >
-          {isPlayingAll ? '⏹ 停止播放' : '▶ 全對話連續朗讀 (+15 XP)'}
+          {isPlayingAll
+            ? locale === 'en' ? '⏹ Stop playback' : '⏹ 停止播放'
+            : locale === 'en' ? '▶ Play full dialogue (+15 XP)' : '▶ 全對話連續朗讀 (+15 XP)'}
         </button>
       </div>
 
       {/* 對話句子清單 */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '0.8rem' }}>
         {activeScene.dialogue.map((line: DialogueLine, idx: number) => {
+          const localizedLine = localizedScene.dialogue[idx]
           const isCurrentActive = activeLineIdx === idx
           const isUser = line.speaker === '客人' || line.speaker === '旅客'
           return (
@@ -152,15 +162,15 @@ export const ChineseConversationLab: React.FC<Props> = ({ onEarnXp }) => {
                       color: '#fff',
                     }}
                   >
-                    {line.speaker}
+                    {localizedLine.speaker}
                   </span>
                   <strong style={{ fontSize: '0.95rem' }}>{line.zh}</strong>
                 </div>
                 <div style={{ fontSize: '0.74rem', color: '#f59e0b' }}>
                   <span lang="zh-Latn">{line.pinyin}</span> · {line.bopomofo}
                 </div>
-                <div lang="ja" style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.15rem' }}>
-                  {line.ja}
+                <div lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.15rem' }}>
+                  {localizedLine.ja}
                 </div>
               </div>
               <button
@@ -173,7 +183,7 @@ export const ChineseConversationLab: React.FC<Props> = ({ onEarnXp }) => {
                   onEarnXp(3)
                 }}
               >
-                🔊 跟讀
+                {locale === 'en' ? '🔊 Repeat' : '🔊 跟讀'}
               </button>
             </div>
           )
@@ -182,11 +192,11 @@ export const ChineseConversationLab: React.FC<Props> = ({ onEarnXp }) => {
 
       {/* 台灣在地文化小貼士 */}
       <div style={{ background: 'var(--surface-soft)', border: '1px solid var(--line)', borderRadius: '10px', padding: '0.75rem' }}>
-        <span lang="ja" style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
-          💡 台湾ローカル豆知識 (Taiwan Culture Tip)：
+        <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
+          {locale === 'en' ? '💡 Taiwan culture tip:' : '💡 台湾ローカル豆知識 (Taiwan Culture Tip)：'}
         </span>
-        <p lang="ja" style={{ margin: '0.2rem 0 0', fontSize: '0.76rem', color: 'var(--muted)', lineHeight: 1.45 }}>
-          {activeScene.cultureTipJa}
+        <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.2rem 0 0', fontSize: '0.76rem', color: 'var(--muted)', lineHeight: 1.45 }}>
+          {localizedScene.cultureTipJa}
         </p>
       </div>
     </div>

@@ -1,6 +1,8 @@
 ﻿import React, { useState } from 'react'
-import { DRAGON_BOAT_DIALOGUES, type DragonBoatDialogueItem } from '../data/dragonBoatZhDialogues'
+import { CHINESE_SUPPORT_EN, DRAGON_BOAT_DIALOGUES, type DragonBoatDialogueItem } from '../data/dragonBoatZhDialogues'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
+import { localizeChineseData } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
@@ -55,7 +57,15 @@ const ZONGZI_STYLES: ZongziStyle[] = [
   },
 ]
 
+const ZONGZI_STYLE_EN: Record<string, { name: string; description: string; features: string[] }> = {
+  south: { name: 'Southern boiled zongzi', description: 'Raw glutinous rice and fillings are wrapped, slowly boiled until soft, then served with sweet chili sauce and peanut powder.', features: ['Boiled from raw rice', 'Soft and cohesive'] },
+  north: { name: 'Northern steamed zongzi', description: 'Seasoned cooked glutinous rice is stir-fried with shallots and fillings, wrapped, and steamed for distinct, chewy grains.', features: ['Seasoned cooked rice', 'Steamed until springy'] },
+  hakkas: { name: 'Hakka ban zong', description: 'A chewy rice-flour wrapper encloses preserved radish, mushrooms, and pork before steaming.', features: ['Rice-flour wrapper', 'Preserved-radish filling'] },
+  alkaline: { name: 'Chilled sweet alkaline zongzi', description: 'A translucent golden dessert zongzi served chilled with sugar, honey, or sweet red bean.', features: ['Translucent amber color', 'Chilled summer dessert'] },
+}
+
 export const DragonBoatZhLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { locale } = useI18n()
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [activeZongziId, setActiveZongziId] = useState<string>('south')
   const [eggStanding, setEggStanding] = useState(false)
@@ -63,8 +73,11 @@ export const DragonBoatZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
   const activeItem: DragonBoatDialogueItem =
     DRAGON_BOAT_DIALOGUES[selectedIdx % DRAGON_BOAT_DIALOGUES.length]
+  const localizedItem = localizeChineseData(activeItem, locale, CHINESE_SUPPORT_EN)
+  const localizedDialogues = localizeChineseData(DRAGON_BOAT_DIALOGUES, locale, CHINESE_SUPPORT_EN)
 
   const currentZongzi = ZONGZI_STYLES.find((z) => z.id === activeZongziId) || ZONGZI_STYLES[0]
+  const currentZongziEn = ZONGZI_STYLE_EN[currentZongzi.id]
 
   function speakChinese(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -94,10 +107,12 @@ export const DragonBoatZhLab: React.FC<Props> = ({ onEarnXp }) => {
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>🛶</span> 台灣端午節正午立蛋與南北粽實驗室 (Dragon Boat Lab)
+            <span>🛶</span> {locale === 'en' ? 'Taiwan Dragon Boat Festival Lab' : '台灣端午節正午立蛋與南北粽實驗室 (Dragon Boat Lab)'}
           </h3>
-          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            台湾の初夏「端午節」！「正午立蛋求好運・南部水煮粽vs北部油飯蒸粽大論戰・門插艾草菖蒲辟邪」を徹底マスター！
+          <p lang={locale === 'en' ? 'en' : 'ja'} className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+            {locale === 'en'
+              ? 'Practise Mandarin through Taiwan’s Dragon Boat Festival: stand an egg at noon, compare southern and northern zongzi, and learn the mugwort-and-calamus custom.'
+              : '台湾の初夏「端午節」！「正午立蛋求好運・南部水煮粽vs北部油飯蒸粽大論戰・門插艾草菖蒲辟邪」を徹底マスター！'}
           </p>
         </div>
       </div>
@@ -121,14 +136,14 @@ export const DragonBoatZhLab: React.FC<Props> = ({ onEarnXp }) => {
           <div style={{ fontSize: '1.8rem' }}>{eggStanding ? '🥚✨' : '🛶 🌿'}</div>
           <div>
             <strong style={{ fontSize: '0.9rem', display: 'block' }}>
-              端午節慶體驗：{currentZongzi.nameZh}
+              {locale === 'en' ? `Dragon Boat Festival Experience: ${currentZongzi.nameZh}` : `端午節慶體驗：${currentZongzi.nameZh}`}
             </strong>
             <span style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
               {eggStanding
-                ? '🎉 雞蛋在正午 12 點神奇直立起來了！陽氣充滿，一整年好運連連！(+15 XP)'
+                ? locale === 'en' ? '🎉 The egg stands upright at noon. May good luck continue all year. (+15 XP)' : '🎉 雞蛋在正午 12 點神奇直立起來了！陽氣充滿，一整年好運連連！(+15 XP)'
                 : isCookingZongzi
-                ? '♨️ 粽葉飄香！熱騰騰粽子出爐，香氣四溢！快淋上醬油膏開吃囉！(+15 XP)'
-                : `${currentZongzi.descZh}`}
+                ? locale === 'en' ? '♨️ The zongzi are cooked and fragrant. Serve them hot with thick soy sauce. (+15 XP)' : '♨️ 粽葉飄香！熱騰騰粽子出爐，香氣四溢！快淋上醬油膏開吃囉！(+15 XP)'
+                : locale === 'en' ? currentZongziEn.description : currentZongzi.descZh}
             </span>
           </div>
         </div>
@@ -144,7 +159,9 @@ export const DragonBoatZhLab: React.FC<Props> = ({ onEarnXp }) => {
             }}
             onClick={handleStandEgg}
           >
-            {eggStanding ? '✓ 雞蛋直立成功！' : '🥚 正午 12 點挑戰立蛋 (+15 XP)'}
+            {eggStanding
+              ? locale === 'en' ? '✓ Egg standing successfully' : '✓ 雞蛋直立成功！'
+              : locale === 'en' ? '🥚 Stand an egg at noon (+15 XP)' : '🥚 正午 12 點挑戰立蛋 (+15 XP)'}
           </button>
           <button
             type="button"
@@ -156,7 +173,9 @@ export const DragonBoatZhLab: React.FC<Props> = ({ onEarnXp }) => {
             }}
             onClick={handleCookZongzi}
           >
-            {isCookingZongzi ? '♨️ 粽葉飄香起鍋' : '🌿 下鍋蒸煮粽子 (+15 XP)'}
+            {isCookingZongzi
+              ? locale === 'en' ? '♨️ Zongzi are ready' : '♨️ 粽葉飄香起鍋'
+              : locale === 'en' ? '🌿 Cook the zongzi (+15 XP)' : '🌿 下鍋蒸煮粽子 (+15 XP)'}
           </button>
         </div>
       </div>
@@ -185,9 +204,9 @@ export const DragonBoatZhLab: React.FC<Props> = ({ onEarnXp }) => {
             >
               <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: zongzi.color }} />
               <strong style={{ fontSize: '0.78rem' }}>{zongzi.nameZh.split(' ')[0]}</strong>
-              <span style={{ fontSize: '0.66rem', color: 'var(--muted)' }}>{zongzi.nameJa.split('（')[0]}</span>
+              <span style={{ fontSize: '0.66rem', color: 'var(--muted)' }}>{locale === 'en' ? ZONGZI_STYLE_EN[zongzi.id].name : zongzi.nameJa.split('（')[0]}</span>
               <div style={{ display: 'flex', gap: '0.2rem', flexWrap: 'wrap', justifyContent: 'center', marginTop: '0.2rem' }}>
-                {zongzi.featureTags.slice(0, 2).map((tag, tIdx) => (
+                {(locale === 'en' ? ZONGZI_STYLE_EN[zongzi.id].features : zongzi.featureTags.slice(0, 2)).map((tag, tIdx) => (
                   <span key={tIdx} style={{ fontSize: '0.62rem', background: 'rgba(5, 150, 105, 0.15)', color: '#059669', padding: '0.05rem 0.3rem', borderRadius: '4px' }}>
                     {tag}
                   </span>
@@ -200,14 +219,14 @@ export const DragonBoatZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
       {/* 場景切換膠囊 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
-        {DRAGON_BOAT_DIALOGUES.map((item, idx) => (
+        {localizedDialogues.map((item, idx) => (
           <button aria-pressed={selectedIdx === idx}
             key={item.id}
             type="button"
             className={`pill-btn ${selectedIdx === idx ? 'active' : ''}`}
             onClick={() => setSelectedIdx(idx)}
           >
-            <span>{item.icon}</span> {item.title.split('：')[0]}
+            <span>{item.icon}</span> {locale === 'en' ? item.title : item.title.split('：')[0]}
           </button>
         ))}
       </div>
@@ -218,12 +237,12 @@ export const DragonBoatZhLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(5, 150, 105, 0.15)', color: '#059669', fontWeight: 700 }}>
-              {activeItem.locationZh} (<span lang="ja">{activeItem.locationJa}</span>)
+              {localizedItem.locationZh} (<span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.locationJa}</span>)
             </span>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem', marginTop: '0.3rem' }}>
-            {activeItem.dialogueLines.map((line, lIdx) => (
+            {localizedItem.dialogueLines.map((line, lIdx) => (
               <div
                 key={lIdx}
                 style={{
@@ -238,9 +257,9 @@ export const DragonBoatZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#059669' }}>
-                    <span lang="ja">{line.speakerJa}</span>：
+                    <span lang={locale === 'en' ? 'en' : 'ja'}>{line.speakerJa}</span>:
                   </span>
-                  <button aria-label={`朗讀：${line.zh}`}
+                  <button aria-label={locale === 'en' ? `Read aloud: ${line.zh}` : `朗讀：${line.zh}`}
                     type="button"
                     style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
                     onClick={() => speakChinese(line.zh)}
@@ -250,7 +269,7 @@ export const DragonBoatZhLab: React.FC<Props> = ({ onEarnXp }) => {
                 </div>
                 <strong style={{ fontSize: '0.86rem', color: 'var(--text)' }}>{line.zh}</strong>
                 <span lang="zh-Latn" style={{ fontSize: '0.72rem', color: '#d97706' }}>{line.pinyin}</span>
-                <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
+                <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
                   {line.ja}
                 </span>
               </div>
@@ -260,12 +279,12 @@ export const DragonBoatZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
         {/* 右側：端午民俗名詞 */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          <span lang="ja" style={{ fontSize: '0.74rem', color: '#059669', fontWeight: 700, display: 'block' }}>
-            💡 台湾端午節・ちまき文化豆知識（Dragon Boat Tips）
+          <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: '#059669', fontWeight: 700, display: 'block' }}>
+            {locale === 'en' ? '💡 Taiwan Dragon Boat Festival and zongzi tips' : '💡 台湾端午節・ちまき文化豆知識（Dragon Boat Tips）'}
           </span>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginTop: '0.3rem' }}>
-            {activeItem.dragonBoatGlossary.map((vocab, vIdx) => (
+            {localizedItem.dragonBoatGlossary.map((vocab, vIdx) => (
               <div
                 key={vIdx}
                 style={{
@@ -277,9 +296,9 @@ export const DragonBoatZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <strong style={{ fontSize: '0.88rem', color: '#059669' }}>{vocab.termZh}</strong>
-                  <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
+                  <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
                 </div>
-                <p lang="ja" style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+                <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
                   {vocab.tipJa}
                 </p>
               </div>

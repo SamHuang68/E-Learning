@@ -1,13 +1,16 @@
-import { useMathLabCopy } from '../../i18n/mathLabCopy'
 import React, { useState, useEffect, useRef } from 'react'
 import { MATRIX_PRESETS, type MatrixTransformPreset } from '../data/diagramPresets'
+import { MATRIX_PRESETS_EN } from '../data/diagramPresets.en'
+import { useI18n } from '../../i18n/i18n'
 
 /**
  * 二維矩陣空間線性變換畫布 (MatrixTransformLab)
  * 高中線性代數核心：將矩陣看作二維網格基底向量 i, j 的扭曲與變換，行列式 det(A) 代表面積放大率。
  */
 export const MatrixTransformLab: React.FC = () => {
-  const ml = useMathLabCopy()
+  const { locale } = useI18n()
+  const copy = (zh: string, en: string) => locale === 'en' ? en : zh
+  const presets = locale === 'en' ? MATRIX_PRESETS_EN : MATRIX_PRESETS
   const [selectedPresetId, setSelectedPresetId] = useState<string>(MATRIX_PRESETS[0].id)
   const [a, setA] = useState<number>(1)
   const [b, setB] = useState<number>(1)
@@ -127,19 +130,19 @@ export const MatrixTransformLab: React.FC = () => {
     <div className="matrix-transform-card">
       <div className="solver-top-bar">
         <div className="solver-title-block">
-          <h3>{ml("🌀 2D 矩陣空間線性變換 (3Blue1Brown 幾何視覺化)")}</h3>
-          <p>{ml("矩陣不是一堆數字，而是「空間的拉伸、旋轉與剪切」！觀察基底向量與面積縮放比例。")}</p>
+          <h3>{copy('🌀 2D 矩陣空間線性變換 (3Blue1Brown 幾何視覺化)', '🌀 2D Matrix Transformations (Geometric View)')}</h3>
+          <p>{copy('矩陣不是一堆數字，而是「空間的拉伸、旋轉與剪切」！觀察基底向量與面積縮放比例。', 'Treat a matrix as a transformation of space: stretching, rotating, shearing, or reflecting basis vectors and areas.')}</p>
         </div>
 
         <div className="preset-tabs">
-          {MATRIX_PRESETS.map((p) => (
+          {presets.map((p) => (
             <button
               key={p.id}
               type="button"
               className={`pill-btn ${p.id === selectedPresetId ? 'active' : ''}`}
               onClick={() => applyPreset(p)}
             >
-              {ml(p.title.split(' (')[0])}
+              {p.title.split(' (')[0]}
             </button>
           ))}
         </div>
@@ -149,9 +152,10 @@ export const MatrixTransformLab: React.FC = () => {
         {/* Canvas 畫布區 */}
         <div className="canvas-container">
           <div className="canvas-badges">
-            <span className="badge-i">{ml("🔴 基底 î = (")}{a}, {c})</span>
-            <span className="badge-j">{ml("🟢 基底 ĵ = (")}{b}, {d})</span>
-            <span className={`badge-det ${det < 0 ? 'flipped' : ''}`}>{ml("面積比例 det(A) = ")}{det} {det < 0 ? ml("（空間手性翻轉）") : ''}
+            <span className="badge-i">{copy('🔴 基底 ', '🔴 Basis ')}î = ({a}, {c})</span>
+            <span className="badge-j">{copy('🟢 基底 ', '🟢 Basis ')}ĵ = ({b}, {d})</span>
+            <span className={`badge-det ${det < 0 ? 'flipped' : ''}`}>
+              {copy('面積比例 ', 'Area scale ')}det(A) = {det} {det < 0 ? copy('（空間手性翻轉）', '(orientation reversed)') : ''}
             </span>
           </div>
 
@@ -166,7 +170,7 @@ export const MatrixTransformLab: React.FC = () => {
         {/* 矩陣參數控制滑桿 */}
         <div className="matrix-controls-panel">
           <div className="matrix-display-box">
-            <h4>{ml("目前變換矩陣 A：")}</h4>
+            <h4>{copy('目前變換矩陣 A：', 'Current transformation matrix A:')}</h4>
             <div className="matrix-bracket">
               <span className="m-left">[</span>
               <div className="m-values">
@@ -179,10 +183,10 @@ export const MatrixTransformLab: React.FC = () => {
 
           <div className="sliders-stack">
             <div className="slider-row">
-              <label>{ml("î_x (a)：")}{a}</label>
+              <label>{copy('î_x (a)：', 'î_x (a): ')}{a}</label>
               <input
                 type="range"
-                aria-label={ml("矩陣係數 a，i 向量 x 分量")}
+                aria-label={copy('矩陣係數 a，i 向量 x 分量', 'Matrix coefficient a, horizontal component of vector i')}
                 aria-valuetext={`${a}`}
                 min="-2"
                 max="2"
@@ -192,10 +196,10 @@ export const MatrixTransformLab: React.FC = () => {
               />
             </div>
             <div className="slider-row">
-              <label>{ml("ĵ_x (b)：")}{b}</label>
+              <label>{copy('ĵ_x (b)：', 'ĵ_x (b): ')}{b}</label>
               <input
                 type="range"
-                aria-label={ml("矩陣係數 b，j 向量 x 分量")}
+                aria-label={copy('矩陣係數 b，j 向量 x 分量', 'Matrix coefficient b, horizontal component of vector j')}
                 aria-valuetext={`${b}`}
                 min="-2"
                 max="2"
@@ -205,10 +209,10 @@ export const MatrixTransformLab: React.FC = () => {
               />
             </div>
             <div className="slider-row">
-              <label>{ml("î_y (c)：")}{c}</label>
+              <label>{copy('î_y (c)：', 'î_y (c): ')}{c}</label>
               <input
                 type="range"
-                aria-label={ml("矩陣係數 c，i 向量 y 分量")}
+                aria-label={copy('矩陣係數 c，i 向量 y 分量', 'Matrix coefficient c, vertical component of vector i')}
                 aria-valuetext={`${c}`}
                 min="-2"
                 max="2"
@@ -218,10 +222,10 @@ export const MatrixTransformLab: React.FC = () => {
               />
             </div>
             <div className="slider-row">
-              <label>{ml("ĵ_y (d)：")}{d}</label>
+              <label>{copy('ĵ_y (d)：', 'ĵ_y (d): ')}{d}</label>
               <input
                 type="range"
-                aria-label={ml("矩陣係數 d，j 向量 y 分量")}
+                aria-label={copy('矩陣係數 d，j 向量 y 分量', 'Matrix coefficient d, vertical component of vector j')}
                 aria-valuetext={`${d}`}
                 min="-2"
                 max="2"
@@ -233,8 +237,12 @@ export const MatrixTransformLab: React.FC = () => {
           </div>
 
           <div className="det-insight-card">
-            <h5>{ml("💡 行列式幾何意義：")}</h5>
-            <p>{ml("藍色著色區域為原本 $1 \\times 1$ 的單位正方形，經過矩陣 $A$ 變換後形成的平行四邊形。 其面積恰好為 $|\\det(A)| = |")}{det}|$！
+            <h5>{copy('💡 行列式幾何意義：', '💡 Geometric meaning of the determinant:')}</h5>
+            <p>
+              {copy(
+                `藍色著色區域為原本 $1 \\times 1$ 的單位正方形，經過矩陣 $A$ 變換後形成的平行四邊形。其面積恰好為 $|\\det(A)| = |${det}|$！`,
+                `The shaded region is the parallelogram formed when matrix $A$ transforms the original $1 \\times 1$ unit square. Its area is exactly $|\\det(A)| = |${det}|$.`,
+              )}
             </p>
           </div>
         </div>

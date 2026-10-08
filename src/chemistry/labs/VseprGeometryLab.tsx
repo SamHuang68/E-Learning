@@ -1,25 +1,29 @@
 import React, { useState } from 'react'
+import { useI18n } from '../../i18n/i18n'
+import { pickUi } from '../../i18n/pickUi'
+import { VSEPR_SHAPES } from '../data/interactiveTools'
 
 interface MoleculePreset {
-  name: string
+  nameZh: string
+  nameEn: string
   formula: string
   bp: number
   lp: number
 }
 
 const PRESET_MOLECULES: MoleculePreset[] = [
-  { name: '二氧化碳', formula: 'CO₂', bp: 2, lp: 0 },
-  { name: '三氟化硼', formula: 'BF₃', bp: 3, lp: 0 },
-  { name: '二氧化硫', formula: 'SO₂', bp: 2, lp: 1 },
-  { name: '甲烷', formula: 'CH₄', bp: 4, lp: 0 },
-  { name: '氨氣', formula: 'NH₃', bp: 3, lp: 1 },
-  { name: '水分子', formula: 'H₂O', bp: 2, lp: 2 },
-  { name: '五氯化磷', formula: 'PCl₅', bp: 5, lp: 0 },
-  { name: '四氟化硫', formula: 'SF₄', bp: 4, lp: 1 },
-  { name: '三氟化氯', formula: 'ClF₃', bp: 3, lp: 2 },
-  { name: '二氟化氙', formula: 'XeF₂', bp: 2, lp: 3 },
-  { name: '六氟化硫', formula: 'SF₆', bp: 6, lp: 0 },
-  { name: '四氟化氙', formula: 'XeF₄', bp: 4, lp: 2 },
+  { nameZh: '二氧化碳', nameEn: 'Carbon dioxide', formula: 'CO₂', bp: 2, lp: 0 },
+  { nameZh: '三氟化硼', nameEn: 'Boron trifluoride', formula: 'BF₃', bp: 3, lp: 0 },
+  { nameZh: '二氧化硫', nameEn: 'Sulfur dioxide', formula: 'SO₂', bp: 2, lp: 1 },
+  { nameZh: '甲烷', nameEn: 'Methane', formula: 'CH₄', bp: 4, lp: 0 },
+  { nameZh: '氨氣', nameEn: 'Ammonia', formula: 'NH₃', bp: 3, lp: 1 },
+  { nameZh: '水分子', nameEn: 'Water', formula: 'H₂O', bp: 2, lp: 2 },
+  { nameZh: '五氯化磷', nameEn: 'Phosphorus pentachloride', formula: 'PCl₅', bp: 5, lp: 0 },
+  { nameZh: '四氟化硫', nameEn: 'Sulfur tetrafluoride', formula: 'SF₄', bp: 4, lp: 1 },
+  { nameZh: '三氟化氯', nameEn: 'Chlorine trifluoride', formula: 'ClF₃', bp: 3, lp: 2 },
+  { nameZh: '二氟化氙', nameEn: 'Xenon difluoride', formula: 'XeF₂', bp: 2, lp: 3 },
+  { nameZh: '六氟化硫', nameEn: 'Sulfur hexafluoride', formula: 'SF₆', bp: 6, lp: 0 },
+  { nameZh: '四氟化氙', nameEn: 'Xenon tetrafluoride', formula: 'XeF₄', bp: 4, lp: 2 },
 ]
 
 /**
@@ -27,53 +31,57 @@ const PRESET_MOLECULES: MoleculePreset[] = [
  * 探討價殼層電子對互斥理論 (VSEPR)、孤對電子壓縮效應、分子偶極極性與混成軌域 (sp, sp2, sp3, sp3d, sp3d2)。
  */
 export const VseprGeometryLab: React.FC = () => {
+  const { locale } = useI18n()
+  const copy = (zhHant: string, en: string) => pickUi(locale, zhHant, en)
   const [bp, setBp] = useState<number>(4) // 鍵結電子對 (BP)
   const [lp, setLp] = useState<number>(0) // 孤對電子對 (LP)
 
   const sn = bp + lp // 空間位阻數 (Steric Number)
+  const canonicalShape = VSEPR_SHAPES.find((item) => item.bondingPairs === bp && item.lonePairs === lp)
+  const geometry = (zhHant: string, fallbackEn: string) => copy(zhHant, canonicalShape?.geometry ?? fallbackEn)
 
-  let shape = '四面體形 (Tetrahedral)'
+  let shape = geometry('四面體形', 'Tetrahedral')
   let angle = '109.5°'
   let hybrid = 'sp³'
   let isPolar = false
   let example = 'CH₄, SiH₄, CCl₄'
 
   if (sn === 2) {
-    shape = '直線形 (Linear)'
+    shape = geometry('直線形', 'Linear')
     angle = '180°'
     hybrid = 'sp'
     isPolar = false
     example = 'BeCl₂, CO₂, C₂H₂'
   } else if (sn === 3) {
     if (lp === 0) {
-      shape = '平面三角形 (Trigonal Planar)'
+      shape = geometry('平面三角形', 'Trigonal Planar')
       angle = '120°'
       hybrid = 'sp²'
       isPolar = false
       example = 'BF₃, SO₃, NO₃⁻'
     } else {
-      shape = '折線形 (Bent)'
-      angle = '< 120° (約 119°)'
+      shape = geometry('折線形', 'Bent')
+      angle = copy('< 120°（約 119°）', '< 120° (about 119°)')
       hybrid = 'sp²'
       isPolar = true
       example = 'SO₂, O₃, NO₂⁻'
     }
   } else if (sn === 4) {
     if (lp === 0) {
-      shape = '四面體形 (Tetrahedral)'
+      shape = geometry('四面體形', 'Tetrahedral')
       angle = '109.5°'
       hybrid = 'sp³'
       isPolar = false
       example = 'CH₄, NH₄⁺, SO₄²⁻'
     } else if (lp === 1) {
-      shape = '三角錐形 (Trigonal Pyramidal)'
-      angle = '107.5° (LP 壓縮)'
+      shape = geometry('三角錐形', 'Trigonal Pyramidal')
+      angle = copy('107.5°（LP 壓縮）', '107.5° (compressed by LP)')
       hybrid = 'sp³'
       isPolar = true
       example = 'NH₃, PCl₃, H₃O⁺'
     } else {
-      shape = '折線形 (Bent)'
-      angle = '104.5° (雙 LP 壓縮)'
+      shape = geometry('折線形', 'Bent')
+      angle = copy('104.5°（雙 LP 壓縮）', '104.5° (compressed by two LPs)')
       hybrid = 'sp³'
       isPolar = true
       example = 'H₂O, OF₂, SCl₂'
@@ -81,22 +89,22 @@ export const VseprGeometryLab: React.FC = () => {
   } else if (sn === 5) {
     hybrid = 'sp³d'
     if (lp === 0) {
-      shape = '雙三角錐形 (Trigonal Bipyramidal)'
-      angle = '90° (軸向), 120° (赤道面)'
+      shape = geometry('雙三角錐形', 'Trigonal Bipyramidal')
+      angle = copy('90°（軸向）、120°（赤道面）', '90° (axial), 120° (equatorial)')
       isPolar = false
       example = 'PCl₅, PF₅'
     } else if (lp === 1) {
-      shape = '蹺蹺板形 (Seesaw)'
+      shape = geometry('蹺蹺板形', 'Seesaw')
       angle = '< 90°, < 120°'
       isPolar = true
       example = 'SF₄, SeF₄'
     } else if (lp === 2) {
-      shape = 'T字形 (T-shaped)'
-      angle = '< 90° (約 87.5°)'
+      shape = geometry('T 字形', 'T-shaped')
+      angle = copy('< 90°（約 87.5°）', '< 90° (about 87.5°)')
       isPolar = true
       example = 'ClF₃, BrF₃'
     } else {
-      shape = '直線形 (Linear)'
+      shape = geometry('直線形', 'Linear')
       angle = '180°'
       isPolar = false
       example = 'XeF₂, I₃⁻'
@@ -104,17 +112,17 @@ export const VseprGeometryLab: React.FC = () => {
   } else if (sn === 6) {
     hybrid = 'sp³d²'
     if (lp === 0) {
-      shape = '八面體形 (Octahedral)'
+      shape = geometry('八面體形', 'Octahedral')
       angle = '90°, 180°'
       isPolar = false
       example = 'SF₆, PF₆⁻'
     } else if (lp === 1) {
-      shape = '四角錐形 (Square Pyramidal)'
+      shape = geometry('四角錐形', 'Square Pyramidal')
       angle = '< 90°'
       isPolar = true
       example = 'BrF₅, IF₅'
     } else {
-      shape = '平面四邊形 (Square Planar)'
+      shape = geometry('平面四邊形', 'Square Planar')
       angle = '90°, 180°'
       isPolar = false
       example = 'XeF₄, ICl₄⁻'
@@ -129,15 +137,18 @@ export const VseprGeometryLab: React.FC = () => {
   const bondLength = 52
 
   return (
-    <div className="math-lab chemistry-lab vsepr-lab" style={{ width: '100%', maxWidth: '100%', minWidth: 0 }}>
+    <div lang={locale} className="math-lab chemistry-lab vsepr-lab" style={{ width: '100%', maxWidth: '100%', minWidth: 0 }}>
       {/* 頂部標題 */}
       <div className="lab-header" style={{ marginBottom: '0.6rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.05rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>📐</span> VSEPR 分子空間幾何與混成軌域實驗室 (VSEPR Theory)
+            <span>📐</span> {copy('VSEPR 分子空間幾何與混成軌域實驗室', 'VSEPR Molecular Geometry and Hybridization Lab')}
           </h3>
           <p className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            {'空間位阻數 SN = BP + LP。孤對電子 (LP) 斥力大於鍵結對 (BP)，使鍵角受到壓縮。'}
+            {copy(
+              '空間位阻數 SN = BP + LP。孤對電子（LP）斥力大於鍵結電子對（BP），使鍵角受到壓縮。',
+              'Steric number SN = BP + LP. Lone pairs (LP) repel more strongly than bonding pairs (BP), compressing bond angles.',
+            )}
           </p>
         </div>
       </div>
@@ -155,7 +166,7 @@ export const VseprGeometryLab: React.FC = () => {
               setLp(m.lp)
             }}
           >
-            {m.formula} ({m.name})
+            {m.formula} ({copy(m.nameZh, m.nameEn)})
           </button>
         ))}
       </div>
@@ -187,9 +198,9 @@ export const VseprGeometryLab: React.FC = () => {
           }}
         >
           <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem', fontSize: '0.72rem', color: '#94a3b8' }}>
-            <span>空間幾何立體投影</span>
+            <span>{copy('空間幾何立體投影', 'Molecular Geometry Projection')}</span>
             <span style={{ color: isPolar ? '#f43f5e' : '#10b981', fontWeight: 600 }}>
-              {isPolar ? '極性分子 (μ > 0)' : '非極性分子 (μ = 0)'}
+              {isPolar ? copy('極性分子（μ > 0）', 'Polar molecule (μ > 0)') : copy('非極性分子（μ = 0）', 'Nonpolar molecule (μ = 0)')}
             </span>
           </div>
 
@@ -262,16 +273,16 @@ export const VseprGeometryLab: React.FC = () => {
           {/* 大考高頻分子快照按鈕 */}
           <div>
             <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--muted)', display: 'block', marginBottom: '0.25rem' }}>
-              🧪 大考高頻分子立體構型快照：
+              🧪 {copy('大考高頻分子立體構型快照：', 'Common Exam Molecule Shapes:')}
             </span>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.25rem' }}>
               {[
-                { label: '💧 H₂O (角形)', bp: 2, lp: 2 },
-                { label: '🌿 NH₃ (三角錐)', bp: 3, lp: 1 },
-                { label: '💎 CH₄ (四面體)', bp: 4, lp: 0 },
-                { label: '📏 CO₂ (直線)', bp: 2, lp: 0 },
-                { label: '🪐 PCl₅ (雙錐)', bp: 5, lp: 0 },
-                { label: '⭐ SF₆ (八面體)', bp: 6, lp: 0 },
+                { label: copy('💧 H₂O（角形）', '💧 H₂O (Bent)'), bp: 2, lp: 2 },
+                { label: copy('🌿 NH₃（三角錐）', '🌿 NH₃ (Trigonal Pyramidal)'), bp: 3, lp: 1 },
+                { label: copy('💎 CH₄（四面體）', '💎 CH₄ (Tetrahedral)'), bp: 4, lp: 0 },
+                { label: copy('📏 CO₂（直線）', '📏 CO₂ (Linear)'), bp: 2, lp: 0 },
+                { label: copy('🪐 PCl₅（雙錐）', '🪐 PCl₅ (Trigonal Bipyramidal)'), bp: 5, lp: 0 },
+                { label: copy('⭐ SF₆（八面體）', '⭐ SF₆ (Octahedral)'), bp: 6, lp: 0 },
               ].map((m) => (
                 <button
                   key={m.label}
@@ -289,9 +300,9 @@ export const VseprGeometryLab: React.FC = () => {
                     color: bp === m.bp && lp === m.lp ? '#10b981' : 'var(--text-main)',
                     fontWeight: 600,
                     cursor: 'pointer',
-                    whiteSpace: 'nowrap',
-                    textOverflow: 'ellipsis',
-                    overflow: 'hidden',
+                    whiteSpace: 'normal',
+                    overflowWrap: 'anywhere',
+                    lineHeight: 1.2,
                   }}
                 >
                   {m.label}
@@ -303,13 +314,13 @@ export const VseprGeometryLab: React.FC = () => {
           {/* 鍵結對 (BP) */}
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem', fontWeight: 600, marginBottom: '0.15rem' }}>
-              <span>$\sigma$ 鍵結電子對 (BP)：</span>
-              <strong style={{ color: '#10b981', fontFamily: 'monospace' }}>{bp} 對</strong>
+              <span>{copy('$\\sigma$ 鍵結電子對（BP）：', '$\\sigma$ Bonding Pairs (BP):')}</span>
+              <strong style={{ color: '#10b981', fontFamily: 'monospace' }}>{copy(`${bp} 對`, `${bp} pairs`)}</strong>
             </div>
             <input
               type="range"
-              aria-label="鍵結電子對數量"
-              aria-valuetext={`${bp} 對`}
+              aria-label={copy('鍵結電子對數量', 'Number of bonding pairs')}
+              aria-valuetext={copy(`${bp} 對`, `${bp} pairs`)}
               min="1"
               max="6"
               step="1"
@@ -326,13 +337,13 @@ export const VseprGeometryLab: React.FC = () => {
           {/* 孤對電子對 (LP) */}
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem', fontWeight: 600, marginBottom: '0.15rem' }}>
-              <span>孤對電子 (Lone Pairs, LP)：</span>
-              <strong style={{ color: '#f59e0b', fontFamily: 'monospace' }}>{lp} 對</strong>
+              <span>{copy('孤對電子（Lone Pairs, LP）：', 'Lone Pairs (LP):')}</span>
+              <strong style={{ color: '#f59e0b', fontFamily: 'monospace' }}>{copy(`${lp} 對`, `${lp} pairs`)}</strong>
             </div>
             <input
               type="range"
-              aria-label="孤對電子數量"
-              aria-valuetext={`${lp} 對`}
+              aria-label={copy('孤對電子數量', 'Number of lone pairs')}
+              aria-valuetext={copy(`${lp} 對`, `${lp} pairs`)}
               min="0"
               max={Math.max(0, 6 - bp)}
               step="1"
@@ -357,19 +368,19 @@ export const VseprGeometryLab: React.FC = () => {
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: 'var(--muted)' }}>空間位阻數 (SN)：</span>
-              <strong>{sn} ({hybrid} 混成軌域)</strong>
+              <span style={{ color: 'var(--muted)' }}>{copy('空間位阻數（SN）：', 'Steric number (SN):')}</span>
+              <strong>{copy(`${sn}（${hybrid} 混成軌域）`, `${sn} (${hybrid} hybridization)`)}</strong>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: 'var(--muted)' }}>分子空間幾何：</span>
+              <span style={{ color: 'var(--muted)' }}>{copy('分子空間幾何：', 'Molecular geometry:')}</span>
               <strong style={{ color: '#2563eb' }}>{shape}</strong>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: 'var(--muted)' }}>理論/預測鍵角：</span>
+              <span style={{ color: 'var(--muted)' }}>{copy('理論／預測鍵角：', 'Theoretical / predicted bond angle:')}</span>
               <strong>{angle}</strong>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: 'var(--muted)' }}>代表化合物：</span>
+              <span style={{ color: 'var(--muted)' }}>{copy('代表化合物：', 'Representative compounds:')}</span>
               <span style={{ color: 'var(--ink)', fontFamily: 'monospace', fontWeight: 600 }}>{example}</span>
             </div>
           </div>

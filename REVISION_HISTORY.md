@@ -169,3 +169,40 @@ Validation and state:
 - The Windows WebKit offline emulation limitation and the two unchanged upstream
   whitespace notices remain classified as before. No new feature or other-project
   change is included.
+
+## localization-completion.1 — 2026-10-08 — 本機候選
+
+沿用既有內容衍生 precache `buildId` 的產物版本策略；npm package 的 `0.0.0` 不作公開發布版號。
+
+### 修改原因與內容
+
+- 完成 PR #130 尚未覆蓋的英文模式教學支援內容，涵蓋數學、物理、化學、計算機概論、TOEIC 與臺灣華語軌。
+- 保留日語、Hanzi、拼音、注音與其他目標語言教材；英文模式只轉換介面、教學說明、答案解析與輔助資訊，繁中介面則統一採用臺灣正體字形。
+- 補齊 populated Error Vault 的內容、展開狀態與操作流程，並將物理及化學的實驗室建議改為精確、預設關閉的契約，避免錯接無關實驗室。
+- 修正計算機概論公式的執行期 LaTeX 跳脫，加入控制字元、裸命令與 KaTeX 解析回歸檢查。
+- 修正數學錯題訂正 modal 在切換語系後保留舊題目內容的衍生狀態問題，改用原生 modal、正確返回焦點，並取消可能誤關下一題的舊計時器。
+- 將共用互動元件的介面語系與學習內容語系分離；Aoba 情境、模擬測驗、分級測驗與跟讀改用精確 ID 英文輔助對照，切換介面語系時保留作答狀態與日語目標內容。
+- 將物理與化學課綱英文化收斂到 App 容器的 canonical localizer；同步修正舊測試繞過該資料邊界所造成的 112 項誤報。
+- 修正獨立 Calculus 路由未將目前 locale 傳入動態推導引擎、非有限值在英文圖例顯示繁中、Canvas 與 Studio 繞過既有權威文案，以及勳章解鎖條件誤顯示機器鍵的四項根因。
+- 拆分 Hub 與語系元件的 Fast Refresh 模組邊界，讓完整 lint 達到零警告。
+- 修正共用 TOEIC 情境實驗室在 320 像素窄螢幕的水平溢位，保留 28 個實驗室原有圖示與強調色，並為英文、日語與繁中片段加入實際 payload 語言契約。
+
+### 驗證結果
+
+- `npm run lint`：通過，零錯誤、零警告。
+- `npm test`：通過，342 個測試檔、1,609 個測試。
+- `npm run verify:schema`：通過，56 項檢查。
+- `npm run build`：通過，TypeScript 與 Vite 正式建置 529 個模組成功；precache build ID 為 `09945517718f7350`。
+- `npm run verify:dist`：通過，298 個產物檔案、99 個必要 public 檔案、8 個延遲載入路由區塊，precache 總容量 8,055,097 bytes。
+- 變更測試聚合：42 個測試檔、632 個測試全數通過；314 個已暫存 TypeScript／TSX 檔零警告，`tsc -b` 通過。
+- 瀏覽器驗收：Aoba 英文輔助與切換語系後狀態保留、化學五個實驗室英文介面與代表性互動、計算機概論全主要頁面、TOEIC 混合語言與原有視覺常數、Math Error Vault modal、Calculus 英文推導步驟／徽章條件／無效算式錯誤與 `undefined` 圖例，以及 320 像素窄螢幕版面均已實際驗證；新開分頁無水平溢位，console 無 warning 或 error。
+
+### 已知限制
+
+- 專案仍為 GitHub Pages 靜態站；未設定 Supabase 環境變數時使用瀏覽器本機後端，資料不會跨裝置同步。
+- 英文模式會刻意保留日語與臺灣華語的目標語言字形，不能將這些教學內容視為未翻譯的介面洩漏。
+- 本次沒有資料庫 migration；`verify:schema` 是靜態契約檢查，不代表已連線修改託管 Supabase。
+
+### 狀態與追溯
+
+本條目建立時的狀態為本機候選，`commit=false`、`push=false`、`deploy=false`。完成後以完整 release commit SHA、實際整合至 `main` 的 SHA、GitHub Actions Pages workflow run 與線上驗收紀錄，作為同一候選的發布憑證；PR #130 只代表本次補完工作的原始範圍，不代表這份候選已經發布。

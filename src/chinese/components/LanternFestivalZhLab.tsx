@@ -1,6 +1,8 @@
 ﻿import React, { useState } from 'react'
-import { LANTERN_FESTIVAL_DIALOGUES, type LanternFestivalDialogueItem } from '../data/lanternFestivalZhDialogues'
+import { CHINESE_SUPPORT_EN, LANTERN_FESTIVAL_DIALOGUES, type LanternFestivalDialogueItem } from '../data/lanternFestivalZhDialogues'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
+import { localizeChineseData } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
@@ -22,7 +24,15 @@ const LANTERN_COLORS: SkyLanternColor[] = [
   { id: 'pink', colorNameZh: '粉色 (愛情)', colorNameJa: 'ピンク（良縁）', hex: '#ec4899', wishZh: '幸福美滿・良緣早至', wishJa: '良縁成就・恋愛円満' },
 ]
 
+const LANTERN_COLOR_EN: Record<string, { name: string; wish: string }> = {
+  red: { name: 'Red (celebration and health)', wish: 'Family peace and good health' },
+  yellow: { name: 'Yellow (wealth and business)', wish: 'Prosperity and career advancement' },
+  blue: { name: 'Blue (study and career)', wish: 'Success at work and in examinations' },
+  pink: { name: 'Pink (love)', wish: 'A happy relationship and a good match' },
+}
+
 export const LanternFestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { locale } = useI18n()
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [activeColorId, setActiveColorId] = useState<string>('red')
   const [isLanternFlying, setIsLanternFlying] = useState(false)
@@ -30,8 +40,11 @@ export const LanternFestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
   const activeItem: LanternFestivalDialogueItem =
     LANTERN_FESTIVAL_DIALOGUES[selectedIdx % LANTERN_FESTIVAL_DIALOGUES.length]
+  const localizedItem = localizeChineseData(activeItem, locale, CHINESE_SUPPORT_EN)
+  const localizedDialogues = localizeChineseData(LANTERN_FESTIVAL_DIALOGUES, locale, CHINESE_SUPPORT_EN)
 
   const currentColor = LANTERN_COLORS.find((c) => c.id === activeColorId) || LANTERN_COLORS[0]
+  const currentColorEn = LANTERN_COLOR_EN[currentColor.id]
 
   function speakChinese(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -62,10 +75,12 @@ export const LanternFestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>🏮</span> 台灣元宵節平溪天燈與鹽水蜂炮實驗室 (Lantern Festival Lab)
+            <span>🏮</span> {locale === 'en' ? 'Taiwan Lantern Festival Lab' : '台灣元宵節平溪天燈與鹽水蜂炮實驗室 (Lantern Festival Lab)'}
           </h3>
-          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            台湾の正月締めくくり「元宵節」！「平渓十分四色天燈祈福・台南鹽水蜂炮消災解厄・廟口猜燈謎」を徹底マスター！
+          <p lang={locale === 'en' ? 'en' : 'ja'} className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+            {locale === 'en'
+              ? 'Practise Mandarin through Taiwan’s Lantern Festival: release a colored sky lantern in Pingxi, experience the Yanshui Beehive Fireworks, and learn lantern-riddle customs.'
+              : '台湾の正月締めくくり「元宵節」！「平渓十分四色天燈祈福・台南鹽水蜂炮消災解厄・廟口猜燈謎」を徹底マスター！'}
           </p>
         </div>
       </div>
@@ -89,14 +104,14 @@ export const LanternFestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
           <div style={{ fontSize: '1.8rem' }}>{isLanternFlying ? '✨🏮' : isBeeFiring ? '💥🎆' : '🏮 🔥'}</div>
           <div>
             <strong style={{ fontSize: '0.9rem', display: 'block' }}>
-              元宵民俗體驗：{currentColor.colorNameZh}天燈【{currentColor.wishZh}】
+              {locale === 'en' ? `Lantern Festival Experience: ${currentColor.colorNameZh} — ${currentColorEn.wish}` : `元宵民俗體驗：${currentColor.colorNameZh}天燈【${currentColor.wishZh}】`}
             </strong>
             <span style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
               {isLanternFlying
-                ? '✨ 天燈灌滿熱氣冉冉升空！紅黃光芒照亮夜空，願望直達天聽！(+15 XP)'
+                ? locale === 'en' ? '✨ The sky lantern fills with hot air and rises into the night, carrying the written wishes upward. (+15 XP)' : '✨ 天燈灌滿熱氣冉冉升空！紅黃光芒照亮夜空，願望直達天聽！(+15 XP)'
                 : isBeeFiring
-                ? '💥 萬發蜂炮齊發！劈啪巨響萬彈穿梭，全副武裝消災除煞！(+15 XP)'
-                : `四色天燈面面寫心願：${currentColor.wishZh}（${currentColor.wishJa}）`}
+                ? locale === 'en' ? '💥 The Yanshui Beehive Fireworks erupt in rapid bursts; protective equipment is essential. (+15 XP)' : '💥 萬發蜂炮齊發！劈啪巨響萬彈穿梭，全副武裝消災除煞！(+15 XP)'
+                : locale === 'en' ? `Write a wish on each side of the lantern: ${currentColor.wishZh} (${currentColorEn.wish}).` : `四色天燈面面寫心願：${currentColor.wishZh}（${currentColor.wishJa}）`}
             </span>
           </div>
         </div>
@@ -112,7 +127,9 @@ export const LanternFestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
             }}
             onClick={handleFlyLantern}
           >
-            {isLanternFlying ? '✨ 天燈升空中...' : '🏮 點火放天燈祈福 (+15 XP)'}
+            {isLanternFlying
+              ? locale === 'en' ? '✨ Sky lantern rising…' : '✨ 天燈升空中...'
+              : locale === 'en' ? '🏮 Light and release the sky lantern (+15 XP)' : '🏮 點火放天燈祈福 (+15 XP)'}
           </button>
           <button
             type="button"
@@ -124,7 +141,9 @@ export const LanternFestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
             }}
             onClick={handleBeeFire}
           >
-            {isBeeFiring ? '💥 蜂炮震撼發射' : '🎆 體驗鹽水蜂炮 (+15 XP)'}
+            {isBeeFiring
+              ? locale === 'en' ? '💥 Beehive fireworks firing' : '💥 蜂炮震撼發射'
+              : locale === 'en' ? '🎆 Experience the Yanshui Beehive Fireworks (+15 XP)' : '🎆 體驗鹽水蜂炮 (+15 XP)'}
           </button>
         </div>
       </div>
@@ -153,7 +172,7 @@ export const LanternFestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
             >
               <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: lantern.hex }} />
               <strong style={{ fontSize: '0.78rem' }}>{lantern.colorNameZh.split(' ')[0]}</strong>
-              <span style={{ fontSize: '0.66rem', color: 'var(--muted)' }}>{lantern.colorNameJa.split('（')[0]}</span>
+              <span style={{ fontSize: '0.66rem', color: 'var(--muted)' }}>{locale === 'en' ? LANTERN_COLOR_EN[lantern.id].name : lantern.colorNameJa.split('（')[0]}</span>
               <span style={{ fontSize: '0.66rem', color: '#ef4444', marginTop: '0.2rem' }}>
                 {lantern.wishZh.split('・')[0]}
               </span>
@@ -164,14 +183,14 @@ export const LanternFestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
       {/* 場景切換膠囊 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
-        {LANTERN_FESTIVAL_DIALOGUES.map((item, idx) => (
+        {localizedDialogues.map((item, idx) => (
           <button aria-pressed={selectedIdx === idx}
             key={item.id}
             type="button"
             className={`pill-btn ${selectedIdx === idx ? 'active' : ''}`}
             onClick={() => setSelectedIdx(idx)}
           >
-            <span>{item.icon}</span> {item.title.split('：')[0]}
+            <span>{item.icon}</span> {locale === 'en' ? item.title : item.title.split('：')[0]}
           </button>
         ))}
       </div>
@@ -182,12 +201,12 @@ export const LanternFestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(239, 68, 68, 0.15)', color: '#ef4444', fontWeight: 700 }}>
-              {activeItem.locationZh} (<span lang="ja">{activeItem.locationJa}</span>)
+              {localizedItem.locationZh} (<span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.locationJa}</span>)
             </span>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem', marginTop: '0.3rem' }}>
-            {activeItem.dialogueLines.map((line, lIdx) => (
+            {localizedItem.dialogueLines.map((line, lIdx) => (
               <div
                 key={lIdx}
                 style={{
@@ -202,9 +221,9 @@ export const LanternFestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#ef4444' }}>
-                    <span lang="ja">{line.speakerJa}</span>：
+                    <span lang={locale === 'en' ? 'en' : 'ja'}>{line.speakerJa}</span>:
                   </span>
-                  <button aria-label={`朗讀：${line.zh}`}
+                  <button aria-label={locale === 'en' ? `Read aloud: ${line.zh}` : `朗讀：${line.zh}`}
                     type="button"
                     style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
                     onClick={() => speakChinese(line.zh)}
@@ -214,7 +233,7 @@ export const LanternFestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
                 </div>
                 <strong style={{ fontSize: '0.86rem', color: 'var(--text)' }}>{line.zh}</strong>
                 <span lang="zh-Latn" style={{ fontSize: '0.72rem', color: '#d97706' }}>{line.pinyin}</span>
-                <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
+                <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
                   {line.ja}
                 </span>
               </div>
@@ -224,12 +243,12 @@ export const LanternFestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
         {/* 右側：元宵民俗名詞 */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          <span style={{ fontSize: '0.74rem', color: '#ef4444', fontWeight: 700, display: 'block' }}>
-            💡 台湾元宵節・小正月文化豆知識（Lantern Festival Tips）
+          <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: '#ef4444', fontWeight: 700, display: 'block' }}>
+            {locale === 'en' ? '💡 Taiwan Lantern Festival tips' : '💡 台湾元宵節・小正月文化豆知識（Lantern Festival Tips）'}
           </span>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginTop: '0.3rem' }}>
-            {activeItem.lanternFestivalGlossary.map((vocab, vIdx) => (
+            {localizedItem.lanternFestivalGlossary.map((vocab, vIdx) => (
               <div
                 key={vIdx}
                 style={{
@@ -241,9 +260,9 @@ export const LanternFestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <strong style={{ fontSize: '0.88rem', color: '#ef4444' }}>{vocab.termZh}</strong>
-                  <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
+                  <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
                 </div>
-                <p lang="ja" style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+                <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
                   {vocab.tipJa}
                 </p>
               </div>

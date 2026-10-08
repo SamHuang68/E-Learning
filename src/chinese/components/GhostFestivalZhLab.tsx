@@ -1,6 +1,9 @@
 ﻿import React, { useState } from 'react'
-import { GHOST_FESTIVAL_DIALOGUES, type GhostFestivalDialogueItem } from '../data/ghostFestivalZhDialogues'
+import { CHINESE_SUPPORT_EN, GHOST_FESTIVAL_DIALOGUES, type GhostFestivalDialogueItem } from '../data/ghostFestivalZhDialogues'
 import { playCorrectSound, playWrongSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
+import type { UiLocale } from '../../i18n/locale'
+import { localizeChineseData } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
@@ -10,29 +13,48 @@ interface OfferingItem {
   id: string
   nameZh: string
   nameJa: string
+  nameEn: string
   icon: string
   isSafeForGhost: boolean
   tipZh: string
   tipJa: string
+  tipEn: string
 }
 
 const OFFERING_LIST: OfferingItem[] = [
-  { id: 'apple', nameZh: '蘋果 (平平安安)', nameJa: 'リンゴ（無病息災）', icon: '🍎', isSafeForGhost: true, tipZh: '適合！象徵平平安安，好兄弟受饗佑民！', tipJa: '適切！無病息災（平平安安）を象徴し最も好まれる。' },
-  { id: 'banana', nameZh: '香蕉 (招你來禁忌)', nameJa: 'バナナ（禁忌：招你來）', icon: '🍌', isSafeForGhost: false, tipZh: '禁忌！台語諧音「招」，會把好兄弟招進家中！', tipJa: 'タブー！台湾語で「招く」の同音で霊を家に引き寄せるため禁止。' },
-  { id: 'instant-noodles', nameZh: '整箱乾拌泡麵', nameJa: 'カップラーメン（箱買い）', icon: '🍜', isSafeForGhost: true, tipZh: '超受歡迎！耐放方便，普渡招牌供品！', tipJa: '大人気！保存が効き分けやすいため中元普渡の定番。' },
-  { id: 'pear', nameZh: '水梨 (招你來禁忌)', nameJa: '梨（禁忌：招你來）', icon: '🍐', isSafeForGhost: false, tipZh: '禁忌！台語諧音「來」，與香蕉李子合稱招你來！', tipJa: 'タブー！台湾語で「来る（來）」の同音のため禁忌。' },
-  { id: 'soda', nameZh: '黑松沙士整箱', nameJa: '台湾コーラ・清涼飲料水', icon: '🥤', isSafeForGhost: true, tipZh: '適合！好兄弟消暑解渴，澎湃大方！', tipJa: '適切！夏の暑さを和らげる清涼飲料水として大定番。' },
-  { id: 'pineapple', nameZh: '鳳梨 (旺來禁忌)', nameJa: 'パイナップル（禁忌：旺來）', icon: '🍍', isSafeForGhost: false, tipZh: '禁忌！諧音「旺來」，好兄弟太旺會引發事故！', tipJa: 'タブー！「災いが盛んに来る（旺來）」ため好兄弟には厳禁。' },
+  { id: 'apple', nameZh: '蘋果 (平平安安)', nameJa: 'リンゴ（無病息災）', nameEn: 'Apple (peace and safety)', icon: '🍎', isSafeForGhost: true, tipZh: '適合！象徵平平安安，好兄弟受饗佑民！', tipJa: '適切！無病息災（平平安安）を象徴し最も好まれる。', tipEn: 'Suitable: the wordplay evokes peace and safety.' },
+  { id: 'banana', nameZh: '香蕉 (招你來禁忌)', nameJa: 'バナナ（禁忌：招你來）', nameEn: 'Banana (taboo)', icon: '🍌', isSafeForGhost: false, tipZh: '禁忌！台語諧音「招」，會把好兄弟招進家中！', tipJa: 'タブー！台湾語で「招く」の同音で霊を家に引き寄せるため禁止。', tipEn: 'Taboo: in Taiwanese wordplay, it can sound like “invite” and may invite spirits into the home.' },
+  { id: 'instant-noodles', nameZh: '整箱乾拌泡麵', nameJa: 'カップラーメン（箱買い）', nameEn: 'Case of instant noodles', icon: '🍜', isSafeForGhost: true, tipZh: '超受歡迎！耐放方便，普渡招牌供品！', tipJa: '大人気！保存が効き分けやすいため中元普渡の定番。', tipEn: 'Suitable: shelf-stable and easy to distribute after the ceremony.' },
+  { id: 'pear', nameZh: '水梨 (招你來禁忌)', nameJa: '梨（禁忌：招你來）', nameEn: 'Pear (taboo)', icon: '🍐', isSafeForGhost: false, tipZh: '禁忌！台語諧音「來」，與香蕉李子合稱招你來！', tipJa: 'タブー！台湾語で「来る（來）」の同音のため禁忌。', tipEn: 'Taboo: in Taiwanese wordplay, it can sound like “come” in the phrase 招你來.' },
+  { id: 'soda', nameZh: '黑松沙士整箱', nameJa: '台湾コーラ・清涼飲料水', nameEn: 'Case of sarsaparilla soda', icon: '🥤', isSafeForGhost: true, tipZh: '適合！好兄弟消暑解渴，澎湃大方！', tipJa: '適切！夏の暑さを和らげる清涼飲料水として大定番。', tipEn: 'Suitable: a generous, refreshing offering for the summer heat.' },
+  { id: 'pineapple', nameZh: '鳳梨 (旺來禁忌)', nameJa: 'パイナップル（禁忌：旺來）', nameEn: 'Pineapple (taboo)', icon: '🍍', isSafeForGhost: false, tipZh: '禁忌！諧音「旺來」，好兄弟太旺會引發事故！', tipJa: 'タブー！「災いが盛んに来る（旺來）」ため好兄弟には厳禁。', tipEn: 'Taboo here: 旺來 wordplay suggests spirits arriving in excessive numbers.' },
 ]
 
+function formatGhostFestivalTabooAlert(
+  offeringId: string,
+  locale: UiLocale,
+): string | null {
+  const item = OFFERING_LIST.find((offering) => offering.id === offeringId)
+  if (!item || item.isSafeForGhost) return null
+  return locale === 'en'
+    ? `⚠️ Taboo: ${item.nameZh} (${item.nameEn}). ${item.tipEn}`
+    : `⚠️ 禁忌提醒！${item.nameZh}：${item.tipZh}`
+}
+
 export const GhostFestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { locale } = useI18n()
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [pickedOfferingIds, setPickedOfferingIds] = useState<string[]>(['apple', 'instant-noodles', 'soda'])
-  const [tabooAlert, setTabooAlert] = useState<string | null>(null)
+  const [tabooOfferingId, setTabooOfferingId] = useState<string | null>(null)
   const [waterLanternReleased, setWaterLanternReleased] = useState(false)
 
   const activeItem: GhostFestivalDialogueItem =
     GHOST_FESTIVAL_DIALOGUES[selectedIdx % GHOST_FESTIVAL_DIALOGUES.length]
+  const localizedItem = localizeChineseData(activeItem, locale, CHINESE_SUPPORT_EN)
+  const localizedDialogues = localizeChineseData(GHOST_FESTIVAL_DIALOGUES, locale, CHINESE_SUPPORT_EN)
+  const tabooAlert = tabooOfferingId === null
+    ? null
+    : formatGhostFestivalTabooAlert(tabooOfferingId, locale)
 
   function speakChinese(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -46,13 +68,13 @@ export const GhostFestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
   function handleToggleOffering(item: OfferingItem) {
     if (pickedOfferingIds.includes(item.id)) {
       setPickedOfferingIds((prev) => prev.filter((id) => id !== item.id))
-      setTabooAlert(null)
+      setTabooOfferingId(null)
     } else {
       if (!item.isSafeForGhost) {
-        setTabooAlert(`⚠️ 禁忌提醒！${item.nameZh}：${item.tipZh}`)
+        setTabooOfferingId(item.id)
         playWrongSound()
       } else {
-        setTabooAlert(null)
+        setTabooOfferingId(null)
         playCorrectSound()
         onEarnXp(5)
       }
@@ -73,10 +95,12 @@ export const GhostFestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>🏮</span> 台灣中元普渡拜拜與供品禁忌實驗室 (Ghost Festival Lab)
+            <span>🏮</span> {locale === 'en' ? 'Taiwan Ghost Festival Offerings Lab' : '台灣中元普渡拜拜與供品禁忌實驗室 (Ghost Festival Lab)'}
           </h3>
-          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            台湾の旧暦7月「中元普渡」！「好兄弟への供養・果物のタブー（香蕉李子梨子＝招你來）・放水燈慈悲祈福」を徹底マスター！
+          <p lang={locale === 'en' ? 'en' : 'ja'} className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+            {locale === 'en'
+              ? 'Practise Mandarin through Taiwan’s Ghost Festival: prepare Pudu offerings, learn fruit taboos and their wordplay, and release a water lantern.'
+              : '台湾の旧暦7月「中元普渡」！「好兄弟への供養・果物のタブー（香蕉李子梨子＝招你來）・放水燈慈悲祈福」を徹底マスター！'}
           </p>
         </div>
       </div>
@@ -99,13 +123,13 @@ export const GhostFestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <div style={{ fontSize: '1.8rem' }}>🏮 🪔</div>
           <div>
-            <strong style={{ fontSize: '0.9rem', display: 'block' }}>中元普渡香案供桌 (Pudu Offerings Table)</strong>
+            <strong style={{ fontSize: '0.9rem', display: 'block' }}>{locale === 'en' ? 'Pudu Offerings Table' : '中元普渡香案供桌 (Pudu Offerings Table)'}</strong>
             <span style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
               {waterLanternReleased
-                ? '🌊 基隆望海巷水燈頭隨波漂向大海！照亮水路引領好兄弟赴宴，功德圓滿！(+15 XP)'
+                ? locale === 'en' ? '🌊 The water lantern drifts from Keelung’s Wanghai Lane toward the sea, lighting the way for the spirits. (+15 XP)' : '🌊 基隆望海巷水燈頭隨波漂向大海！照亮水路引領好兄弟赴宴，功德圓滿！(+15 XP)'
                 : tabooAlert
                 ? tabooAlert
-                : `已擺設 ${pickedOfferingIds.length} 樣供品，心意滿滿！插上普渡旗與線香，祈求闔家平安！`}
+                : locale === 'en' ? `${pickedOfferingIds.length} offerings arranged. Add the Pudu flag and incense, and wish the household peace.` : `已擺設 ${pickedOfferingIds.length} 樣供品，心意滿滿！插上普渡旗與線香，祈求闔家平安！`}
             </span>
           </div>
         </div>
@@ -121,7 +145,9 @@ export const GhostFestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
             }}
             onClick={handleReleaseWaterLantern}
           >
-            {waterLanternReleased ? '✓ 水燈漂向大海' : '🪔 子夜望海巷放水燈'}
+            {waterLanternReleased
+              ? locale === 'en' ? '✓ Lantern released toward the sea' : '✓ 水燈漂向大海'
+              : locale === 'en' ? '🪔 Release a midnight water lantern' : '🪔 子夜望海巷放水燈'}
           </button>
         </div>
       </div>
@@ -150,7 +176,7 @@ export const GhostFestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
             >
               <span style={{ fontSize: '1.4rem' }}>{item.icon}</span>
               <strong style={{ fontSize: '0.78rem' }}>{item.nameZh}</strong>
-              <span lang="ja" style={{ fontSize: '0.66rem', color: 'var(--muted)' }}>{item.nameJa}</span>
+              <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.66rem', color: 'var(--muted)' }}>{locale === 'en' ? item.nameEn : item.nameJa}</span>
             </button>
           )
         })}
@@ -158,14 +184,14 @@ export const GhostFestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
       {/* 場景切換膠囊 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
-        {GHOST_FESTIVAL_DIALOGUES.map((item, idx) => (
+        {localizedDialogues.map((item, idx) => (
           <button aria-pressed={selectedIdx === idx}
             key={item.id}
             type="button"
             className={`pill-btn ${selectedIdx === idx ? 'active' : ''}`}
             onClick={() => setSelectedIdx(idx)}
           >
-            <span>{item.icon}</span> {item.title.split('：')[0]}
+            <span>{item.icon}</span> {locale === 'en' ? item.title : item.title.split('：')[0]}
           </button>
         ))}
       </div>
@@ -176,12 +202,12 @@ export const GhostFestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(245, 158, 11, 0.15)', color: '#d97706', fontWeight: 700 }}>
-              {activeItem.locationZh} (<span lang="ja">{activeItem.locationJa}</span>)
+              {localizedItem.locationZh} (<span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.locationJa}</span>)
             </span>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem', marginTop: '0.3rem' }}>
-            {activeItem.dialogueLines.map((line, lIdx) => (
+            {localizedItem.dialogueLines.map((line, lIdx) => (
               <div
                 key={lIdx}
                 style={{
@@ -196,9 +222,9 @@ export const GhostFestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#38bdf8' }}>
-                    <span lang="ja">{line.speakerJa}</span>：
+                    <span lang={locale === 'en' ? 'en' : 'ja'}>{line.speakerJa}</span>:
                   </span>
-                  <button aria-label={`朗讀：${line.zh}`}
+                  <button aria-label={locale === 'en' ? `Read aloud: ${line.zh}` : `朗讀：${line.zh}`}
                     type="button"
                     style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
                     onClick={() => speakChinese(line.zh)}
@@ -208,7 +234,7 @@ export const GhostFestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
                 </div>
                 <strong style={{ fontSize: '0.86rem', color: 'var(--text)' }}>{line.zh}</strong>
                 <span lang="zh-Latn" style={{ fontSize: '0.72rem', color: '#f59e0b' }}>{line.pinyin}</span>
-                <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
+                <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
                   {line.ja}
                 </span>
               </div>
@@ -218,12 +244,12 @@ export const GhostFestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
         {/* 右側：普渡民俗名詞 */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          <span lang="ja" style={{ fontSize: '0.74rem', color: '#d97706', fontWeight: 700, display: 'block' }}>
-            💡 台湾中元普渡・好兄弟カルチャー豆知識（Pudu Tips）
+          <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: '#d97706', fontWeight: 700, display: 'block' }}>
+            {locale === 'en' ? '💡 Taiwan Ghost Festival and Pudu tips' : '💡 台湾中元普渡・好兄弟カルチャー豆知識（Pudu Tips）'}
           </span>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginTop: '0.3rem' }}>
-            {activeItem.ghostFestivalGlossary.map((vocab, vIdx) => (
+            {localizedItem.ghostFestivalGlossary.map((vocab, vIdx) => (
               <div
                 key={vIdx}
                 style={{
@@ -235,9 +261,9 @@ export const GhostFestivalZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <strong style={{ fontSize: '0.88rem', color: '#d97706' }}>{vocab.termZh}</strong>
-                  <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
+                  <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
                 </div>
-                <p lang="ja" style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+                <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
                   {vocab.tipJa}
                 </p>
               </div>

@@ -1,17 +1,21 @@
 ﻿import React, { useState } from 'react'
-import { SYNONYM_ITEMS, type SynonymItem } from '../data/synonyms'
+import { CHINESE_SUPPORT_EN, SYNONYM_ITEMS, type SynonymItem } from '../data/synonyms'
 import { playCorrectSound, playWrongSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
+import { localizeChineseData } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
 }
 
 export const SynonymsLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { locale } = useI18n()
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [selectedOption, setSelectedOption] = useState<Record<string, number>>({})
   const [submitted, setSubmitted] = useState<Record<string, boolean>>({})
 
   const activeItem: SynonymItem = SYNONYM_ITEMS[selectedIdx % SYNONYM_ITEMS.length]
+  const localizedItem = localizeChineseData(activeItem, locale, CHINESE_SUPPORT_EN)
 
   function speakChinese(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -41,10 +45,12 @@ export const SynonymsLab: React.FC<Props> = ({ onEarnXp }) => {
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>⚖️</span> 華語近義詞辨析與語法搭配實驗室 (Synonyms Distinction Lab)
+            <span>⚖️</span> {locale === 'en' ? 'Mandarin Synonym and Grammar-Pattern Lab' : '華語近義詞辨析與語法搭配實驗室 (Synonyms Distinction Lab)'}
           </h3>
-          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            日本人学習者が最も混同しやすい近義詞の「品詞・語順・使われる文脈」の違いをクリアに攻略！
+          <p lang={locale === 'en' ? 'en' : 'ja'} className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+            {locale === 'en'
+              ? 'Compare easily confused synonyms by part of speech, word order, collocation, and context.'
+              : '日本人学習者が最も混同しやすい近義詞の「品詞・語順・使われる文脈」の違いをクリアに攻略！'}
           </p>
         </div>
       </div>
@@ -72,25 +78,25 @@ export const SynonymsLab: React.FC<Props> = ({ onEarnXp }) => {
               <h3 style={{ margin: 0, fontSize: '1.5rem', color: '#38bdf8' }}>{activeItem.wordA.zh}</h3>
               <span lang="zh-Latn" style={{ fontSize: '0.76rem', color: 'var(--muted)' }}>{activeItem.wordA.pinyin}</span>
             </div>
-            <span lang="ja" style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', fontWeight: 700 }}>
-              {activeItem.wordA.posJa}
+            <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', fontWeight: 700 }}>
+              {localizedItem.wordA.posJa}
             </span>
           </div>
 
           <div style={{ background: 'var(--surface-soft)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
-            <span lang="ja" style={{ fontSize: '0.7rem', color: 'var(--muted)', display: 'block' }}>意味と特徴：</span>
-            <div lang="ja" style={{ fontSize: '0.8rem', lineHeight: 1.45 }}>{activeItem.wordA.definitionJa}</div>
+            <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.7rem', color: 'var(--muted)', display: 'block' }}>{locale === 'en' ? 'Meaning and use:' : '意味と特徴：'}</span>
+            <div lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.8rem', lineHeight: 1.45 }}>{localizedItem.wordA.definitionJa}</div>
           </div>
 
           <div style={{ background: 'rgba(56, 189, 248, 0.08)', padding: '0.6rem', borderRadius: '8px', border: '1px solid rgba(56, 189, 248, 0.25)' }}>
-            <span lang="ja" style={{ fontSize: '0.7rem', color: '#38bdf8', fontWeight: 700, display: 'block' }}>文法パターン：</span>
+            <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.7rem', color: '#38bdf8', fontWeight: 700, display: 'block' }}>{locale === 'en' ? 'Grammar pattern:' : '文法パターン：'}</span>
             <code style={{ fontSize: '0.8rem', color: '#38bdf8', fontWeight: 700 }}>{activeItem.wordA.patternZh}</code>
           </div>
 
           <div style={{ background: 'var(--surface-soft)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.7rem', color: 'var(--muted)' }}>例文 (Example)：</span>
-              <button aria-label={`朗讀：${activeItem.wordA.exampleZh}`}
+              <span style={{ fontSize: '0.7rem', color: 'var(--muted)' }}>{locale === 'en' ? 'Target example:' : '例文 (Example)：'}</span>
+              <button aria-label={locale === 'en' ? `Read aloud: ${activeItem.wordA.exampleZh}` : `朗讀：${activeItem.wordA.exampleZh}`}
                 type="button"
                 style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
                 onClick={() => speakChinese(activeItem.wordA.exampleZh)}
@@ -99,7 +105,7 @@ export const SynonymsLab: React.FC<Props> = ({ onEarnXp }) => {
               </button>
             </div>
             <div style={{ fontSize: '0.84rem', fontWeight: 700, margin: '0.2rem 0' }}>{activeItem.wordA.exampleZh}</div>
-            <div lang="ja" style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>{activeItem.wordA.exampleJa}</div>
+            <div lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>{localizedItem.wordA.exampleJa}</div>
           </div>
         </div>
 
@@ -110,25 +116,25 @@ export const SynonymsLab: React.FC<Props> = ({ onEarnXp }) => {
               <h3 style={{ margin: 0, fontSize: '1.5rem', color: '#f59e0b' }}>{activeItem.wordB.zh}</h3>
               <span lang="zh-Latn" style={{ fontSize: '0.76rem', color: 'var(--muted)' }}>{activeItem.wordB.pinyin}</span>
             </div>
-            <span lang="ja" style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', fontWeight: 700 }}>
-              {activeItem.wordB.posJa}
+            <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', fontWeight: 700 }}>
+              {localizedItem.wordB.posJa}
             </span>
           </div>
 
           <div style={{ background: 'var(--surface-soft)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
-            <span lang="ja" style={{ fontSize: '0.7rem', color: 'var(--muted)', display: 'block' }}>意味と特徴：</span>
-            <div lang="ja" style={{ fontSize: '0.8rem', lineHeight: 1.45 }}>{activeItem.wordB.definitionJa}</div>
+            <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.7rem', color: 'var(--muted)', display: 'block' }}>{locale === 'en' ? 'Meaning and use:' : '意味と特徴：'}</span>
+            <div lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.8rem', lineHeight: 1.45 }}>{localizedItem.wordB.definitionJa}</div>
           </div>
 
           <div style={{ background: 'rgba(245, 158, 11, 0.08)', padding: '0.6rem', borderRadius: '8px', border: '1px solid rgba(245, 158, 11, 0.25)' }}>
-            <span lang="ja" style={{ fontSize: '0.7rem', color: '#f59e0b', fontWeight: 700, display: 'block' }}>文法パターン：</span>
+            <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.7rem', color: '#f59e0b', fontWeight: 700, display: 'block' }}>{locale === 'en' ? 'Grammar pattern:' : '文法パターン：'}</span>
             <code style={{ fontSize: '0.8rem', color: '#f59e0b', fontWeight: 700 }}>{activeItem.wordB.patternZh}</code>
           </div>
 
           <div style={{ background: 'var(--surface-soft)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.7rem', color: 'var(--muted)' }}>例文 (Example)：</span>
-              <button aria-label={`朗讀：${activeItem.wordB.exampleZh}`}
+              <span style={{ fontSize: '0.7rem', color: 'var(--muted)' }}>{locale === 'en' ? 'Target example:' : '例文 (Example)：'}</span>
+              <button aria-label={locale === 'en' ? `Read aloud: ${activeItem.wordB.exampleZh}` : `朗讀：${activeItem.wordB.exampleZh}`}
                 type="button"
                 style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
                 onClick={() => speakChinese(activeItem.wordB.exampleZh)}
@@ -137,7 +143,7 @@ export const SynonymsLab: React.FC<Props> = ({ onEarnXp }) => {
               </button>
             </div>
             <div style={{ fontSize: '0.84rem', fontWeight: 700, margin: '0.2rem 0' }}>{activeItem.wordB.exampleZh}</div>
-            <div lang="ja" style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>{activeItem.wordB.exampleJa}</div>
+            <div lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>{localizedItem.wordB.exampleJa}</div>
           </div>
         </div>
       </div>
@@ -145,15 +151,15 @@ export const SynonymsLab: React.FC<Props> = ({ onEarnXp }) => {
       {/* 核心差異總結與實戰測驗 */}
       <div style={{ marginTop: '0.8rem', background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem' }}>
         <div style={{ background: 'rgba(16, 185, 129, 0.08)', padding: '0.6rem 0.8rem', borderRadius: '8px', border: '1px solid rgba(16, 185, 129, 0.3)', marginBottom: '0.8rem' }}>
-          <span lang="ja" style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
-            💡 決定的な使い分けのポイント：
+          <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
+            {locale === 'en' ? '💡 Decisive usage contrast:' : '💡 決定的な使い分けのポイント：'}
           </span>
-          <p lang="ja" style={{ margin: '0.2rem 0 0', fontSize: '0.8rem', lineHeight: 1.45 }}>{activeItem.coreDifferenceJa}</p>
+          <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.2rem 0 0', fontSize: '0.8rem', lineHeight: 1.45 }}>{localizedItem.coreDifferenceJa}</p>
         </div>
 
         <div>
           <span style={{ fontSize: '0.74rem', color: 'var(--muted)', fontWeight: 700, display: 'block' }}>
-            🎯 3秒選詞實戰 (Quick Drill)
+            {locale === 'en' ? '🎯 Three-second word-choice drill' : '🎯 3秒選詞實戰 (Quick Drill)'}
           </span>
           <h4 style={{ margin: '0.3rem 0 0.6rem', fontSize: '0.94rem' }}>{activeItem.quiz.questionZh}</h4>
 
@@ -198,7 +204,7 @@ export const SynonymsLab: React.FC<Props> = ({ onEarnXp }) => {
 
           {submitted[activeItem.id] && (
             <div style={{ marginTop: '0.6rem', padding: '0.6rem', borderRadius: '8px', background: 'var(--surface-soft)', fontSize: '0.76rem', color: 'var(--muted)', lineHeight: 1.45 }}>
-              💡 <strong>解説：</strong><span lang="ja">{activeItem.quiz.explanationJa}</span>
+              💡 <strong>{locale === 'en' ? 'Explanation: ' : '解説：'}</strong><span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.quiz.explanationJa}</span>
             </div>
           )}
         </div>

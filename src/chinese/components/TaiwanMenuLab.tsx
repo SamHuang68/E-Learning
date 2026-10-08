@@ -1,6 +1,8 @@
 ﻿import React, { useState } from 'react'
-import { TAIWANESE_LOANWORDS, type LoanwordItem } from '../data/taiwaneseLoanwords'
+import { CHINESE_SUPPORT_EN, TAIWANESE_LOANWORDS, type LoanwordItem } from '../data/taiwaneseLoanwords'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
+import { localizeChineseData } from '../teachingCopy'
 
 interface FoodItem {
   nameZh: string
@@ -9,6 +11,9 @@ interface FoodItem {
   nameJa: string
   descriptionJa: string
   orderCustomizationJa: string
+  nameEn: string
+  descriptionEn: string
+  orderCustomizationEn: string
   emoji: string
   category: '夜市小吃' | '傳統正餐' | '台灣甜品'
 }
@@ -21,6 +26,9 @@ const TAIWAN_FOODS: FoodItem[] = [
     nameJa: 'ショーロンポー（スープ入り蒸し餃子）',
     descriptionJa: '薄い皮の中にジューシーな豚肉餡とアツアツのスープがたっぷり入った台湾グルメの代表格。',
     orderCustomizationJa: '「要一籠 / 薑絲醬油（ショウガと醤油）」で注文。レンゲに乗せて皮を破りスープを味わう。',
+    nameEn: 'Xiaolongbao (soup dumplings)',
+    descriptionEn: 'Thin wrappers hold a juicy pork filling and hot broth in this classic steamed dumpling.',
+    orderCustomizationEn: 'Order 一籠 (one steamer basket) and pair the dumplings with shredded ginger and soy sauce. Rest one on a spoon and open the wrapper carefully before sipping the broth.',
     emoji: '🥟',
     category: '傳統正餐',
   },
@@ -31,6 +39,9 @@ const TAIWAN_FOODS: FoodItem[] = [
     nameJa: 'ダージーパイ（台湾特大フライドチキン）',
     descriptionJa: '人の顔ほどある巨大な鶏むね肉に五香粉やスパイスを効かせてサクサクに揚げた人気夜市グルメ。',
     orderCustomizationJa: '「要切（カット）/ 不切（そのまま）」、「微辣（ピリ辛）/ 不加辣（辛味なし）」を指定。',
+    nameEn: 'Large fried chicken cutlet',
+    descriptionEn: 'An oversized chicken cutlet seasoned with five-spice powder and fried until crisp, a night-market favourite.',
+    orderCustomizationEn: 'Specify 要切 or 不切 for cut or uncut, then 微辣 or 不加辣 for mildly spicy or no chilli.',
     emoji: '🍗',
     category: '夜市小吃',
   },
@@ -41,6 +52,9 @@ const TAIWAN_FOODS: FoodItem[] = [
     nameJa: 'ルーローハン（豚肉の甘辛煮込みご飯）',
     descriptionJa: '細かく刻んだ豚バラ肉を醤油、エシャロット（紅蔥頭）、五香粉でじっくり煮込みご飯にかけたソウルフード。',
     orderCustomizationJa: '「加一顆滷蛋（煮卵追加）/ 燙青菜（茹で野菜）」を一緒に頼むのが定番。',
+    nameEn: 'Braised pork rice',
+    descriptionEn: 'Finely chopped pork belly is slowly braised with soy sauce, shallots, and five-spice powder, then served over rice.',
+    orderCustomizationEn: 'Common additions are 加一顆滷蛋 for a braised egg and 燙青菜 for blanched greens.',
     emoji: '🍚',
     category: '傳統正餐',
   },
@@ -51,6 +65,9 @@ const TAIWAN_FOODS: FoodItem[] = [
     nameJa: 'タピオカミルクティー（ボバティー）',
     descriptionJa: 'もちもちのブラックタピオカ（粉圓）が入った濃厚なミルクティー。台湾発祥の世界的人気ドリンク。',
     orderCustomizationJa: '甘さ（微糖30% / 無糖0%）、氷（去冰＝氷なし / 微冰＝少なめ）を指定。',
+    nameEn: 'Pearl milk tea (boba tea)',
+    descriptionEn: 'Rich milk tea with chewy black tapioca pearls, a drink that originated in Taiwan and became popular worldwide.',
+    orderCustomizationEn: 'Choose sweetness such as 微糖 (30%) or 無糖 (0%), then ice such as 去冰 (no ice) or 微冰 (light ice).',
     emoji: '🧋',
     category: '台灣甜品',
   },
@@ -61,6 +78,9 @@ const TAIWAN_FOODS: FoodItem[] = [
     nameJa: 'マンゴーかき氷（雪花氷）',
     descriptionJa: 'ミルク味のふわふわ氷の上に、新鮮な愛文マンゴーと練乳・マンゴーアイスを贅沢に乗せた夏の定番。',
     orderCustomizationJa: '夏季限定（5月〜10月が旬）。シェアして食べるのがおすすめ。',
+    nameEn: 'Mango snowflake ice',
+    descriptionEn: 'Fluffy milk-flavoured shaved ice topped with fresh Irwin mango, condensed milk, and mango ice cream.',
+    orderCustomizationEn: 'Fresh mango is seasonal, usually from May through October. Portions are often large enough to share.',
     emoji: '🍧',
     category: '台灣甜品',
   },
@@ -71,6 +91,9 @@ const TAIWAN_FOODS: FoodItem[] = [
     nameJa: 'チョウドウフ（発酵揚げ豆腐）',
     descriptionJa: '独特の発酵臭を持つが、カリッと揚げて甘酸っぱい台湾風キムチ（台式泡菜）と一緒に食べると絶品。',
     orderCustomizationJa: '「炸的（揚げ）」が初心者におすすめ。「加辣（辛味追加）」で泡菜と一緒に一口で。',
+    nameEn: 'Stinky tofu (fermented tofu)',
+    descriptionEn: 'Fermented tofu with a distinctive aroma, often fried until crisp and served with sweet-and-sour Taiwan pickles.',
+    orderCustomizationEn: 'Fried 炸的 tofu is an approachable first choice. Ask for 加辣 to add chilli and eat it with the pickles.',
     emoji: '🥢',
     category: '夜市小吃',
   },
@@ -81,9 +104,12 @@ interface Props {
 }
 
 export const TaiwanMenuLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { locale } = useI18n()
   const [activeTab, setActiveTab] = useState<'food' | 'loanwords'>('food')
   const [selectedFood, setSelectedFood] = useState<FoodItem>(TAIWAN_FOODS[0])
   const [selectedLoanword, setSelectedLoanword] = useState<LoanwordItem>(TAIWANESE_LOANWORDS[0])
+  const localizedLoanword = localizeChineseData(selectedLoanword, locale, CHINESE_SUPPORT_EN)
+  const localizedLoanwords = localizeChineseData(TAIWANESE_LOANWORDS, locale, CHINESE_SUPPORT_EN)
 
   function speakChinese(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -100,10 +126,12 @@ export const TaiwanMenuLab: React.FC<Props> = ({ onEarnXp }) => {
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>🏮</span> 台灣夜市美食菜單圖鑑與生活文化實驗室 (Taiwan Food & Culture Lab)
+            <span>🏮</span> {locale === 'en' ? 'Taiwan Food Menu and Everyday Culture Lab' : '台灣夜市美食菜單圖鑑與生活文化實驗室 (Taiwan Food & Culture Lab)'}
           </h3>
-          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            夜市でそのまま使える台湾ローカルフードの注文フレーズ＆台湾人が日常で使う定番台湾語（閩南語）借用語を攻略！
+          <p lang={locale === 'en' ? 'en' : 'ja'} className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+            {locale === 'en'
+              ? 'Practise night-market ordering phrases and common Taiwanese Hokkien loanwords used in everyday Mandarin.'
+              : '夜市でそのまま使える台湾ローカルフードの注文フレーズ＆台湾人が日常で使う定番台湾語（閩南語）借用語を攻略！'}
           </p>
         </div>
       </div>
@@ -115,14 +143,14 @@ export const TaiwanMenuLab: React.FC<Props> = ({ onEarnXp }) => {
           className={`pill-btn ${activeTab === 'food' ? 'active' : ''}`}
           onClick={() => setActiveTab('food')}
         >
-          🍜 經典美食菜單圖鑑 (Food Menu)
+          {locale === 'en' ? '🍜 Classic food menu' : '🍜 經典美食菜單圖鑑 (Food Menu)'}
         </button>
         <button aria-pressed={activeTab === 'loanwords'}
           type="button"
           className={`pill-btn ${activeTab === 'loanwords' ? 'active' : ''}`}
           onClick={() => setActiveTab('loanwords')}
         >
-          🗣️ 日常生活台灣語借詞 (Taiwanese Slang)
+          {locale === 'en' ? '🗣️ Everyday Taiwanese loanwords' : '🗣️ 日常生活台灣語借詞 (Taiwanese Slang)'}
         </button>
       </div>
 
@@ -179,19 +207,19 @@ export const TaiwanMenuLab: React.FC<Props> = ({ onEarnXp }) => {
                   playCorrectSound()
                 }}
               >
-                🔊 聽發音
+                {locale === 'en' ? '🔊 Play pronunciation' : '🔊 聽發音'}
               </button>
             </div>
 
             <div style={{ background: 'var(--surface-soft)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
-              <span lang="ja" style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block' }}>🇯🇵 日本語名・料理の特徴：</span>
-              <strong lang="ja" style={{ fontSize: '0.86rem', display: 'block', margin: '0.15rem 0 0.3rem' }}>{selectedFood.nameJa}</strong>
-              <p lang="ja" style={{ margin: 0, fontSize: '0.78rem', lineHeight: 1.45, color: 'var(--muted)' }}>{selectedFood.descriptionJa}</p>
+              <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block' }}>{locale === 'en' ? 'English name and description:' : '🇯🇵 日本語名・料理の特徴：'}</span>
+              <strong lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.86rem', display: 'block', margin: '0.15rem 0 0.3rem' }}>{locale === 'en' ? selectedFood.nameEn : selectedFood.nameJa}</strong>
+              <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: 0, fontSize: '0.78rem', lineHeight: 1.45, color: 'var(--muted)' }}>{locale === 'en' ? selectedFood.descriptionEn : selectedFood.descriptionJa}</p>
             </div>
 
             <div style={{ background: 'rgba(245, 158, 11, 0.08)', padding: '0.6rem', borderRadius: '8px', border: '1px solid rgba(245, 158, 11, 0.3)' }}>
-              <span lang="ja" style={{ fontSize: '0.72rem', color: '#f59e0b', fontWeight: 700, display: 'block' }}>💡 屋台・店頭での注文カスタムのコツ：</span>
-              <p lang="ja" style={{ margin: '0.2rem 0 0', fontSize: '0.78rem', lineHeight: 1.45 }}>{selectedFood.orderCustomizationJa}</p>
+              <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.72rem', color: '#f59e0b', fontWeight: 700, display: 'block' }}>{locale === 'en' ? '💡 How to customize your order:' : '💡 屋台・店頭での注文カスタムのコツ：'}</span>
+              <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.2rem 0 0', fontSize: '0.78rem', lineHeight: 1.45 }}>{locale === 'en' ? selectedFood.orderCustomizationEn : selectedFood.orderCustomizationJa}</p>
             </div>
           </div>
         </div>
@@ -199,7 +227,7 @@ export const TaiwanMenuLab: React.FC<Props> = ({ onEarnXp }) => {
         /* 生活台灣語借詞 */
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))', gap: '0.8rem' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-            {TAIWANESE_LOANWORDS.map((item) => (
+            {localizedLoanwords.map((item, index) => (
               <button aria-pressed={selectedLoanword.id === item.id}
                 key={item.id}
                 type="button"
@@ -215,13 +243,13 @@ export const TaiwanMenuLab: React.FC<Props> = ({ onEarnXp }) => {
                   cursor: 'pointer',
                   textAlign: 'left',
                 }}
-                onClick={() => setSelectedLoanword(item)}
+                onClick={() => setSelectedLoanword(TAIWANESE_LOANWORDS[index])}
               >
                 <div>
                   <strong style={{ fontSize: '1rem' }}>{item.wordZh}</strong>
                   <div lang="zh-Latn" style={{ fontSize: '0.74rem', color: '#10b981' }}>{item.taiwanesePinyin}</div>
                 </div>
-                <span style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>{item.meaningJa.split('・')[0]}</span>
+                <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>{item.meaningJa.split('・')[0]}</span>
               </button>
             ))}
           </div>
@@ -230,25 +258,25 @@ export const TaiwanMenuLab: React.FC<Props> = ({ onEarnXp }) => {
             <div>
               <h3 style={{ margin: 0, fontSize: '1.3rem', color: '#10b981' }}>{selectedLoanword.wordZh}</h3>
               <div style={{ fontSize: '0.8rem', color: 'var(--muted)', marginTop: '0.15rem' }}>
-                <span lang="ja">台湾語読み：</span><strong lang="zh-Latn">{selectedLoanword.taiwanesePinyin}</strong>
+                <span lang={locale === 'en' ? 'en' : 'ja'}>{locale === 'en' ? 'Taiwanese pronunciation: ' : '台湾語読み：'}</span><strong lang="zh-Latn">{selectedLoanword.taiwanesePinyin}</strong>
               </div>
             </div>
 
             <div style={{ background: 'var(--surface-soft)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
-              <span style={{ fontSize: '0.72rem', color: 'var(--muted)' }}>意味：</span>
-              <strong lang="ja" style={{ fontSize: '0.88rem', display: 'block', margin: '0.2rem 0' }}>{selectedLoanword.meaningJa}</strong>
-              <div style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>華語同義語：{selectedLoanword.meaningZh}</div>
+              <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.72rem', color: 'var(--muted)' }}>{locale === 'en' ? 'Meaning:' : '意味：'}</span>
+              <strong lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.88rem', display: 'block', margin: '0.2rem 0' }}>{localizedLoanword.meaningJa}</strong>
+              <div style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>{locale === 'en' ? 'Mandarin synonym: ' : '華語同義語：'}{localizedLoanword.meaningZh}</div>
             </div>
 
             <div style={{ background: 'var(--surface-soft)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)' }}>
-              <span lang="ja" style={{ fontSize: '0.72rem', color: 'var(--muted)' }}>どんな場面で使う？：</span>
-              <p lang="ja" style={{ margin: '0.2rem 0 0', fontSize: '0.78rem', lineHeight: 1.45 }}>{selectedLoanword.usageSituationJa}</p>
+              <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.72rem', color: 'var(--muted)' }}>{locale === 'en' ? 'When to use it:' : 'どんな場面で使う？：'}</span>
+              <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.2rem 0 0', fontSize: '0.78rem', lineHeight: 1.45 }}>{localizedLoanword.usageSituationJa}</p>
             </div>
 
             <div style={{ background: 'rgba(16, 185, 129, 0.08)', padding: '0.6rem', borderRadius: '8px', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
-              <span style={{ fontSize: '0.72rem', color: '#10b981', fontWeight: 700 }}>例文：</span>
+              <span style={{ fontSize: '0.72rem', color: '#10b981', fontWeight: 700 }}>{locale === 'en' ? 'Target example:' : '例文：'}</span>
               <div style={{ fontSize: '0.86rem', fontWeight: 700, margin: '0.2rem 0' }}>{selectedLoanword.exampleZh}</div>
-              <div lang="ja" style={{ fontSize: '0.76rem', color: 'var(--muted)' }}>{selectedLoanword.exampleJa}</div>
+              <div lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.76rem', color: 'var(--muted)' }}>{localizedLoanword.exampleJa}</div>
             </div>
           </div>
         </div>

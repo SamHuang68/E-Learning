@@ -1,4 +1,6 @@
 import React, { useState, useMemo } from 'react'
+import { useI18n } from '../../i18n/i18n'
+import { pickUi } from '../../i18n/pickUi'
 
 /**
  * 化學動態實驗室：酸鹼滴定與 pH 曲線實驗室 (TitrationLab)
@@ -6,6 +8,8 @@ import React, { useState, useMemo } from 'react'
  * 包含動態滴定管、錐形瓶指示劑即時變色、S 型滴定曲線、緩衝區與當量點極值標記。
  */
 export const TitrationLab: React.FC = () => {
+  const { locale } = useI18n()
+  const copy = (zhHant: string, en: string) => pickUi(locale, zhHant, en)
   const [acidType, setAcidType] = useState<'strong' | 'weak'>('strong')
   const [indicator, setIndicator] = useState<'phenolphthalein' | 'btb' | 'methyl_orange'>('phenolphthalein')
   const [vTitrant, setVTitrant] = useState<number>(15) // 已加入 0.1M NaOH 體積 (mL)
@@ -112,15 +116,18 @@ export const TitrationLab: React.FC = () => {
   const eqSy = graphOriginY - ((acidType === 'strong' ? 7.0 : 8.72) / 14) * graphH
 
   return (
-    <div className="math-lab chemistry-lab titration-lab" style={{ width: '100%', maxWidth: '100%', minWidth: 0 }}>
+    <div lang={locale} className="math-lab chemistry-lab titration-lab" style={{ width: '100%', maxWidth: '100%', minWidth: 0 }}>
       {/* 頂部標題 */}
       <div className="lab-header" style={{ marginBottom: '0.6rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.05rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>🧪</span> 酸鹼滴定與 pH 曲線實驗室 (Acid-Base Titration)
+            <span>🧪</span> {copy('酸鹼滴定與 pH 曲線實驗室', 'Acid–Base Titration and pH Curve Lab')}
           </h3>
           <p className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            {'滴定當量點分析：強酸強鹼當量點 pH=7.0；弱酸強鹼半當量點 pH = pKa = 4.74，當量點弱鹼水解 pH=8.72。'}
+            {copy(
+              '滴定當量點分析：強酸強鹼當量點 pH=7.0；弱酸強鹼半當量點 pH = pKa = 4.74，當量點弱鹼水解 pH=8.72。',
+              'Analyze titration equivalence points: a strong-acid/strong-base equivalence point has pH 7.0; a weak-acid/strong-base half-equivalence point has pH = pKa = 4.74, and hydrolysis at equivalence gives pH 8.72.',
+            )}
           </p>
         </div>
       </div>
@@ -133,7 +140,7 @@ export const TitrationLab: React.FC = () => {
           style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', background: acidType === 'strong' && vTitrant === 25 ? 'rgba(236, 72, 153, 0.2)' : undefined }}
           onClick={() => { setAcidType('strong'); setIndicator('phenolphthalein'); setVTitrant(25); }}
         >
-          🧪 強酸滴定當量點 (HCl + NaOH, pH=7.0)
+          🧪 {copy('強酸滴定當量點（HCl + NaOH，pH=7.0）', 'Strong-Acid Equivalence Point (HCl + NaOH, pH 7.0)')}
         </button>
         <button
           type="button"
@@ -141,7 +148,7 @@ export const TitrationLab: React.FC = () => {
           style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', background: acidType === 'weak' && vTitrant === 12.5 ? 'rgba(56, 189, 248, 0.2)' : undefined }}
           onClick={() => { setAcidType('weak'); setIndicator('phenolphthalein'); setVTitrant(12.5); }}
         >
-          ⚖️ 弱酸半當量緩衝點 (pH=pKa=4.74)
+          ⚖️ {copy('弱酸半當量緩衝點（pH=pKa=4.74）', 'Weak-Acid Half-Equivalence Buffer Point (pH = pKa = 4.74)')}
         </button>
         <button
           type="button"
@@ -149,7 +156,7 @@ export const TitrationLab: React.FC = () => {
           style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', background: acidType === 'weak' && vTitrant === 25 ? 'rgba(236, 72, 153, 0.2)' : undefined }}
           onClick={() => { setAcidType('weak'); setIndicator('phenolphthalein'); setVTitrant(25); }}
         >
-          🌸 弱酸當量點弱鹼水解 (pH=8.72 酚酞變粉紅)
+          🌸 {copy('弱酸當量點弱鹼水解（pH=8.72，酚酞變粉紅）', 'Weak-Acid Equivalence with Basic Hydrolysis (pH 8.72; Phenolphthalein Turns Pink)')}
         </button>
       </div>
 
@@ -178,9 +185,9 @@ export const TitrationLab: React.FC = () => {
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem', fontSize: '0.72rem', color: '#94a3b8' }}>
-            <span>滴定器材與 pH 即時曲線</span>
+            <span>{copy('滴定器材與 pH 即時曲線', 'Titration Apparatus and Live pH Curve')}</span>
             <span style={{ color: ph < 7 ? '#ef4444' : ph > 7 ? '#38bdf8' : '#10b981', fontWeight: 600 }}>
-              當前 pH = {ph.toFixed(2)}
+              {copy('當前', 'Current')} pH = {ph.toFixed(2)}
             </span>
           </div>
 
@@ -195,7 +202,7 @@ export const TitrationLab: React.FC = () => {
             <rect x="44" y={17 + (vTitrant / 50) * 75} width="12" height={80 - (vTitrant / 50) * 75} fill="rgba(56, 189, 248, 0.4)" />
             <line x1="50" y1="100" x2="50" y2="115" stroke="#94a3b8" strokeWidth="2" />
             <circle cx="50" cy="118" r="2.5" fill="#38bdf8" />
-            <text x="50" y="12" fill="#94a3b8" fontSize="7" textAnchor="middle">滴定管 (NaOH)</text>
+            <text x="50" y="12" fill="#94a3b8" fontSize="7" textAnchor="middle">{copy('滴定管（NaOH）', 'Buret (NaOH)')}</text>
 
             {/* 錐形瓶 (Erlenmeyer Flask) */}
             <polygon
@@ -205,7 +212,7 @@ export const TitrationLab: React.FC = () => {
               strokeWidth="1.8"
             />
             <text x="50" y="198" fill="#cbd5e1" fontSize="7.5" textAnchor="middle">
-              {acidType === 'strong' ? 'HCl 溶液' : 'CH₃COOH'}
+              {acidType === 'strong' ? copy('HCl 溶液', 'HCl solution') : 'CH₃COOH'}
             </text>
 
             {/* === 右側：pH 曲線圖 === */}
@@ -245,7 +252,7 @@ export const TitrationLab: React.FC = () => {
             {/* 當量點標記 */}
             <circle cx={eqSx} cy={eqSy} r="4" fill="#10b981" stroke="#fff" strokeWidth="1" />
             <text x={eqSx + 6} y={eqSy - 4} fill="#34d399" fontSize="7.5" fontWeight="bold">
-              當量點
+              {copy('當量點', 'Equivalence point')}
             </text>
 
             {/* 當前操作點 */}
@@ -273,7 +280,7 @@ export const TitrationLab: React.FC = () => {
           {/* 經典酸鹼滴定快照 */}
           <div>
             <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--muted)', display: 'block', marginBottom: '0.25rem' }}>
-              ⚡ 經典酸鹼滴定情境快照：
+              ⚡ {copy('經典酸鹼滴定情境快照：', 'Classic Acid–Base Titration Snapshots:')}
             </span>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.3rem' }}>
               <button
@@ -295,8 +302,8 @@ export const TitrationLab: React.FC = () => {
                   textAlign: 'left',
                 }}
               >
-                ⚖️ <strong>強酸強鹼當量點</strong>
-                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>HCl + NaOH · pH=7.00 中性</div>
+                ⚖️ <strong>{copy('強酸強鹼當量點', 'Strong-Acid/Strong-Base Equivalence')}</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>{copy('HCl + NaOH · pH=7.00 中性', 'HCl + NaOH · pH 7.00, neutral')}</div>
               </button>
               <button
                 type="button"
@@ -317,8 +324,8 @@ export const TitrationLab: React.FC = () => {
                   textAlign: 'left',
                 }}
               >
-                🌸 <strong>弱酸滴定酚酞變色</strong>
-                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>CH₃COOH · pH=8.72 弱鹼性</div>
+                🌸 <strong>{copy('弱酸滴定酚酞變色', 'Phenolphthalein Change in Weak-Acid Titration')}</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>{copy('CH₃COOH · pH=8.72 弱鹼性', 'CH₃COOH · pH 8.72, mildly basic')}</div>
               </button>
               <button
                 type="button"
@@ -339,8 +346,8 @@ export const TitrationLab: React.FC = () => {
                   textAlign: 'left',
                 }}
               >
-                🧪 <strong>半中和點 (pH = pKa)</strong>
-                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>V=12.5mL · pH=4.74 最佳緩衝</div>
+                🧪 <strong>{copy('半中和點（pH = pKa）', 'Half-Neutralization Point (pH = pKa)')}</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>{copy('V=12.5mL · pH=4.74 最佳緩衝', 'V = 12.5 mL · pH 4.74, maximum buffer capacity')}</div>
               </button>
               <button
                 type="button"
@@ -361,8 +368,8 @@ export const TitrationLab: React.FC = () => {
                   textAlign: 'left',
                 }}
               >
-                🔴 <strong>初始強酸狀態 (pH=1)</strong>
-                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>0.1M HCl 未加入滴定液</div>
+                🔴 <strong>{copy('初始強酸狀態（pH=1）', 'Initial Strong-Acid State (pH 1)')}</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>{copy('0.1M HCl，尚未加入滴定液', '0.1 M HCl before any titrant is added')}</div>
               </button>
             </div>
           </div>
@@ -370,7 +377,7 @@ export const TitrationLab: React.FC = () => {
           {/* 酸液種類 */}
           <div>
             <label style={{ fontSize: '0.74rem', fontWeight: 600, display: 'block', marginBottom: '0.2rem' }}>
-              被滴定酸液試樣：
+              {copy('被滴定酸液試樣：', 'Acid sample being titrated:')}
             </label>
             <div style={{ display: 'flex', gap: '0.3rem' }}>
               <button
@@ -379,7 +386,7 @@ export const TitrationLab: React.FC = () => {
                 style={{ flex: 1, padding: '0.2rem', fontSize: '0.7rem' }}
                 onClick={() => setAcidType('strong')}
               >
-                強酸 HCl (0.1M)
+                {copy('強酸 HCl（0.1M）', 'Strong acid HCl (0.1 M)')}
               </button>
               <button
                 type="button"
@@ -387,7 +394,7 @@ export const TitrationLab: React.FC = () => {
                 style={{ flex: 1, padding: '0.2rem', fontSize: '0.7rem' }}
                 onClick={() => setAcidType('weak')}
               >
-                弱酸 CH₃COOH (pKa 4.74)
+                {copy('弱酸 CH₃COOH（pKa 4.74）', 'Weak acid CH₃COOH (pKa 4.74)')}
               </button>
             </div>
           </div>
@@ -395,7 +402,7 @@ export const TitrationLab: React.FC = () => {
           {/* 指示劑種類 */}
           <div>
             <label style={{ fontSize: '0.74rem', fontWeight: 600, display: 'block', marginBottom: '0.2rem' }}>
-              酸鹼指示劑：
+              {copy('酸鹼指示劑：', 'Acid–base indicator:')}
             </label>
             <div style={{ display: 'flex', gap: '0.25rem' }}>
               <button
@@ -404,7 +411,7 @@ export const TitrationLab: React.FC = () => {
                 style={{ flex: 1, padding: '0.15rem 0.2rem', fontSize: '0.65rem' }}
                 onClick={() => setIndicator('phenolphthalein')}
               >
-                酚酞 (8.2~10.0)
+                {copy('酚酞（8.2~10.0）', 'Phenolphthalein (8.2–10.0)')}
               </button>
               <button
                 type="button"
@@ -420,7 +427,7 @@ export const TitrationLab: React.FC = () => {
                 style={{ flex: 1, padding: '0.15rem 0.2rem', fontSize: '0.65rem' }}
                 onClick={() => setIndicator('methyl_orange')}
               >
-                甲基橙 (3.1~4.4)
+                {copy('甲基橙（3.1~4.4）', 'Methyl orange (3.1–4.4)')}
               </button>
             </div>
           </div>
@@ -428,13 +435,13 @@ export const TitrationLab: React.FC = () => {
           {/* 滴入體積滑桿 */}
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem', fontWeight: 600, marginBottom: '0.15rem' }}>
-              <span>已滴入 NaOH 體積：</span>
+              <span>{copy('已滴入 NaOH 體積：', 'NaOH volume added:')}</span>
               <strong style={{ color: '#2563eb', fontFamily: 'monospace' }}>{vTitrant.toFixed(1)} mL</strong>
             </div>
             <input
               type="range"
-              aria-label="已滴入氫氧化鈉體積"
-              aria-valuetext={`${vTitrant.toFixed(1)} 毫升`}
+              aria-label={copy('已滴入氫氧化鈉體積', 'Volume of sodium hydroxide added')}
+              aria-valuetext={copy(`${vTitrant.toFixed(1)} 毫升`, `${vTitrant.toFixed(1)} milliliters`)}
               min="0"
               max="50"
               step="0.5"
@@ -450,7 +457,7 @@ export const TitrationLab: React.FC = () => {
                 style={{ flex: 1, padding: '0.15rem 0.2rem', fontSize: '0.65rem' }}
                 onClick={() => setVTitrant(0)}
               >
-                歸零
+                {copy('歸零', 'Reset')}
               </button>
               <button
                 type="button"
@@ -466,7 +473,7 @@ export const TitrationLab: React.FC = () => {
                 style={{ flex: 1, padding: '0.15rem 0.2rem', fontSize: '0.65rem' }}
                 onClick={() => setVTitrant(25)}
               >
-                當量點 (25mL)
+                {copy('當量點（25mL）', 'Equivalence (25 mL)')}
               </button>
             </div>
           </div>
@@ -486,19 +493,19 @@ export const TitrationLab: React.FC = () => {
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: 'var(--muted)' }}>當前溶液狀態：</span>
+              <span style={{ color: 'var(--muted)' }}>{copy('當前溶液狀態：', 'Current solution state:')}</span>
               <strong style={{ color: ph < 7 ? '#ef4444' : ph > 7 ? '#3b82f6' : '#10b981' }}>
-                pH {ph.toFixed(2)} ({ph < 7 ? '酸性' : ph > 7 ? '鹼性' : '中性'})
+                pH {ph.toFixed(2)} ({ph < 7 ? copy('酸性', 'acidic') : ph > 7 ? copy('鹼性', 'basic') : copy('中性', 'neutral')})
               </strong>
             </div>
             {acidType === 'weak' && (
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ color: 'var(--muted)' }}>半當量點 (12.5mL)：</span>
+                <span style={{ color: 'var(--muted)' }}>{copy('半當量點（12.5mL）：', 'Half-equivalence point (12.5 mL):')}</span>
                 <strong style={{ color: '#8b5cf6' }}>pH = pKa = 4.74</strong>
               </div>
             )}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: 'var(--muted)' }}>化學計量當量點：</span>
+              <span style={{ color: 'var(--muted)' }}>{copy('化學計量當量點：', 'Stoichiometric equivalence point:')}</span>
               <strong style={{ color: '#10b981' }}>25.0 mL ({acidType === 'strong' ? 'pH=7.00' : 'pH=8.72'})</strong>
             </div>
           </div>

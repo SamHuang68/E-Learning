@@ -78,3 +78,20 @@ export const YUELAO_LOVE_DIALOGUES: YuelaoLoveDialogueItem[] = [
     ],
   },
 ]
+
+export const CHINESE_SUPPORT_EN = {
+  '台灣七夕拜月老：霞海城隍廟求紅線、鉛錢過香爐與求良緣': 'Qixi and Yue Lao in Taiwan: Praying for a Match at Taipei Xia-Hai City God Temple',
+  '台湾の七夕・月下老人参拝：霞海城隍廟の赤い糸（紅線）・鉛銭の香炉くぐりと良縁祈願': 'Qixi and Yue Lao in Taiwan: Praying for a Match at Taipei Xia-Hai City God Temple',
+  '台北・大稲埕の霞海城隍廟、線香の煙漂う本殿前': 'In front of the incense-filled main hall at Taipei Xia-Hai City God Temple in Dadaocheng',
+  '台湾の友人': 'Taiwanese friend',
+  '今日は旧暦7月7日の七夕（台湾のバレンタインデー）！台湾で最もご利益があると名高い台北・大稲埕の霞海城隍廟の「月下老人（縁結びの神様）」にお参りしに来たよ！お供え物にはナツメ、クコ、竜眼、キャンディを用意して、甘い良縁と円満を祈願するんだ！': 'Today is Qixi, the seventh day of the seventh lunar month. We came to pray to Yue Lao, the matchmaker deity at Taipei Xia-Hai City God Temple. Jujubes, goji berries, longans, and sweets are offered for a loving and harmonious relationship.',
+  '日本人旅行者': 'Japanese traveller',
+  '月老様に願い事をお伝えするとき、相手の性格や外見、価値観まで詳しく具体的にお話しした方がいいのですか？': 'When I make my request to Yue Lao, should I describe the person\'s character, appearance, and values in detail?',
+  'その通り！自分の氏名・生年月日・現住所を名乗り、理想の条件を具体的に伝えるほど月老様も縁を結びやすいのさ。おみくじで許可を得たら「赤い糸」と「鉛銭（台湾語で縁結びと同音）」を授かり、香炉の煙の上で時計回りに3回回して（過爐）、財布に入れて大切に持ち歩くんだよ！': 'Exactly. State your name, birth date, and address, then describe the qualities you hope for. After receiving permission through divination, take a red thread and lead coin, circle them clockwise over the incense burner three times, and keep them safely in your wallet.',
+  '月下老人（男女の運命の赤い糸を結ぶ中国・台湾伝統の婚姻・縁結びの神様）': 'Yue Lao, the traditional matchmaker deity who ties destined partners with a red thread',
+  '右手に杖、左手に婚姻簿を持ち、白髪と長い髭をたくわえた慈悲深い老人の姿をしている。': 'He is portrayed as a kindly white-haired elder holding a staff and a register of marriages.',
+  '運命の赤い糸（月老から授かり良縁を引き寄せるお守り）': 'A red thread from Yue Lao, carried as a charm for a good match',
+  '香炉の煙の上で3回時計回りに回して煙を浴びせ（過爐）、財布やポーチに入れて身につける。': 'Pass it clockwise over the incense burner three times, then keep it in a wallet or pouch.',
+  '鉛の古銭お守り（台湾語で「鉛（iân）」の発音が「縁（iân）」と同音で縁起が良い）': 'A lead-coin charm whose Taiwanese pronunciation echoes the word for affinity',
+  '赤い糸と一緒に結ばれて授与され、「月老と有縁・良縁成就」を象徴する。': 'It is tied to the red thread and symbolizes an auspicious bond with Yue Lao and the fulfilment of a good match.',
+} as const

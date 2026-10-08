@@ -10,7 +10,7 @@
     "prepare:archify": "node scripts/prepare-archify.mjs",
     "verify:archify": "node scripts/prepare-archify.mjs --check",
     "verify:schema": "node scripts/verify-supabase-schema.mjs",
-    "lint": "oxlint",
+    "lint": "oxlint --deny-warnings",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",

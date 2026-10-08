@@ -1,18 +1,23 @@
 ﻿import React, { useState } from 'react'
-import { RAILWAY_DIALOGUES, type RailwayDialogueItem } from '../data/travelZhDialogues'
+import { CHINESE_SUPPORT_EN, RAILWAY_DIALOGUES, type RailwayDialogueItem } from '../data/travelZhDialogues'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
+import { localizeChineseData } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
 }
 
 export const TravelZhLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { locale } = useI18n()
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [destination, setDestination] = useState('左營 (高雄)')
   const [ticketPurchased, setTicketPurchased] = useState(false)
 
   const activeItem: RailwayDialogueItem =
     RAILWAY_DIALOGUES[selectedIdx % RAILWAY_DIALOGUES.length]
+  const localizedItem = localizeChineseData(activeItem, locale, CHINESE_SUPPORT_EN)
+  const localizedDialogues = localizeChineseData(RAILWAY_DIALOGUES, locale, CHINESE_SUPPORT_EN)
 
   function speakChinese(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -36,10 +41,12 @@ export const TravelZhLab: React.FC<Props> = ({ onEarnXp }) => {
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>🚅</span> 台灣高鐵與名勝鐵道觀光實驗室 (Tourism & Railway Lab)
+            <span>🚅</span> {locale === 'en' ? 'Taiwan High Speed Rail and Scenic Railway Lab' : '台灣高鐵與名勝鐵道觀光實驗室 (Tourism & Railway Lab)'}
           </h3>
-          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            台湾新幹線（高鐵 THSR）での「対号座（指定席）・早割（早鳥票）・阿里山森林鉄道・日出雲海」など旅の中国語を完全網羅！
+          <p lang={locale === 'en' ? 'en' : 'ja'} className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+            {locale === 'en'
+              ? 'Practise essential Mandarin for reserved seats, early-bird fares, the Alishan Forest Railway, sunrise, and Taiwan rail travel.'
+              : '台湾新幹線（高鐵 THSR）での「対号座（指定席）・早割（早鳥票）・阿里山森林鉄道・日出雲海」など旅の中国語を完全網羅！'}
           </p>
         </div>
       </div>
@@ -62,15 +69,17 @@ export const TravelZhLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <div style={{ fontSize: '1.8rem' }}>🎫 🚄</div>
           <div>
-            <strong style={{ fontSize: '0.9rem', display: 'block' }}>高鐵自動售票機 (Ticket Vending Machine)</strong>
-            <span style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
-              起站：台北 ➜ 訖站：{destination} (標準車廂 對號座 05 車 12A)
+            <strong style={{ fontSize: '0.9rem', display: 'block' }}>{locale === 'en' ? 'High-speed rail ticket machine' : '高鐵自動售票機 (Ticket Vending Machine)'}</strong>
+            <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
+              {locale === 'en'
+                ? <>Origin: Taipei ➜ Destination: {destination} · Standard carriage · Reserved seat · Car 5, seat 12A</>
+                : <>起站：台北 ➜ 訖站：{destination} (標準車廂 對號座 05 車 12A)</>}
             </span>
           </div>
         </div>
 
         <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-          <select aria-label="高鐵目的地"
+          <select aria-label={locale === 'en' ? 'High-speed rail destination' : '高鐵目的地'}
             value={destination}
             onChange={(e) => setDestination(e.target.value)}
             style={{
@@ -96,21 +105,23 @@ export const TravelZhLab: React.FC<Props> = ({ onEarnXp }) => {
             }}
             onClick={handleBuyTicket}
           >
-            {ticketPurchased ? '✓ 購票成功！出票中 (+10 XP)' : '💳 點擊模擬購票'}
+            {ticketPurchased
+              ? locale === 'en' ? '✓ Purchase complete · Printing ticket (+10 XP)' : '✓ 購票成功！出票中 (+10 XP)'
+              : locale === 'en' ? '💳 Simulate ticket purchase' : '💳 點擊模擬購票'}
           </button>
         </div>
       </div>
 
       {/* 場景切換膠囊 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
-        {RAILWAY_DIALOGUES.map((item, idx) => (
+        {localizedDialogues.map((item, idx) => (
           <button aria-pressed={selectedIdx === idx}
             key={item.id}
             type="button"
             className={`pill-btn ${selectedIdx === idx ? 'active' : ''}`}
             onClick={() => setSelectedIdx(idx)}
           >
-            <span>{item.icon}</span> {item.title.split('與')[0]}
+            <span>{item.icon}</span> {locale === 'en' ? item.title : item.title.split('與')[0]}
           </button>
         ))}
       </div>
@@ -121,7 +132,7 @@ export const TravelZhLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(249, 115, 22, 0.15)', color: '#f97316', fontWeight: 700 }}>
-              {activeItem.locationZh} (<span lang="ja">{activeItem.locationJa}</span>)
+              {activeItem.locationZh} (<span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.locationJa}</span>)
             </span>
           </div>
 
@@ -141,9 +152,9 @@ export const TravelZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#38bdf8' }}>
-                    <span lang="ja">{line.speakerJa}</span>：
+                    <span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.dialogueLines[lIdx].speakerJa}</span>:
                   </span>
-                  <button aria-label={`朗讀：${line.zh}`}
+                  <button aria-label={locale === 'en' ? `Read aloud: ${line.zh}` : `朗讀：${line.zh}`}
                     type="button"
                     style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
                     onClick={() => speakChinese(line.zh)}
@@ -153,8 +164,8 @@ export const TravelZhLab: React.FC<Props> = ({ onEarnXp }) => {
                 </div>
                 <strong style={{ fontSize: '0.86rem', color: 'var(--text)' }}>{line.zh}</strong>
                 <span lang="zh-Latn" style={{ fontSize: '0.72rem', color: '#f59e0b' }}>{line.pinyin}</span>
-                <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
-                  {line.ja}
+                <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
+                  {localizedItem.dialogueLines[lIdx].ja}
                 </span>
               </div>
             ))}
@@ -163,12 +174,12 @@ export const TravelZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
         {/* 右側：鐵道觀光單詞 */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          <span style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
-            💡 台湾鉄道旅行・観光必須単語（Railway Tips）
+          <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
+            {locale === 'en' ? '💡 Railway travel and sightseeing tips' : '💡 台湾鉄道旅行・観光必須単語（Railway Tips）'}
           </span>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginTop: '0.3rem' }}>
-            {activeItem.railwayGlossary.map((vocab, vIdx) => (
+            {localizedItem.railwayGlossary.map((vocab, vIdx) => (
               <div
                 key={vIdx}
                 style={{
@@ -180,9 +191,9 @@ export const TravelZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <strong style={{ fontSize: '0.88rem', color: '#f59e0b' }}>{vocab.termZh}</strong>
-                  <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
+                  <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
                 </div>
-                <p lang="ja" style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+                <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
                   {vocab.tipJa}
                 </p>
               </div>

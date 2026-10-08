@@ -10,6 +10,8 @@ import { findMatchingChemistrySignal } from '../chemistry/utils/vaultSignal'
 import { CHEMISTRY_MOCK_EXAMS } from '../chemistry/data/mockExams'
 import { UI_LOCALE_KEY } from './locale'
 
+const CJK = /[\u3040-\u30ff\u3400-\u9fff\uf900-\ufaff]/
+
 beforeAll(async () => { await loadCalculusCopy() })
 describe('Preserved handoff review regressions', () => {
   it('retains frequency nu in all three photon-energy concepts', () => {
@@ -20,11 +22,16 @@ describe('Preserved handoff review regressions', () => {
       expect(text).not.toContain('h\nu')
     }
   })
-  it.each(['中文', '測試+1', 'x$中文'])('renders a recoverable canvas error for opaque expression %s', expression => {
+  it.each([
+    ['中文', 'Cannot parse'],
+    ['測試+1', 'Cannot parse'],
+    ['x$中文', 'Unexpected trailing characters'],
+  ])('renders a recoverable canvas error for opaque expression %s', (expression, expectedError) => {
     vi.stubGlobal('localStorage', { getItem: (key: string) => key === UI_LOCALE_KEY ? 'en' : null })
     try {
       const html = renderToStaticMarkup(createElement(CalculusCanvas, { expression, mode: 'tangent_secant' }))
-      expect(html).toContain('Cannot parse')
+      expect(html).toContain('Cannot evaluate')
+      expect(html).toContain(expectedError)
       expect(html).toContain(expression)
       expect(html).toContain('Correct the expression')
       expect(calculusCopy('en', `無法解析「${expression}」：無法解析表達式`)).toBe(`Cannot parse "${expression}": Cannot parse expression`)
@@ -36,11 +43,24 @@ describe('Preserved handoff review regressions', () => {
     try {
       const title = calculusCopy('en', "求函數 f(x) = {0} 的符號導函數與臨界點".replace('{0}', expression))
       const html = renderToStaticMarkup(createElement(StepByStepSolver, {
-        problemTitle: title, steps: generateDerivationSteps(expression), currentStepIndex: 0, onStepChange: () => {},
+        problemTitle: title, steps: generateDerivationSteps(expression, 'en'), currentStepIndex: 0, onStepChange: () => {},
       }))
       expect(html).toContain(expression)
       expect(html).toContain('Find the symbolic derivative')
       expect(html).toContain('Cannot parse')
+    } finally { vi.unstubAllGlobals() }
+  })
+  it('keeps complete Canvas and solver shells Han-free for an ASCII-only parse error', () => {
+    vi.stubGlobal('localStorage', { getItem: (key: string) => key === UI_LOCALE_KEY ? 'en' : null })
+    try {
+      const expression = 'x$'
+      const canvasHtml = renderToStaticMarkup(createElement(CalculusCanvas, { expression, mode: 'tangent_secant' }))
+      const title = calculusCopy('en', "求函數 f(x) = {0} 的符號導函數與臨界點".replace('{0}', expression))
+      const solverHtml = renderToStaticMarkup(createElement(StepByStepSolver, {
+        problemTitle: title, steps: generateDerivationSteps(expression, 'en'), currentStepIndex: 0, onStepChange: () => {},
+      }))
+      expect(canvasHtml).not.toMatch(CJK)
+      expect(solverHtml).not.toMatch(CJK)
     } finally { vi.unstubAllGlobals() }
   })
   it('uses the concentration-change question hint instead of a standard-potential signal', () => {

@@ -1,5 +1,6 @@
 import type { LangId } from '../utils/storage'
-import { LocaleToggle, useI18n } from '../i18n/i18n'
+import { useI18n } from '../i18n/i18n'
+import { LocaleToggle } from '../i18n/LocaleComponents'
 import type { MessageKey } from '../i18n/messages'
 
 type Props = {

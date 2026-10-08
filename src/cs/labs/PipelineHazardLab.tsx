@@ -1,5 +1,6 @@
 ﻿import React, { useState } from 'react'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
 
 interface Props {
   onEarnXp: (amount: number) => void
@@ -8,6 +9,8 @@ interface Props {
 type HazardScenario = 'alu_raw' | 'load_use'
 
 export const PipelineHazardLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { locale } = useI18n()
+  const copy = (zhHant: string, en: string) => locale === 'en' ? en : zhHant
   const [scenario, setScenario] = useState<HazardScenario>('alu_raw')
   const [enableForwarding, setEnableForwarding] = useState<boolean>(true)
   const [hasClaimedXp, setHasClaimedXp] = useState<boolean>(false)
@@ -30,10 +33,10 @@ export const PipelineHazardLab: React.FC<Props> = ({ onEarnXp }) => {
       <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
           <h3 style={{ margin: 0, fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>⚡</span> CPU 5級管線冒險與前向傳遞 (Forwarding) 實驗室
+            <span>⚡</span> {copy('CPU 5級管線冒險與前向傳遞 (Forwarding) 實驗室', 'Five-Stage CPU Pipeline Hazards and Forwarding Lab')}
           </h3>
           <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.76rem', color: 'var(--muted)' }}>
-            觀察資料冒險 (RAW) 如何引發管線停頓 (Stall)，以及旁路前向傳遞如何消除氣泡
+            {copy('觀察資料冒險 (RAW) 如何引發管線停頓 (Stall)，以及旁路前向傳遞如何消除氣泡', 'Observe how a read-after-write data hazard stalls a pipeline and how bypass forwarding removes bubbles.')}
           </p>
         </div>
 
@@ -53,7 +56,7 @@ export const PipelineHazardLab: React.FC<Props> = ({ onEarnXp }) => {
                 fontWeight: 600,
               }}
             >
-              ALU-ALU 相依
+              {copy('ALU-ALU 相依', 'ALU-to-ALU dependency')}
             </button>
             <button
               type="button"
@@ -69,7 +72,7 @@ export const PipelineHazardLab: React.FC<Props> = ({ onEarnXp }) => {
                 fontWeight: 600,
               }}
             >
-              Load-Use 相依
+              {copy('Load-Use 相依', 'Load-use dependency')}
             </button>
           </div>
 
@@ -87,7 +90,7 @@ export const PipelineHazardLab: React.FC<Props> = ({ onEarnXp }) => {
               fontWeight: 700,
             }}
           >
-            {enableForwarding ? '🟢 Forwarding: 開啟' : '🔴 Forwarding: 關閉'}
+            {enableForwarding ? copy('🟢 Forwarding: 開啟', '🟢 Forwarding: on') : copy('🔴 Forwarding: 關閉', '🔴 Forwarding: off')}
           </button>
 
           {!hasClaimedXp ? (
@@ -105,10 +108,10 @@ export const PipelineHazardLab: React.FC<Props> = ({ onEarnXp }) => {
                 fontWeight: 700,
               }}
             >
-              領取 +15 XP
+              {copy('領取 +15 XP', 'Claim +15 XP')}
             </button>
           ) : (
-            <span style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700 }}>✓ 已掌握 +15 XP</span>
+            <span style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700 }}>{copy('✓ 已掌握 +15 XP', '✓ Mastered +15 XP')}</span>
           )}
         </div>
       </div>
@@ -118,22 +121,26 @@ export const PipelineHazardLab: React.FC<Props> = ({ onEarnXp }) => {
         {/* 左側：時序表 */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           <span style={{ fontSize: '0.76rem', fontWeight: 700, color: '#2563eb' }}>
-            📅 5 級管線時序圖 (時脈週期 CC 1 ~ {totalCycles})
+            {copy('📅 5 級管線時序圖', '📅 Five-stage pipeline timing')} ({copy('時脈週期', 'clock cycles')} CC 1–{totalCycles})
           </span>
 
           <div style={{ background: 'var(--surface-soft)', border: '1px solid var(--line)', borderRadius: '8px', padding: '0.6rem', fontSize: '0.78rem', fontFamily: 'monospace' }}>
             <div style={{ fontWeight: 700, color: '#f59e0b', marginBottom: '0.3rem' }}>
-              {scenario === 'alu_raw' ? 'I1: ADD R1, R2, R3 (寫入 R1)' : 'I1: LW R1, 0(R2) (從記憶體載入 R1)'}
+              {scenario === 'alu_raw'
+                ? copy('I1: ADD R1, R2, R3 (寫入 R1)', 'I1: ADD R1, R2, R3 (writes R1)')
+                : copy('I1: LW R1, 0(R2) (從記憶體載入 R1)', 'I1: LW R1, 0(R2) (loads R1 from memory)')}
             </div>
             <div style={{ fontWeight: 700, color: '#3b82f6' }}>
-              {scenario === 'alu_raw' ? 'I2: SUB R4, R1, R5 (讀取 R1 ➜ RAW)' : 'I2: ADD R3, R1, R4 (讀取 R1 ➜ Load-Use)'}
+              {scenario === 'alu_raw'
+                ? copy('I2: SUB R4, R1, R5 (讀取 R1 ➜ RAW)', 'I2: SUB R4, R1, R5 (reads R1 ➜ RAW)')
+                : copy('I2: ADD R3, R1, R4 (讀取 R1 ➜ Load-Use)', 'I2: ADD R3, R1, R4 (reads R1 ➜ load-use)')}
             </div>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', overflowX: 'auto' }}>
             {/* 指令 1 時序 */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-              <span style={{ width: '70px', fontSize: '0.74rem', fontWeight: 600 }}>指令 1:</span>
+              <span style={{ width: '70px', fontSize: '0.74rem', fontWeight: 600 }}>{copy('指令 1:', 'Instruction 1:')}</span>
               <span style={{ background: '#3b82f6', color: '#fff', padding: '3px 8px', borderRadius: '4px', fontSize: '0.7rem' }}>CC1: IF</span>
               <span style={{ background: '#3b82f6', color: '#fff', padding: '3px 8px', borderRadius: '4px', fontSize: '0.7rem' }}>CC2: ID</span>
               <span style={{ background: '#3b82f6', color: '#fff', padding: '3px 8px', borderRadius: '4px', fontSize: '0.7rem' }}>CC3: EX</span>
@@ -143,7 +150,7 @@ export const PipelineHazardLab: React.FC<Props> = ({ onEarnXp }) => {
 
             {/* 指令 2 時序 (根據是否有 Stall 展開) */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-              <span style={{ width: '70px', fontSize: '0.74rem', fontWeight: 600 }}>指令 2:</span>
+              <span style={{ width: '70px', fontSize: '0.74rem', fontWeight: 600 }}>{copy('指令 2:', 'Instruction 2:')}</span>
               <span style={{ opacity: 0.2, padding: '3px 8px', fontSize: '0.7rem' }}>-</span>
               <span style={{ background: '#10b981', color: '#fff', padding: '3px 8px', borderRadius: '4px', fontSize: '0.7rem' }}>CC2: IF</span>
               <span style={{ background: '#10b981', color: '#fff', padding: '3px 8px', borderRadius: '4px', fontSize: '0.7rem' }}>CC3: ID</span>
@@ -174,13 +181,13 @@ export const PipelineHazardLab: React.FC<Props> = ({ onEarnXp }) => {
           </div>
 
           <div style={{ marginTop: '0.5rem', padding: '0.6rem 0.8rem', background: stallCycles === 0 ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)', border: `1px solid ${stallCycles === 0 ? '#10b981' : '#ef4444'}`, borderRadius: '8px', fontSize: '0.76rem' }}>
-            <strong>狀態判定：</strong>
+            <strong>{copy('狀態判定：', 'Result:')}</strong>
             {stallCycles === 0 ? (
-              <span style={{ color: '#10b981', fontWeight: 700 }}> 零停頓 (0 Stall)！EX/MEM 轉發旁路直接將 R1 傳入下一條 EX，完美隱藏延遲。</span>
+              <span style={{ color: '#10b981', fontWeight: 700 }}> {copy('零停頓 (0 Stall)！EX/MEM 轉發旁路直接將 R1 傳入下一條 EX，完美隱藏延遲。', 'Zero stalls. The EX/MEM bypass forwards R1 directly to the next EX stage and hides the dependency latency.')}</span>
             ) : stallCycles === 1 ? (
-              <span style={{ color: '#ef4444', fontWeight: 700 }}> 停頓 1 週期 (Load-Use Hazard)！資料必須等 MEM 階段讀出後才能 Forwarding。</span>
+              <span style={{ color: '#ef4444', fontWeight: 700 }}> {copy('停頓 1 週期 (Load-Use Hazard)！資料必須等 MEM 階段讀出後才能 Forwarding。', 'One-cycle stall for the load-use hazard. Forwarding must wait until the MEM stage returns the data.')}</span>
             ) : (
-              <span style={{ color: '#ef4444', fontWeight: 700 }}> 停頓 2 週期！無 Forwarding 支援，必須等待指令 1 在 WB 級寫回暫存器。</span>
+              <span style={{ color: '#ef4444', fontWeight: 700 }}> {copy('停頓 2 週期！無 Forwarding 支援，必須等待指令 1 在 WB 級寫回暫存器。', 'Two-cycle stall. Without forwarding, instruction 2 must wait for instruction 1 to write the register in WB.')}</span>
             )}
           </div>
         </div>
@@ -188,18 +195,18 @@ export const PipelineHazardLab: React.FC<Props> = ({ onEarnXp }) => {
         {/* 右側：硬體管線結構與考點解析 */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           <span style={{ fontSize: '0.76rem', fontWeight: 700, color: '#10b981' }}>
-            💡 管線冒險 (Pipeline Hazards) 考點精要
+            {copy('💡 管線冒險 (Pipeline Hazards) 考點精要', '💡 Pipeline-Hazard Essentials')}
           </span>
 
           <ul style={{ margin: 0, paddingLeft: '1.2rem', fontSize: '0.76rem', color: 'var(--text)', lineHeight: 1.6 }}>
-            <li><strong>結構冒險 (Structural Hazard)</strong>：硬體資源衝突（例如指令與資料共享單一記憶體埠），解法為採用 Harvard 架構分離 I-Cache 與 D-Cache。</li>
-            <li><strong>資料冒險 (Data Hazard: RAW)</strong>：後續指令需要先前指令的運算結果，透過 <strong>Forwarding (轉發/旁路)</strong> 可大幅減少或消除停頓。</li>
-            <li><strong>載入使用冒險 (Load-Use Data Hazard)</strong>：唯一無法被 Forwarding 完全消除的資料冒險，硬體 Hazard Detection Unit 必須強制插入 <strong>1 個 Bubble 氣泡</strong>。</li>
-            <li><strong>控制冒險 (Control Hazard)</strong>：分支指令 (Branch) 跳躍與否，解法為<strong>靜態預測、動態 2-bit 飽和計數器與分支目標緩衝區 (BTB)</strong>。</li>
+            <li>{copy('結構冒險：硬體資源衝突，例如指令與資料共享單一記憶體埠；Harvard 架構以分離 I-Cache 與 D-Cache 解決。', 'Structural hazard: hardware resources conflict, such as instructions and data sharing one memory port; a Harvard design separates the I-Cache and D-Cache.')}</li>
+            <li>{copy('資料冒險 (RAW)：後續指令需要先前指令的結果，轉發或旁路可大幅減少或消除停頓。', 'RAW data hazard: a later instruction needs an earlier result; forwarding or bypassing can reduce or eliminate the stall.')}</li>
+            <li>{copy('載入使用冒險：資料到 MEM 階段才可用，因此偵測單元即使有轉發也必須插入 1 個 Bubble。', 'Load-use hazard: the value is not ready until MEM, so the hazard-detection unit must insert one bubble even with forwarding.')}</li>
+            <li>{copy('控制冒險：分支方向未知；可用靜態預測、動態 2-bit 飽和計數器與分支目標緩衝區 (BTB)。', 'Control hazard: the branch direction is unknown; mitigations include static prediction, a dynamic two-bit saturating counter, and a branch target buffer.')}</li>
           </ul>
 
           <div style={{ background: 'var(--surface-soft)', border: '1px solid var(--line)', borderRadius: '8px', padding: '0.6rem 0.8rem', fontSize: '0.74rem', color: 'var(--muted)', lineHeight: 1.45 }}>
-            🔍 <strong>工程意義：</strong>在現代高性能處理器與 GPU SM（流式多處理器）中，管線化與亂序執行 (Out-of-Order, OoO) 能極限填滿執行單元，是提升 IPC (Instructions Per Cycle) 的核心靈魂。
+            🔍 <strong>{copy('工程意義：', 'Engineering significance:')}</strong>{copy('在現代高性能處理器與 GPU SM 中，管線化與亂序執行可維持執行單元忙碌，是提升 IPC 的核心技術。', 'In modern high-performance processors and GPU streaming multiprocessors, pipelining and out-of-order execution keep functional units busy and raise instructions per cycle.')}
           </div>
         </div>
       </div>

@@ -12,7 +12,13 @@ export type ChemistryStage = 'junior' | 'senior'
 
 export type ChemistryBand = '國中必修' | '高中必修' | '選修'
 
-export type ChemistryTargetExam = '國中教育會考 (CAP)' | '學科能力測驗 (GSAT)' | '分科測驗 (AST)'
+export type ChemistryTargetExam =
+  | '國中教育會考 (CAP)'
+  | '學科能力測驗 (GSAT)'
+  | '分科測驗 (AST)'
+  | 'Comprehensive Assessment Program (CAP)'
+  | 'General Scholastic Ability Test (GSAT)'
+  | 'Advanced Subjects Test (AST)'
 
 /**
  * 108 課綱化學五大核心主軸 (Strands)

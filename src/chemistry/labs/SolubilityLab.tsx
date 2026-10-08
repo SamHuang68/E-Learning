@@ -1,46 +1,58 @@
 import React, { useState, useMemo } from 'react'
+import { useI18n } from '../../i18n/i18n'
+import { pickUi } from '../../i18n/pickUi'
 
 interface SoluteInfo {
   id: string
-  name: string
+  nameZh: string
+  nameEn: string
   formula: string
   color: string
   evalSolubility: (tempC: number) => number
-  desc: string
+  descZh: string
+  descEn: string
 }
 
 const SOLUTES: SoluteInfo[] = [
   {
     id: 'kno3',
-    name: '硝酸鉀',
+    nameZh: '硝酸鉀',
+    nameEn: 'Potassium nitrate',
     formula: 'KNO₃',
     color: '#38bdf8',
     evalSolubility: (t) => 13.3 + 0.6 * t + 0.015 * t * t, // 20°C ~31.6g, 60°C ~110g, 80°C ~169g
-    desc: '吸熱溶解，溶解度隨溫度劇烈上升',
+    descZh: '吸熱溶解，溶解度隨溫度劇烈上升',
+    descEn: 'Endothermic dissolution; solubility rises steeply with temperature',
   },
   {
     id: 'nacl',
-    name: '氯化鈉 (食鹽)',
+    nameZh: '氯化鈉（食鹽）',
+    nameEn: 'Sodium chloride (table salt)',
     formula: 'NaCl',
     color: '#facc15',
     evalSolubility: (t) => 35.7 + 0.04 * t, // 20°C ~36g, 100°C ~39.8g
-    desc: '溶解度受溫度影響微弱',
+    descZh: '溶解度受溫度影響微弱',
+    descEn: 'Solubility changes only slightly with temperature',
   },
   {
     id: 'cuso4',
-    name: '硫酸銅',
+    nameZh: '硫酸銅',
+    nameEn: 'Copper(II) sulfate',
     formula: 'CuSO₄',
     color: '#60a5fa',
     evalSolubility: (t) => 14.3 + 0.45 * t + 0.003 * t * t, // 20°C ~20.7g, 60°C ~40g
-    desc: '藍色晶體，隨溫度平穩上升',
+    descZh: '藍色晶體，溶解度隨溫度平穩上升',
+    descEn: 'Blue crystals; solubility rises steadily with temperature',
   },
   {
     id: 'ce2so4',
-    name: '硫酸鈰',
+    nameZh: '硫酸鈰',
+    nameEn: 'Cerium(III) sulfate',
     formula: 'Ce₂(SO₄)₃',
     color: '#f43f5e',
     evalSolubility: (t) => Math.max(1.5, 20.0 - 0.18 * t), // 逆溶解度
-    desc: '放熱溶解，高溫溶解度反而下降',
+    descZh: '放熱溶解，高溫溶解度反而下降',
+    descEn: 'Exothermic dissolution; solubility decreases as temperature rises',
   },
 ]
 
@@ -49,12 +61,15 @@ const SOLUTES: SoluteInfo[] = [
  * 模擬固體溶質溶解度曲線、飽和/未飽和/過飽和狀態、降溫結晶與析出量計算。
  */
 export const SolubilityLab: React.FC = () => {
+  const { locale } = useI18n()
+  const copy = (zhHant: string, en: string) => pickUi(locale, zhHant, en)
   const [soluteId, setSoluteId] = useState<string>('kno3')
   const [tempC, setTempC] = useState<number>(60) // 溫度 (°C)
   const [waterG, setWaterG] = useState<number>(100) // 水重 (g)
   const [soluteAdded, setSoluteAdded] = useState<number>(90) // 加入溶質重 (g)
 
   const activeSolute = SOLUTES.find((s) => s.id === soluteId) || SOLUTES[0]
+  const soluteName = (solute: SoluteInfo) => copy(solute.nameZh, solute.nameEn)
 
   // 當前溫度下的最大溶解度 (g / 100g 水)
   const maxSolPer100 = activeSolute.evalSolubility(tempC)
@@ -103,15 +118,18 @@ export const SolubilityLab: React.FC = () => {
   const precipH = Math.min(35, (precipitated / 150) * 35)
 
   return (
-    <div className="math-lab chemistry-lab solubility-lab" style={{ width: '100%', maxWidth: '100%', minWidth: 0 }}>
+    <div lang={locale} className="math-lab chemistry-lab solubility-lab" style={{ width: '100%', maxWidth: '100%', minWidth: 0 }}>
       {/* 頂部標題 */}
       <div className="lab-header" style={{ marginBottom: '0.6rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.05rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>🧊</span> 溶解度曲線與結晶析出實驗室 (Solubility & Crystallization)
+            <span>🧊</span> {copy('溶解度曲線與結晶析出實驗室', 'Solubility Curves and Crystallization Lab')}
           </h3>
           <p className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            飽和溶液：溶劑在特定溫度下所能溶解之溶質上限。降溫或蒸發溶劑破壞溶解平衡即可析出固體晶體。
+            {copy(
+              '飽和溶液：溶劑在特定溫度下所能溶解之溶質上限。降溫或蒸發溶劑破壞溶解平衡即可析出固體晶體。',
+              'A saturated solution contains the maximum amount of solute that a solvent can dissolve at a given temperature. Cooling or evaporating the solvent can disturb the equilibrium and form solid crystals.',
+            )}
           </p>
         </div>
       </div>
@@ -126,7 +144,7 @@ export const SolubilityLab: React.FC = () => {
             style={{ padding: '0.15rem 0.4rem', fontSize: '0.68rem' }}
             onClick={() => setSoluteId(s.id)}
           >
-            {s.formula} ({s.name})
+            {s.formula} ({soluteName(s)})
           </button>
         ))}
       </div>
@@ -156,9 +174,11 @@ export const SolubilityLab: React.FC = () => {
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem', fontSize: '0.72rem', color: '#94a3b8' }}>
-            <span>溶解度曲線與燒杯析出</span>
+            <span>{copy('溶解度曲線與燒杯析出', 'Solubility Curve and Beaker Crystallization')}</span>
             <span style={{ color: isSaturated ? '#ef4444' : '#10b981', fontWeight: 600 }}>
-              {isSaturated ? `飽和 (析出 ${precipitated.toFixed(1)}g)` : '未飽和溶液'}
+              {isSaturated
+                ? copy(`飽和（析出 ${precipitated.toFixed(1)}g）`, `Saturated (${precipitated.toFixed(1)} g precipitated)`)
+                : copy('未飽和溶液', 'Unsaturated solution')}
             </span>
           </div>
 
@@ -170,7 +190,7 @@ export const SolubilityLab: React.FC = () => {
             {/* === 左側：溶解度曲線 === */}
             <line x1={gX} y1={gY} x2={gX + gW} y2={gY} stroke="#475569" strokeWidth="1.5" />
             <line x1={gX} y1={gY - gH} x2={gX} y2={gY} stroke="#475569" strokeWidth="1.5" />
-            <text x={gX + 4} y={gY - gH + 8} fill="#94a3b8" fontSize="7.5">S (g/100g水)</text>
+            <text x={gX + 4} y={gY - gH + 8} fill="#94a3b8" fontSize="7.5">{copy('S（g/100g 水）', 'S (g/100 g water)')}</text>
             <text x={gX + gW - 4} y={gY - 5} fill="#94a3b8" fontSize="7.5" textAnchor="end">T (°C)</text>
 
             {/* 曲線本體 */}
@@ -209,7 +229,7 @@ export const SolubilityLab: React.FC = () => {
 
             {/* 燒杯刻度標籤 */}
             <text x={beakerX + beakerW / 2} y={beakerY + beakerH + 16} fill="#cbd5e1" fontSize="8" fontWeight="bold" textAnchor="middle">
-              {activeSolute.formula} 溶液 ({tempC}°C)
+              {copy(`${activeSolute.formula} 溶液（${tempC}°C）`, `${activeSolute.formula} solution (${tempC}°C)`)}
             </text>
           </svg>
         </div>
@@ -231,7 +251,7 @@ export const SolubilityLab: React.FC = () => {
           {/* 經典溶解與結晶快照 */}
           <div>
             <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--muted)', display: 'block', marginBottom: '0.25rem' }}>
-              ⚡ 經典溶解度與結晶快照：
+              ⚡ {copy('經典溶解度與結晶快照：', 'Classic Solubility and Crystallization Snapshots:')}
             </span>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.3rem' }}>
               <button
@@ -254,8 +274,8 @@ export const SolubilityLab: React.FC = () => {
                   textAlign: 'left',
                 }}
               >
-                ❄️ <strong>KNO₃ 降溫大量析出</strong>
-                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>20°C · 析出 128.4g</div>
+                ❄️ <strong>{copy('KNO₃ 降溫大量析出', 'KNO₃: Heavy Precipitation on Cooling')}</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>{copy('20°C · 析出 128.4g', '20°C · 128.4 g precipitated')}</div>
               </button>
               <button
                 type="button"
@@ -277,8 +297,8 @@ export const SolubilityLab: React.FC = () => {
                   textAlign: 'left',
                 }}
               >
-                🧂 <strong>NaCl 食鹽飽和</strong>
-                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>溶解度平坦 · 析 13.5g</div>
+                🧂 <strong>{copy('NaCl 食鹽飽和', 'NaCl Table-Salt Saturation')}</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>{copy('溶解度曲線平坦 · 析出 13.5g', 'Nearly flat solubility curve · 13.5 g precipitated')}</div>
               </button>
               <button
                 type="button"
@@ -300,8 +320,8 @@ export const SolubilityLab: React.FC = () => {
                   textAlign: 'left',
                 }}
               >
-                💙 <strong>CuSO₄ 恰好飽和</strong>
-                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>60°C · 剛好完全溶解</div>
+                💙 <strong>{copy('CuSO₄ 恰好飽和', 'CuSO₄: Just Saturated')}</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>{copy('60°C · 剛好完全溶解', '60°C · exactly fully dissolved')}</div>
               </button>
               <button
                 type="button"
@@ -323,8 +343,8 @@ export const SolubilityLab: React.FC = () => {
                   textAlign: 'left',
                 }}
               >
-                🌡️ <strong>Ce₂(SO₄)₃ 逆溶解</strong>
-                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>升溫反而析出更多</div>
+                🌡️ <strong>{copy('Ce₂(SO₄)₃ 逆溶解', 'Ce₂(SO₄)₃: Inverse Solubility')}</strong>
+                <div style={{ fontSize: '0.62rem', color: 'var(--muted)' }}>{copy('升溫反而析出更多', 'Heating produces more precipitate')}</div>
               </button>
             </div>
           </div>
@@ -332,13 +352,13 @@ export const SolubilityLab: React.FC = () => {
           {/* 溶液溫度 */}
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem', fontWeight: 600, marginBottom: '0.15rem' }}>
-              <span>溶液溫度 $T$：</span>
+              <span>{copy('溶液溫度 $T$：', 'Solution Temperature $T$:')}</span>
               <strong style={{ color: '#ef4444', fontFamily: 'monospace' }}>{tempC} °C</strong>
             </div>
             <input
               type="range"
-              aria-label="溶液溫度"
-              aria-valuetext={`${tempC} 攝氏度`}
+              aria-label={copy('溶液溫度', 'Solution temperature')}
+              aria-valuetext={copy(`${tempC} 攝氏度`, `${tempC} degrees Celsius`)}
               min="0"
               max="100"
               step="5"
@@ -353,7 +373,7 @@ export const SolubilityLab: React.FC = () => {
                 style={{ flex: 1, padding: '0.15rem 0.2rem', fontSize: '0.65rem' }}
                 onClick={() => setTempC((t) => Math.max(0, t - 20))}
               >
-                ❄️ 降溫 20°C
+                ❄️ {copy('降溫 20°C', 'Cool by 20°C')}
               </button>
               <button
                 type="button"
@@ -361,7 +381,7 @@ export const SolubilityLab: React.FC = () => {
                 style={{ flex: 1, padding: '0.15rem 0.2rem', fontSize: '0.65rem' }}
                 onClick={() => setTempC((t) => Math.min(100, t + 20))}
               >
-                🔥 升溫 20°C
+                🔥 {copy('升溫 20°C', 'Heat by 20°C')}
               </button>
             </div>
           </div>
@@ -369,13 +389,13 @@ export const SolubilityLab: React.FC = () => {
           {/* 加入溶質重 */}
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem', fontWeight: 600, marginBottom: '0.15rem' }}>
-              <span>加入 {activeSolute.name} 重：</span>
+              <span>{copy(`加入${soluteName(activeSolute)}重量：`, `Mass of ${soluteName(activeSolute)} added:`)}</span>
               <strong style={{ color: '#2563eb', fontFamily: 'monospace' }}>{soluteAdded} g</strong>
             </div>
             <input
               type="range"
-              aria-label={`加入${activeSolute.name}的重量`}
-              aria-valuetext={`${soluteAdded} 克`}
+              aria-label={copy(`加入${soluteName(activeSolute)}的重量`, `Mass of ${soluteName(activeSolute)} added`)}
+              aria-valuetext={copy(`${soluteAdded} 克`, `${soluteAdded} grams`)}
               min="10"
               max="200"
               step="5"
@@ -388,13 +408,13 @@ export const SolubilityLab: React.FC = () => {
           {/* 水量重 */}
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem', fontWeight: 600, marginBottom: '0.15rem' }}>
-              <span>溶劑水重：</span>
+              <span>{copy('溶劑水重：', 'Mass of solvent water:')}</span>
               <strong style={{ color: '#38bdf8', fontFamily: 'monospace' }}>{waterG} g</strong>
             </div>
             <input
               type="range"
-              aria-label="溶劑水重量"
-              aria-valuetext={`${waterG} 克`}
+              aria-label={copy('溶劑水重量', 'Mass of solvent water')}
+              aria-valuetext={copy(`${waterG} 克`, `${waterG} grams`)}
               min="50"
               max="200"
               step="10"
@@ -419,17 +439,17 @@ export const SolubilityLab: React.FC = () => {
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: 'var(--muted)' }}>此溫度飽和溶解度：</span>
-              <strong style={{ fontFamily: 'monospace' }}>{maxSolPer100.toFixed(1)} g / 100g 水</strong>
+              <span style={{ color: 'var(--muted)' }}>{copy('此溫度飽和溶解度：', 'Saturated solubility at this temperature:')}</span>
+              <strong style={{ fontFamily: 'monospace' }}>{maxSolPer100.toFixed(1)} g / {copy('100g 水', '100 g water')}</strong>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: 'var(--muted)' }}>重量百分濃度 (wt%)：</span>
+              <span style={{ color: 'var(--muted)' }}>{copy('重量百分濃度（wt%）：', 'Mass percent concentration (wt%):')}</span>
               <strong style={{ color: '#2563eb', fontFamily: 'monospace' }}>{concentrationPct} %</strong>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: 'var(--muted)' }}>結晶析出固體重：</span>
+              <span style={{ color: 'var(--muted)' }}>{copy('結晶析出固體重：', 'Mass of crystallized solid:')}</span>
               <strong style={{ color: precipitated > 0 ? '#ef4444' : '#10b981', fontFamily: 'monospace' }}>
-                {precipitated.toFixed(1)} g ({precipitated > 0 ? '已過飽和析出' : '完全溶解'})
+                {precipitated.toFixed(1)} g ({precipitated > 0 ? copy('已過飽和析出', 'precipitated from supersaturation') : copy('完全溶解', 'fully dissolved')})
               </strong>
             </div>
           </div>

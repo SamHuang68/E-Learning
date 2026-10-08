@@ -45,6 +45,8 @@ describe('P0-1 calculus symbolic acceptance probes', () => {
     expect(sqrtNeg).not.toBe(0)
     expect(formatCalcNumber(sqrtNeg)).toBe('未定義')
     expect(formatCalcNumber(lnNeg)).toBe('未定義')
+    expect(formatCalcNumber(sqrtNeg, 'en')).toBe('undefined')
+    expect(formatCalcNumber(lnNeg, 'en')).toBe('undefined')
   })
 
   it('1/0 is Infinity, not ~1e12', () => {

@@ -78,3 +78,20 @@ export const LOTTERY_DIALOGUES: LotteryDialogueItem[] = [
     ],
   },
 ]
+
+export const CHINESE_SUPPORT_EN = {
+  '台灣統一發票單月25日開獎：末三碼對中兩百元與超商直接折抵': 'Taiwan Receipt Lottery: Draw Dates, NT$200 Last-Three-Digit Prizes, and Store Redemption',
+  'レシート宝くじ（統一發票）：奇数月25日抽選・末尾3桁200元当せん＆コンビニ引換': 'Taiwan Receipt Lottery: Draw Dates, NT$200 Last-Three-Digit Prizes, and Store Redemption',
+  '台湾のコンビニのレジ前': 'At a Taiwan convenience-store register',
+  '台湾の友人': 'Taiwanese friend',
+  'この2ヶ月で貯めたレシートを早く出して！奇数月の25日はレシート宝くじ（統一發票）の抽選日で、特賞はなんと1000万台湾元（約4700万円）だよ！': 'Get out the receipts you saved over the last two months. The receipt-lottery numbers are drawn on the 25th of odd-numbered months, and the special prize is NT$10 million.',
+  '日本人旅行者': 'Japanese traveller',
+  '今スマホアプリでQRコードを読み取ったら、なんと下3桁が一致しました！6等の200元が当たりました！この当せんレシートはどこで換金できますか？': 'The app scanned the QR code and the last three digits match. I won the sixth prize of NT$200. Where can I redeem this winning receipt?',
+  '200元なら一番手軽！セブンイレブンやファミリーマートにそのまま持って行き、裏面に名前とパスポート番号を書けば、その場ですぐ現金受け取りか買い物割引に使えるよ！': 'NT$200 is easy to redeem. Take the receipt to a participating convenience store and write your name and passport number on the back. You can receive cash or use the prize toward a purchase.',
+  'レシート宝くじ（脱税防止のために台湾政府が1951年に開始した国民的制度）': 'The uniform-invoice lottery, introduced by Taiwan in 1951 to encourage people to request receipts',
+  'すべての買い物レシート上部に8桁の番号が印字されており、2ヶ月に1回抽選がある。': 'Each eligible receipt carries an eight-digit number, and a drawing is held every two months.',
+  '下3桁（頭獎3組の番号の下3桁が合致すれば六獎200元当せん）': 'A last-three-digit match with a first-prize number wins the NT$200 sixth prize',
+  '手動で確認する際はまず下3桁だけを素早くチェックするのが台湾人の定番スタイル。': 'When checking manually, people usually compare the last three digits first.',
+  'スマホ電子レシートキャリア（バーコード提示でペーパーレス自動抽選＆口座振込）': 'A mobile e-receipt carrier that stores receipts, checks prizes, and can transfer winnings automatically',
+  '「發票存載具」と言えば紙のレシートが出ず、当せん金が自動で銀行口座に振り込まれる。': 'Ask to save the invoice to your carrier to avoid paper; linked settings can deposit winnings into a bank account.',
+} as const

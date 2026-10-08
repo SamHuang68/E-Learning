@@ -9,6 +9,8 @@ import { PHYSICS_MOCK_EXAMS } from '../physics/data/mockExams'
 import { CHEMISTRY_MOCK_EXAMS } from '../chemistry/data/mockExams'
 import { PHYSICS_SOLVING_SIGNALS } from '../physics/data/solvingSignals'
 import { CHEMISTRY_SOLVING_SIGNALS } from '../chemistry/data/solvingSignals'
+import { localizePhysicsSignal } from '../physics/locale/content'
+import { localizeChemistrySignal } from '../chemistry/locale/content'
 import { AI_CLOUD_SCENARIOS } from '../toeic/data/aiCloudDialogues'
 import { toeicCertificates } from '../toeic/data/certificates'
 import { localizeToeicCertificate } from './toeicCertificateCopy'
@@ -95,9 +97,34 @@ describe('有資料錯題庫英文介面', () => {
     for (const [source, english] of Object.entries(STEM_VAULT_CONTENT_EN)) {
       expect(formulas(english).sort(), source).toEqual(formulas(source).sort())
     }
-    for (const signal of [...PHYSICS_SOLVING_SIGNALS, ...CHEMISTRY_SOLVING_SIGNALS]) {
-      for (const text of [signal.problemSignal, signal.threeSecondRule, signal.firstStepFormula]) {
-        expect(stemVaultCopy('en', text)).not.toMatch(/[\u3040-\u30ff\u3400-\u9fff\uf900-\ufaff]/)
+    const signalText = (signal: {
+      gradeBand: string
+      topic: string
+      problemSignal: string
+      threeSecondRule: string
+      firstStepFormula: string
+      exampleProblem: { question: string; quickSolve: string }
+    }) => [
+      signal.gradeBand,
+      signal.topic,
+      signal.problemSignal,
+      signal.threeSecondRule,
+      signal.firstStepFormula,
+      signal.exampleProblem.question,
+      signal.exampleProblem.quickSolve,
+    ]
+    for (const signal of PHYSICS_SOLVING_SIGNALS) {
+      const english = localizePhysicsSignal(signal, 'en')
+      expect(localizePhysicsSignal(signal, 'zh-Hant')).toBe(signal)
+      for (const text of signalText(english)) {
+        expect(text).not.toMatch(/[\u3040-\u30ff\u3400-\u9fff\uf900-\ufaff]/)
+      }
+    }
+    for (const signal of CHEMISTRY_SOLVING_SIGNALS) {
+      const english = localizeChemistrySignal(signal, 'en')
+      expect(localizeChemistrySignal(signal, 'zh-Hant')).toBe(signal)
+      for (const text of signalText(english)) {
+        expect(text).not.toMatch(/[\u3040-\u30ff\u3400-\u9fff\uf900-\ufaff]/)
       }
     }
   })

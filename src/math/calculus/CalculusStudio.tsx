@@ -1,4 +1,3 @@
-import { useCalculusCopy } from '../../i18n/calculusCopy'
 import React, { useState, useMemo } from 'react'
 import { CalculusBadgeDialog } from './components/CalculusBadgeDialog'
 import { CalculusCanvas } from './components/CalculusCanvas/CalculusCanvas'
@@ -10,8 +9,11 @@ import { useCalculusLearningCoordinator } from './hooks/useCalculusLearningCoord
 import { CalculusPrerequisiteGraph } from './components/CalculusPrerequisiteGraph'
 import { GradientIntuitionCard } from './components/GradientIntuitionCard'
 import type { CalculusLabMode, RiemannMethod, CalculusProblem } from './types'
+import { useI18n } from '../../i18n/i18n'
+import { useCalculusCopy } from '../../i18n/calculusCopy'
 
 export const CalculusStudio: React.FC = () => {
+  const { locale } = useI18n()
   const c = useCalculusCopy()
   const [activeTab, setActiveTab] = useState<'canvas_lab' | 'step_solver' | 'adaptive_practice'>('canvas_lab')
   const [mode, setMode] = useState<CalculusLabMode>('tangent_secant')
@@ -36,7 +38,7 @@ export const CalculusStudio: React.FC = () => {
   } = useCalculusLearningCoordinator()
 
   // 自動為當前表達式產生推導步驟
-  const dynamicSteps = useMemo(() => generateDerivationSteps(expression), [expression])
+  const dynamicSteps = useMemo(() => generateDerivationSteps(expression, locale), [expression, locale])
 
   const handleSelectProblem = (p: CalculusProblem) => {
     setExpression(p.defaultExpr)
@@ -56,9 +58,9 @@ export const CalculusStudio: React.FC = () => {
       {/* 專題頂部標題列與模式導覽 */}
       <header className="calculus-studio-header">
         <div className="title-group">
-          <span className="studio-tag">{c("108 課綱數甲 · AP Calculus BC · 大一先修")}</span>
-          <h2>{c("∫ 微積分互動專題 (Calculus Interactive Studio)")}</h2>
-          <p className="subtitle">{c("以幾何動態為先、代數求解為本 · 雙向反應式即時推導工作台")}</p>
+          <span className="studio-tag">{c('108 課綱數甲 · AP Calculus BC · 大一先修')}</span>
+          <h2>{c('∫ 微積分互動專題 (Calculus Interactive Studio)')}</h2>
+          <p className="subtitle">{c('以幾何動態為先、代數求解為本 · 雙向反應式即時推導工作台')}</p>
         </div>
 
         <div className="studio-tabs-row">
@@ -68,21 +70,23 @@ export const CalculusStudio: React.FC = () => {
             aria-pressed={activeTab === 'canvas_lab'}
             onClick={() => setActiveTab('canvas_lab')}
           >
-            {c("🎨 幾何動態實驗室 (Canvas Lab)")}</button>
+            {c('🎨 幾何動態實驗室 (Canvas Lab)')}
+          </button>
           <button
             type="button"
             className={`studio-tab-btn ${activeTab === 'step_solver' ? 'active' : ''}`}
             aria-pressed={activeTab === 'step_solver'}
             onClick={() => setActiveTab('step_solver')}
           >
-            {c("📝 步驟式推導解題器 (Step Solver)")}</button>
+            {c('📝 步驟式推導解題器 (Step Solver)')}
+          </button>
           <button
             type="button"
             className={`studio-tab-btn ${activeTab === 'adaptive_practice' ? 'active' : ''}`}
             aria-pressed={activeTab === 'adaptive_practice'}
             onClick={() => setActiveTab('adaptive_practice')}
           >
-            {c("🎯 4 階認知能力挑戰 (IRT θ: ")}{currentTheta >= 0 ? `+${currentTheta.toFixed(2)}` : currentTheta.toFixed(2)})
+            {c('🎯 4 階認知能力挑戰 (IRT θ:')} {currentTheta >= 0 ? `+${currentTheta.toFixed(2)}` : currentTheta.toFixed(2)})
           </button>
         </div>
       </header>
@@ -165,7 +169,10 @@ export const CalculusStudio: React.FC = () => {
         </div>
       </div>
 
-      <CalculusBadgeDialog badges={newlyUnlockedBadges} onDismiss={clearBadgeNotification} />
+      <CalculusBadgeDialog
+        badges={newlyUnlockedBadges}
+        onDismiss={clearBadgeNotification}
+      />
 
     </div>
   )

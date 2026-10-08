@@ -78,3 +78,20 @@ export const ZHUAZHOU_DIALOGUES: ZhuazhouDialogueItem[] = [
     ],
   },
 ]
+
+export const CHINESE_SUPPORT_EN = {
+  '台灣寶寶滿周歲「抓周」：戴虎頭帽、腳踏紅龜粿與米篩預測志向': 'A Taiwan First-Birthday Zhuazhou: Tiger Hat, Red Turtle Cakes, and Choosing a Future Path',
+  '台湾の満1歳のお祝い「抓周（選び取り）」：虎の帽子・亀の草餅踏み・将来占い': 'A Taiwan First-Birthday Zhuazhou: Tiger Hat, Red Turtle Cakes, and Choosing a Future Path',
+  '台湾の家庭の満1歳「抓周」お祝いリビング': 'A family living room prepared for a first-birthday zhuazhou celebration',
+  '台湾のおばあちゃん': 'Taiwanese grandmother',
+  'さあ！台湾では満1歳の誕生日を「度晬（ドーツェイ）」と呼ぶのよ！まずは虎の帽子と虎の靴を履かせて魔除けをし、一生病気知らずで健やかに育つよう祈るの！': 'In Taiwan, a child\'s first birthday is called duzui. We first put on a tiger hat and tiger shoes to ward off harm and wish the child lifelong health.',
+  '日本人の親': 'Japanese parent',
+  'すごく可愛いですね！床に置いてあるこの2つの赤い亀の模様の餅菓子は何ですか？赤ちゃんに踏ませるのですか？': 'They are adorable! What are these two red, turtle-shaped rice cakes on the floor? Does the baby step on them?',
+  'そう！これは「腳踏龜（亀踏み）」と言って、赤い亀草餅（紅龜粿）を両足で踏んで長寿と富貴を祈るの！そのあと大きな竹ざる（米篩）に入れて「選び取り（抓周）」よ！そろばん（会計士）、聴診器（医師）、マウス（ITエンジニア）など何を掴むか楽しみね！': 'Yes. In the turtle-stepping rite, the baby steps on red turtle cakes as a wish for longevity and prosperity. Then the baby sits in a large bamboo rice sieve for zhuazhou and chooses an object, such as an abacus, stethoscope, or computer mouse.',
+  '満1歳の誕生日（台湾語由来の古風で格式ある祝福の言葉）': 'A formal, traditional term for a child\'s first birthday, derived from Taiwanese',
+  '赤ちゃんが無事に厳しい乳児期を乗り越え満1歳を迎えたことを一族総出で神仏と先祖に感謝する。': 'The extended family gives thanks to the deities and ancestors for the child reaching the first birthday safely.',
+  '亀草餅踏み（赤・紫の長寿を象徴する亀型餅を踏んで歩き始めを祝う）': 'Turtle-cake stepping, in which the child steps on longevity-shaped cakes to celebrate learning to walk',
+  '日本の「一升餅」に似た儀式。右足で富貴を、左足で健康長寿を踏み固める意味がある。': 'The rite resembles Japan\'s issho-mochi tradition: the right foot represents prosperity and the left represents health and longevity.',
+  '選び取り儀式（米篩の中に置かれた道具から赤ちゃんが最初に手にした物で将来を占う）': 'A selection ritual that playfully predicts the child\'s future from the first object chosen from the rice sieve',
+  '鶏肉（一生食べ物に困らない）、金元宝（金運）、筆・本（学者）、聴診器（医師）、マウス（IT）などが並ぶ。': 'Typical objects include chicken for lifelong abundance, a gold ingot for wealth, writing tools for scholarship, a stethoscope for medicine, and a mouse for technology.',
+} as const

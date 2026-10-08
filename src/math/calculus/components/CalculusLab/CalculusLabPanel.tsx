@@ -1,6 +1,7 @@
-import { useCalculusCopy } from '../../../../i18n/calculusCopy'
 import React from 'react'
 import type { CalculusLabMode, RiemannMethod } from '../../types'
+import { useI18n } from '../../../../i18n/i18n'
+import { PRESET_FUNCTIONS, PRESET_FUNCTIONS_EN } from '../../data/calculusLabPresets'
 
 interface Props {
   mode: CalculusLabMode
@@ -27,15 +28,6 @@ interface Props {
   }) => void
 }
 
-const PRESET_FUNCTIONS: Array<{ label: string; expr: string; mode: CalculusLabMode }> = [
-  { label: '拋物線 f(x) = x² - 2x + 2', expr: 'x^2 - 2*x + 2', mode: 'tangent_secant' },
-  { label: '三次多項式 f(x) = x³ - 3x + 1', expr: 'x^3 - 3*x + 1', mode: 'optimization_mvt' },
-  { label: '定積分拋物線 f(x) = x²', expr: 'x^2', mode: 'riemann_sum' },
-  { label: '三角振盪 f(x) = sin(x) + 1.5', expr: 'sin(x) + 1.5', mode: 'ftc_accumulation' },
-  { label: '泰勒級數正弦 f(x) = sin(x)', expr: 'sin(x)', mode: 'taylor_series' },
-  { label: '牛頓法多項式 f(x) = x³ - 2x - 5', expr: 'x^3 - 2*x - 5', mode: 'newton_slope_field' },
-]
-
 export const CalculusLabPanel: React.FC<Props> = ({
   mode,
   expression,
@@ -51,11 +43,13 @@ export const CalculusLabPanel: React.FC<Props> = ({
   onExpressionChange,
   onParamChange,
 }) => {
-  const c = useCalculusCopy()
+  const { locale } = useI18n()
+  const copy = (zh: string, en: string) => locale === 'en' ? en : zh
+  const presetFunctions = locale === 'en' ? PRESET_FUNCTIONS_EN : PRESET_FUNCTIONS
   return (
     <div className="calculus-lab-control-card">
       <div className="control-card-header">
-        <h4>{c("🎛️ 幾何實驗室參數面板")}</h4>
+        <h4>{copy('🎛️ 幾何實驗室參數面板', '🎛️ Geometry Lab Controls')}</h4>
         <span className="mode-badge">{mode.toUpperCase()}</span>
       </div>
 
@@ -67,79 +61,86 @@ export const CalculusLabPanel: React.FC<Props> = ({
           aria-pressed={mode === 'limit_epsilon'}
           onClick={() => onModeSelect('limit_epsilon')}
         >
-          {c("🔍 極限 ε-δ")}</button>
+          {copy('🔍 極限 ε-δ', '🔍 Limit ε–δ')}
+        </button>
         <button
           type="button"
           className={`btn-mode-tab ${mode === 'tangent_secant' ? 'active' : ''}`}
           aria-pressed={mode === 'tangent_secant'}
           onClick={() => onModeSelect('tangent_secant')}
         >
-          {c("📈 割線切線")}</button>
+          {copy('📈 割線切線', '📈 Secant and Tangent')}
+        </button>
         <button
           type="button"
           className={`btn-mode-tab ${mode === 'optimization_mvt' ? 'active' : ''}`}
           aria-pressed={mode === 'optimization_mvt'}
           onClick={() => onModeSelect('optimization_mvt')}
         >
-          {c("🎯 均值極值")}</button>
+          {copy('🎯 均值極值', '🎯 Mean Value and Extrema')}
+        </button>
         <button
           type="button"
           className={`btn-mode-tab ${mode === 'riemann_sum' ? 'active' : ''}`}
           aria-pressed={mode === 'riemann_sum'}
           onClick={() => onModeSelect('riemann_sum')}
         >
-          {c("📊 黎曼和")}</button>
+          {copy('📊 黎曼和', '📊 Riemann Sum')}
+        </button>
         <button
           type="button"
           className={`btn-mode-tab ${mode === 'ftc_accumulation' ? 'active' : ''}`}
           aria-pressed={mode === 'ftc_accumulation'}
           onClick={() => onModeSelect('ftc_accumulation')}
         >
-          {c("🔄 FTC 基本定理")}</button>
+          {copy('🔄 FTC 基本定理', '🔄 Fundamental Theorem')}
+        </button>
         <button
           type="button"
           className={`btn-mode-tab ${mode === 'taylor_series' ? 'active' : ''}`}
           aria-pressed={mode === 'taylor_series'}
           onClick={() => onModeSelect('taylor_series')}
         >
-          {c("〰️ 泰勒級數")}</button>
+          {copy('〰️ 泰勒級數', '〰️ Taylor Series')}
+        </button>
         <button
           type="button"
           className={`btn-mode-tab ${mode === 'newton_slope_field' ? 'active' : ''}`}
           aria-pressed={mode === 'newton_slope_field'}
           onClick={() => onModeSelect('newton_slope_field')}
         >
-          {c("⚡ 牛頓法求根")}</button>
+          {copy('⚡ 牛頓法求根', '⚡ Newton Root Finding')}
+        </button>
       </div>
 
       {/* 函數選擇器與輸入框 */}
       <div className="form-group expr-select-group">
-        <label htmlFor="calculus-preset-classic">{c("快速挑選經典函數：")}</label>
+        <label htmlFor="calculus-preset-classic">{copy('快速挑選經典函數：', 'Choose a classic function:')}</label>
         <select
           id="calculus-preset-classic"
           value={expression}
           onChange={(e) => {
-            const chosen = PRESET_FUNCTIONS.find((p) => p.expr === e.target.value)
+            const chosen = presetFunctions.find((p) => p.expr === e.target.value)
             onExpressionChange(e.target.value)
             if (chosen) onModeSelect(chosen.mode)
           }}
         >
-          {PRESET_FUNCTIONS.map((p, idx) => (
+          {presetFunctions.map((p, idx) => (
             <option key={idx} value={p.expr}>
-              {c(p.label)}
+              {p.label}
             </option>
           ))}
         </select>
       </div>
 
       <div className="form-group expr-input-group">
-        <label htmlFor="calculus-expression">{c("自訂函數表達式 f(x)：")}</label>
+        <label htmlFor="calculus-expression">{copy('自訂函數表達式 f(x)：', 'Custom function f(x):')}</label>
         <input
           id="calculus-expression"
           type="text"
           value={expression}
           onChange={(e) => onExpressionChange(e.target.value)}
-          placeholder={c("例如: x^3 - 3*x + 1")}
+          placeholder={copy('例如: x^3 - 3*x + 1', 'Example: x^3 - 3*x + 1')}
         />
       </div>
 
@@ -148,13 +149,13 @@ export const CalculusLabPanel: React.FC<Props> = ({
         {/* 切點 x0 */}
         <div className="slider-item">
           <div className="slider-label-row">
-            <span id="calculus-x0-label">{c("探索焦點 / 切點 x₀:")}</span>
+            <span id="calculus-x0-label">{copy('探索焦點 / 切點 x₀:', 'Focus / point of tangency x₀:')}</span>
             <strong>{x0.toFixed(2)}</strong>
           </div>
           <input
             type="range"
             aria-labelledby="calculus-x0-label"
-            aria-valuetext={c(`${x0.toFixed(2)} x 座標`)}
+            aria-valuetext={copy(`${x0.toFixed(2)} x 座標`, `x-coordinate ${x0.toFixed(2)}`)}
             min="-1"
             max="4"
             step="0.1"
@@ -167,13 +168,13 @@ export const CalculusLabPanel: React.FC<Props> = ({
         {(mode === 'tangent_secant' || mode === 'limit_epsilon') && (
           <div className="slider-item">
             <div className="slider-label-row">
-              <span id="calculus-dx-label">{c("微元步長 Δx:")}</span>
+              <span id="calculus-dx-label">{copy('微元步長 Δx:', 'Increment Δx:')}</span>
               <strong className={deltaX < 0.1 ? 'highlight-green' : ''}>{deltaX.toFixed(3)}</strong>
             </div>
             <input
               type="range"
               aria-labelledby="calculus-dx-label"
-              aria-valuetext={c(`${deltaX.toFixed(3)} x 單位`)}
+              aria-valuetext={copy(`${deltaX.toFixed(3)} x 單位`, `${deltaX.toFixed(3)} x-units`)}
               min="0.005"
               max="2.0"
               step="0.005"
@@ -187,13 +188,13 @@ export const CalculusLabPanel: React.FC<Props> = ({
         {mode === 'limit_epsilon' && (
           <div className="slider-item">
             <div className="slider-label-row">
-              <span id="calculus-epsilon-label">{c("目標容忍誤差 ε:")}</span>
+              <span id="calculus-epsilon-label">{copy('目標容忍誤差 ε:', 'Target tolerance ε:')}</span>
               <strong>{epsilon.toFixed(2)}</strong>
             </div>
             <input
               type="range"
               aria-labelledby="calculus-epsilon-label"
-              aria-valuetext={c(`${epsilon.toFixed(2)} 函數值單位`)}
+              aria-valuetext={copy(`${epsilon.toFixed(2)} 函數值單位`, `${epsilon.toFixed(2)} function-value units`)}
               min="0.1"
               max="2.0"
               step="0.05"
@@ -208,13 +209,13 @@ export const CalculusLabPanel: React.FC<Props> = ({
           <>
             <div className="slider-item">
               <div className="slider-label-row">
-                <span id="calculus-int-a-label">{c("積分下限 a:")}</span>
+                <span id="calculus-int-a-label">{copy('積分下限 a:', 'Lower integration bound a:')}</span>
                 <strong>{intA.toFixed(1)}</strong>
               </div>
               <input
                 type="range"
                 aria-labelledby="calculus-int-a-label"
-                aria-valuetext={c(`${intA.toFixed(1)} x 座標`)}
+                aria-valuetext={copy(`${intA.toFixed(1)} x 座標`, `x-coordinate ${intA.toFixed(1)}`)}
                 min="-1"
                 max={intB - 0.5}
                 step="0.5"
@@ -225,13 +226,13 @@ export const CalculusLabPanel: React.FC<Props> = ({
 
             <div className="slider-item">
               <div className="slider-label-row">
-                <span id="calculus-int-b-label">{c("積分上限 b:")}</span>
+                <span id="calculus-int-b-label">{copy('積分上限 b:', 'Upper integration bound b:')}</span>
                 <strong>{intB.toFixed(1)}</strong>
               </div>
               <input
                 type="range"
                 aria-labelledby="calculus-int-b-label"
-                aria-valuetext={c(`${intB.toFixed(1)} x 座標`)}
+                aria-valuetext={copy(`${intB.toFixed(1)} x 座標`, `x-coordinate ${intB.toFixed(1)}`)}
                 min={intA + 0.5}
                 max="5"
                 step="0.5"
@@ -247,13 +248,13 @@ export const CalculusLabPanel: React.FC<Props> = ({
           <>
             <div className="slider-item">
               <div className="slider-label-row">
-                <span id="calculus-slices-label">{c("黎曼和切片數 N:")}</span>
+                <span id="calculus-slices-label">{copy('黎曼和切片數 N:', 'Riemann-sum slices N:')}</span>
                 <strong>{slicesN}</strong>
               </div>
               <input
                 type="range"
                 aria-labelledby="calculus-slices-label"
-                aria-valuetext={c(`${slicesN} 個切片`)}
+                aria-valuetext={copy(`${slicesN} 個切片`, `${slicesN} slices`)}
                 min="2"
                 max="80"
                 step="2"
@@ -263,7 +264,7 @@ export const CalculusLabPanel: React.FC<Props> = ({
             </div>
 
             <div className="riemann-method-selector">
-              <label>{c("採樣端點：")}</label>
+              <label>{copy('採樣端點：', 'Sample point:')}</label>
               <div className="segmented-btn-group">
                 <button
                   type="button"
@@ -271,21 +272,24 @@ export const CalculusLabPanel: React.FC<Props> = ({
                   aria-pressed={riemannMethod === 'left'}
                   onClick={() => onParamChange({ riemannMethod: 'left' })}
                 >
-                  {c("左端點")}</button>
+                  {copy('左端點', 'Left endpoint')}
+                </button>
                 <button
                   type="button"
                   className={`seg-btn ${riemannMethod === 'midpoint' ? 'active' : ''}`}
                   aria-pressed={riemannMethod === 'midpoint'}
                   onClick={() => onParamChange({ riemannMethod: 'midpoint' })}
                 >
-                  {c("中點")}</button>
+                  {copy('中點', 'Midpoint')}
+                </button>
                 <button
                   type="button"
                   className={`seg-btn ${riemannMethod === 'right' ? 'active' : ''}`}
                   aria-pressed={riemannMethod === 'right'}
                   onClick={() => onParamChange({ riemannMethod: 'right' })}
                 >
-                  {c("右端點")}</button>
+                  {copy('右端點', 'Right endpoint')}
+                </button>
               </div>
             </div>
           </>
@@ -295,13 +299,13 @@ export const CalculusLabPanel: React.FC<Props> = ({
         {mode === 'taylor_series' && (
           <div className="slider-item">
             <div className="slider-label-row">
-              <span id="calculus-order-label">{c("泰勒展開多項式階數 N:")}</span>
-              <strong>{taylorOrder}{c(" 階")}</strong>
+              <span id="calculus-order-label">{copy('泰勒展開多項式階數 N:', 'Taylor-polynomial order N:')}</span>
+              <strong>{taylorOrder} {copy('階', 'order')}</strong>
             </div>
             <input
               type="range"
               aria-labelledby="calculus-order-label"
-              aria-valuetext={c(`${taylorOrder} 階`)}
+              aria-valuetext={copy(`${taylorOrder} 階`, `order ${taylorOrder}`)}
               min="0"
               max="8"
               step="1"

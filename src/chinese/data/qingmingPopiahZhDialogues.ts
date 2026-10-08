@@ -78,3 +78,20 @@ export const QINGMING_POPIAH_DIALOGUES: QingmingPopiahDialogueItem[] = [
     ],
   },
 ]
+
+export const CHINESE_SUPPORT_EN = {
+  "台灣清明節：掃墓壓墓紙慎終追遠、手作包潤餅撒花生糖粉": "Qingming in Taiwan: Tomb Sweeping, Grave Paper, and Handmade Popiah with Peanut Sugar",
+  "台湾の清明節：お墓参り（掃墓）・墓紙（掛紙）と手作り生春巻き（潤餅・ポピア）文化": "Qingming in Taiwan: Tomb Sweeping, Grave Paper, and Handmade Popiah",
+  "清明節の墓参り後、家族全員で生春巻き（潤餅）を包む食卓": "A family table for wrapping popiah after the Qingming tomb visit",
+  "台湾のご家族（長老）": "Elder member of a Taiwanese family",
+  "午前中にお墓参り（掃墓）をして、カラフルな墓紙（掛紙）を小石で墓石に押さえてきました。子孫が手入れした証です。そして帰宅後の一大イベントが家族で「潤餅（ポピア）」を包むことなんだ！": "This morning we swept the tomb and held colourful grave paper in place with small stones to show that descendants had tended it. Back home, the family event is wrapping runbing, or popiah, together.",
+  "日本からの来客": "Visitor from Japan",
+  "テーブルに10種類以上の具材が並んですごいご馳走ですね！潤餅を包む特別な順番やコツはあるのですか？": "More than ten fillings are spread across the table. Is there a special order or technique for wrapping popiah?",
+  "もちもちの薄い皮を2枚重ねて敷き、底にたっぷり「ピーナッツ砂糖粉」を振るのが最大の秘訣！甘く香ばしいだけでなく、炒めキャベツの水分を吸って皮が破れるのを防ぐんだ。紅麹豚肉、錦糸卵、押し豆腐、南部なら焼きそば（油麵）も入れてギュッと巻いて食べるのさ！": "The key is to overlap two thin wrappers and spread plenty of peanut sugar on the bottom. It adds sweetness and absorbs moisture from the cabbage so the wrapper does not tear. Add red-yeast pork, shredded egg, pressed tofu, and, in the south, fried noodles, then roll it tightly.",
+  "お墓に五色紙を小石で留める清明節の儀礼（子孫繁栄と墓守の印）": "A Qingming rite of securing five-colour grave paper with stones to mark family care of the tomb",
+  "風で飛ばないよう黄・赤・白などの墓紙（掛紙）を墓の上に点々と小石で重石留めする。": "Yellow, red, white, and other grave papers are placed across the tomb and weighted with stones so they do not blow away.",
+  "台湾風手巻き生春巻き（清明・寒食節の伝統料理・豊富な炒め具材を巻く）": "Taiwan-style hand-wrapped popiah filled with many cooked ingredients for Qingming and the Cold Food Festival",
+  "南部ではピーナッツ砂糖粉が多めで炒めた油麺が入るなど、地域ごとの個性が際立つ。": "Regional versions vary; southern popiah often uses more peanut sugar and includes fried oil noodles.",
+  "すりおろしピーナッツと粉砂糖のミックス（潤餅の破れ防止と風味の要）": "Ground peanuts mixed with sugar, adding flavour and helping keep the popiah wrapper dry",
+  "皮の上に真っ先に敷き詰めることで、野菜から染み出る水分をブロックする生活の知恵。": "Spreading it on the wrapper first creates a barrier against moisture released by the vegetables.",
+} as const

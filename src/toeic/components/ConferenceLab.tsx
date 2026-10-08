@@ -1,6 +1,9 @@
 ﻿import React, { useState } from 'react'
+import { useMemo } from 'react'
 import { CONFERENCE_SCENARIOS, type ConferenceScenarioItem } from '../data/conferenceDialogues'
 import { playCorrectSound, playWrongSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
+import { localizeToeicData, toeicSupportLang } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
@@ -8,7 +11,15 @@ interface Props {
 }
 
 export const ConferenceLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'zh' }) => {
-  const isJa = instructionLang === 'ja'
+  const { locale } = useI18n()
+  const supportLang = toeicSupportLang(locale, instructionLang)
+  const isJa = supportLang === 'ja'
+  const isEn = supportLang === 'en'
+  const copy = (zh: string, ja: string, en: string) => isEn ? en : isJa ? ja : zh
+  const scenarios = useMemo(
+    () => CONFERENCE_SCENARIOS.map((item) => localizeToeicData(item, locale, instructionLang)),
+    [instructionLang, locale],
+  )
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const [isMicMuted, setIsMicMuted] = useState(false)
@@ -17,7 +28,7 @@ export const ConferenceLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'zh
   const [submitted, setSubmitted] = useState<Record<string, boolean>>({})
 
   const activeItem: ConferenceScenarioItem =
-    CONFERENCE_SCENARIOS[selectedIdx % CONFERENCE_SCENARIOS.length]
+    scenarios[selectedIdx % scenarios.length]
 
   function speakConferenceAudio(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -50,19 +61,21 @@ export const ConferenceLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'zh
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>💻</span> {isJa ? 'TOEIC オンライン会議・画面共有＆Q&A特訓' : 'TOEIC 商務視訊會議與簡報 Q&A 聽力實驗室'}
+            <span>💻</span> {copy('TOEIC 商務視訊會議與簡報 Q&A 聽力實驗室', 'TOEIC オンライン会議・画面共有＆Q&A特訓', 'TOEIC Video-Conference and Presentation Q&A Listening Lab')}
           </h3>
           <p className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            {isJa
-              ? '近年のTOEICで急増している「Zoom/Teams画面共有・ミュート解除（unmute）・プレゼン質疑応答」の英語表現を攻略！'
-              : '多益現代職場高頻話題：線上會議靜音操作、投影片螢幕共享與會後開放提問！'}
+            {copy(
+              '多益現代職場高頻話題：線上會議靜音操作、投影片螢幕共享與會後開放提問！',
+              '近年のTOEICで急増している「Zoom/Teams画面共有・ミュート解除（unmute）・プレゼン質疑応答」の英語表現を攻略！',
+              'Practise modern workplace language for muting, screen sharing, presenting data, and opening the floor for questions.',
+            )}
           </p>
         </div>
       </div>
 
       {/* 場景切換膠囊 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
-        {CONFERENCE_SCENARIOS.map((item, idx) => (
+        {scenarios.map((item, idx) => (
           <button
             key={item.id}
             type="button"
@@ -119,14 +132,14 @@ export const ConferenceLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'zh
               }}
               onClick={() => speakConferenceAudio(activeItem.audioScript)}
             >
-              {isPlaying ? '会議再生中...' : '▶ 会議音声を聴く (Play Audio)'}
+              {isPlaying ? copy('播放中…', '会議再生中…', 'Playing…') : copy('▶ 播放會議音訊', '▶ 会議音声を聴く', '▶ Play meeting audio')}
             </button>
             <button
               type="button"
               className="pill-btn"
               onClick={() => setShowScript((prev) => !prev)}
             >
-              {showScript ? '隠す' : '📝 スクリプト'}
+              {showScript ? copy('隱藏逐字稿', 'スクリプトを隠す', 'Hide transcript') : copy('📝 顯示逐字稿', '📝 スクリプトを表示', '📝 Show transcript')}
             </button>
           </div>
 
@@ -137,7 +150,7 @@ export const ConferenceLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'zh
           )}
 
           <div style={{ marginTop: 'auto', background: 'var(--surface-soft)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)', fontSize: '0.74rem', color: 'var(--muted)', textAlign: 'left', lineHeight: 1.45 }}>
-            💡 <strong>TOEIC 頻出ポイント：</strong>{activeItem.virtualMeetingTipsJa}
+            💡 <strong>{copy('TOEIC 高頻重點：', 'TOEIC 頻出ポイント：', 'Key TOEIC terms:')}</strong>{activeItem.virtualMeetingTipsJa}
           </div>
         </div>
 
@@ -189,7 +202,7 @@ export const ConferenceLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'zh
                       onClick={() => handleSelectOption(q.id, optIdx, q.correctIndex)}
                     >
                       <span style={{ fontSize: '0.82rem' }}>{opt}</span>
-                      {isDone && isCorrect && <span style={{ color: '#10b981', fontWeight: 700 }}>✓ 正解 (+15 XP)</span>}
+                      {isDone && isCorrect && <span style={{ color: '#10b981', fontWeight: 700 }}>✓ {copy('答對', '正解', 'Correct')} (+15 XP)</span>}
                     </button>
                   )
                 })}
@@ -197,7 +210,7 @@ export const ConferenceLab: React.FC<Props> = ({ onEarnXp, instructionLang = 'zh
 
               {submitted[q.id] && (
                 <div style={{ marginTop: '0.6rem', padding: '0.6rem', borderRadius: '8px', background: 'var(--surface-soft)', fontSize: '0.76rem', color: 'var(--muted)', lineHeight: 1.45 }}>
-                  💡 <strong>{isJa ? '解説：' : '解析：'}</strong> {isJa ? q.explanationJa : q.explanationZh}
+                  💡 <strong>{copy('解析：', '解説：', 'Explanation:')}</strong> {isJa ? q.explanationJa : q.explanationZh}
                 </div>
               )}
             </div>

@@ -3,6 +3,7 @@ import type { ToeicCertificate, ToeicUnit } from '../data/certificates'
 import type { ToeicProgress } from '../../utils/storage'
 import { speakEnglish } from '../../utils/speech'
 import { useI18n } from '../../i18n/i18n'
+import { localizeToeicCertificate } from '../teachingCopy'
 
 type Props = {
   cert: ToeicCertificate
@@ -42,6 +43,7 @@ export function ToeicToday({
   dailyGoal,
 }: Props) {
   const { t, locale } = useI18n()
+  const displayCert = localizeToeicCertificate(cert, locale)
   const srsGuideUrl = `${import.meta.env.BASE_URL}srs-review.html`
   const vocabPct = Math.round((progress.vocabDone / unit.words) * 100)
   const listenPct = Math.round((progress.listeningDone / unit.listening) * 100)
@@ -60,7 +62,7 @@ export function ToeicToday({
             {locale === 'en' ? cert.nameEn : cert.name} · {cert.scoreMin}–{cert.scoreMax} · Unit {unit.id}
           </span>
           <h2>{unit.titleEn}</h2>
-          <p>{cert.audience}</p>
+          <p>{displayCert.audience}</p>
           <div className="banner-actions">
             <button
               type="button"
@@ -203,7 +205,7 @@ export function ToeicToday({
             {progress.grammarStarted ? 'In progress' : 'Pending'}
           </li>
         </ul>
-        <p>{cert.audience}</p>
+        <p>{displayCert.audience}</p>
         <button type="button" className="text-link" onClick={onOpenBuilder}>
           Open lesson builder →
         </button>
@@ -224,8 +226,8 @@ export function ToeicToday({
       </button>
 
       <div className="unit-map">
-        <h3>{cert.mapTitle}</h3>
-        <p>{cert.mapDesc}</p>
+        <h3>{displayCert.mapTitle}</h3>
+        <p>{displayCert.mapDesc}</p>
         <div>
           {cert.units.map((u) => (
             <button

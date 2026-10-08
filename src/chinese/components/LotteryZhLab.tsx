@@ -1,12 +1,15 @@
 ﻿import React, { useState } from 'react'
-import { LOTTERY_DIALOGUES, type LotteryDialogueItem } from '../data/lotteryZhDialogues'
+import { CHINESE_SUPPORT_EN, LOTTERY_DIALOGUES, type LotteryDialogueItem } from '../data/lotteryZhDialogues'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
+import { localizeChineseData } from '../teachingCopy'
 
 interface Props {
   onEarnXp: (amount: number) => void
 }
 
 export const LotteryZhLab: React.FC<Props> = ({ onEarnXp }) => {
+  const { locale } = useI18n()
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [inputDigits, setInputDigits] = useState('789')
   const [winningMatch, setWinningMatch] = useState<'none' | 'matched200' | 'matched1000w'>('matched200')
@@ -14,6 +17,8 @@ export const LotteryZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
   const activeItem: LotteryDialogueItem =
     LOTTERY_DIALOGUES[selectedIdx % LOTTERY_DIALOGUES.length]
+  const localizedItem = localizeChineseData(activeItem, locale, CHINESE_SUPPORT_EN)
+  const localizedDialogues = localizeChineseData(LOTTERY_DIALOGUES, locale, CHINESE_SUPPORT_EN)
 
   function speakChinese(text: string) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -51,10 +56,12 @@ export const LotteryZhLab: React.FC<Props> = ({ onEarnXp }) => {
       <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
         <div>
           <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>🧾</span> 台灣統一發票對獎與超商折抵生活實驗室 (Receipt Lottery Lab)
+            <span>🧾</span> {locale === 'en' ? 'Taiwan Uniform-Invoice Lottery Lab' : '台灣統一發票對獎與超商折抵生活實驗室 (Receipt Lottery Lab)'}
           </h3>
-          <p lang="ja" className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
-            台湾の国民的お楽しみ「統一發票」！「奇数月25日抽選・末三碼（下3桁）200元・超商當場折抵購物・手機載具自動匯款」を直感マスター！
+          <p lang={locale === 'en' ? 'en' : 'ja'} className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+            {locale === 'en'
+              ? 'Practise Mandarin for Taiwan’s uniform-invoice lottery: check receipt digits, identify prizes, and redeem a small prize at a convenience store.'
+              : '台湾の国民的お楽しみ「統一發票」！「奇数月25日抽選・末三碼（下3桁）200元・超商當場折抵購物・手機載具自動匯款」を直感マスター！'}
           </p>
         </div>
       </div>
@@ -77,25 +84,25 @@ export const LotteryZhLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <div style={{ fontSize: '1.8rem' }}>🧾 🎁</div>
           <div>
-            <strong style={{ fontSize: '0.9rem', display: 'block' }}>統一發票中獎開獎機 (Lottery Checker)</strong>
+            <strong style={{ fontSize: '0.9rem', display: 'block' }}>{locale === 'en' ? 'Uniform-Invoice Lottery Checker' : '統一發票中獎開獎機 (Lottery Checker)'}</strong>
             <span style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
               {redeemed
-                ? '✓ 恭喜！超商櫃檯核對證件完成！已當場折抵現金 200 元！(+15 XP)'
+                ? locale === 'en' ? '✓ Identity verified at the convenience-store counter. NT$200 redeemed. (+15 XP)' : '✓ 恭喜！超商櫃檯核對證件完成！已當場折抵現金 200 元！(+15 XP)'
                 : winningMatch === 'matched200'
-                ? '🎉 恭喜中獎！末三碼對中「789」，獲得六獎 200 元！可直接超商消費折抵'
+                ? locale === 'en' ? '🎉 Prize! The last three digits match 789: sixth prize, NT$200. Redeem it at a convenience store.' : '🎉 恭喜中獎！末三碼對中「789」，獲得六獎 200 元！可直接超商消費折抵'
                 : winningMatch === 'matched1000w'
-                ? '🎊 狂賀！八碼全中「88888888」特別獎一千萬元！(+50 XP)'
-                : '銘謝惠顧，這張沒中，祝下張幸運中獎！'}
+                ? locale === 'en' ? '🎊 Jackpot! All eight digits match 88888888: NT$10 million special prize. (+50 XP)' : '🎊 狂賀！八碼全中「88888888」特別獎一千萬元！(+50 XP)'
+                : locale === 'en' ? 'No prize on this receipt. Better luck next time!' : '銘謝惠顧，這張沒中，祝下張幸運中獎！'}
             </span>
           </div>
         </div>
 
         <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center', flexWrap: 'wrap' }}>
-          <input aria-label="發票末三碼"
+          <input aria-label={locale === 'en' ? 'Last three invoice digits' : '發票末三碼'}
             type="text"
             value={inputDigits}
             onChange={(e) => setInputDigits(e.target.value)}
-            placeholder="輸入發票末三碼"
+            placeholder={locale === 'en' ? 'Enter the last three digits' : '輸入發票末三碼'}
             style={{ width: '120px', padding: '0.3rem 0.5rem', borderRadius: '6px', border: '1px solid var(--line)', background: 'var(--surface)', color: 'var(--text)', fontSize: '0.74rem' }}
           />
 
@@ -105,7 +112,7 @@ export const LotteryZhLab: React.FC<Props> = ({ onEarnXp }) => {
             style={{ padding: '0.4rem 0.75rem', fontSize: '0.74rem' }}
             onClick={handleCheckReceipt}
           >
-            🔍 即時對獎
+            {locale === 'en' ? '🔍 Check now' : '🔍 即時對獎'}
           </button>
 
           {winningMatch !== 'none' && (
@@ -119,7 +126,9 @@ export const LotteryZhLab: React.FC<Props> = ({ onEarnXp }) => {
               }}
               onClick={handleRedeemAtStore}
             >
-              {redeemed ? '已折抵' : '🏪 超商折抵200元'}
+              {redeemed
+                ? locale === 'en' ? 'Redeemed' : '已折抵'
+                : locale === 'en' ? '🏪 Redeem NT$200 at a store' : '🏪 超商折抵200元'}
             </button>
           )}
         </div>
@@ -127,14 +136,14 @@ export const LotteryZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
       {/* 場景切換膠囊 */}
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
-        {LOTTERY_DIALOGUES.map((item, idx) => (
+        {localizedDialogues.map((item, idx) => (
           <button aria-pressed={selectedIdx === idx}
             key={item.id}
             type="button"
             className={`pill-btn ${selectedIdx === idx ? 'active' : ''}`}
             onClick={() => setSelectedIdx(idx)}
           >
-            <span>{item.icon}</span> {item.title.split('：')[0]}
+            <span>{item.icon}</span> {locale === 'en' ? item.title : item.title.split('：')[0]}
           </button>
         ))}
       </div>
@@ -145,12 +154,12 @@ export const LotteryZhLab: React.FC<Props> = ({ onEarnXp }) => {
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.45rem', borderRadius: '999px', background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', fontWeight: 700 }}>
-              {activeItem.locationZh} (<span lang="ja">{activeItem.locationJa}</span>)
+              {localizedItem.locationZh} (<span lang={locale === 'en' ? 'en' : 'ja'}>{localizedItem.locationJa}</span>)
             </span>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem', marginTop: '0.3rem' }}>
-            {activeItem.dialogueLines.map((line, lIdx) => (
+            {localizedItem.dialogueLines.map((line, lIdx) => (
               <div
                 key={lIdx}
                 style={{
@@ -165,9 +174,9 @@ export const LotteryZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#38bdf8' }}>
-                    <span lang="ja">{line.speakerJa}</span>：
+                    <span lang={locale === 'en' ? 'en' : 'ja'}>{line.speakerJa}</span>:
                   </span>
-                  <button aria-label={`朗讀：${line.zh}`}
+                  <button aria-label={locale === 'en' ? `Read aloud: ${line.zh}` : `朗讀：${line.zh}`}
                     type="button"
                     style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
                     onClick={() => speakChinese(line.zh)}
@@ -177,7 +186,7 @@ export const LotteryZhLab: React.FC<Props> = ({ onEarnXp }) => {
                 </div>
                 <strong style={{ fontSize: '0.86rem', color: 'var(--text)' }}>{line.zh}</strong>
                 <span lang="zh-Latn" style={{ fontSize: '0.72rem', color: '#f59e0b' }}>{line.pinyin}</span>
-                <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
+                <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)', marginTop: '0.1rem' }}>
                   {line.ja}
                 </span>
               </div>
@@ -187,12 +196,12 @@ export const LotteryZhLab: React.FC<Props> = ({ onEarnXp }) => {
 
         {/* 右側：發票文化單詞 */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          <span lang="ja" style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
-            💡 台湾統一發票・レシート宝くじ豆知識（Lottery Tips）
+          <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: '#10b981', fontWeight: 700, display: 'block' }}>
+            {locale === 'en' ? '💡 Taiwan uniform-invoice lottery tips' : '💡 台湾統一發票・レシート宝くじ豆知識（Lottery Tips）'}
           </span>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginTop: '0.3rem' }}>
-            {activeItem.lotteryGlossary.map((vocab, vIdx) => (
+            {localizedItem.lotteryGlossary.map((vocab, vIdx) => (
               <div
                 key={vIdx}
                 style={{
@@ -204,9 +213,9 @@ export const LotteryZhLab: React.FC<Props> = ({ onEarnXp }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <strong style={{ fontSize: '0.88rem', color: '#10b981' }}>{vocab.termZh}</strong>
-                  <span lang="ja" style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
+                  <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{vocab.meaningJa}</span>
                 </div>
-                <p lang="ja" style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+                <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.25rem 0 0', fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.4 }}>
                   {vocab.tipJa}
                 </p>
               </div>

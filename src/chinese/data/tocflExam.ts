@@ -115,3 +115,7 @@ export const TOCFL_MOCK_QUESTIONS: TocflQuestion[] = [
     point: 10,
   },
 ]
+
+// TOCFL support copy is localized by question id in teachingCopy.ts so the
+// target prompts, choices, audio text, and answer indices remain untouched.
+export const CHINESE_SUPPORT_EN = {} as const

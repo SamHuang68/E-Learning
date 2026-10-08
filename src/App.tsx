@@ -8,7 +8,8 @@ import { Hub } from './Hub'
 import { saveLang, writeLangPreference, type LangId } from './utils/storage'
 import { lazyWithRetry } from './utils/lazyWithRetry'
 import { parseTopViewHash, type TopView } from './utils/topRoute'
-import { LocaleProvider, useI18n } from './i18n/i18n'
+import { useI18n } from './i18n/i18n'
+import { LocaleProvider } from './i18n/LocaleComponents'
 import { applyDocumentLang } from './i18n/locale'
 
 type ModuleAppProps = {

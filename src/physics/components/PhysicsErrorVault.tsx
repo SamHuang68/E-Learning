@@ -1,6 +1,4 @@
-import { stemCatalogCopy } from '../../i18n/stemCatalogCopy'
 import { useI18n } from '../../i18n/i18n'
-import { loadStemVaultContentCopy, localizeStemVaultQuestion, stemVaultCopy } from '../../i18n/stemVaultCopy'
 /**
  * 臺灣 108 課綱物理 · 錯題弱點診斷與實驗室直通筆記本 (Physics Error Vault & Lab Teleportation)
  *
@@ -11,16 +9,72 @@ import { loadStemVaultContentCopy, localizeStemVaultQuestion, stemVaultCopy } fr
  * 4. 零溢出與平滑滾動：KaTeX 數學算式具備平滑滾動保護，卡片極致緊湊排版，手機端 0 橫向溢出。
  */
 
-import React, { use, useState, useMemo, useEffect, useRef, useId } from 'react'
+import React, { useState, useMemo, useEffect, useRef, useId } from 'react'
 import {
   getAllPhysicsUnits,
   type PhysicsQuestion,
   PHYSICS_STRAND_NAMES,
 } from '../data/curriculum'
 import { PHYSICS_MOCK_EXAMS } from '../data/mockExams'
-import { findMatchingSignal } from '../utils/vaultSignal'
+import { PHYSICS_SOLVING_SIGNALS } from '../data/solvingSignals'
 import { MathFormula } from '../../math/components/MathFormula'
 import { exportErrorVaultToAnki } from '../../utils/ankiExporter'
+import type { UiLocale } from '../../i18n/locale'
+import {
+  localizePhysicsMockExam,
+  localizePhysicsQuestion,
+  localizePhysicsSignal,
+  localizePhysicsUnit,
+} from '../locale/content'
+import {
+  resolvePhysicsLab,
+  type PhysicsLabMatch,
+} from './physicsErrorVaultLabResolver'
+
+const PHYSICS_STRAND_EN: Record<PhysicsQuestion['strand'], string> = {
+  mechanics: 'Mechanics, motion, and energy',
+  thermodynamics: 'Thermodynamics and molecular motion',
+  waves_optics: 'Waves and geometric optics',
+  electromagnetism: 'Electromagnetism and circuits',
+  modern: 'Modern and atomic physics',
+}
+
+const PHYSICS_LAB_EN: Readonly<Record<string, string>> = {
+  '斜向拋體運動實驗室': 'Projectile-motion lab',
+  '拋體運動學': 'Projectile kinematics',
+  '調控初速、發射仰角與重力加速度，即時觀測拋物線軌跡與水平射程。':
+    'Adjust launch speed, angle, and gravitational acceleration to observe the trajectory and horizontal range.',
+  '簡諧運動與單擺實驗室': 'Simple-harmonic-motion and pendulum lab',
+  '簡諧與力學能守恆': 'Simple harmonic motion and mechanical-energy conservation',
+  '調節擺長、振幅與彈性係數，動態剖析速度、加速度與動能位能週期性轉化。':
+    'Adjust pendulum length, amplitude, and spring constant to examine periodic changes in speed, acceleration, kinetic energy, and potential energy.',
+  '司乃耳折射與透鏡光學實驗室': 'Snell refraction and lens-optics lab',
+  '幾何光學與全反射': 'Geometric optics and total internal reflection',
+  '連續變換入射角與介質折射率，實測司乃耳定律、全反射臨界角與透鏡成像規律。':
+    'Vary the incident angle and refractive indices to test Snell\'s law, the critical angle, and lens imaging.',
+  '直流電路歐姆定律實驗室': 'DC-circuit and Ohm\'s-law lab',
+  '電路分析與歐姆定律': 'Circuit analysis and Ohm\'s law',
+  '自由配置電源電壓與電阻串並聯拓撲，即時模擬迴路電流、分壓與電功率消耗。':
+    'Configure source voltage and series or parallel resistors to simulate loop current, voltage division, and power.',
+  '阿基米德浮力與密度實驗室': 'Archimedes buoyancy and density lab',
+  '流體靜力與浮力': 'Fluid statics and buoyancy',
+  '沉浸式測試固體在不同液體密度下的排開體積、浮力大小與秤重視重變化。':
+    'Test displaced volume, buoyant force, and apparent weight for solids in liquids of different densities.',
+  '力學動態模擬': 'Interactive mechanics simulation',
+  '透過動態畫布模擬物體受力與運動軌跡。':
+    'Use an interactive canvas to simulate forces and motion trajectories.',
+}
+
+function localizePhysicsLab(lab: PhysicsLabMatch, locale: UiLocale): PhysicsLabMatch {
+  if (locale !== 'en') return lab
+  const name = PHYSICS_LAB_EN[lab.name]
+  const badge = PHYSICS_LAB_EN[lab.badge]
+  const description = PHYSICS_LAB_EN[lab.description]
+  if (!name || !badge || !description) {
+    throw new Error(`Missing physics error-vault lab copy: ${lab.id}`)
+  }
+  return { ...lab, name, badge, description }
+}
 
 export type PhysicsErrorVaultProps = {
   /** 答錯題目 ID 清單 (自 LocalStorage progress 載入) */
@@ -37,161 +91,58 @@ export interface EnrichedPhysicsError {
   sourceType: 'unit' | 'mock'
   sourceLabel: string
   strandName: string
-  matchedLab: {
-    id: string
-    name: string
-    icon: string
-    badge: string
-    description: string
-  }
-}
-
-/**
- * 智慧匹配題目所屬之物理互動實驗室
- *
- * @param q 物理題目物件
- * @param unitSuggestedLab 單元建議實驗室代碼
- * @returns 實驗室詳細定義 (包含 ID、名稱、圖標、特徵與說明)
- */
-function resolvePhysicsLab(
-  q: PhysicsQuestion,
-  unitSuggestedLab?: string,
-): { id: string; name: string; icon: string; badge: string; description: string } {
-  const textToScan = `${q.title} ${q.question} ${q.solution} ${q.interactiveLab || ''} ${unitSuggestedLab || ''}`.toLowerCase()
-
-  // 1. 斜向拋體與等加速度運動實驗室 (ProjectileLab)
-  if (
-    textToScan.includes('projectile') ||
-    textToScan.includes('拋體') ||
-    textToScan.includes('拋射') ||
-    textToScan.includes('平拋') ||
-    textToScan.includes('斜拋') ||
-    textToScan.includes('自由落體') ||
-    textToScan.includes('運動學') ||
-    textToScan.includes('仰角') ||
-    textToScan.includes('射程') ||
-    textToScan.includes('軌跡') ||
-    textToScan.includes('初速')
-  ) {
-    return {
-      id: 'projectile',
-      name: '斜向拋體運動實驗室',
-      icon: '🚀',
-      badge: '拋體運動學',
-      description: '調控初速、發射仰角與重力加速度，即時觀測拋物線軌跡與水平射程。',
-    }
-  }
-
-  // 2. 簡諧運動與單擺能量實驗室 (ShmLab)
-  if (
-    textToScan.includes('shm') ||
-    textToScan.includes('簡諧') ||
-    textToScan.includes('單擺') ||
-    textToScan.includes('彈簧') ||
-    textToScan.includes('週期') ||
-    textToScan.includes('振幅') ||
-    textToScan.includes('力學能') ||
-    textToScan.includes('動能') ||
-    textToScan.includes('位能') ||
-    textToScan.includes('擺角') ||
-    textToScan.includes('端點')
-  ) {
-    return {
-      id: 'shm',
-      name: '簡諧運動與單擺實驗室',
-      icon: '⏱️',
-      badge: '簡諧與力學能守恆',
-      description: '調節擺長、振幅與彈性係數，動態剖析速度、加速度與動能位能週期性轉化。',
-    }
-  }
-
-  // 3. 司乃耳折射與幾何光學實驗室 (OpticsLab)
-  if (
-    textToScan.includes('optics') ||
-    textToScan.includes('lens') ||
-    textToScan.includes('折射') ||
-    textToScan.includes('反射') ||
-    textToScan.includes('司乃耳') ||
-    textToScan.includes('透鏡') ||
-    textToScan.includes('凸透鏡') ||
-    textToScan.includes('凹透鏡') ||
-    textToScan.includes('光學') ||
-    textToScan.includes('全反射') ||
-    textToScan.includes('焦距') ||
-    textToScan.includes('成像') ||
-    textToScan.includes('臨界角') ||
-    q.strand === 'waves_optics'
-  ) {
-    return {
-      id: 'optics',
-      name: '司乃耳折射與透鏡光學實驗室',
-      icon: '🌈',
-      badge: '幾何光學與全反射',
-      description: '連續變換入射角與介質折射率，實測司乃耳定律、全反射臨界角與透鏡成像規律。',
-    }
-  }
-
-  // 4. 直流電路歐姆定律實驗室 (CircuitLab)
-  if (
-    textToScan.includes('circuit') ||
-    textToScan.includes('kirchhoff') ||
-    textToScan.includes('電路') ||
-    textToScan.includes('電阻') ||
-    textToScan.includes('歐姆') ||
-    textToScan.includes('電流') ||
-    textToScan.includes('電壓') ||
-    textToScan.includes('電功率') ||
-    textToScan.includes('克希荷夫') ||
-    textToScan.includes('並聯') ||
-    textToScan.includes('串聯') ||
-    textToScan.includes('安培') ||
-    textToScan.includes('伏特') ||
-    q.strand === 'electromagnetism'
-  ) {
-    return {
-      id: 'circuit',
-      name: '直流電路歐姆定律實驗室',
-      icon: '⚡',
-      badge: '電路分析與歐姆定律',
-      description: '自由配置電源電壓與電阻串並聯拓撲，即時模擬迴路電流、分壓與電功率消耗。',
-    }
-  }
-
-  // 5. 阿基米德浮力與密度實驗室 (BuoyancyLab)
-  if (
-    textToScan.includes('buoyancy') ||
-    textToScan.includes('density') ||
-    textToScan.includes('measurement') ||
-    textToScan.includes('浮力') ||
-    textToScan.includes('阿基米德') ||
-    textToScan.includes('密度') ||
-    textToScan.includes('排水法') ||
-    textToScan.includes('下沉') ||
-    textToScan.includes('漂浮') ||
-    textToScan.includes('彈簧秤') ||
-    textToScan.includes('液體')
-  ) {
-    return {
-      id: 'buoyancy',
-      name: '阿基米德浮力與密度實驗室',
-      icon: '⛵',
-      badge: '流體靜力與浮力',
-      description: '沉浸式測試固體在不同液體密度下的排開體積、浮力大小與秤重視重變化。',
-    }
-  }
-
-  return {
-    id: 'projectile',
-    name: '斜向拋體運動實驗室',
-    icon: '🚀',
-    badge: '力學動態模擬',
-    description: '透過動態畫布模擬物體受力與運動軌跡。',
-  }
+  matchedLab?: PhysicsLabMatch
 }
 
 /**
  * 取得與題目最匹配的 3 秒破題訊號資料
  */
+function findMatchingSignal(q: PhysicsQuestion, locale: UiLocale) {
+  const text = `${q.title} ${q.question} ${q.solution}`.toLowerCase()
+  const signals = PHYSICS_SOLVING_SIGNALS.map((signal) =>
+    localizePhysicsSignal(signal, locale),
+  )
+
+  if (locale === 'en') {
+    const stopWords = new Set([
+      'about', 'after', 'also', 'been', 'before', 'between', 'choose', 'does',
+      'each', 'find', 'from', 'given', 'into', 'more', 'object', 'question',
+      'should', 'than', 'that', 'their', 'then', 'there', 'these', 'they',
+      'this', 'through', 'using', 'what', 'when', 'where', 'which', 'with',
+    ])
+    const tokens = (value: string) =>
+      value
+        .toLowerCase()
+        .replace(/\\[a-z]+/g, ' ')
+        .replace(/[^a-z0-9]+/g, ' ')
+        .split(/\s+/)
+        .filter((token) => token.length >= 4 && !stopWords.has(token))
+
+    const questionTokens = new Set(tokens(text))
+    const ranked = signals
+      .map((signal) => {
+        const signalTokens = new Set(tokens(`${signal.topic} ${signal.problemSignal}`))
+        const overlap = [...signalTokens].filter((token) => questionTokens.has(token)).length
+        return { signal, overlap }
+      })
+      .sort((left, right) => right.overlap - left.overlap)
+
+    return ranked[0]?.overlap >= 3 ? ranked[0].signal : undefined
+  }
+
+  return (
+    signals.find((s) => {
+      const topicLower = s.topic.toLowerCase()
+      const signalLower = s.problemSignal.toLowerCase()
+      return (
+        (s.strand === q.strand && text.includes(topicLower.slice(0, 4))) ||
+        signalLower.split(' ').some((kw) => kw.length > 2 && text.includes(kw))
+      )
+    }) ||
+    signals.find((s) => s.strand === q.strand)
+  )
+}
+
 
 /**
  * 物理弱點錯題筆記本元件
@@ -201,9 +152,8 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
   onRemoveError,
   onOpenLab,
 }) => {
+  const { t, locale } = useI18n()
   // 狀態：展開步驟診斷的卡片 ID 集合
-  const { locale } = useI18n()
-  if (locale === 'en') use(loadStemVaultContentCopy())
   const [expandedSteps, setExpandedSteps] = useState<Record<string, boolean>>({})
   // 狀態：領域篩選
   const [selectedStrand, setSelectedStrand] = useState<string>('all')
@@ -234,8 +184,7 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
     onRemoveError(question.id)
   }
 
-  const removedTitle = removedQuestion === null ? ''
-    : stemVaultCopy(locale, removedQuestion.title).replace(/\{id\}/g, () => removedQuestion.id)
+  const removedTitle = removedQuestion?.title ?? ''
   const removalNotice = removedQuestion === null ? '' : locale === 'en'
     ? `Removed “${removedTitle}” from the error notebook. ${errorQuestionIds.length} items remain.`
     : `已將「${removedTitle}」移出錯題本，還有 ${errorQuestionIds.length} 題待複習。`
@@ -248,28 +197,38 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
     // (A) 單元練習題庫 (G7~G12 所有單元)
     const allUnits = getAllPhysicsUnits()
     allUnits.forEach((unit) => {
+      const displayUnit = localizePhysicsUnit(unit, locale)
       unit.questions.forEach((q) => {
         const labInfo = resolvePhysicsLab(q, unit.suggestedLab)
         map.set(q.id, {
-          question: q,
+          question: localizePhysicsQuestion(q, locale),
           sourceType: 'unit',
-          sourceLabel: locale === 'en' ? `${stemVaultCopy(locale, unit.band)} · Unit ${unit.id} : ${stemCatalogCopy(locale, unit.title)}` : `${unit.band} · 單元 ${unit.id}: ${stemCatalogCopy(locale, unit.title)}`,
-          strandName: stemVaultCopy(locale, PHYSICS_STRAND_NAMES[q.strand]),
-          matchedLab: labInfo,
+          sourceLabel: `${displayUnit.band} · ${locale === 'en' ? 'Unit' : '單元'} ${displayUnit.id}: ${displayUnit.title}`,
+          strandName:
+            locale === 'en'
+              ? PHYSICS_STRAND_EN[q.strand]
+              : PHYSICS_STRAND_NAMES[q.strand] || q.strand,
+          matchedLab: labInfo ? localizePhysicsLab(labInfo, locale) : undefined,
+
         })
       })
     })
 
     // (B) 大考模擬試卷題庫 (CAP / GSAT / AST)
     Object.values(PHYSICS_MOCK_EXAMS).forEach((exam) => {
+      const displayExam = localizePhysicsMockExam(exam, locale)
       exam.questions.forEach((q) => {
         const labInfo = resolvePhysicsLab(q)
         map.set(q.id, {
-          question: q,
+          question: localizePhysicsQuestion(q, locale),
           sourceType: 'mock',
-          sourceLabel: locale === 'en' ? `${exam.id.toUpperCase()} mock exam` : `${exam.title} (${exam.targetExam})`,
-          strandName: stemVaultCopy(locale, PHYSICS_STRAND_NAMES[q.strand]),
-          matchedLab: labInfo,
+          sourceLabel: `${displayExam.title} (${displayExam.targetExam})`,
+          strandName:
+            locale === 'en'
+              ? PHYSICS_STRAND_EN[q.strand]
+              : PHYSICS_STRAND_NAMES[q.strand] || q.strand,
+          matchedLab: labInfo ? localizePhysicsLab(labInfo, locale) : undefined,
+
         })
       })
     })
@@ -287,20 +246,26 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
         // 容錯備援：若 ID 未能在標準池中找到，動態建構基礎物件避免渲染中斷
         const fallbackQ: PhysicsQuestion = {
           id,
-          title: '物理進階複習題目 ({id})',
+          title: locale === 'en' ? `Advanced physics review item (${id})` : `物理進階複習題目 (${id})`,
+
           strand: 'mechanics',
           type: 'choice',
           difficulty: 3,
-          question: '本題為歷次練習之重點錯題，請檢視推導公式並前往實驗室重溫觀念。',
+          question: locale === 'en'
+            ? 'This saved review item could not be found in the current bank. Review the derivation and revisit the underlying concept.'
+            : '本題為歷次練習之重點錯題，請檢視推導公式並重溫基礎觀念。',
           answer: 0,
-          solution: '請回顧牛頓運動定律、能量守恆與電磁基本關係式進行推導。',
+          solution: locale === 'en'
+            ? 'Review Newton\'s laws, conservation of energy, and the basic electromagnetic relationships before deriving an answer.'
+            : '請回顧牛頓運動定律、能量守恆與電磁基本關係式進行推導。',
         }
         return {
           question: fallbackQ,
           sourceType: 'unit' as const,
-          sourceLabel: stemVaultCopy(locale, '物理綜合強化題庫'),
-          strandName: stemVaultCopy(locale, '力學 (綜合強化)'),
-          matchedLab: resolvePhysicsLab(fallbackQ),
+          sourceLabel: locale === 'en' ? 'Physics review bank' : '物理綜合強化題庫',
+          strandName: locale === 'en' ? 'Mechanics (review)' : '力學 (綜合強化)',
+          matchedLab: undefined,
+
         }
       })
       .filter(Boolean)
@@ -309,7 +274,7 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
   // 3. 依據篩選條件過濾錯題列表
   const filteredQuestions = useMemo(() => {
     return errorQuestions.filter((item) => {
-      const q = localizeStemVaultQuestion(locale, item.question)
+      const q = item.question
 
       // 領域篩選
       if (selectedStrand !== 'all' && q.strand !== selectedStrand) {
@@ -340,7 +305,7 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
 
       return true
     })
-  }, [errorQuestions, selectedStrand, selectedSource, selectedDifficulty, searchQuery, locale])
+  }, [errorQuestions, selectedStrand, selectedSource, selectedDifficulty, searchQuery])
 
   // 展開 / 收起指定題目步驟拆解
   function toggleStep(qId: string) {
@@ -365,8 +330,11 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
       <div className="practice-card compact-vault-card" style={{ textAlign: 'center', padding: '2.5rem 1.5rem' }}>
         {removalStatus}
         <div style={{ fontSize: '2.8rem', marginBottom: '0.6rem' }}>🎉</div>
-        <h3 ref={emptyTitleRef} tabIndex={-1} style={{ margin: '0 0 0.4rem', color: '#0369a1' }}>{stemVaultCopy(locale, "太棒了！物理錯題本目前空空如也")}</h3>
-        <p style={{ color: 'var(--muted)', fontSize: '0.86rem', maxWidth: '460px', margin: '0 auto' }}>{stemVaultCopy(locale, "你在單元基礎練習與大考模擬試卷中答錯的物理考題都會自動歸納在此。隨時歡迎透過模擬考或單元練習挑戰自我！")}</p>
+        <h3 ref={emptyTitleRef} tabIndex={-1} style={{ margin: '0 0 0.4rem', color: '#0369a1' }}>{t('vault.physicsEmptyTitle')}</h3>
+        <p style={{ color: 'var(--muted)', fontSize: '0.86rem', maxWidth: '460px', margin: '0 auto' }}>
+          {t('vault.physicsEmptyBody')}
+        </p>
+
       </div>
     )
   }
@@ -381,24 +349,27 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
         <div className="vault-stat-card">
           <span className="vault-stat-icon">📖</span>
           <div className="vault-stat-meta">
-            <span className="vault-stat-label">{stemVaultCopy(locale, "待強化錯題總數")}</span>
-            <span className="vault-stat-value">{errorQuestions.length} {locale === 'en' ? 'items' : '題'}</span>
+            <span className="vault-stat-label">{t('vault.openTotal')}</span>
+            <span className="vault-stat-value">{t('vault.itemsCount', { count: errorQuestions.length })}</span>
+
           </div>
         </div>
 
         <div className="vault-stat-card">
           <span className="vault-stat-icon">🚀</span>
           <div className="vault-stat-meta">
-            <span className="vault-stat-label">{stemVaultCopy(locale, "可直通實驗室")}</span>
-            <span className="vault-stat-value">{stemVaultCopy(locale, "5 大動態模擬")}</span>
+            <span className="vault-stat-label">{t('vault.labsAvailable')}</span>
+            <span className="vault-stat-value">{t('vault.dynamicLabsCount', { count: 5 })}</span>
+
           </div>
         </div>
 
         <div className="vault-stat-card">
           <span className="vault-stat-icon">🎯</span>
           <div className="vault-stat-meta">
-            <span className="vault-stat-label">{stemVaultCopy(locale, "目前篩選顯示")}</span>
-            <span className="vault-stat-value">{filteredQuestions.length} {locale === 'en' ? 'items' : '題'}</span>
+            <span className="vault-stat-label">{t('vault.filteredCount')}</span>
+            <span className="vault-stat-value">{t('vault.itemsCount', { count: filteredQuestions.length })}</span>
+
           </div>
         </div>
       </div>
@@ -410,37 +381,42 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
             ref={searchRef}
             type="search"
             className="vault-search-input"
-            aria-label={stemVaultCopy(locale, "搜尋物理錯題")}
-            placeholder={stemVaultCopy(locale, "🔍 搜尋錯題關鍵字、公式或考點...")}
+            aria-label={t('vault.physicsSearchAria')}
+            placeholder={t('vault.physicsSearchPlaceholder')}
+
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
 
           <select
             className="vault-select-filter"
-            aria-label={stemVaultCopy(locale, "錯題來源篩選")}
+            aria-label={t('vault.sourceFilterAria')}
+
             id="physics-vault-source"
             value={selectedSource}
             onChange={(e) => setSelectedSource(e.target.value)}
           >
-            <option value="all">{stemVaultCopy(locale, "全部來源 (單元練習 + 模擬考)")}</option>
-            <option value="unit">{stemVaultCopy(locale, "僅單元練習題目")}</option>
-            <option value="mock">{stemVaultCopy(locale, "僅大考模擬試卷")}</option>
+            <option value="all">{t('vault.sourceAll')}</option>
+            <option value="unit">{t('vault.sourceUnit')}</option>
+            <option value="mock">{t('vault.sourceMock')}</option>
+
           </select>
 
           <select
             className="vault-select-filter"
-            aria-label={stemVaultCopy(locale, "錯題難度篩選")}
+            aria-label={t('vault.difficultyFilterAria')}
+
             id="physics-vault-difficulty"
             value={selectedDifficulty}
             onChange={(e) => setSelectedDifficulty(e.target.value)}
           >
-            <option value="all">{stemVaultCopy(locale, "全難度星級")}</option>
-            <option value="1">{stemVaultCopy(locale, "★ 難度 1 (基礎題)")}</option>
-            <option value="2">{stemVaultCopy(locale, "★★ 難度 2 (會考標準)")}</option>
-            <option value="3">{stemVaultCopy(locale, "★★★ 難度 3 (學測素養)")}</option>
-            <option value="4">{stemVaultCopy(locale, "★★★★ 難度 4 (分科進階)")}</option>
-            <option value="5">{stemVaultCopy(locale, "★★★★★ 難度 5 (競賽挑戰)")}</option>
+            <option value="all">{t('vault.difficultyAll')}</option>
+            <option value="1">{t('vault.difficulty1')}</option>
+            <option value="2">{t('vault.difficulty2')}</option>
+            <option value="3">{t('vault.difficulty3')}</option>
+            <option value="4">{t('vault.difficulty4')}</option>
+            <option value="5">{t('vault.difficulty5')}</option>
+
           </select>
 
           <button
@@ -449,17 +425,19 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
             style={{ marginLeft: 'auto', background: 'var(--surface-soft)' }}
             onClick={() => toggleAllSteps(!allExpanded)}
           >
-            {allExpanded ? stemVaultCopy(locale, "🔼 全部收起步驟") : stemVaultCopy(locale, "📖 全部展開步驟")}
+            {allExpanded ? t('vault.collapseAll') : t('vault.expandAll')}
+
           </button>
 
           <button
             type="button"
             className="vault-chip-btn"
             style={{ background: 'rgba(37, 99, 235, 0.12)', color: '#2563eb', borderColor: '#2563eb' }}
-            onClick={() => exportErrorVaultToAnki(locale === 'en' ? 'Physics' : '物理', filteredQuestions.map((item) => localizeStemVaultQuestion(locale, item.question)))}
-            title={stemVaultCopy(locale, "一鍵匯出當前篩選錯題至 Anki 記憶牌組")}
+            onClick={() => exportErrorVaultToAnki(t('vault.physicsTrack'), filteredQuestions.map((q) => q.question))}
+            title={t('vault.exportCurrentTitle')}
           >
-            {stemVaultCopy(locale, '📑 匯出 Anki 牌組')}
+            {t('vault.exportCurrent')}
+
           </button>
         </div>
 
@@ -471,7 +449,8 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
             aria-pressed={selectedStrand === 'all'}
             onClick={() => setSelectedStrand('all')}
           >
-            {stemVaultCopy(locale, '全部主軸')} ({errorQuestions.length})
+            {t('vault.allStrands', { count: errorQuestions.length })}
+
           </button>
           <button
             type="button"
@@ -479,7 +458,8 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
             aria-pressed={selectedStrand === 'mechanics'}
             onClick={() => setSelectedStrand('mechanics')}
           >
-            {stemVaultCopy(locale, "⚙️ 力學運動與能量")} ({errorQuestions.filter((q) => q.question.strand === 'mechanics').length})
+            ⚙️ {locale === 'en' ? PHYSICS_STRAND_EN.mechanics : '力學運動與能量'} ({errorQuestions.filter((q) => q.question.strand === 'mechanics').length})
+
           </button>
           <button
             type="button"
@@ -487,7 +467,8 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
             aria-pressed={selectedStrand === 'thermodynamics'}
             onClick={() => setSelectedStrand('thermodynamics')}
           >
-            {stemVaultCopy(locale, "🔥 熱學與分子動力")} ({errorQuestions.filter((q) => q.question.strand === 'thermodynamics').length})
+            🔥 {locale === 'en' ? PHYSICS_STRAND_EN.thermodynamics : '熱學與分子動力'} ({errorQuestions.filter((q) => q.question.strand === 'thermodynamics').length})
+
           </button>
           <button
             type="button"
@@ -495,7 +476,8 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
             aria-pressed={selectedStrand === 'waves_optics'}
             onClick={() => setSelectedStrand('waves_optics')}
           >
-            {stemVaultCopy(locale, "🌈 波動與幾何光學")} ({errorQuestions.filter((q) => q.question.strand === 'waves_optics').length})
+            🌈 {locale === 'en' ? PHYSICS_STRAND_EN.waves_optics : '波動與幾何光學'} ({errorQuestions.filter((q) => q.question.strand === 'waves_optics').length})
+
           </button>
           <button
             type="button"
@@ -503,7 +485,8 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
             aria-pressed={selectedStrand === 'electromagnetism'}
             onClick={() => setSelectedStrand('electromagnetism')}
           >
-            {stemVaultCopy(locale, "⚡ 電磁學與電路")} ({errorQuestions.filter((q) => q.question.strand === 'electromagnetism').length})
+            ⚡ {locale === 'en' ? PHYSICS_STRAND_EN.electromagnetism : '電磁學與電路'} ({errorQuestions.filter((q) => q.question.strand === 'electromagnetism').length})
+
           </button>
           <button
             type="button"
@@ -511,7 +494,8 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
             aria-pressed={selectedStrand === 'modern'}
             onClick={() => setSelectedStrand('modern')}
           >
-            {stemVaultCopy(locale, "⚛️ 近代物理與原子")} ({errorQuestions.filter((q) => q.question.strand === 'modern').length})
+            ⚛️ {locale === 'en' ? PHYSICS_STRAND_EN.modern : '近代物理與原子'} ({errorQuestions.filter((q) => q.question.strand === 'modern').length})
+
           </button>
         </div>
       </div>
@@ -519,15 +503,19 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
       {/* 錯題卡片清單 */}
       {filteredQuestions.length === 0 ? (
         <div className="practice-card" style={{ textAlign: 'center', padding: '1.75rem' }}>
-          <p style={{ color: 'var(--muted)', margin: 0, fontSize: '0.86rem' }}>{stemVaultCopy(locale, "沒有符合當前篩選條件的錯題項目。")}</p>
+          <p style={{ color: 'var(--muted)', margin: 0, fontSize: '0.86rem' }}>
+            {t('vault.noFilterMatches')}
+          </p>
+
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
           {filteredQuestions.map((item, index) => {
-            const q = localizeStemVaultQuestion(locale, item.question)
+            const q = item.question
             const isStepOpen = Boolean(expandedSteps[q.id])
             const stepsId = `${stepsIdPrefix}-${index}`
-            const matchedSignal = findMatchingSignal(item.question)
+            const matchedSignal = findMatchingSignal(q, locale)
+
             const lab = item.matchedLab
 
             return (
@@ -543,10 +531,11 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
                   <button
                     type="button"
                     className="vault-btn-mastered"
-                    title={stemVaultCopy(locale, "移出錯題筆記本")}
+                    title={t('vault.removeTitle')}
                     onClick={() => removeQuestion(item.question)}
                   >
-                    {stemVaultCopy(locale, '✓ 我已掌握 (移出)')}
+                    {t('vault.remove')}
+
                   </button>
                 </div>
 
@@ -579,7 +568,8 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
                             <div className="katex-scroll-protection" style={{ flex: 1 }}>
                               <MathFormula math={opt.replace(/^[A-D]\.\s*/, '')} />
                             </div>
-                            {isCorrectOption && <span style={{ marginLeft: 'auto' }}>{stemVaultCopy(locale, "✓ 正確")}</span>}
+                            {isCorrectOption && <span style={{ marginLeft: 'auto' }}>{t('vault.correctOption')}</span>}
+
                           </div>
                         )
                       })}
@@ -590,7 +580,8 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
                 {/* 正確解析與公式推導區 */}
                 <div className="vault-solution-wrapper">
                   <div className="vault-solution-header">
-                    <span className="vault-solution-title">{stemVaultCopy(locale, "💡 正確解析與公式推導")}</span>
+                    <span className="vault-solution-title">{t('vault.physicsSolution')}</span>
+
                     <button
                       type="button"
                       className="vault-toggle-steps-btn"
@@ -598,7 +589,8 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
                       aria-controls={isStepOpen ? stepsId : undefined}
                       onClick={() => toggleStep(q.id)}
                     >
-                      {isStepOpen ? stemVaultCopy(locale, "🔼 收起深度拆解") : stemVaultCopy(locale, "📖 展開 5 步深度拆解與盲點診斷 ▾")}
+                      {isStepOpen ? t('vault.collapseDetails') : t('vault.expandDetails')}
+
                     </button>
                   </div>
 
@@ -613,17 +605,19 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
                       <div className="vault-step-card">
                         <div className="vault-step-title-line">
                           <span className="vault-step-num">1</span>
-                          <span>{stemVaultCopy(locale, "🎯 審題與 3 秒破題訊號 (Diagnosis)")}</span>
+                          <span>{t('vault.stepDiagnosis')}</span>
+
                         </div>
                         <div className="vault-step-content-text">
                           {matchedSignal ? (
                             <p style={{ margin: 0, color: '#0369a1', fontWeight: 600 }}>
-                              {stemVaultCopy(locale, '【破題訊號】')}{stemVaultCopy(locale, matchedSignal.problemSignal)} ➜{' '}
-                              <span style={{ color: '#0284c7' }}>{stemVaultCopy(locale, matchedSignal.threeSecondRule)}</span>
+                              {t('vault.cue')} {matchedSignal.problemSignal} ➜{' '}
+                              <span style={{ color: '#0284c7' }}>{matchedSignal.threeSecondRule}</span>
                             </p>
                           ) : (
                             <p style={{ margin: 0 }}>
-                              <MathFormula math={q.hint || stemVaultCopy(locale, '鎖定本題物理主軸【{strand}】，釐清已知物理量與待求未知量之函數關係。', { strand: item.strandName })} />
+                              <MathFormula math={q.hint || t('vault.physicsDiagnosisDefault', { strand: item.strandName })} />
+
                             </p>
                           )}
                         </div>
@@ -633,13 +627,15 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
                       <div className="vault-step-card">
                         <div className="vault-step-title-line">
                           <span className="vault-step-num">2</span>
-                          <span>{stemVaultCopy(locale, "📐 關鍵公式與物理定律 (Formula Formulation)")}</span>
+                          <span>{t('vault.physicsFormulaStep')}</span>
+
                         </div>
                         <div className="vault-step-content-text katex-scroll-protection">
                           {matchedSignal?.firstStepFormula ? (
-                            <MathFormula math={`$$${stemVaultCopy(locale, matchedSignal.firstStepFormula)}$$`} block />
+                            <MathFormula math={`$$${matchedSignal.firstStepFormula}$$`} block />
                           ) : (
-                            <MathFormula math={stemVaultCopy(locale, '依據本題主軸【{strand}】選擇適用的定義或關係式，逐一對照題目已知條件與單位。', { strand: item.strandName })} />
+                            <MathFormula math={t('vault.physicsFormulaDefault')} />
+
                           )}
                         </div>
                       </div>
@@ -648,7 +644,8 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
                       <div className="vault-step-card">
                         <div className="vault-step-title-line">
                           <span className="vault-step-num">3</span>
-                          <span>{stemVaultCopy(locale, "🔍 步驟推導與數值求解 (Step-by-Step Derivation)")}</span>
+                          <span>{t('vault.physicsDerivationStep')}</span>
+
                         </div>
                         <div className="vault-step-content-text katex-scroll-protection">
                           <MathFormula math={q.solution} />
@@ -659,13 +656,14 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
                       <div className="vault-step-card">
                         <div className="vault-step-title-line">
                           <span className="vault-step-num">4</span>
-                          <span>{stemVaultCopy(locale, "💡 易錯盲點與常犯陷阱 (Pitfall Warnings)")}</span>
+                          <span>{t('vault.physicsPitfallStep')}</span>
                         </div>
                         <div className="vault-pitfall-box">
                           {q.hint ? (
-                            <div><strong>{stemVaultCopy(locale, "⚠️ 考點警示：")}</strong>{q.hint}</div>
+                            <div><strong>{t('vault.warning')}</strong>{q.hint}</div>
                           ) : (
-                            <div><strong>{stemVaultCopy(locale, "⚠️ 常見盲區：")}</strong>{stemVaultCopy(locale, "核對本題主軸【{strand}】的適用條件、符號定義與單位，勿直接套用其他情境的結論。", { strand: item.strandName })}</div>
+                            <MathFormula math={t('vault.physicsPitfallDefault')} />
+
                           )}
                         </div>
                       </div>
@@ -675,7 +673,8 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
                         <div className="vault-step-card">
                           <div className="vault-step-title-line">
                             <span className="vault-step-num">5</span>
-                            <span>{stemVaultCopy(locale, "📝 108 課綱核心素養指引 (Competency)")}</span>
+                            <span>{t('vault.competency')}</span>
+
                           </div>
                           <div className="vault-step-content-text" style={{ color: 'var(--muted)' }}>
                             {q.competency}
@@ -687,20 +686,23 @@ export const PhysicsErrorVault: React.FC<PhysicsErrorVaultProps> = ({
                 </div>
 
                 {/* 底部：動態關聯實驗室直通按鈕 */}
-                <div className="vault-teleport-footer">
-                  <div className="vault-teleport-hint">
-                    <span>{stemVaultCopy(locale, "💡 觀念仍不清楚？透過動態畫布模擬驗證：")}</span>
-                  </div>
+                {lab && (
+                  <div className="vault-teleport-footer">
+                    <div className="vault-teleport-hint">
+                      <span>{t('vault.physicsLabHint')}</span>
+                    </div>
 
-                  <button
-                    type="button"
-                    className="vault-lab-teleport-btn"
-                    onClick={() => onOpenLab?.(lab.id)}
-                    disabled={!onOpenLab}
-                  >
-                    <span>{lab.icon} {locale === 'en' ? `Explore ${stemVaultCopy(locale, lab.name)} ➔` : `前往「${lab.name}」即時驗證 ➔`}</span>
-                  </button>
-                </div>
+                    <button
+                      type="button"
+                      className="vault-lab-teleport-btn"
+                      onClick={() => onOpenLab?.(lab.id)}
+                      disabled={!onOpenLab}
+                    >
+                      <span>{t('vault.openLab', { icon: lab.icon, name: lab.name })}</span>
+                    </button>
+                  </div>
+                )}
+
               </article>
             )
           })}

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { CS_MOCK_EXAMS, type CsMockExam as CsMockExamData } from '../data/mockExams'
+import { CS_MOCK_EXAMS } from '../data/mockExams'
 import type { CsQuestion } from '../data/curriculum'
 import { playCorrectSound, playWrongSound } from '../../engine/audioSynthesizer'
+import { useI18n } from '../../i18n/i18n'
+import { localizeCsMockExam } from '../../i18n/csTeachingCopy'
 
 interface Props {
   onRecordExamScore: (examId: string, score: number, errorQuestionIds: string[]) => void
@@ -9,23 +11,26 @@ interface Props {
 }
 
 export const CsMockExam: React.FC<Props> = ({ onRecordExamScore, onEarnXp }) => {
+  const { locale } = useI18n()
+  const copy = (zhHant: string, en: string) => locale === 'en' ? en : zhHant
   const [selectedExamKey, setSelectedExamKey] = useState<'midterm' | 'final'>('midterm')
-  const [currentExam, setCurrentExam] = useState<CsMockExamData>(CS_MOCK_EXAMS.midterm)
+  const currentExam = React.useMemo(
+    () => localizeCsMockExam(locale, CS_MOCK_EXAMS[selectedExamKey]),
+    [locale, selectedExamKey],
+  )
   const [activeQuestionIdx, setActiveQuestionIdx] = useState(0)
   const [userAnswers, setUserAnswers] = useState<Record<string, number>>({})
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [score, setScore] = useState<number | null>(null)
-  const [secondsRemaining, setSecondsRemaining] = useState(currentExam.durationMinutes * 60)
+  const [secondsRemaining, setSecondsRemaining] = useState(CS_MOCK_EXAMS.midterm.durationMinutes * 60)
   const [isTimerRunning, setIsTimerRunning] = useState(false)
 
   useEffect(() => {
-    const exam = CS_MOCK_EXAMS[selectedExamKey]
-    setCurrentExam(exam)
     setActiveQuestionIdx(0)
     setUserAnswers({})
     setIsSubmitted(false)
     setScore(null)
-    setSecondsRemaining(exam.durationMinutes * 60)
+    setSecondsRemaining(CS_MOCK_EXAMS[selectedExamKey].durationMinutes * 60)
     setIsTimerRunning(true)
   }, [selectedExamKey])
 
@@ -103,14 +108,14 @@ export const CsMockExam: React.FC<Props> = ({ onRecordExamScore, onEarnXp }) => 
             className={`pill-btn ${selectedExamKey === 'midterm' ? 'active' : ''}`}
             onClick={() => setSelectedExamKey('midterm')}
           >
-            期中模擬評量 (30分鐘)
+            {copy('期中模擬評量 (30分鐘)', 'Midterm practice (30 minutes)')}
           </button>
           <button aria-pressed={selectedExamKey === 'final'}
             type="button"
             className={`pill-btn ${selectedExamKey === 'final' ? 'active' : ''}`}
             onClick={() => setSelectedExamKey('final')}
           >
-            期末前沿 AI 綜合大考 (40分鐘)
+            {copy('期末前沿 AI 綜合大考 (40分鐘)', 'Frontier-AI final (40 minutes)')}
           </button>
         </div>
 
@@ -128,7 +133,7 @@ export const CsMockExam: React.FC<Props> = ({ onRecordExamScore, onEarnXp }) => 
               style={{ padding: '0.45rem 1rem', fontSize: '0.78rem' }}
               onClick={handleSubmitExam}
             >
-              交卷評分
+              {copy('交卷評分', 'Submit and score')}
             </button>
           )}
         </div>
@@ -151,13 +156,13 @@ export const CsMockExam: React.FC<Props> = ({ onRecordExamScore, onEarnXp }) => 
         >
           <div>
             <span style={{ fontSize: '0.72rem', color: 'var(--muted)', fontWeight: 700 }}>
-              評量完成 · 診斷報告
+              {copy('評量完成 · 診斷報告', 'Assessment complete · Diagnostic report')}
             </span>
             <h3 style={{ margin: '0.2rem 0', fontSize: '1.2rem' }}>
-              測驗得分：{score} 分（{score >= 60 ? '及格通過 🎉' : '需加強複習 💪'}）
+              {copy('測驗得分：', 'Score: ')}{score}{copy(' 分', ' points')}（{score >= 60 ? copy('及格通過 🎉', 'Passed 🎉') : copy('需加強複習 💪', 'Review recommended 💪')}）
             </h3>
             <span style={{ fontSize: '0.74rem', color: 'var(--text)' }}>
-              錯題已自動歸檔至「錯題弱點本」，供您後續深入解析與弱點突破！
+              {copy('錯題已自動歸檔至「錯題弱點本」，供您後續深入解析與弱點突破！', 'Missed questions were added to the error vault for focused review.')}
             </span>
           </div>
           <button
@@ -171,7 +176,7 @@ export const CsMockExam: React.FC<Props> = ({ onRecordExamScore, onEarnXp }) => 
               setIsTimerRunning(true)
             }}
           >
-            ↺ 重新測驗
+            {copy('↺ 重新測驗', '↺ Retake')}
           </button>
         </div>
       )}
@@ -222,7 +227,7 @@ export const CsMockExam: React.FC<Props> = ({ onRecordExamScore, onEarnXp }) => 
         <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1.2rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
             <span style={{ fontSize: '0.74rem', padding: '0.1rem 0.5rem', borderRadius: '999px', background: 'rgba(37, 99, 235, 0.15)', color: '#2563eb', fontWeight: 700 }}>
-              第 {activeQuestionIdx + 1} / {currentExam.questions.length} 題
+              {copy(`第 ${activeQuestionIdx + 1} / ${currentExam.questions.length} 題`, `Question ${activeQuestionIdx + 1} / ${currentExam.questions.length}`)}
             </span>
             <strong style={{ fontSize: '0.92rem' }}>{currentQ.title}</strong>
           </div>
@@ -272,8 +277,8 @@ export const CsMockExam: React.FC<Props> = ({ onRecordExamScore, onEarnXp }) => 
                     onClick={() => handleSelectOption(currentQ.id, optIdx)}
                   >
                     <span style={{ fontSize: '0.82rem' }}>{opt}</span>
-                    {isSubmitted && optIdx === currentQ.answer && <span style={{ color: '#10b981', fontWeight: 700 }}>✓ 正確</span>}
-                    {isSubmitted && isSelected && optIdx !== currentQ.answer && <span style={{ color: '#ef4444', fontWeight: 700 }}>✗ 您的回答</span>}
+                    {isSubmitted && optIdx === currentQ.answer && <span style={{ color: '#10b981', fontWeight: 700 }}>{copy('✓ 正確', '✓ Correct')}</span>}
+                    {isSubmitted && isSelected && optIdx !== currentQ.answer && <span style={{ color: '#ef4444', fontWeight: 700 }}>{copy('✗ 您的回答', '✗ Your answer')}</span>}
                   </button>
                 )
               })}
@@ -284,7 +289,7 @@ export const CsMockExam: React.FC<Props> = ({ onRecordExamScore, onEarnXp }) => 
           {isSubmitted && (
             <div style={{ marginTop: '0.85rem', padding: '0.85rem', borderRadius: '8px', background: 'var(--surface-soft)', border: '1px solid var(--line)' }}>
               <strong style={{ fontSize: '0.8rem', color: '#2563eb', display: 'block', marginBottom: '0.3rem' }}>
-                💡 試題深入解析：
+                {copy('💡 試題深入解析：', '💡 Detailed explanation:')}
               </strong>
               <ul style={{ margin: 0, paddingLeft: '1.2rem', fontSize: '0.76rem', lineHeight: 1.5, color: 'var(--text)' }}>
                 {currentQ.solution.map((step, sIdx) => (
@@ -292,7 +297,7 @@ export const CsMockExam: React.FC<Props> = ({ onRecordExamScore, onEarnXp }) => 
                 ))}
               </ul>
               <div style={{ marginTop: '0.4rem', fontSize: '0.72rem', color: 'var(--muted)' }}>
-                <strong>考點結論：</strong>{currentQ.explanation}
+                <strong>{copy('考點結論：', 'Key conclusion:')}</strong>{currentQ.explanation}
               </div>
             </div>
           )}

@@ -1,19 +1,22 @@
-import { useCalculusCopy } from '../../i18n/calculusCopy'
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { RIEMANN_PRESETS } from '../data/diagramPresets'
+import { RIEMANN_PRESETS_EN } from '../data/diagramPresets.en'
+import { useI18n } from '../../i18n/i18n'
 
 /**
  * 黎曼和切片極限與微積分視覺化 (RiemannCalculusLab)
  * 高中微積分核心：將定積分看作長條切片無限細分的極限，親手調整切片數 N 觀察階梯逼近連續曲線。
  */
 export const RiemannCalculusLab: React.FC = () => {
-  const c = useCalculusCopy()
+  const { locale } = useI18n()
+  const copy = (zh: string, en: string) => locale === 'en' ? en : zh
+  const presets = locale === 'en' ? RIEMANN_PRESETS_EN : RIEMANN_PRESETS
   const [selectedPresetId, setSelectedPresetId] = useState<string>(RIEMANN_PRESETS[0].id)
   const [slicesN, setSlicesN] = useState<number>(8)
   const [sumMode, setSumMode] = useState<'left' | 'right' | 'mid'>('mid')
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
-  const preset = RIEMANN_PRESETS.find((p) => p.id === selectedPresetId) ?? RIEMANN_PRESETS[0]
+  const preset = presets.find((p) => p.id === selectedPresetId) ?? presets[0]
 
   // 計算函數值 f(x)
   const evalFn = useCallback((x: number): number => {
@@ -109,19 +112,19 @@ export const RiemannCalculusLab: React.FC = () => {
     <div className="riemann-calculus-card">
       <div className="solver-top-bar">
         <div className="solver-title-block">
-          <h3>{c("📈 黎曼和與定積分切片極限 (Riemann Sum)")}</h3>
-          <p>{c("定積分不是玄學公式！拖動滑桿將切片數 $N$ 從 4 增加到 100，親眼目睹矩陣和收斂至平滑曲線面積。")}</p>
+          <h3>{copy('📈 黎曼和與定積分切片極限 (Riemann Sum)', '📈 Riemann Sums and Definite Integrals')}</h3>
+          <p>{copy('定積分不是玄學公式！拖動滑桿將切片數 $N$ 從 4 增加到 100，親眼目睹矩陣和收斂至平滑曲線面積。', 'Increase the slice count $N$ from 4 to 100 and watch the rectangular sum converge to the area under a smooth curve.')}</p>
         </div>
 
         <div className="preset-tabs">
-          {RIEMANN_PRESETS.map((p) => (
+          {presets.map((p) => (
             <button
               key={p.id}
               type="button"
               className={`pill-btn ${p.id === selectedPresetId ? 'active' : ''}`}
               onClick={() => setSelectedPresetId(p.id)}
             >
-              {c(p.title.split('：')[0])}
+              {p.title.split(locale === 'en' ? ':' : '：')[0]}
             </button>
           ))}
         </div>
@@ -131,10 +134,10 @@ export const RiemannCalculusLab: React.FC = () => {
         {/* Canvas 曲線與階梯和繪製區 */}
         <div className="canvas-container" style={{ width: '100%', overflow: 'hidden', minWidth: 0 }}>
           <div className="riemann-badges" style={{ flexWrap: 'wrap', gap: '0.35rem', marginBottom: '0.4rem' }}>
-            <span className="badge-fn">{c("🔴 曲線 $")}{preset.fnLatex}$</span>
-            <span className="badge-slices">{c("切片數 $N = ")}{slicesN}$</span>
+            <span className="badge-fn">{copy('🔴 曲線 ', '🔴 Curve ')}${preset.fnLatex}$</span>
+            <span className="badge-slices">{copy('切片數 ', 'Slices ')}$N = {slicesN}$</span>
             <span className="badge-approx">
-              {c("黎曼和 $\\approx ")}{riemannSum.toFixed(3)}{c("$ (精確值 ")}{preset.exactIntegral})
+              {copy('黎曼和 ', 'Riemann sum ')}$\approx {riemannSum.toFixed(3)}$ ({copy('精確值', 'exact value')} {preset.exactIntegral})
             </span>
           </div>
 
@@ -151,13 +154,13 @@ export const RiemannCalculusLab: React.FC = () => {
         <div className="riemann-controls-panel">
           <div className="slider-box">
             <div className="slider-label-row">
-              <label>{c("切片細分數 $N$：")}<strong>{slicesN}</strong></label>
+              <label>{copy('切片細分數 ', 'Number of slices ')}$N${copy('：', ': ')}<strong>{slicesN}</strong></label>
               <span className="dx-hint">$\Delta x = {dx.toFixed(3)}$</span>
             </div>
             <input
               type="range"
-              aria-label={c("黎曼和切片細分數")}
-              aria-valuetext={c(`${slicesN} 個切片`)}
+              aria-label={copy('黎曼和切片細分數', 'Number of Riemann-sum slices')}
+              aria-valuetext={copy(`${slicesN} 個切片`, `${slicesN} slices`)}
               min="4"
               max="100"
               step="2"
@@ -167,41 +170,44 @@ export const RiemannCalculusLab: React.FC = () => {
           </div>
 
           <div className="mode-toggle-group">
-            <label className="group-title">{c("取樣點模式：")}</label>
+            <label className="group-title">{copy('取樣點模式：', 'Sample-point mode:')}</label>
             <div className="btn-group">
               <button
                 type="button"
                 className={`btn-mode ${sumMode === 'left' ? 'active' : ''}`}
                 onClick={() => setSumMode('left')}
               >
-                {c("左端點和 (Left)")}</button>
+                {copy('左端點和 (Left)', 'Left-endpoint sum')}
+              </button>
               <button
                 type="button"
                 className={`btn-mode ${sumMode === 'mid' ? 'active' : ''}`}
                 onClick={() => setSumMode('mid')}
               >
-                {c("中點和 (Midpoint)")}</button>
+                {copy('中點和 (Midpoint)', 'Midpoint sum')}
+              </button>
               <button
                 type="button"
                 className={`btn-mode ${sumMode === 'right' ? 'active' : ''}`}
                 onClick={() => setSumMode('right')}
               >
-                {c("右端點和 (Right)")}</button>
+                {copy('右端點和 (Right)', 'Right-endpoint sum')}
+              </button>
             </div>
           </div>
 
           <div className="convergence-card">
-            <h5>{c("🎯 極限逼近診斷：")}</h5>
+            <h5>{copy('🎯 極限逼近診斷：', '🎯 Convergence Check:')}</h5>
             <div className="stat-row">
-              <span>{c("當前切片和：")}</span>
+              <span>{copy('當前切片和：', 'Current rectangular sum:')}</span>
               <strong>{riemannSum.toFixed(4)}</strong>
             </div>
             <div className="stat-row">
-              <span>{c("微積分精確定積分：")}</span>
+              <span>{copy('微積分精確定積分：', 'Exact definite integral:')}</span>
               <strong>{preset.exactIntegral.toFixed(4)}</strong>
             </div>
             <div className="stat-row">
-              <span>{c("誤差百分比：")}</span>
+              <span>{copy('誤差百分比：', 'Percentage error:')}</span>
               <span className={`err-pill ${errorPct < 1 ? 'good' : ''}`}>
                 {errorPct.toFixed(2)}%
               </span>

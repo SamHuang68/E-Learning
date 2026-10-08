@@ -80,6 +80,13 @@ describe('臺灣 108 課綱物理 (Physics Track) 課程架構與資料完整性
     })
   })
 
+  it('七年級量測與實驗誤差應歸入力學基礎，不得誤標為近代物理', () => {
+    const measurementUnit = getPhysicsUnit('g7', 1)
+
+    expect(measurementUnit?.strand).toBe('mechanics')
+    expect(measurementUnit?.questions.every((question) => question.strand === 'mechanics')).toBe(true)
+  })
+
   it('每個單元之核心觀念皆應包含 KaTeX 物理公式與實驗室建議', () => {
     const allUnits = getAllPhysicsUnits()
     allUnits.forEach((unit) => {
@@ -160,6 +167,14 @@ describe('物理 3 秒破題訊號庫 (Physics Solving Signals) 測試', () => {
       expect(sig.exampleProblem.question).toBeDefined()
       expect(sig.exampleProblem.quickSolve).toBeDefined()
     })
+  })
+
+  it('直尺最小刻度題應有專用量測訊號與第一步關係式', () => {
+    const signal = PHYSICS_SOLVING_SIGNALS.find((item) => item.id === 'sig-j-measurement-scale')
+
+    expect(signal?.strand).toBe('mechanics')
+    expect(signal?.problemSignal).toContain('最小刻度')
+    expect(signal?.firstStepFormula).toContain('last recorded place')
   })
 
   it('能依學段與主軸正確篩選破題訊號卡', () => {
