@@ -4,6 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "audit:all": "npm audit --package-lock-only --include=dev --audit-level=info",
+    "audit:prod": "npm audit --package-lock-only --omit=dev --audit-level=low",
     "dev": "vite",
     "build": "node scripts/prepare-archify.mjs --check && tsc -b && vite build && node scripts/generate-precache.mjs",
     "verify:dist": "node scripts/verify-dist.mjs",
@@ -31,6 +33,6 @@
     "oxlint": "^1.71.0",
     "typescript": "~6.0.2",
     "vite": "^8.1.1",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   }
 }

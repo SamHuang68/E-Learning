@@ -27,8 +27,40 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Install
-        run: npm ci
+      - name: 正式依賴弱點閘門
+        id: audit_prod
+        timeout-minutes: 5
+        run: npm run audit:prod
+
+      - name: 完整依賴弱點報告（非阻擋）
+        id: audit_all
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        timeout-minutes: 5
+        run: npm run audit:all
+
+      - name: 記錄依賴弱點狀態
+        if: ${{ always() }}
+        shell: bash
+        env:
+          PROD_OUTCOME: ${{ steps.audit_prod.outcome }}
+          ALL_OUTCOME: ${{ steps.audit_all.outcome }}
+        run: |
+          {
+            echo "### 依賴弱點稽核"
+            echo
+            echo "- 正式依賴閘門：\`${PROD_OUTCOME}\`"
+            echo "- 完整依賴圖（非阻擋報告）：\`${ALL_OUTCOME}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "$ALL_OUTCOME" = "failure" ]; then
+            echo "::warning title=完整依賴弱點稽核未通過::請檢查該步驟；可能是完整依賴圖中的安全告警（含正式、開發或建置依賴），也可能是套件登錄服務傳輸錯誤。正式依賴仍由前一步阻擋。"
+          elif [ "$PROD_OUTCOME" = "success" ] && [ "$ALL_OUTCOME" != "success" ]; then
+            echo "::warning title=完整依賴弱點稽核未完成::正式依賴閘門已通過，但完整依賴圖沒有成功完成；請檢查該步驟狀態。"
+          fi
+
+      - name: 安裝鎖定依賴
+        run: npm ci --no-audit
 
       - name: Lint
         run: npm run lint
