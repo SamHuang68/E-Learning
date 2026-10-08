@@ -293,3 +293,30 @@ Validation and state:
 - 雲端同步回歸使用瀏覽器 localStorage-backed Supabase shim，沒有連線 hosted Supabase，也未驗證正式資料庫欄位、RLS、實際網路、跨裝置同步或正式 readback。進度匯入回歸直接呼叫 export／import 函式，沒有經由 Data Controls 的檔案選擇器實際選檔；瀏覽器暫時 QA payload 只證明本機 storage 與事件驅動畫面更新，不是 cloud hydrate 或 import UI E2E。
 - 模擬評量自動交卷目前以來源結構契約保護；瀏覽器僅驗證交卷後的英文零分報告，沒有以 fake timer、Strict Mode 或實際等待倒數歸零確認音效、經驗值及 `onRecordExamScore` 恰好執行一次。
 - 本條目最初建立時為未提交候選；Sam 於 2026-10-08 指示「收尾」後，已明確進入完整 gate、精確 allowlist commit、push、PR、合併與部署流程。本檔不預寫包含自身的 commit SHA；完整 release commit、merge SHA、CI 與 live 部署證據由同版本 PR 及交付回報相互引用。建立 release commit 前的狀態仍為 `commit=false`、`push=false`、`merge=false`、`deploy=false`。
+
+## dependency-security-patches.1 — 2026-10-09 — 發布候選
+
+沿用 npm package `0.0.0` 與內容衍生 precache `buildId` 的既有版本策略。本輪只處理已確認的開發／建置依賴安全告警及其 CI 可見性，不修改應用程式執行碼、課程內容、資料契約或使用者資料。
+
+### 根因與修正
+
+- 基準鎖檔的完整 `npm audit` 為 5 個套件紀錄：Vitest 與 `@vitest/mocker` 共用一項 moderate 告警，PostCSS 為一項 moderate 告警，Nanoid 與 `source-map-js` 各為一項 high 告警；排除開發依賴後為 0。這表示正式瀏覽器依賴沒有已知命中，但 CI／本機測試與建置會安裝及執行相關工具鏈，不能以部署成功取代修補。
+- 將 Vitest 最低版本由 `^4.1.10` 提升至 `^4.1.11`，並把同版的七個 `@vitest/*` 套件更新至 4.1.11，修正開發伺服器 mock redirect 邊界問題。
+- 在既有相容版本範圍內將 PostCSS 8.5.19 更新至 8.5.29、Nanoid 3.3.16 更新至 3.3.20、`source-map-js` 1.2.1 更新至 1.2.2；不新增永久 `overrides`、不使用 `npm audit fix` 或 `--force`。npm 解析期間順帶選到的三個非必要 minor 更新已恢復基準版本，最終沒有新增直接依賴、產品執行期套件或非必要 minor 變更。
+- 新增 `audit:prod` 與 `audit:all`。GitHub Pages workflow 在安裝前先以精確鎖檔對正式依賴執行 low 以上 fail-closed 稽核，再執行含開發依賴、info 以上的非阻擋完整報告；後者即使正式閘門已轉紅仍會在未取消的情況下執行，並保留原始 outcome、Actions 摘要與 warning，不以 `|| true` 洗成成功。明確稽核後，`npm ci` 使用 `--no-audit` 避免重複隱含查詢。
+- 保留 `verify:local` 與 `verify:dist` 的確定性／可離線責任；線上安全告警資料庫與套件登錄服務錯誤不混入產物完整性判決。README 已記錄兩層命令、資料傳輸邊界與 CI 行為。
+
+### 驗證結果
+
+- 修正前重現：完整依賴稽核 exit 1，moderate 3、high 2、critical 0；正式依賴稽核 exit 0、總數 0。修正後 `npm run audit:prod` 與 `npm run audit:all` 均 exit 0、總數 0。
+- `npm ci --no-audit --no-fund` 由更新後鎖檔重新建立依賴樹成功；`npm ls` 證明 Vitest 4.1.11、`@vitest/mocker` 4.1.11、PostCSS 8.5.29、Nanoid 3.3.20 與 `source-map-js` 1.2.2 均為實際安裝版本。
+- `npm run verify:local` 通過：全庫 oxlint 零警告；347 個 Vitest 測試檔、1,642 個測試全數通過；Supabase schema 靜態契約 56／56 通過；production build 完成 532 個模組。
+- 內容衍生 precache `buildId=b159cfeff1320df3`，與本輪基準發布候選相同；`verify:dist` 驗證 298 個產物檔、99 個必要 public 檔、8 個延遲載入路由區塊及 8,064,721 bytes precache 全數通過，最大 bundled JavaScript 為 436,409 bytes。
+- 鎖檔差異限定於直接 Vitest 範圍、四項安全告警所屬套件及其同一工具鏈相容解析；沒有 dependency／devDependency 新增、刪除或跨 major 更新。
+
+### 已知限制與發布狀態
+
+- `npm audit` 會查詢外部安全告警資料庫；相同 commit 與鎖檔可能因新告警或套件登錄服務故障而在未來轉紅。正式依賴步驟會阻擋 GitHub Pages 部署；完整依賴圖只作非阻擋報告，因此其失敗不能被解讀為「依賴安全檢查全綠」。
+- 現有 GitHub workflow 只在 push 至 `main` 或手動 dispatch 時執行，新增閘門是部署閘門，不是 PR 合併前的 GitHub required check。PR 預覽仍以外部 Cloudflare Pages check 及本機完整 gate 為準。
+- 本輪不改變既有驗收缺口：沒有連線 hosted Supabase 驗證跨裝置同步，沒有經由實際檔案選擇器執行匯入 E2E，也沒有在可掛載 React Strict Mode 與 fake timer 的瀏覽器測試環境驗證自動交卷副作用恰好一次。
+- 本條目建立時為未提交候選，`commit=false`、`push=false`、`merge=false`、`deploy=false`。Sam 於 2026-10-09 指示「照建議執行」後，已授權本輪精確依賴修補、完整 gate、新分支、PR、合併與 GitHub Pages／Cloudflare Pages 部署驗收；完整 release commit、merge SHA、遠端 CI 與 live manifest 證據由同版本 PR 與交付回報相互引用，不在包含自身的提交內預寫 SHA。

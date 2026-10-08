@@ -40,16 +40,16 @@ npm run build
 npm run preview
 ```
 
-## 100-round 本機驗證（對齊 CI）
+## 100-round 本機驗證
 
-Pages 部署 workflow（[`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml)）在 build 後才上傳 artifact。本機用同一組閘門，**不需要** Supabase env：
+Pages 部署 workflow（[`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml)）在 build 後才上傳 artifact。本機可重現下列確定性閘門，**不需要** Supabase env：
 
 ```bash
-npm ci                 # 或已安裝則可略過
+npm ci --no-audit      # 或已安裝則可略過；線上依賴稽核另列於下方
 npm run verify:local   # lint → test → verify:schema → build → verify:dist
 ```
 
-分步（與 CI job 相同順序）：
+分步：
 
 ```bash
 npm run lint           # oxlint：errors 必須為 0
@@ -58,6 +58,15 @@ npm run verify:schema  # 靜態 SQL 合約；不連線託管雲端
 npm run build          # tsc + vite + generate-precache
 npm run verify:dist    # 缺 public audio／archify／content 或 Hub chunk 即失敗
 ```
+
+CI 另在安裝前透過 npm 套件登錄服務執行兩層線上依賴稽核：正式環境依賴的 low 以上安全告警都會阻擋部署；完整依賴圖（含開發與建置工具）則保留原始結果並在 Actions 摘要顯示警告，但不會把登錄服務傳輸失敗誤報成已確認的開發依賴弱點。本機需要即時重查時可分別執行：
+
+```bash
+npm run audit:prod     # 正式環境依賴；low 以上告警均以非零狀態結束
+npm run audit:all      # 完整依賴圖；info 以上告警均以非零狀態結束
+```
+
+這兩個命令會把鎖檔中的套件名稱與版本送往目前設定的 npm 套件登錄服務，結果也可能因安全告警資料庫更新而改變，因此不併入可離線重跑的 `verify:local` 或產物層 `verify:dist`。
 
 可讀版本紀錄保存在 [`REVISION_HISTORY.md`](REVISION_HISTORY.md)；歷史 round 仍可由 `main` 上的提交標題追溯：
 
