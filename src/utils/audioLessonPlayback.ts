@@ -81,7 +81,7 @@ export function startAudioLesson(
         }, duration)
       } else play(index + 1)
     }
-    const startTts = () => {
+    const startTts = (fallbackReason?: string) => {
       if (!current()) return
       const isFallback = mode === 'clip'
       mode = 'tts'
@@ -90,11 +90,16 @@ export function startAudioLesson(
       previousStop?.()
       if (isFallback) options.onPhase('preparing')
       if (!current()) return
+      const source = { kind: 'speech' as const, lang: segment.lang, voice: null,
+        ...(isFallback ? { fallbackReason: fallbackReason ?? 'playback-failed' } : {}) }
+      options.onSource?.(source)
+      if (!current()) return
       ownSpeechRequest = true
       try {
         setStop('tts', speakText(segment.text, {
           lang: segment.lang,
           rate: options.rate,
+          onVoice: (voice) => { if (current() && mode === 'tts') options.onSource?.({ ...source, voice }) },
           onStart: () => { if (current() && mode === 'tts') options.onPhase('playing') },
           onEnd: () => { if (mode === 'tts') ended() },
           onCancel: () => { if (current()) stop() },
@@ -105,12 +110,14 @@ export function startAudioLesson(
       }
     }
     if (segment.audioSrc) {
+      options.onSource?.({ kind: 'clip', lang: segment.lang, voice: null })
+      if (!current()) return
       try {
         setStop('clip', playClip(segment.audioSrc, {
           rate: options.rate,
           onStart: () => { if (current() && mode === 'clip') options.onPhase('playing') },
           onEnd: () => { if (mode === 'clip') ended() },
-          onError: () => { if (current() && mode === 'clip') startTts() },
+          onError: (code) => { if (current() && mode === 'clip') startTts(code) },
         }))
       } catch {
         startTts()

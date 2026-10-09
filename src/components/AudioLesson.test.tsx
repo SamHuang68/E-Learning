@@ -5,6 +5,7 @@ import { LocaleContext } from '../i18n/i18n'
 import { translate } from '../i18n/messages'
 import type { AudioLessonSegment } from '../utils/audioLessonTypes'
 import { AudioLesson } from './AudioLesson'
+import { AudioSourceLabel } from './語音檢查面板'
 import { hasLessonVoice } from '../utils/audioLessonVoices'
 
 const { failedState } = vi.hoisted(() => ({ failedState: {
@@ -63,6 +64,34 @@ afterEach(() => {
 })
 
 describe('共用語音教學介面', () => {
+  it.each([true, false, null])('實際音源顯示本機、連線與未知的界線 %s', (localService) => {
+    const source = { kind: 'speech' as const, lang: 'ja-JP' as const,
+      voice: { name: 'Test voice', lang: 'ja-JP', localService }, fallbackReason: 'playback-start-timeout' }
+    const html = renderToStaticMarkup(<AudioSourceLabel source={source} en={false} />)
+    expect(html).toContain(localService === true ? '本機聲音' : localService === false ? '連線聲音' : '服務類型未知')
+    expect(html).toContain('教材音檔未能播放，已改嘗試系統語音')
+    const english = renderToStaticMarkup(<AudioSourceLabel source={source} en />)
+    expect(english).not.toMatch(/[\u3400-\u9fff]/)
+    expect(english).toContain('playback-start-timeout')
+  })
+
+  it('音檔來源不顯示舊聲音，瀏覽器預設聲音不捏造服務類型', () => {
+    expect(renderToStaticMarkup(<AudioSourceLabel source={{ kind: 'clip', lang: 'en-US', voice: null }} en />))
+      .toContain('Lesson audio')
+    const html = renderToStaticMarkup(<AudioSourceLabel source={{ kind: 'speech', lang: 'en-US',
+      voice: { name: null, lang: null, localService: null } }} en />)
+    expect(html).toContain('Browser default voice')
+    expect(html).toContain('Service type unknown')
+  })
+  it('音訊檢查沿用課文語言，明示事件與聽感的界線，不自動錄音或上傳', () => {
+    installVoices(['ja-JP', 'en-US'])
+    const html = render('zh-Hant')
+    for (const text of ['音訊檢查與協助', '試播日語節錄', '試播英語節錄', '網頁無法判斷網站是否被靜音', '不錄音、不自動上傳']) expect(html).toContain(text)
+    const english = render('en')
+    expect(english).toContain('Audio check and help')
+    expect(english).toContain('Test Japanese excerpt')
+    expect(english).not.toMatch(/[\u3400-\u9fff]/)
+  })
   it('英文介面提供全部操作與誠實的不支援提示，沒有意外中文', () => {
     const html = render('en')
     for (const text of ['Audio lesson', 'Play lesson', 'Play examples', 'Replay current', 'Stop', 'Speed', 'Normal', 'Slow', 'Leave time to repeat']) {
