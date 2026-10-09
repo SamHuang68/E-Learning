@@ -462,3 +462,9 @@ Validation and state:
 - 本候選基準為 `95a3efaefa5b60c48d1f4c471801d3fe98cf0562`，分支 `codex/language-voice-teaching`。條目建立時仍未提交；之後追加同版本的真實完整來源 SHA 及交付紀錄，不預寫自身 SHA。
 - `push=false`、`merge=false`、`deploy=false`，發布授權：無。正式網站、舊工作目錄及既有使用者進度未更新；驗收 logs、截圖與產音 WAV／副本保留，不納入提交。
 - 驗收後將獨立來源 5211 的原始四個瀏覽器儲存鍵值逐字比對還原，只移除本輪建立的 demo 解鎖資料；XP／完成度不變。重新載入確認觀察器已移除、speaking／pending 均為 false，關閉本輪頁籤及自有服務；5211／10457 監聽數均為 0，未終止其他程序。最後唯讀核對仍為本機日語聲音 0、非管理員，安裝待完成。
+
+### 同版本程式與素材本機提交完成補記
+
+- 2026-10-09，真實完整來源 SHA `90338d63d6dd06e3f1e757d57637c5e237da2c83`，訊息「補齊英語課文音檔與本機日語選聲」，基準 `95a3efaefa5b60c48d1f4c471801d3fe98cf0562`；tree `fb9da71bab4c77ed4386136898f25c3c6520058d`、src tree `a014fbd2e2288344461c300af8100f3990108ad8`。
+- 精確提交 13 檔，暫存清單 unexpected／missing 均為 0、差異檢查通過、dataStaged 及 logsStaged 均 0。新素材、來源、buildId `70085cd6694db1d1`、1796 測試與安裝待完成邊界見 [同版本本機交付紀錄](docs/語音教學本機交付紀錄.md) 的語音教學.4；本補記以後續純文件提交保存，不預寫自身 SHA。
+- 程式與素材 `commit=true`、`push=false`、`merge=false`、`deploy=false`；正式網站未更新。官方日語安裝及安裝後實機驗收仍待完成，不將本機程式／素材提交宣稱為整體補完完成。
