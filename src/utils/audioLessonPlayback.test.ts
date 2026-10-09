@@ -133,6 +133,41 @@ describe('語音教學分段與播放生命週期', () => {
     vi.restoreAllMocks()
   })
 
+  it.each([false, true])('來源通知啟動其他播放時回收舊播放器，音檔模式 %s', async (clip) => {
+    const { startAudioLesson } = await import('./audioLessonPlayback')
+    startAudioLesson([{ ...segments[0], ...(clip ? { audioSrc: 'audio/example.mp3' } : {}) }], {
+      ...options, onSource: () => startAudioLesson([segments[1]], { ...options, onSource: undefined }),
+    })
+    expect(clips).toHaveLength(0)
+    expect(audible().map((item) => item.text)).toEqual([segments[1].text])
+  })
+
+  it('音檔逾時保留確切原因，回退語音仍沿用慢速', async () => {
+    const { startAudioLesson } = await import('./audioLessonPlayback')
+    const onSource = vi.fn()
+    startAudioLesson([{ ...segments[0], audioSrc: 'audio/example.mp3' }], { ...options, onSource })
+    await vi.advanceTimersByTimeAsync(10000)
+    expect(onSource.mock.calls.at(-1)?.[0].fallbackReason).toBe('playback-start-timeout')
+    expect(audible()[0].rate).toBe(0.8)
+  })
+
+  it('音檔失敗後回報實際回退語音及原因，失效音檔不再改寫來源', async () => {
+    const { startAudioLesson } = await import('./audioLessonPlayback')
+    const onSource = vi.fn()
+    startAudioLesson([{ ...segments[0], audioSrc: 'audio/example.mp3' }], { ...options, onSource })
+    expect(onSource).toHaveBeenLastCalledWith({ kind: 'clip', lang: 'en-US', voice: null })
+    const oldError = clips[0].onerror
+    oldError?.()
+    expect(onSource).toHaveBeenLastCalledWith({
+      kind: 'speech', lang: 'en-US', voice: { name: 'US voice', lang: 'en-US', localService: null },
+      fallbackReason: 'playback-failed',
+    })
+    const count = onSource.mock.calls.length
+    oldError?.()
+    expect(onSource).toHaveBeenCalledTimes(count)
+    expect(audible()).toHaveLength(1)
+  })
+
   it('教學等待真正的原生 start 才顯示播放，未開始的 end 不續播或完成', async () => {
     const { startAudioLesson } = await import('./audioLessonPlayback')
     startAudioLesson(segments, options)
@@ -634,6 +669,32 @@ describe('語音教學分段與播放生命週期', () => {
     startAudioLesson(segments, { ...options, rate: Number.NaN })
     expect(options.onError).toHaveBeenCalledWith('playback-failed')
     expect(audible()).toHaveLength(0)
+  })
+
+  it('從解說接續到下一組，只為本次播過的原文留白', async () => {
+    const { startAudioLesson } = await import('./audioLessonPlayback')
+    const group: AudioLessonSegment[] = [
+      { id: 'earlier-example', text: 'Skipped example.', lang: 'en-US', kind: 'example' },
+      { id: 'first-explanation', text: 'First explanation.', lang: 'en-US', kind: 'explanation' },
+      { id: 'second-explanation', text: 'Second explanation.', lang: 'en-US', kind: 'explanation' },
+      { id: 'next-example', text: 'Hi.', lang: 'en-US', kind: 'example' },
+      { id: 'next-explanation', text: 'Final explanation.', lang: 'en-US', kind: 'explanation' },
+    ]
+    startAudioLesson(group.slice(1), { ...options, shadow: true })
+    completeUtterance(audible()[0])
+    completeUtterance(audible()[1])
+    expect(audible().map((utterance) => utterance.text)).toEqual(['First explanation.', 'Second explanation.', 'Hi.'])
+    expect(options.onPhase).not.toHaveBeenCalledWith('shadowing')
+    completeUtterance(audible()[2])
+    completeUtterance(audible()[3])
+    expect(audible().map((utterance) => utterance.text)).toEqual(['First explanation.', 'Second explanation.', 'Hi.', 'Final explanation.'])
+    expect(options.onSegment).toHaveBeenLastCalledWith(2)
+    expect(options.onPhase).toHaveBeenLastCalledWith('shadowing')
+    await vi.advanceTimersByTimeAsync(1799)
+    expect(options.onPhase).toHaveBeenLastCalledWith('shadowing')
+    await vi.advanceTimersByTimeAsync(1)
+    expect(options.onPhase).toHaveBeenLastCalledWith('complete')
+    expect(options.onError).not.toHaveBeenCalled()
   })
 
   it('講解段落不加入跟讀留白，也不在完成後留下中斷訂閱', async () => {

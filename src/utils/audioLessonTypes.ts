@@ -1,4 +1,13 @@
+import type { SpeechVoiceSelection } from './speech'
+
 export type AudioLessonLanguage = 'ja-JP' | 'en-US' | 'zh-TW'
+
+export type AudioLessonSource = {
+  kind: 'clip' | 'speech'
+  lang: AudioLessonLanguage
+  voice: SpeechVoiceSelection | null
+  fallbackReason?: string
+}
 
 export type AudioLessonSegment = {
   id: string
@@ -22,4 +31,5 @@ export type AudioLessonPlaybackOptions = {
   onSegment: (index: number) => void
   onPhase: (phase: AudioLessonPhase) => void
   onError: (code: string) => void
+  onSource?: (source: AudioLessonSource) => void
 }

@@ -45,12 +45,36 @@
   min-height: var(--touch-min, 44px);
 }
 
-.audio-lesson-settings select {
+.audio-lesson-settings select,
+.audio-lesson-navigation select {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface);
   padding-inline: 0.6rem;
   max-width: 100%;
+  min-height: var(--touch-min, 44px);
+  color: var(--ink);
+  font: inherit;
+}
+
+.audio-lesson-navigation label {
+  display: grid;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.audio-lesson-navigation select {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.audio-lesson-preferences,
+.audio-lesson-navigation p {
+  margin-block: 0.5rem;
+  color: var(--muted);
+  font-size: 0.9375rem;
+  line-height: 1.65;
 }
 
 .audio-lesson-settings input {
@@ -87,7 +111,7 @@
   transform: none;
 }
 
-.audio-lesson :is(button, input, select):focus-visible {
+.audio-lesson :is(button, a, input, select, summary, textarea):focus-visible {
   outline: var(--focus-ring, 3px solid var(--accent));
   outline-offset: var(--focus-ring-offset, 2px);
 }
@@ -122,4 +146,60 @@
 
 .audio-lesson-source {
   margin-block: 0.75rem 0;
+}
+
+.audio-check {
+  margin-block: 0.75rem;
+  border-block: 1px solid var(--line);
+  font-size: 0.9375rem;
+  line-height: 1.65;
+}
+
+.audio-check summary {
+  padding-block: 0.65rem;
+  cursor: pointer;
+  min-height: var(--touch-min, 44px);
+  box-sizing: border-box;
+  font-weight: 600;
+}
+
+.audio-check p,
+.audio-lesson-source-detail p {
+  margin-block: 0.5rem;
+}
+
+.audio-check ol {
+  padding-inline-start: 1.5rem;
+}
+
+.audio-check textarea {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  margin-block: 0.5rem;
+  padding: 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  resize: vertical;
+}
+
+.audio-lesson-source-detail {
+  font-size: 0.9375rem;
+  line-height: 1.65;
+}
+
+.audio-check .ghost[aria-pressed="true"] {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.audio-check-download {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: var(--touch-min, 44px);
+  text-decoration: none;
 }

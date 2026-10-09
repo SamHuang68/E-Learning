@@ -5,6 +5,7 @@ import { LocaleContext } from '../i18n/i18n'
 import { translate } from '../i18n/messages'
 import type { AudioLessonSegment } from '../utils/audioLessonTypes'
 import { AudioLesson } from './AudioLesson'
+import { AudioSourceLabel } from './語音檢查面板'
 import { hasLessonVoice } from '../utils/audioLessonVoices'
 
 const { failedState } = vi.hoisted(() => ({ failedState: {
@@ -63,6 +64,95 @@ afterEach(() => {
 })
 
 describe('共用語音教學介面', () => {
+  it.each([0, 1])('接續播放只檢查選段之後的語音需求，起點 %s', (current) => {
+    installVoices(['en-US'])
+    failedState.current = current
+    const html = render('en')
+    expect(html).toContain('Play from here')
+    expect(html).toMatch(/disabled=""[^>]*>Play lesson<\/button>/)
+    if (current === 0) expect(html).toMatch(/disabled=""[^>]*>Play from here<\/button>/)
+    else expect(html).not.toMatch(/disabled=""[^>]*>Play from here<\/button>/)
+  })
+
+  it('剩餘段落仍須可播；具備音檔時不強制要求系統聲音', () => {
+    installVoices(['ja-JP'])
+    failedState.current = 1
+    expect(render('en')).toMatch(/disabled=""[^>]*>Play from here<\/button>/)
+    const html = render('en', [segments[0], { ...segments[1], audioSrc: 'audio/explanation.mp3' }])
+    expect(html).toContain('Play from here')
+    expect(html).not.toMatch(/disabled=""[^>]*>Play from here<\/button>/)
+    expect(render('en', [])).toMatch(/disabled=""[^>]*>Play from here<\/button>/)
+    expect(render('en', [])).not.toMatch(/<button[^>]*aria-describedby[^>]*>Play from here<\/button>/)
+  })
+
+  it.each([
+    ['en', 'Remaining segments finished', 'Lesson finished'],
+    ['zh-Hant', '剩餘段落播放完成', '導讀完成'],
+  ] as const)('%s 接續播放完成不冒充全課完成', (locale, expected, misleading) => {
+    failedState.phase = 'complete'
+    failedState.playback = { scope: 'remaining', index: 0, total: 1 }
+    failedState.current = 1
+    const html = render(locale)
+    expect(html).toContain(expected)
+    expect(html).not.toContain(misleading)
+    expect(html).toContain(locale === 'en' ? 'Earlier examples and their repeat time are skipped' : '不補播前方原文或其留白')
+  })
+
+  it('重新開啟時採用已儲存的慢速與關閉留白偏好', () => {
+    vi.stubGlobal('localStorage', { getItem: (key: string) => key === 'e-learning-audio-lesson-v1'
+      ? JSON.stringify({ rate: 0.7, shadow: false }) : null })
+    const html = render('en')
+    expect(html).toMatch(/<option value="0.7" selected="">Slow<\/option>/)
+    expect(html).not.toMatch(/type="checkbox"[^>]*checked/)
+    expect(html).toContain('Preferences stay in this browser')
+  })
+
+  it('段落選單保留原文及解說，第一段不可再往前', () => {
+    const html = render('en')
+    expect(html).toContain('Choose segment')
+    expect(html).toContain('1 / 2 · Example · Japanese · こんにちは。')
+    expect(html).toContain('2 / 2 · Explanation · English · A greeting used during the day.')
+    expect(html).toMatch(/disabled=""[^>]*>Previous segment<\/button>/)
+    expect(html).not.toMatch(/disabled=""[^>]*>Next segment<\/button>/)
+    expect(html).toContain('Changing the selection stops playback')
+  })
+
+  it('最後一段不可往後，空教材不提供段落導航', () => {
+    failedState.current = 1
+    const html = render('en')
+    expect(html).toMatch(/disabled=""[^>]*>Next segment<\/button>/)
+    expect(html).not.toMatch(/disabled=""[^>]*>Previous segment<\/button>/)
+    expect(render('en', [])).not.toContain('Choose segment')
+  })
+
+  it.each([true, false, null])('實際音源顯示本機、連線與未知的界線 %s', (localService) => {
+    const source = { kind: 'speech' as const, lang: 'ja-JP' as const,
+      voice: { name: 'Test voice', lang: 'ja-JP', localService }, fallbackReason: 'playback-start-timeout' }
+    const html = renderToStaticMarkup(<AudioSourceLabel source={source} en={false} />)
+    expect(html).toContain(localService === true ? '本機聲音' : localService === false ? '連線聲音' : '服務類型未知')
+    expect(html).toContain('教材音檔未能播放，已改嘗試系統語音')
+    const english = renderToStaticMarkup(<AudioSourceLabel source={source} en />)
+    expect(english).not.toMatch(/[\u3400-\u9fff]/)
+    expect(english).toContain('playback-start-timeout')
+  })
+
+  it('音檔來源不顯示舊聲音，瀏覽器預設聲音不捏造服務類型', () => {
+    expect(renderToStaticMarkup(<AudioSourceLabel source={{ kind: 'clip', lang: 'en-US', voice: null }} en />))
+      .toContain('Lesson audio')
+    const html = renderToStaticMarkup(<AudioSourceLabel source={{ kind: 'speech', lang: 'en-US',
+      voice: { name: null, lang: null, localService: null } }} en />)
+    expect(html).toContain('Browser default voice')
+    expect(html).toContain('Service type unknown')
+  })
+  it('音訊檢查沿用課文語言，明示事件與聽感的界線，不自動錄音或上傳', () => {
+    installVoices(['ja-JP', 'en-US'])
+    const html = render('zh-Hant')
+    for (const text of ['音訊檢查與協助', '試播日語節錄', '試播英語節錄', '網頁無法判斷網站是否被靜音', '不錄音、不自動上傳']) expect(html).toContain(text)
+    const english = render('en')
+    expect(english).toContain('Audio check and help')
+    expect(english).toContain('Test Japanese excerpt')
+    expect(english).not.toMatch(/[\u3400-\u9fff]/)
+  })
   it('英文介面提供全部操作與誠實的不支援提示，沒有意外中文', () => {
     const html = render('en')
     for (const text of ['Audio lesson', 'Play lesson', 'Play examples', 'Replay current', 'Stop', 'Speed', 'Normal', 'Slow', 'Leave time to repeat']) {

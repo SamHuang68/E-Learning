@@ -19,4 +19,5 @@ export const PROGRESS_STORAGE_KEYS = {
 export const LOCAL_PREFERENCE_KEYS = {
   accessibility: 'e-learning-a11y-settings',
   audioMuted: 'learning_audio_muted_v1',
+  audioLesson: 'e-learning-audio-lesson-v1',
 } as const

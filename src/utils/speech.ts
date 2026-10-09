@@ -3,6 +3,12 @@ import { hasLessonVoice } from './audioLessonVoices'
 export type SpeechPlaybackError = 'unsupported' | 'voice-unavailable' | 'playback-failed' |
   'playback-not-started' | 'playback-start-timeout'
 
+export type SpeechVoiceSelection = {
+  name: string | null
+  lang: string | null
+  localService: boolean | null
+}
+
 export type SpeakOptions = {
   lang?: string
   rate?: number
@@ -11,6 +17,7 @@ export type SpeakOptions = {
   onEnd?: () => void
   onError?: (code: SpeechPlaybackError) => void
   onCancel?: () => void
+  onVoice?: (voice: SpeechVoiceSelection) => void
 }
 
 let jaVoice: SpeechSynthesisVoice | null = null
@@ -266,6 +273,12 @@ function speak(text: string, options: SpeakOptions = {}) {
     assignVoices(voices)
     try {
       utter = buildUtterance(text, lang, options)
+      options.onVoice?.({
+        name: utter.voice?.name ?? null,
+        lang: utter.voice?.lang ?? null,
+        localService: typeof utter.voice?.localService === 'boolean' ? utter.voice.localService : null,
+      })
+      if (!running || run !== speechRun) return
     } catch {
       finish(() => options.onError?.('playback-failed'))
       return

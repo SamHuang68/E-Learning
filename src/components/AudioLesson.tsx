@@ -3,6 +3,9 @@ import { useI18n } from '../i18n/i18n'
 import { isSpeechSupported, warmVoices } from '../utils/speech'
 import { startAudioLesson } from '../utils/audioLessonPlayback'
 import { hasLessonVoice } from '../utils/audioLessonVoices'
+import { loadAudioLessonPreferences, saveAudioLessonPreferences, type AudioLessonPreferences } from '../utils/storage'
+import { checkExcerpt, recordCheckPhase, type AudioCheck } from '../utils/語音檢查'
+import { AudioCheckPanel, AudioSourceLabel } from './語音檢查面板'
 import type {
   AudioLessonLanguage,
   AudioLessonPhase,
@@ -16,7 +19,7 @@ type Props = {
   segments: AudioLessonSegment[]
 }
 
-type PlaybackScope = 'lesson' | 'examples' | 'replay'
+type PlaybackScope = 'lesson' | 'remaining' | 'examples' | 'replay' | 'check'
 
 function availableVoices(): SpeechSynthesisVoice[] {
   if (!isSpeechSupported()) return []
@@ -32,22 +35,32 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
   const en = locale === 'en'
   const headingId = useId()
   const statusId = useId()
+  const navigationId = useId()
   const supported = isSpeechSupported()
   const [voices, setVoices] = useState(availableVoices)
   const [voicesLoaded, setVoicesLoaded] = useState(() => availableVoices().length > 0)
   const [phase, setPhase] = useState<AudioLessonPhase | 'idle'>('idle')
   const [current, setCurrent] = useState(0)
   const [playback, setPlayback] = useState({ scope: 'lesson' as PlaybackScope, index: 0, total: 0 })
-  const [rate, setRate] = useState(0.95)
-  const [shadow, setShadow] = useState(true)
+  const [preferences, setPreferences] = useState(loadAudioLessonPreferences)
+  const { rate, shadow } = preferences
+  const [preferencesSaved, setPreferencesSaved] = useState(true)
   const [error, setError] = useState('')
+  const [diagnostic, setDiagnostic] = useState<AudioCheck | null>(null)
+  const [checkText, setCheckText] = useState<string | null>(null)
   const stopRef = useRef<(() => void) | null>(null)
   const runRef = useRef(0)
   const mountedRef = useRef(false)
   const voiceWaitRef = useRef<AbortController | null>(null)
   const contentKey = JSON.stringify(segments)
   const items = segments.filter((segment) => segment.text.trim() || segment.audioSrc)
+  const remaining = current >= 0 ? items.slice(current) : []
   const examples = items.filter((segment) => segment.kind === 'example')
+  const samples = [...new Set(items.map((segment) => segment.lang))].flatMap((lang) => {
+    const segment = items.find((item) => item.lang === lang && item.text.trim())
+    const sample = segment ? checkExcerpt(segment) : null
+    return sample ? [sample] : []
+  })
   const sourceText = items.some((segment) => Boolean(segment.audioSrc))
     ? en
       ? 'Plays supplied lesson audio when available, with system speech as fallback. This is not a pronunciation score. Voice availability and offline playback depend on your device; some voices need the network.'
@@ -62,6 +75,7 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
     stopRef.current?.()
     stopRef.current = null
     setPhase('stopped')
+    setDiagnostic((previous) => previous ? recordCheckPhase(previous, 'stopped') : null)
   }
 
   useEffect(() => {
@@ -101,12 +115,16 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
     setCurrent(0)
     setPlayback({ scope: 'lesson', index: 0, total: 0 })
     setError('')
+    setDiagnostic(null)
+    setCheckText(null)
     const hidden = () => {
       if (!document.hidden) return
       runRef.current += 1
       stopRef.current?.()
       stopRef.current = null
       setPhase((previous) => previous === 'preparing' || previous === 'playing' || previous === 'shadowing' ? 'stopped' : previous)
+      setDiagnostic((previous) => previous && ['preparing', 'playing', 'shadowing'].includes(previous.phase)
+        ? recordCheckPhase(previous, 'stopped') : previous)
     }
     document.addEventListener('visibilitychange', hidden)
     return () => {
@@ -138,9 +156,16 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
     setError('')
     setPlayback({ scope, index: 0, total: selection.length })
     setPhase('preparing')
+    setCheckText(scope === 'check' ? selection[0].text : null)
+    setDiagnostic({ startedAt: Date.now(), rate, isCheck: scope === 'check', phase: 'preparing',
+      source: null, error: null, heard: null, started: false, events: [] })
     const ownedStop = startAudioLesson(selection, {
       rate,
-      shadow,
+      shadow: scope === 'check' ? false : shadow,
+      onSource: (source) => {
+        if (run !== runRef.current) return
+        setDiagnostic((previous) => previous ? { ...previous, source } : null)
+      },
       onSegment: (index) => {
         if (run !== runRef.current) return
         const item = selection[index]
@@ -150,18 +175,60 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
       onPhase: (next) => {
         if (run !== runRef.current) return
         setPhase(next)
+        setDiagnostic((previous) => previous ? recordCheckPhase(previous, next) : null)
       },
       onError: (code) => {
         if (run !== runRef.current) return
         setError(code)
         setPhase('error')
+        setDiagnostic((previous) => previous ? { ...previous, error: code } : null)
       },
     })
     if (run === runRef.current) stopRef.current = ownedStop
     else ownedStop()
   }
 
-  const completeText = playback.scope === 'examples'
+  function refreshVoices() {
+    setVoices(availableVoices())
+    voiceWaitRef.current?.abort()
+    const wait = new AbortController()
+    voiceWaitRef.current = wait
+    void warmVoices(wait.signal).then(() => {
+      if (wait.signal.aborted || !mountedRef.current) return
+      setVoices(availableVoices())
+      setVoicesLoaded(true)
+    })
+  }
+
+  function changePreferences(next: AudioLessonPreferences) {
+    if (active) stop()
+    setPreferences(next)
+    setPreferencesSaved(saveAudioLessonPreferences(next))
+  }
+
+  function selectSegment(index: number) {
+    if (!Number.isInteger(index) || index < 0 || index >= items.length) return
+    stop()
+    setCurrent(index)
+    setPlayback({ scope: 'replay', index: 0, total: 1 })
+    setPhase('idle')
+    setError('')
+    setDiagnostic(null)
+    setCheckText(null)
+  }
+
+  function segmentLabel(segment: AudioLessonSegment, index: number) {
+    const text = Array.from(segment.text.trim().replace(/\s+/g, ' '))
+    const excerpt = text.length ? text.slice(0, 70).join('') + (text.length > 70 ? '…' : '')
+      : en ? 'Lesson audio' : '教材音檔'
+    return `${index + 1} / ${items.length} · ${segment.kind === 'example' ? en ? 'Example' : '原文示範' : en ? 'Explanation' : '解說'} · ${languageName(segment.lang)} · ${excerpt}`
+  }
+
+  const completeText = playback.scope === 'check'
+    ? en ? 'Test events finished; confirm whether you heard it' : '試播事件已結束，請確認是否聽到'
+    : playback.scope === 'remaining'
+      ? en ? 'Remaining segments finished' : '剩餘段落播放完成'
+    : playback.scope === 'examples'
     ? en ? 'Examples finished' : '原文示範播放完成'
     : playback.scope === 'replay'
       ? en ? 'Current segment finished' : '當句播放完成'
@@ -186,7 +253,7 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
       : error === 'empty-lesson'
         ? en ? 'There is no spoken content in this lesson.' : '本課目前沒有可播放內容。'
         : error === 'playback-not-started' || error === 'playback-start-timeout'
-          ? en ? 'Audio did not start. Check device audio and voice availability, then retry. Network-based voices may need a connection.' : '未確認語音開始播放。請檢查裝置音訊與可用語音後重試；連線型聲音可能需要網路。'
+          ? en ? 'Audio did not start. Check site muting, device audio and voice availability, then retry. Network-based voices may need a connection.' : '未確認語音開始播放。請檢查網站靜音、裝置音訊與可用語音後重試；連線型聲音可能需要網路。'
         : en ? 'Playback failed. Check your device audio and connection, then try again.' : '播放失敗，請檢查裝置音訊與連線後重試。'
 
   return (
@@ -201,8 +268,7 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
         <label>
           {en ? 'Speed' : '語速'}
           <select value={rate} onChange={(event) => {
-            if (active) stop()
-            setRate(Number(event.target.value))
+            changePreferences({ ...preferences, rate: event.target.value === '0.7' ? 0.7 : 0.95 })
           }}>
             <option value={0.95}>{en ? 'Normal' : '正常'}</option>
             <option value={0.7}>{en ? 'Slow' : '慢速'}</option>
@@ -210,15 +276,36 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
         </label>
         <label>
           <input type="checkbox" checked={shadow} onChange={(event) => {
-            if (active) stop()
-            setShadow(event.target.checked)
+            changePreferences({ ...preferences, shadow: event.target.checked })
           }} />
           {en ? 'Leave time to repeat' : '留白跟讀'}
         </label>
       </div>
+      <p className="audio-lesson-preferences">
+        {en ? 'Preferences stay in this browser; they are not included in progress exports or sync.' : '偏好僅限本瀏覽器，不會隨學習進度匯出或同步。'}
+      </p>
+      {!preferencesSaved ? <p className="audio-lesson-notice" role="alert">
+        {en ? 'Preferences could not be saved. These settings still apply here, but reopening may restore the previous values.' : '偏好未能儲存。此畫面仍使用新設定，重新開啟可能回復舊值。'}
+      </p> : null}
+      {items.length > 0 ? <div className="audio-lesson-navigation">
+        <label>
+          {en ? 'Choose segment' : '選擇段落'}
+          <select value={current} aria-describedby={navigationId} onChange={(event) => selectSegment(Number(event.target.value))}>
+            {items.map((segment, index) => <option key={segment.id} value={index}>{segmentLabel(segment, index)}</option>)}
+          </select>
+        </label>
+        <div className="audio-lesson-actions">
+          <button type="button" className="ghost" disabled={current <= 0} onClick={() => selectSegment(current - 1)}>{en ? 'Previous segment' : '上一段'}</button>
+          <button type="button" className="ghost" disabled={current >= items.length - 1} onClick={() => selectSegment(current + 1)}>{en ? 'Next segment' : '下一段'}</button>
+        </div>
+        <p id={navigationId}>{en ? 'Changing the selection stops playback. Replay current plays one segment; Play from here continues to the end. Earlier examples and their repeat time are skipped.' : '更換段落會停止目前播放。「重播當句」播放單段；「從此段播放」接續到課尾，不補播前方原文或其留白。'}</p>
+      </div> : null}
       <div className="audio-lesson-actions" aria-describedby={statusId}>
         <button type="button" className="primary-btn inline" disabled={!canPlay(items)} onClick={() => play(items, 'lesson')}>
           {en ? 'Play lesson' : '播放導讀'}
+        </button>
+        <button type="button" className="ghost" aria-describedby={items.length ? navigationId : undefined} disabled={!canPlay(remaining)} onClick={() => play(remaining, 'remaining')}>
+          {en ? 'Play from here' : '從此段播放'}
         </button>
         <button type="button" className="ghost" disabled={!canPlay(examples)} onClick={() => play(examples, 'examples')}>
           {en ? 'Play examples' : '聽原文示範'}
@@ -236,10 +323,11 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
       {playback.total > 0 && items[current] ? (
         <div className="audio-lesson-current">
           <p className="audio-lesson-current-label">
-            {active ? en ? 'Current segment' : '目前段落' : en ? 'Replay target' : '重播目標'}
+            {playback.scope === 'check' ? en ? 'Test excerpt' : '試播節錄' : active ? en ? 'Current segment' : '目前段落' : en ? 'Replay target' : '重播目標'}
             {` · ${items[current].kind === 'example' ? en ? 'Example' : '原文示範' : en ? 'Explanation' : '解說'} · ${languageName(items[current].lang)}`}
           </p>
-          <p lang={items[current].lang}>{items[current].text}</p>
+          <p lang={items[current].lang}>{checkText ?? items[current].text}</p>
+          {playback.scope === 'check' ? <p>{en ? 'Replay current plays the full source segment.' : '「重播當句」會播放完整原始段落。'}</p> : null}
         </div>
       ) : null}
       {!items.length ? <p>{en ? 'No spoken content is available yet.' : '目前沒有可播放內容。'}</p> : null}
@@ -252,21 +340,14 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
             : en
               ? `Missing voices: ${missing.map(languageName).join(', ')}. Enable these languages on your device and check again.`
               : `缺少適用語音：${missing.map(languageName).join('、')}。請在裝置啟用這些語言後重新檢查。`}
-          <button type="button" className="ghost" onClick={() => {
-            setVoices(availableVoices())
-            voiceWaitRef.current?.abort()
-            const wait = new AbortController()
-            voiceWaitRef.current = wait
-            void warmVoices(wait.signal).then(() => {
-              if (wait.signal.aborted) return
-              if (!mountedRef.current) return
-              setVoices(availableVoices())
-              setVoicesLoaded(true)
-            })
-          }}>{en ? 'Check voices again' : '重新檢查語音'}</button>
+          <button type="button" className="ghost" onClick={refreshVoices}>{en ? 'Check voices again' : '重新檢查語音'}</button>
         </p>
       ) : null}
       {phase === 'error' ? <p className="audio-lesson-notice" role="alert">{errorText}</p> : null}
+      {diagnostic?.source ? <AudioSourceLabel source={diagnostic.source} en={en} /> : null}
+      <AudioCheckPanel en={en} check={diagnostic} samples={samples} canPlay={canPlay}
+        languageName={languageName} onPlay={(sample) => play([sample], 'check')} onRefresh={refreshVoices}
+        onHeard={(heard) => setDiagnostic((previous) => previous ? { ...previous, heard } : null)} />
       <p className="audio-lesson-source">
         {sourceText}
       </p>

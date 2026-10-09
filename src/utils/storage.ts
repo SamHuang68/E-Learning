@@ -2,7 +2,7 @@ import type { BuilderConfig } from '../data/course'
 import { LEARN_ORDER, type KanaScript, type LearnRowId } from '../data/kana'
 import { defaultItemState, type ItemState } from '../engine/srs'
 import type { ToeicBuilderConfig, ToeicCertificate } from '../toeic/data/certificates'
-import { PROGRESS_STORAGE_KEYS } from './progressKeys'
+import { LOCAL_PREFERENCE_KEYS, PROGRESS_STORAGE_KEYS } from './progressKeys'
 import {
   LEARNING_EVENT_SCHEMA_VERSION,
   PROGRESS_BUNDLE_VERSION,
@@ -691,6 +691,35 @@ export function loadToeicPresets(): ToeicSavedPreset[] {
     return raw ? (JSON.parse(raw) as ToeicSavedPreset[]) : []
   } catch {
     return []
+  }
+}
+
+export type AudioLessonPreferences = { rate: 0.95 | 0.7; shadow: boolean }
+
+function normalizeAudioLessonPreferences(value: unknown): AudioLessonPreferences {
+  const candidate = value !== null && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown> : {}
+  return {
+    rate: candidate.rate === 0.7 ? 0.7 : 0.95,
+    shadow: typeof candidate.shadow === 'boolean' ? candidate.shadow : true,
+  }
+}
+
+export function loadAudioLessonPreferences(): AudioLessonPreferences {
+  try {
+    return normalizeAudioLessonPreferences(JSON.parse(localStorage.getItem(LOCAL_PREFERENCE_KEYS.audioLesson) ?? 'null'))
+  } catch {
+    return normalizeAudioLessonPreferences(null)
+  }
+}
+
+export function saveAudioLessonPreferences(preferences: AudioLessonPreferences): boolean {
+  try {
+    // 僅保存本機偏好，不觸發學習進度同步。
+    localStorage.setItem(LOCAL_PREFERENCE_KEYS.audioLesson, JSON.stringify(normalizeAudioLessonPreferences(preferences)))
+    return true
+  } catch {
+    return false
   }
 }
 

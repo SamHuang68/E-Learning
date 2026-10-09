@@ -57,6 +57,30 @@ describe('speech language selection and cancellation', () => {
     vi.unstubAllGlobals()
   })
 
+  it('回報聲音時取消，不得再送出靜音墊句或正文', async () => {
+    const { speakJapanese, stopSpeaking } = await import('./speech')
+    speakJapanese('こんにちは。', { onVoice: () => stopSpeaking() })
+    expect(synth.speak).not.toHaveBeenCalled()
+    expect(vi.getTimerCount()).toBe(0)
+  })
+
+  it('瀏覽器自行選聲時不捏造實際聲音或服務類型', async () => {
+    const { speakEnglish } = await import('./speech')
+    const onVoice = vi.fn()
+    speakEnglish('Welcome.', { lang: 'en-CA', onVoice })
+    expect(onVoice).toHaveBeenCalledExactlyOnceWith({ name: null, lang: null, localService: null })
+  })
+
+  it.each([true, false, undefined])('回報實際聲音與服務來源 %s，靜音墊句不重複回報', async (localService) => {
+    const { speakJapanese } = await import('./speech')
+    voices = [{ name: '測試聲音', lang: 'ja-JP', localService }]
+    const onVoice = vi.fn()
+    speakJapanese('こんにちは。', { onVoice })
+    expect(onVoice).toHaveBeenCalledExactlyOnceWith({
+      name: '測試聲音', lang: 'ja-JP', localService: localService ?? null,
+    })
+  })
+
   it.each(['en-US', 'en-GB', 'en-AU'])('uses the requested %s language and matching installed voice', async (lang) => {
     const { speakEnglish } = await import('./speech')
     speakEnglish('Welcome to the office.', { lang })
