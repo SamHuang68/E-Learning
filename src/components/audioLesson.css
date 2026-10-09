@@ -45,12 +45,36 @@
   min-height: var(--touch-min, 44px);
 }
 
-.audio-lesson-settings select {
+.audio-lesson-settings select,
+.audio-lesson-navigation select {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface);
   padding-inline: 0.6rem;
   max-width: 100%;
+  min-height: var(--touch-min, 44px);
+  color: var(--ink);
+  font: inherit;
+}
+
+.audio-lesson-navigation label {
+  display: grid;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.audio-lesson-navigation select {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.audio-lesson-preferences,
+.audio-lesson-navigation p {
+  margin-block: 0.5rem;
+  color: var(--muted);
+  font-size: 0.9375rem;
+  line-height: 1.65;
 }
 
 .audio-lesson-settings input {

@@ -14,6 +14,7 @@ describe('cookie / localStorage inventory', () => {
     expect(docs).toContain(PROGRESS_STORAGE_KEYS.chinese)
     expect(docs).toContain(PROGRESS_STORAGE_KEYS.csSignals)
     expect(docs).toContain(LOCAL_PREFERENCE_KEYS.accessibility)
+    expect(docs).toContain(LOCAL_PREFERENCE_KEYS.audioLesson)
     expect(docs).toContain(UI_LOCALE_KEY)
     expect(docs).toContain('aoba-progress')
     expect(docs).toContain('toeic-progress')

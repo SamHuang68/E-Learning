@@ -3,6 +3,7 @@ import { useI18n } from '../i18n/i18n'
 import { isSpeechSupported, warmVoices } from '../utils/speech'
 import { startAudioLesson } from '../utils/audioLessonPlayback'
 import { hasLessonVoice } from '../utils/audioLessonVoices'
+import { loadAudioLessonPreferences, saveAudioLessonPreferences, type AudioLessonPreferences } from '../utils/storage'
 import { checkExcerpt, recordCheckPhase, type AudioCheck } from '../utils/語音檢查'
 import { AudioCheckPanel, AudioSourceLabel } from './語音檢查面板'
 import type {
@@ -34,14 +35,16 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
   const en = locale === 'en'
   const headingId = useId()
   const statusId = useId()
+  const navigationId = useId()
   const supported = isSpeechSupported()
   const [voices, setVoices] = useState(availableVoices)
   const [voicesLoaded, setVoicesLoaded] = useState(() => availableVoices().length > 0)
   const [phase, setPhase] = useState<AudioLessonPhase | 'idle'>('idle')
   const [current, setCurrent] = useState(0)
   const [playback, setPlayback] = useState({ scope: 'lesson' as PlaybackScope, index: 0, total: 0 })
-  const [rate, setRate] = useState(0.95)
-  const [shadow, setShadow] = useState(true)
+  const [preferences, setPreferences] = useState(loadAudioLessonPreferences)
+  const { rate, shadow } = preferences
+  const [preferencesSaved, setPreferencesSaved] = useState(true)
   const [error, setError] = useState('')
   const [diagnostic, setDiagnostic] = useState<AudioCheck | null>(null)
   const [checkText, setCheckText] = useState<string | null>(null)
@@ -196,6 +199,30 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
     })
   }
 
+  function changePreferences(next: AudioLessonPreferences) {
+    if (active) stop()
+    setPreferences(next)
+    setPreferencesSaved(saveAudioLessonPreferences(next))
+  }
+
+  function selectSegment(index: number) {
+    if (!Number.isInteger(index) || index < 0 || index >= items.length) return
+    stop()
+    setCurrent(index)
+    setPlayback({ scope: 'replay', index: 0, total: 1 })
+    setPhase('idle')
+    setError('')
+    setDiagnostic(null)
+    setCheckText(null)
+  }
+
+  function segmentLabel(segment: AudioLessonSegment, index: number) {
+    const text = Array.from(segment.text.trim().replace(/\s+/g, ' '))
+    const excerpt = text.length ? text.slice(0, 70).join('') + (text.length > 70 ? '…' : '')
+      : en ? 'Lesson audio' : '教材音檔'
+    return `${index + 1} / ${items.length} · ${segment.kind === 'example' ? en ? 'Example' : '原文示範' : en ? 'Explanation' : '解說'} · ${languageName(segment.lang)} · ${excerpt}`
+  }
+
   const completeText = playback.scope === 'check'
     ? en ? 'Test events finished; confirm whether you heard it' : '試播事件已結束，請確認是否聽到'
     : playback.scope === 'examples'
@@ -238,8 +265,7 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
         <label>
           {en ? 'Speed' : '語速'}
           <select value={rate} onChange={(event) => {
-            if (active) stop()
-            setRate(Number(event.target.value))
+            changePreferences({ ...preferences, rate: event.target.value === '0.7' ? 0.7 : 0.95 })
           }}>
             <option value={0.95}>{en ? 'Normal' : '正常'}</option>
             <option value={0.7}>{en ? 'Slow' : '慢速'}</option>
@@ -247,12 +273,30 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
         </label>
         <label>
           <input type="checkbox" checked={shadow} onChange={(event) => {
-            if (active) stop()
-            setShadow(event.target.checked)
+            changePreferences({ ...preferences, shadow: event.target.checked })
           }} />
           {en ? 'Leave time to repeat' : '留白跟讀'}
         </label>
       </div>
+      <p className="audio-lesson-preferences">
+        {en ? 'Preferences stay in this browser; they are not included in progress exports or sync.' : '偏好僅限本瀏覽器，不會隨學習進度匯出或同步。'}
+      </p>
+      {!preferencesSaved ? <p className="audio-lesson-notice" role="alert">
+        {en ? 'Preferences could not be saved. These settings still apply here, but reopening may restore the previous values.' : '偏好未能儲存。此畫面仍使用新設定，重新開啟可能回復舊值。'}
+      </p> : null}
+      {items.length > 0 ? <div className="audio-lesson-navigation">
+        <label>
+          {en ? 'Choose segment' : '選擇段落'}
+          <select value={current} aria-describedby={navigationId} onChange={(event) => selectSegment(Number(event.target.value))}>
+            {items.map((segment, index) => <option key={segment.id} value={index}>{segmentLabel(segment, index)}</option>)}
+          </select>
+        </label>
+        <div className="audio-lesson-actions">
+          <button type="button" className="ghost" disabled={current <= 0} onClick={() => selectSegment(current - 1)}>{en ? 'Previous segment' : '上一段'}</button>
+          <button type="button" className="ghost" disabled={current >= items.length - 1} onClick={() => selectSegment(current + 1)}>{en ? 'Next segment' : '下一段'}</button>
+        </div>
+        <p id={navigationId}>{en ? 'Changing the selection stops playback. Choose a segment, then use Replay current to hear it.' : '更換段落會停止目前播放。選取後按「重播當句」即可播放。'}</p>
+      </div> : null}
       <div className="audio-lesson-actions" aria-describedby={statusId}>
         <button type="button" className="primary-btn inline" disabled={!canPlay(items)} onClick={() => play(items, 'lesson')}>
           {en ? 'Play lesson' : '播放導讀'}

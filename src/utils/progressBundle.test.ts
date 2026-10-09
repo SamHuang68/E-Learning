@@ -39,6 +39,18 @@ function parseStored(key: string): unknown {
 }
 
 describe('progress bundle', () => {
+  it('語音偏好不隨進度匯出、匯入或清除', () => {
+    const preferences = JSON.stringify({ rate: 0.7, shadow: false })
+    localStorage.setItem(LOCAL_PREFERENCE_KEYS.audioLesson, preferences)
+    const bundle = exportProgressBundle()
+    expect(bundle).not.toHaveProperty('audioLesson')
+    expect(JSON.stringify(bundle)).not.toContain(LOCAL_PREFERENCE_KEYS.audioLesson)
+    clearLocalProgressCache()
+    expect(localStorage.getItem(LOCAL_PREFERENCE_KEYS.audioLesson)).toBe(preferences)
+    expect(importProgressBundle({ ...bundle, audioLesson: { rate: 0.95, shadow: true } })).toBe(true)
+    expect(localStorage.getItem(LOCAL_PREFERENCE_KEYS.audioLesson)).toBe(preferences)
+  })
+
   it('preserves absent CS storage through export and import', () => {
     const bundle = exportProgressBundle()
     expect(bundle.cs).toBeNull()

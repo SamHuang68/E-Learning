@@ -64,6 +64,33 @@ afterEach(() => {
 })
 
 describe('共用語音教學介面', () => {
+  it('重新開啟時採用已儲存的慢速與關閉留白偏好', () => {
+    vi.stubGlobal('localStorage', { getItem: (key: string) => key === 'e-learning-audio-lesson-v1'
+      ? JSON.stringify({ rate: 0.7, shadow: false }) : null })
+    const html = render('en')
+    expect(html).toMatch(/<option value="0.7" selected="">Slow<\/option>/)
+    expect(html).not.toMatch(/type="checkbox"[^>]*checked/)
+    expect(html).toContain('Preferences stay in this browser')
+  })
+
+  it('段落選單保留原文及解說，第一段不可再往前', () => {
+    const html = render('en')
+    expect(html).toContain('Choose segment')
+    expect(html).toContain('1 / 2 · Example · Japanese · こんにちは。')
+    expect(html).toContain('2 / 2 · Explanation · English · A greeting used during the day.')
+    expect(html).toMatch(/disabled=""[^>]*>Previous segment<\/button>/)
+    expect(html).not.toMatch(/disabled=""[^>]*>Next segment<\/button>/)
+    expect(html).toContain('Changing the selection stops playback')
+  })
+
+  it('最後一段不可往後，空教材不提供段落導航', () => {
+    failedState.current = 1
+    const html = render('en')
+    expect(html).toMatch(/disabled=""[^>]*>Next segment<\/button>/)
+    expect(html).not.toMatch(/disabled=""[^>]*>Previous segment<\/button>/)
+    expect(render('en', [])).not.toContain('Choose segment')
+  })
+
   it.each([true, false, null])('實際音源顯示本機、連線與未知的界線 %s', (localService) => {
     const source = { kind: 'speech' as const, lang: 'ja-JP' as const,
       voice: { name: 'Test voice', lang: 'ja-JP', localService }, fallbackReason: 'playback-start-timeout' }

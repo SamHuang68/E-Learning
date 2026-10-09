@@ -48,6 +48,7 @@ Canonical registry: [`src/utils/progressKeys.ts`](../src/utils/progressKeys.ts) 
 | `e-learning-a11y-settings` | Accessibility |
 | `e-learning-a11y-light-v1` | One-time a11y migration flag |
 | `learning_audio_muted_v1` | Mute |
+| `e-learning-audio-lesson-v1` | 語音教學的語速與留白偏好；僅本瀏覽器保存，不隨學習進度匯出、同步或清除。重新開啟課程時載入，未提供跨分頁即時同步。 |
 
 ## localStorage — builder / secret (never uploaded)
 
