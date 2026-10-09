@@ -83,8 +83,9 @@ export function startAudioLesson(
           exampleIndex = -1
           play(index + 1)
         }
+        const deadline = performance.now() + duration
         shadowTimer = window.setTimeout(continuePlayback, duration)
-        options.onShadowing?.(continuePlayback)
+        options.onShadowing?.(continuePlayback, deadline)
       } else play(index + 1)
     }
     const startTts = (fallbackReason?: string) => {

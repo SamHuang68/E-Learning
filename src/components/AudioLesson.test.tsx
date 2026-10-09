@@ -14,6 +14,7 @@ const { failedState } = vi.hoisted(() => ({ failedState: {
   playback: undefined as { scope: string; index: number; total: number } | undefined,
   current: undefined as number | undefined,
   error: undefined as string | undefined,
+  shadowDeadline: undefined as number | undefined,
 } }))
 
 // 明示的錯誤狀態 SSR 驗證，不將狀態注入當作瀏覽器播放證據。
@@ -23,6 +24,9 @@ vi.mock('react', async (importOriginal) => {
     ...react,
     useState: (initial: unknown) => {
       const state = react.useState(initial)
+      if (initial && typeof initial === 'object' && 'deadline' in initial && failedState.shadowDeadline !== undefined) {
+        return [{ deadline: failedState.shadowDeadline }, state[1]]
+      }
       if (initial === 'idle' && failedState.phase) return [failedState.phase, state[1]]
       if (initial === 0 && failedState.current !== undefined) return [failedState.current, state[1]]
       if (initial === '' && failedState.error) return [failedState.error, state[1]]
@@ -60,10 +64,34 @@ afterEach(() => {
   failedState.playback = undefined
   failedState.current = undefined
   failedState.error = undefined
+  failedState.shadowDeadline = undefined
+  vi.restoreAllMocks()
   vi.unstubAllGlobals()
 })
 
 describe('共用語音教學介面', () => {
+  it.each([
+    ['zh-Hant', 2800, '留白剩餘約 2 秒'],
+    ['en', 3400, 'About 3 seconds left to repeat'],
+    ['en', 1500, 'About 1 second left to repeat'],
+    ['zh-Hant', 500, '留白剩餘約 0 秒'],
+  ] as const)('%s 留白倒數由期限向上取整且不加入即時播報', (locale, deadline, expected) => {
+    vi.spyOn(performance, 'now').mockReturnValue(1000)
+    failedState.phase = 'shadowing'
+    failedState.shadowDeadline = deadline
+    const html = render(locale)
+    expect(html).toMatch(new RegExp(`<p[^>]*role="timer"[^>]*aria-live="off"[^>]*>${expected}</p>`))
+    const status = html.match(/<p[^>]*role="status"[^>]*>(.*?)<\/p>/)?.[1]
+    expect(status).not.toContain(expected)
+    expect(html).toContain(locale === 'en' ? '>Continue now</button>' : '>立即接續</button>')
+  })
+
+  it.each(['idle', 'preparing', 'playing', 'complete', 'stopped', 'error'])('非留白階段不顯示舊倒數：%s', (phase) => {
+    failedState.phase = phase
+    failedState.shadowDeadline = 999999
+    expect(render('en')).not.toContain('role="timer"')
+  })
+
   it.each(['idle', 'preparing', 'playing', 'shadowing', 'complete', 'stopped', 'error'])('立即接續僅在留白時可用：%s', (phase) => {
     failedState.phase = phase
     const html = render('zh-Hant')

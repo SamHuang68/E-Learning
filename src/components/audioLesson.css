@@ -83,6 +83,10 @@
   height: 1.1rem;
 }
 
+.audio-lesson-countdown {
+  font-variant-numeric: tabular-nums;
+}
+
 .audio-lesson button {
   min-height: var(--touch-min, 44px);
   white-space: normal;
