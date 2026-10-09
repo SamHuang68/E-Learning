@@ -30,6 +30,25 @@ function availableVoices(): SpeechSynthesisVoice[] {
   }
 }
 
+function secondsUntil(deadline: number) {
+  return Math.max(0, Math.ceil((deadline - performance.now()) / 1000))
+}
+
+function ShadowCountdown({ deadline, en }: { deadline: number; en: boolean }) {
+  const [seconds, setSeconds] = useState(() => secondsUntil(deadline))
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      const next = secondsUntil(deadline)
+      setSeconds(next)
+      if (next === 0) window.clearInterval(timer)
+    }, 200)
+    return () => window.clearInterval(timer)
+  }, [deadline])
+  return <p className="audio-lesson-preferences audio-lesson-countdown" role="timer" aria-live="off">
+    {en ? `About ${seconds} ${seconds === 1 ? 'second' : 'seconds'} left to repeat` : `留白剩餘約 ${seconds} 秒`}
+  </p>
+}
+
 export function AudioLesson({ lessonId, title, segments }: Props) {
   const { locale } = useI18n()
   const en = locale === 'en'
@@ -48,6 +67,7 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
   const [error, setError] = useState('')
   const [diagnostic, setDiagnostic] = useState<AudioCheck | null>(null)
   const [checkText, setCheckText] = useState<string | null>(null)
+  const [shadowTiming, setShadowTiming] = useState({ deadline: 0 })
   const stopRef = useRef<(() => void) | null>(null)
   const continueRef = useRef<(() => void) | null>(null)
   const runRef = useRef(0)
@@ -74,6 +94,7 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
   function stop() {
     runRef.current += 1
     continueRef.current = null
+    setShadowTiming({ deadline: 0 })
     stopRef.current?.()
     stopRef.current = null
     setPhase('stopped')
@@ -112,6 +133,7 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
   useEffect(() => {
     runRef.current += 1
     continueRef.current = null
+    setShadowTiming({ deadline: 0 })
     stopRef.current?.()
     stopRef.current = null
     setPhase('idle')
@@ -124,6 +146,7 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
       if (!document.hidden) return
       runRef.current += 1
       continueRef.current = null
+      setShadowTiming({ deadline: 0 })
       stopRef.current?.()
       stopRef.current = null
       setPhase((previous) => previous === 'preparing' || previous === 'playing' || previous === 'shadowing' ? 'stopped' : previous)
@@ -157,6 +180,7 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
     runRef.current += 1
     const run = runRef.current
     continueRef.current = null
+    setShadowTiming({ deadline: 0 })
     stopRef.current?.()
     stopRef.current = null
     setError('')
@@ -168,8 +192,10 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
     const ownedStop = startAudioLesson(selection, {
       rate,
       shadow: scope === 'check' ? false : shadow,
-      onShadowing: (continuePlayback) => {
-        if (run === runRef.current) continueRef.current = continuePlayback
+      onShadowing: (continuePlayback, deadline) => {
+        if (run !== runRef.current) return
+        continueRef.current = continuePlayback
+        setShadowTiming({ deadline })
       },
       onSource: (source) => {
         if (run !== runRef.current) return
@@ -183,7 +209,10 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
       },
       onPhase: (next) => {
         if (run !== runRef.current) return
-        if (next !== 'shadowing') continueRef.current = null
+        if (next !== 'shadowing') {
+          continueRef.current = null
+          setShadowTiming({ deadline: 0 })
+        }
         setPhase(next)
         setDiagnostic((previous) => previous ? recordCheckPhase(previous, next) : null)
       },
@@ -337,6 +366,8 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
       <p id={statusId} className="audio-lesson-status" role="status" aria-live="polite" aria-atomic="true">
         {phaseText}{active && playback.total ? ` · ${playback.index + 1}/${playback.total}` : ''}
       </p>
+      {phase === 'shadowing' && shadowTiming.deadline > 0
+        ? <ShadowCountdown key={shadowTiming.deadline} deadline={shadowTiming.deadline} en={en} /> : null}
       {phase === 'shadowing' ? <p className="audio-lesson-preferences">
         {en
           ? 'The lesson continues automatically after repeat time. Choose Continue now when you are ready. The last group finishes playback.'

@@ -494,6 +494,24 @@ describe('語音教學分段與播放生命週期', () => {
     expect(options.onError).not.toHaveBeenCalled()
   })
 
+  it.each([
+    ['Hi.', 'en-US', 0.8, 1800],
+    ['1234567890', 'en-US', 0.5, 2400],
+    ['1234567890', 'ja-JP', 0.5, 4200],
+  ] as const)('留白倒數期限沿用原文、語言與語速：%s %s %s', async (text, lang, rate, duration) => {
+    const { startAudioLesson } = await import('./audioLessonPlayback')
+    vi.spyOn(performance, 'now').mockReturnValue(1000)
+    const onShadowing = vi.fn()
+    startAudioLesson([{ ...segments[0], text, lang }], { ...options, rate, shadow: true, onShadowing })
+    completeUtterance(audible()[0])
+    expect(onShadowing).toHaveBeenCalledWith(expect.any(Function), 1000 + duration)
+    await vi.advanceTimersByTimeAsync(duration - 1)
+    expect(options.onPhase).toHaveBeenLastCalledWith('shadowing')
+    await vi.advanceTimersByTimeAsync(1)
+    expect(options.onPhase).toHaveBeenLastCalledWith('complete')
+    expect(vi.getTimerCount()).toBe(0)
+  })
+
   it('留白立即接續只前進一次，並取消該次自動接續期限', async () => {
     const { startAudioLesson } = await import('./audioLessonPlayback')
     const onShadowing = vi.fn()

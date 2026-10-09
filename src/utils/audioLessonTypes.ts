@@ -32,5 +32,6 @@ export type AudioLessonPlaybackOptions = {
   onPhase: (phase: AudioLessonPhase) => void
   onError: (code: string) => void
   onSource?: (source: AudioLessonSource) => void
-  onShadowing?: (continuePlayback: () => void) => void
+  // deadline 為 performance.now() 時基的毫秒期限，僅供顯示。
+  onShadowing?: (continuePlayback: () => void, deadline: number) => void
 }
