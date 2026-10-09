@@ -7,14 +7,14 @@ class TestUtterance extends EventTarget {
   rate = 1
   pitch = 1
   volume = 1
-  voice: { name: string; lang: string } | null = null
+  voice: { name: string; lang: string; localService?: boolean } | null = null
   onstart: (() => void) | null = null
   onend: (() => void) | null = null
   onerror: ((event: { error: string }) => void) | null = null
 }
 
 describe('speech language selection and cancellation', () => {
-  let voices = [
+  let voices: { name: string; lang: string; localService?: boolean }[] = [
     { name: 'US voice', lang: 'en-US' },
     { name: 'British voice', lang: 'en-GB' },
     { name: 'Australian voice', lang: 'en-AU' },
@@ -72,6 +72,82 @@ describe('speech language selection and cancellation', () => {
     speakEnglish('Welcome.', { lang: 'en-CA' })
     expect(synth.speak.mock.calls.at(-1)?.[0].lang).toBe('en-CA')
     expect(synth.speak.mock.calls.at(-1)?.[0].voice).toBeNull()
+  })
+
+  it('Google 日語排在前方時仍優先本機日語，朗讀與靜音墊句使用同一聲音', async () => {
+    const { speakJapanese } = await import('./speech')
+    const localJapanese = { name: 'Microsoft Haruka', lang: 'ja-JP', localService: true }
+    voices = [
+      { name: 'Google 日本語', lang: 'ja-JP', localService: false },
+      { name: 'Microsoft English', lang: 'en-US', localService: true },
+      localJapanese,
+    ]
+    speakJapanese('こんにちは。')
+    const [pad, utterance] = synth.speak.mock.calls.map(([item]) => item as TestUtterance)
+    expect(pad.volume).toBe(0)
+    expect(pad.lang).toBe('ja-JP')
+    expect(pad.voice).toBe(localJapanese)
+    expect(utterance.text).toBe('こんにちは。')
+    expect(utterance.voice).toBe(localJapanese)
+  })
+
+  it('沒有本機日語時保留原本的 Google 日語回退', async () => {
+    const { speakJapanese } = await import('./speech')
+    const googleJapanese = { name: 'Google 日本語', lang: 'ja-JP', localService: false }
+    voices = [
+      { name: 'Japanese voice', lang: 'ja-JP', localService: false },
+      { name: 'Microsoft English', lang: 'en-US', localService: true },
+      googleJapanese,
+    ]
+    speakJapanese('こんにちは。')
+    for (const [item] of synth.speak.mock.calls) {
+      expect((item as TestUtterance).voice).toBe(googleJapanese)
+    }
+    expect(synth.speak).toHaveBeenCalled()
+  })
+
+  it('日語本機優先不改變英語原本的 Google 品質優先策略', async () => {
+    const { speakEnglish } = await import('./speech')
+    const googleEnglish = { name: 'Google US English', lang: 'en-US', localService: false }
+    voices = [
+      { name: 'Microsoft English', lang: 'en-US', localService: true },
+      googleEnglish,
+      { name: 'Microsoft Haruka', lang: 'ja-JP', localService: true },
+    ]
+    speakEnglish('Welcome to the office.')
+    for (const [item] of synth.speak.mock.calls) {
+      expect((item as TestUtterance).voice).toBe(googleEnglish)
+    }
+    expect(synth.speak).toHaveBeenCalled()
+  })
+
+  it('每次日語播放重新選擇最新清單，本機聲音新增或移除不黏住舊聲音', async () => {
+    const { speakJapanese, stopSpeaking } = await import('./speech')
+    const googleJapanese = { name: 'Google 日本語', lang: 'ja-JP', localService: false }
+    const localJapanese = { name: 'Microsoft Haruka', lang: 'ja-JP', localService: true }
+    voices = [googleJapanese]
+    speakJapanese('最初の文です。')
+    expect(synth.speak.mock.calls.at(-1)?.[0].voice).toBe(googleJapanese)
+    stopSpeaking()
+    synth.speak.mockClear()
+
+    voices = [googleJapanese, localJapanese]
+    voiceEvents.dispatchEvent(new Event('voiceschanged'))
+    speakJapanese('次の文です。')
+    for (const [item] of synth.speak.mock.calls) {
+      expect((item as TestUtterance).voice).toBe(localJapanese)
+    }
+    expect(synth.speak).toHaveBeenCalled()
+    stopSpeaking()
+    synth.speak.mockClear()
+
+    voices = [googleJapanese]
+    voiceEvents.dispatchEvent(new Event('voiceschanged'))
+    speakJapanese('最後の文です。')
+    for (const [item] of synth.speak.mock.calls) {
+      expect((item as TestUtterance).voice).toBe(googleJapanese)
+    }
+    expect(synth.speak).toHaveBeenCalled()
   })
 
   it('does not start a queued utterance after Stop', async () => {

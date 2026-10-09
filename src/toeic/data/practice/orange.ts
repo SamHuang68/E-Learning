@@ -735,8 +735,8 @@ export const orangePractice: Record<string, UnitPractice> = {
         register: 'polite',
         audio: {
           src: 'audio/toeic/orange-6-p1.mp3',
-          durationMs: 3200,
-          speaker: 'studio',
+          durationMs: 2900,
+          speaker: 'Microsoft David Desktop',
         },
       },
       {
@@ -749,8 +749,8 @@ export const orangePractice: Record<string, UnitPractice> = {
         register: 'casual',
         audio: {
           src: 'audio/toeic/orange-6-p2.mp3',
-          durationMs: 3000,
-          speaker: 'studio',
+          durationMs: 2926,
+          speaker: 'Microsoft David Desktop',
         },
       },
       {
@@ -763,8 +763,8 @@ export const orangePractice: Record<string, UnitPractice> = {
         register: 'polite',
         audio: {
           src: 'audio/toeic/orange-6-p3.mp3',
-          durationMs: 3100,
-          speaker: 'studio',
+          durationMs: 2821,
+          speaker: 'Microsoft David Desktop',
         },
       },
     ],

@@ -40,8 +40,15 @@ const clips: TestAudio[] = []
 let throwClipOnPlay = false
 class TestAudio {
   constructor() { clips.push(this) }
-  src = ''
+  private source = ''
+  get src() { return this.source }
+  set src(value: string) {
+    this.source = value
+    // 原生元素指定來源時會還原為預設速率；不可用不重設的替身掩蓋慢速失效。
+    this.playbackRate = this.defaultPlaybackRate
+  }
   preload = ''
+  defaultPlaybackRate = 1
   playbackRate = 1
   currentTime = 0
   onplaying: (() => void) | null = null
@@ -527,6 +534,17 @@ describe('語音教學分段與播放生命週期', () => {
     expect(clips).toHaveLength(1)
     expect(clips[0].playbackRate).toBe(0.8)
     expect(clips[0].preload).toBe('none')
+    stop()
+  })
+
+  it.each([0.7, 0.95, 1])('原生來源載入重設速率時仍保留 %s 倍速', async (rate) => {
+    const { playClip } = await import('./mediaAudio')
+    const stop = playClip('audio/example.mp3', { rate })
+    expect(clips[0].defaultPlaybackRate).toBe(rate)
+    expect(clips[0].playbackRate).toBe(rate)
+    expect(clips[0].play).toHaveBeenCalledOnce()
+    clips[0].src = clips[0].src
+    expect(clips[0].playbackRate).toBe(rate)
     stop()
   })
 

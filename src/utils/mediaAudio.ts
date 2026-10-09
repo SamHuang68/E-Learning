@@ -15,6 +15,8 @@ export function playClip(
       ? src
       : `${(import.meta.env.BASE_URL || '/').replace(/\/?$/, '/')}${src.replace(/^\//, '')}`
   const audio = new Audio()
+  // 來源載入會把播放速率重設為 defaultPlaybackRate；兩者須使用同一教學語速。
+  audio.defaultPlaybackRate = opts.rate ?? 1
   audio.playbackRate = opts.rate ?? 1
   audio.preload = 'none'
   audio.src = resolved

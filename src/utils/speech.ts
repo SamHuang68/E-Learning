@@ -64,7 +64,8 @@ function pickEnglishVoice(voices: SpeechSynthesisVoice[]) {
 }
 
 function assignVoices(list: SpeechSynthesisVoice[]) {
-  jaVoice = pickVoice(list, 'ja')
+  jaVoice = pickVoice(list.filter((voice) => voice.localService === true), 'ja') ??
+    pickVoice(list, 'ja')
   enVoice = pickEnglishVoice(list)
 }
 
