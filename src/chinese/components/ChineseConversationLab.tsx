@@ -1,8 +1,12 @@
-﻿import React, { useState } from 'react'
+﻿import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { CHINESE_SUPPORT_EN, CONVERSATION_SCENES, type ConversationScene, type DialogueLine } from '../data/conversations'
 import { playCorrectSound } from '../../engine/audioSynthesizer'
 import { useI18n } from '../../i18n/i18n'
 import { localizeChineseData } from '../teachingCopy'
+import { AudioLesson } from '../../components/AudioLesson'
+import { startAudioLesson } from '../../utils/audioLessonPlayback'
+import { speakChinese } from '../../utils/speech'
+import type { AudioLessonSegment } from '../../utils/audioLessonTypes'
 
 interface Props {
   onEarnXp: (amount: number) => void
@@ -13,49 +17,83 @@ export const ChineseConversationLab: React.FC<Props> = ({ onEarnXp }) => {
   const [selectedSceneId, setSelectedSceneId] = useState<string>(CONVERSATION_SCENES[0].id)
   const [activeLineIdx, setActiveLineIdx] = useState<number | null>(null)
   const [isPlayingAll, setIsPlayingAll] = useState(false)
+  const stopSpeechRef = useRef<(() => void) | null>(null)
+  const playbackRunRef = useRef(0)
 
   const activeScene: ConversationScene =
     CONVERSATION_SCENES.find((s) => s.id === selectedSceneId) ?? CONVERSATION_SCENES[0]
   const localizedScene = localizeChineseData(activeScene, locale, CHINESE_SUPPORT_EN)
   const localizedScenes = localizeChineseData(CONVERSATION_SCENES, locale, CHINESE_SUPPORT_EN)
+  const audioSegments = useMemo<AudioLessonSegment[]>(() => {
+    const scene = localizeChineseData(activeScene, locale, CHINESE_SUPPORT_EN)
+    const lang = locale === 'en' ? 'en-US' : 'ja-JP'
+    return [
+      ...activeScene.dialogue.flatMap((line, index): AudioLessonSegment[] => [
+        { id: `line-${index}-example`, text: line.zh, lang: 'zh-TW', kind: 'example' },
+        { id: `line-${index}-explanation`, text: scene.dialogue[index].ja, lang, kind: 'explanation' },
+      ]),
+      { id: 'culture-tip', text: scene.cultureTipJa, lang, kind: 'explanation' },
+    ]
+  }, [activeScene, locale])
 
-  function speakLine(text: string, onEnd?: () => void) {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
-    window.speechSynthesis.cancel()
-    const utterance = new SpeechSynthesisUtterance(text)
-    utterance.lang = 'zh-TW'
-    utterance.rate = 0.9
-    if (onEnd) utterance.onend = onEnd
-    window.speechSynthesis.speak(utterance)
+  function stopPlayback() {
+    playbackRunRef.current += 1
+    stopSpeechRef.current?.()
+    stopSpeechRef.current = null
+    setIsPlayingAll(false)
+    setActiveLineIdx(null)
   }
+
+  useEffect(() => {
+    const handleHidden = () => {
+      if (document.hidden) stopPlayback()
+    }
+    document.addEventListener('visibilitychange', handleHidden)
+    return () => {
+      document.removeEventListener('visibilitychange', handleHidden)
+      stopPlayback()
+    }
+  }, [selectedSceneId, locale])
 
   function handlePlayAll() {
     if (isPlayingAll) {
-      window.speechSynthesis.cancel()
-      setIsPlayingAll(false)
-      setActiveLineIdx(null)
+      stopPlayback()
       return
     }
 
+    stopPlayback()
+    const run = ++playbackRunRef.current
     setIsPlayingAll(true)
-    let currentIdx = 0
-
-    function playNext() {
-      if (currentIdx >= activeScene.dialogue.length) {
-        setIsPlayingAll(false)
-        setActiveLineIdx(null)
-        onEarnXp(15)
-        playCorrectSound()
-        return
-      }
-      setActiveLineIdx(currentIdx)
-      speakLine(activeScene.dialogue[currentIdx].zh, () => {
-        currentIdx += 1
-        setTimeout(playNext, 600)
-      })
-    }
-
-    playNext()
+    stopSpeechRef.current = startAudioLesson(
+      activeScene.dialogue.map((line, index) => ({
+        id: `dialogue-${index}`, text: line.zh, lang: 'zh-TW', kind: 'example',
+      })),
+      {
+        rate: 0.9,
+        shadow: false,
+        onSegment: (index) => {
+          if (run === playbackRunRef.current) setActiveLineIdx(index)
+        },
+        onPhase: (phase) => {
+          if (run !== playbackRunRef.current) return
+          if (phase === 'complete' || phase === 'stopped' || phase === 'error') {
+            setIsPlayingAll(false)
+            setActiveLineIdx(null)
+            stopSpeechRef.current = null
+          }
+          if (phase === 'complete') {
+            onEarnXp(15)
+            playCorrectSound()
+          }
+        },
+        onError: () => {
+          if (run === playbackRunRef.current) {
+            setIsPlayingAll(false)
+            setActiveLineIdx(null)
+          }
+        },
+      },
+    )
   }
 
   return (
@@ -82,9 +120,8 @@ export const ChineseConversationLab: React.FC<Props> = ({ onEarnXp }) => {
             type="button"
             className={`pill-btn ${activeScene.id === scene.id ? 'active' : ''}`}
             onClick={() => {
+              stopPlayback()
               setSelectedSceneId(scene.id)
-              setActiveLineIdx(null)
-              setIsPlayingAll(false)
             }}
           >
             {scene.sceneCategory}: {scene.titleJa.split('（')[0]}
@@ -125,6 +162,11 @@ export const ChineseConversationLab: React.FC<Props> = ({ onEarnXp }) => {
             : locale === 'en' ? '▶ Play full dialogue (+15 XP)' : '▶ 全對話連續朗讀 (+15 XP)'}
         </button>
       </div>
+
+      <AudioLesson
+        lessonId={`chinese-conversation:${activeScene.id}:${locale}`}
+        segments={audioSegments}
+      />
 
       {/* 對話句子清單 */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '0.8rem' }}>
@@ -178,8 +220,15 @@ export const ChineseConversationLab: React.FC<Props> = ({ onEarnXp }) => {
                 className="btn-play-ex"
                 style={{ marginLeft: '0.5rem', flexShrink: 0 }}
                 onClick={() => {
+                  stopPlayback()
+                  const run = ++playbackRunRef.current
                   setActiveLineIdx(idx)
-                  speakLine(line.zh)
+                  const finish = () => {
+                    if (run === playbackRunRef.current) setActiveLineIdx(null)
+                  }
+                  stopSpeechRef.current = speakChinese(line.zh, {
+                    rate: 0.9, onEnd: finish, onError: finish, onCancel: finish,
+                  })
                   onEarnXp(3)
                 }}
               >

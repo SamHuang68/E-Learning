@@ -1,11 +1,13 @@
 import { useMemo, useState } from 'react'
 import {
   enScenarios,
-  jaScenarios,
   type ScenarioOption,
   type ScenarioScript,
 } from '../data/scenarios'
 import { useI18n } from '../i18n/i18n'
+import { localizeJaScenarios } from '../i18n/jaInteractiveCopy'
+import { AudioLesson } from './AudioLesson'
+import type { AudioLessonSegment } from '../utils/audioLessonTypes'
 
 type ScenarioResult = {
   scenarioId: string
@@ -24,8 +26,8 @@ export function ScenarioPlayer({ track, scenarios, onComplete, onExit }: Props) 
   const { locale } = useI18n()
   const isEn = locale === 'en'
   const bank = useMemo(
-    () => scenarios ?? (track === 'ja' ? jaScenarios : enScenarios),
-    [scenarios, track],
+    () => scenarios ?? (track === 'ja' ? localizeJaScenarios(locale) : enScenarios),
+    [scenarios, track, locale],
   )
   const [scenarioIndex, setScenarioIndex] = useState(0)
   const [beatIndex, setBeatIndex] = useState(0)
@@ -76,6 +78,25 @@ export function ScenarioPlayer({ track, scenarios, onComplete, onExit }: Props) 
     )
   }
 
+  const feedback = picked
+    ? picked.correct
+      ? isEn
+        ? `Appropriate register: ${picked.register}`
+        : `語體合適：${picked.register}`
+      : isEn
+        ? `This option is ${picked.register}. Choose a more suitable business expression.`
+        : `這個語體偏 ${picked.register}，請選更合適的商務／丁寧表現。`
+    : ''
+  const audioSegments: AudioLessonSegment[] = [
+    { id: 'prompt', text: beat.prompt, lang: track === 'en' || isEn ? 'en-US' : 'zh-TW', kind: 'explanation' },
+  ]
+  if (picked) {
+    audioSegments.push(
+      { id: 'selected-answer', text: picked.text, lang: track === 'ja' ? 'ja-JP' : 'en-US', kind: picked.correct ? 'example' : 'explanation' },
+      { id: 'feedback', text: feedback, lang: isEn ? 'en-US' : 'zh-TW', kind: 'explanation' },
+    )
+  }
+
   return (
     <section className="practice-view scenario-player" lang={locale}>
       {onExit ? (
@@ -110,6 +131,11 @@ export function ScenarioPlayer({ track, scenarios, onComplete, onExit }: Props) 
           <span className="scenario-chip">Beat {beatIndex + 1}</span>
           <strong>{beat.prompt}</strong>
         </div>
+        <AudioLesson
+          lessonId={`scenario:${track}:${scenario.id}:${beatIndex}:${pickedText ?? 'unanswered'}:${locale}`}
+          title={isEn ? 'Scenario audio lesson' : '情境語音教學'}
+          segments={audioSegments}
+        />
         <div className="choice-grid">
           {beat.options.map((option) => {
             const done = pickedText !== null
@@ -141,13 +167,7 @@ export function ScenarioPlayer({ track, scenarios, onComplete, onExit }: Props) 
             aria-live="polite"
             aria-atomic="true"
           >
-            {picked.correct
-              ? isEn
-                ? `Appropriate register: ${picked.register}`
-                : `語體合適：${picked.register}`
-              : isEn
-                ? `This option is ${picked.register}. Choose a more suitable business expression.`
-                : `這個語體偏 ${picked.register}，請選更合適的商務／丁寧表現。`}
+            {feedback}
           </p>
         ) : null}
         <div className="flash-actions">

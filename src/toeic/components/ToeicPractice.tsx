@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { SpeakButton } from '../../components/SpeakButton'
+import { AudioLesson } from '../../components/AudioLesson'
+import type { AudioLessonSegment } from '../../utils/audioLessonTypes'
 import { ExerciseSession } from '../../components/ExerciseSession'
 import { itemKey } from '../../data/contentPack'
 import {
@@ -111,6 +113,14 @@ export function ToeicPractice({
   const card = cards[index]
   const total = cards.length
   const fallbackSpeak = unit.titleEn
+  const explanationLang = locale === 'en' ? 'en-US' : 'zh-TW'
+  const audioSegments: AudioLessonSegment[] = card ? [
+    { id: 'sentence', text: card.speakText ?? card.sentence, lang: 'en-US', kind: 'example', audioSrc: card.audio?.src },
+    { id: 'meaning', text: card.meaning, lang: explanationLang, kind: 'explanation' },
+    ...(card.sentenceZh && card.sentenceZh !== card.sentence ? [{ id: 'translation', text: card.sentenceZh, lang: explanationLang, kind: 'explanation' } as AudioLessonSegment] : []),
+    { id: 'scenario', text: card.scenario, lang: 'en-US', kind: 'explanation' },
+    { id: 'register', text: REGISTER_LABELS[card.register].en, lang: 'en-US', kind: 'explanation' },
+  ] : []
   const exercises = isReview
     ? cardsToExercises(cards, 'en', allCards(pack))
     : sessionFromUnitPractice(
@@ -243,6 +253,14 @@ export function ToeicPractice({
               hear the unit title.
             </p>
           </div>
+        )}
+
+        {card && (
+          <AudioLesson
+            lessonId={`en:${certificateId}:${unit.id}:${kind}:${isReview ? 'review' : 'learn'}:${card.id}:${locale}`}
+            title={locale === 'en' ? 'Audio lesson' : '語音教學'}
+            segments={audioSegments}
+          />
         )}
 
         <div className="flash-actions">
