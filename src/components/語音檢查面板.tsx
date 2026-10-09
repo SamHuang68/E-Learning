@@ -93,7 +93,15 @@ export function AudioCheckPanel({ en, check, samples, canPlay, languageName, onP
       <p>{en ? 'Includes the selected voice name and playback events; excludes lesson text, account data, and progress. Review before sharing.' : '包含選用聲音名稱與播放事件，不含教材文字、帳號與進度；分享前請先確認內容。'}</p>
       <label htmlFor={exportId}>{en ? 'Latest attempt report' : '最近一次診斷紀錄'}</label>
       <textarea id={exportId} readOnly value={report} rows={8} spellCheck={false} />
-      <button type="button" className="ghost" onClick={() => { void copy() }}>{en ? 'Copy report' : '複製診斷紀錄'}</button>
+      <div className="audio-lesson-actions">
+        <button type="button" className="ghost" onClick={() => { void copy() }}>{en ? 'Copy report' : '複製診斷紀錄'}</button>
+        <a className="ghost audio-check-download" href={`data:application/json;charset=utf-8,${encodeURIComponent(report)}`}
+          download={`語音診斷-${new Date(check.startedAt).toISOString().replace(/[:.]/g, '-')}.json`}>
+          {en ? 'Download report' : '下載診斷紀錄'}
+        </a>
+      </div>
+      <p>{en ? 'Check your browser downloads to confirm the file was saved. If downloads are blocked, copy the text above. Saved copies remain on your device after this view is cleared.'
+        : '請到瀏覽器下載清單確認檔案是否儲存；若下載被阻擋，可複製上方文字。畫面清除後，已保存的檔案仍會留在裝置。'}</p>
       <p role="status">{copyState.status === 'copied' ? en ? 'Report copied.' : '已複製診斷紀錄。'
         : copyState.status === 'failed' ? en ? 'Copy was unavailable. Select and copy the text above manually.' : '無法自動複製，請選取上方文字手動複製。' : null}</p>
     </details> : null}

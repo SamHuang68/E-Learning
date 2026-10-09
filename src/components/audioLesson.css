@@ -111,7 +111,7 @@
   transform: none;
 }
 
-.audio-lesson :is(button, input, select, summary, textarea):focus-visible {
+.audio-lesson :is(button, a, input, select, summary, textarea):focus-visible {
   outline: var(--focus-ring, 3px solid var(--accent));
   outline-offset: var(--focus-ring-offset, 2px);
 }
@@ -194,4 +194,12 @@
 .audio-check .ghost[aria-pressed="true"] {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
+}
+
+.audio-check-download {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: var(--touch-min, 44px);
+  text-decoration: none;
 }
