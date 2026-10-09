@@ -64,6 +64,24 @@ afterEach(() => {
 })
 
 describe('共用語音教學介面', () => {
+  it.each(['idle', 'preparing', 'playing', 'shadowing', 'complete', 'stopped', 'error'])('立即接續僅在留白時可用：%s', (phase) => {
+    failedState.phase = phase
+    const html = render('zh-Hant')
+    expect(html).toContain('立即接續')
+    if (phase === 'shadowing') {
+      expect(html).not.toMatch(/disabled=""[^>]*>立即接續<\/button>/)
+      expect(html).toContain('留白結束後會自動接續；練習完成可按「立即接續」')
+    } else expect(html).toMatch(/disabled=""[^>]*>立即接續<\/button>/)
+  })
+
+  it('英文留白操作保留自動接續與最後一組完成的界線', () => {
+    failedState.phase = 'shadowing'
+    const html = render('en')
+    expect(html).toContain('Continue now')
+    expect(html).toContain('The lesson continues automatically after repeat time')
+    expect(html).toContain('The last group finishes playback')
+  })
+
   it.each([0, 1])('接續播放只檢查選段之後的語音需求，起點 %s', (current) => {
     installVoices(['en-US'])
     failedState.current = current

@@ -494,6 +494,90 @@ describe('語音教學分段與播放生命週期', () => {
     expect(options.onError).not.toHaveBeenCalled()
   })
 
+  it('留白立即接續只前進一次，並取消該次自動接續期限', async () => {
+    const { startAudioLesson } = await import('./audioLessonPlayback')
+    const onShadowing = vi.fn()
+    const next = { ...segments[0], id: 'next', text: 'Next example.' }
+    startAudioLesson([...segments, next], { ...options, shadow: true, onShadowing })
+    expect(onShadowing).not.toHaveBeenCalled()
+    completeUtterance(audible()[0])
+    completeUtterance(audible()[1])
+    expect(options.onPhase).toHaveBeenLastCalledWith('shadowing')
+    expect(onShadowing).toHaveBeenCalledTimes(1)
+    const continueNow = onShadowing.mock.calls[0][0] as () => void
+    continueNow()
+    continueNow()
+    expect(audible().map((item) => item.text)).toEqual([...segments, next].map((item) => item.text))
+    expect(options.onPhase).toHaveBeenLastCalledWith('preparing')
+    completeUtterance(audible()[2])
+    expect(onShadowing).toHaveBeenCalledTimes(2)
+    continueNow()
+    expect(options.onPhase).toHaveBeenLastCalledWith('shadowing')
+    onShadowing.mock.calls[1][0]()
+    expect(options.onPhase).toHaveBeenLastCalledWith('complete')
+    await vi.advanceTimersByTimeAsync(10000)
+    expect(audible()).toHaveLength(3)
+    expect(vi.getTimerCount()).toBe(0)
+  })
+
+  it.each(['stop', 'hidden', 'pagehide', 'new-lesson', 'new-speech'] as const)('留白接續權限在 %s 後失效', async (action) => {
+    const { startAudioLesson } = await import('./audioLessonPlayback')
+    const onShadowing = vi.fn()
+    const stop = startAudioLesson([...segments, { ...segments[0], id: 'next' }], { ...options, shadow: true, onShadowing })
+    completeUtterance(audible()[0])
+    completeUtterance(audible()[1])
+    const continueNow = onShadowing.mock.calls[0][0] as () => void
+    if (action === 'stop') stop()
+    else if (action === 'hidden') {
+      page.hidden = true
+      page.dispatchEvent(new Event('visibilitychange'))
+    } else if (action === 'pagehide') window.dispatchEvent(new Event('pagehide'))
+    else if (action === 'new-lesson') startAudioLesson([segments[1]], { ...options, onPhase: vi.fn() })
+    else {
+      const { speakEnglish } = await import('./speech')
+      speakEnglish('Another playback owner.')
+    }
+    const count = audible().length
+    if (count > 2) completeUtterance(audible()[2])
+    continueNow()
+    await vi.advanceTimersByTimeAsync(10000)
+    expect(audible()).toHaveLength(count)
+    expect(options.onPhase).toHaveBeenLastCalledWith('stopped')
+    expect(vi.getTimerCount()).toBe(0)
+  })
+
+  it('留白自然到期後，舊接續函式不能跳過下一組留白', async () => {
+    const { startAudioLesson } = await import('./audioLessonPlayback')
+    const onShadowing = vi.fn()
+    startAudioLesson([
+      { ...segments[0], text: 'Hi.' }, { ...segments[0], id: 'next', text: 'Bye.' },
+    ], { ...options, shadow: true, onShadowing })
+    completeUtterance(audible()[0])
+    const oldContinue = onShadowing.mock.calls[0][0] as () => void
+    await vi.advanceTimersByTimeAsync(1800)
+    completeUtterance(audible()[1])
+    oldContinue()
+    expect(options.onPhase).toHaveBeenLastCalledWith('shadowing')
+    expect(audible()).toHaveLength(2)
+    await vi.advanceTimersByTimeAsync(1800)
+    expect(options.onPhase).toHaveBeenLastCalledWith('complete')
+    expect(vi.getTimerCount()).toBe(0)
+  })
+
+  it.each(['continue', 'stop', 'new-lesson'] as const)('留白通知內同步 %s 不殘留舊計時器', async (action) => {
+    const { startAudioLesson } = await import('./audioLessonPlayback')
+    let stop = () => {}
+    stop = startAudioLesson([segments[0]], { ...options, shadow: true, onShadowing: (continueNow) => {
+      if (action === 'continue') continueNow()
+      else if (action === 'stop') stop()
+      else startAudioLesson([segments[1]], { ...options, onPhase: vi.fn() })
+    } })
+    completeUtterance(audible()[0])
+    if (action === 'new-lesson') completeUtterance(audible()[1])
+    expect(options.onPhase).toHaveBeenLastCalledWith(action === 'continue' ? 'complete' : 'stopped')
+    expect(vi.getTimerCount()).toBe(0)
+  })
+
   it('示範與解說結束後保留跟讀留白，停止會取消留白與後續完成', async () => {
     const { startAudioLesson } = await import('./audioLessonPlayback')
     options.shadow = true

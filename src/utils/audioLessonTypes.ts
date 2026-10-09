@@ -32,4 +32,5 @@ export type AudioLessonPlaybackOptions = {
   onPhase: (phase: AudioLessonPhase) => void
   onError: (code: string) => void
   onSource?: (source: AudioLessonSource) => void
+  onShadowing?: (continuePlayback: () => void) => void
 }
