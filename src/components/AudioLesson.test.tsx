@@ -64,6 +64,40 @@ afterEach(() => {
 })
 
 describe('共用語音教學介面', () => {
+  it.each([0, 1])('接續播放只檢查選段之後的語音需求，起點 %s', (current) => {
+    installVoices(['en-US'])
+    failedState.current = current
+    const html = render('en')
+    expect(html).toContain('Play from here')
+    expect(html).toMatch(/disabled=""[^>]*>Play lesson<\/button>/)
+    if (current === 0) expect(html).toMatch(/disabled=""[^>]*>Play from here<\/button>/)
+    else expect(html).not.toMatch(/disabled=""[^>]*>Play from here<\/button>/)
+  })
+
+  it('剩餘段落仍須可播；具備音檔時不強制要求系統聲音', () => {
+    installVoices(['ja-JP'])
+    failedState.current = 1
+    expect(render('en')).toMatch(/disabled=""[^>]*>Play from here<\/button>/)
+    const html = render('en', [segments[0], { ...segments[1], audioSrc: 'audio/explanation.mp3' }])
+    expect(html).toContain('Play from here')
+    expect(html).not.toMatch(/disabled=""[^>]*>Play from here<\/button>/)
+    expect(render('en', [])).toMatch(/disabled=""[^>]*>Play from here<\/button>/)
+    expect(render('en', [])).not.toMatch(/<button[^>]*aria-describedby[^>]*>Play from here<\/button>/)
+  })
+
+  it.each([
+    ['en', 'Remaining segments finished', 'Lesson finished'],
+    ['zh-Hant', '剩餘段落播放完成', '導讀完成'],
+  ] as const)('%s 接續播放完成不冒充全課完成', (locale, expected, misleading) => {
+    failedState.phase = 'complete'
+    failedState.playback = { scope: 'remaining', index: 0, total: 1 }
+    failedState.current = 1
+    const html = render(locale)
+    expect(html).toContain(expected)
+    expect(html).not.toContain(misleading)
+    expect(html).toContain(locale === 'en' ? 'Earlier examples and their repeat time are skipped' : '不補播前方原文或其留白')
+  })
+
   it('重新開啟時採用已儲存的慢速與關閉留白偏好', () => {
     vi.stubGlobal('localStorage', { getItem: (key: string) => key === 'e-learning-audio-lesson-v1'
       ? JSON.stringify({ rate: 0.7, shadow: false }) : null })

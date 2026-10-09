@@ -671,6 +671,32 @@ describe('語音教學分段與播放生命週期', () => {
     expect(audible()).toHaveLength(0)
   })
 
+  it('從解說接續到下一組，只為本次播過的原文留白', async () => {
+    const { startAudioLesson } = await import('./audioLessonPlayback')
+    const group: AudioLessonSegment[] = [
+      { id: 'earlier-example', text: 'Skipped example.', lang: 'en-US', kind: 'example' },
+      { id: 'first-explanation', text: 'First explanation.', lang: 'en-US', kind: 'explanation' },
+      { id: 'second-explanation', text: 'Second explanation.', lang: 'en-US', kind: 'explanation' },
+      { id: 'next-example', text: 'Hi.', lang: 'en-US', kind: 'example' },
+      { id: 'next-explanation', text: 'Final explanation.', lang: 'en-US', kind: 'explanation' },
+    ]
+    startAudioLesson(group.slice(1), { ...options, shadow: true })
+    completeUtterance(audible()[0])
+    completeUtterance(audible()[1])
+    expect(audible().map((utterance) => utterance.text)).toEqual(['First explanation.', 'Second explanation.', 'Hi.'])
+    expect(options.onPhase).not.toHaveBeenCalledWith('shadowing')
+    completeUtterance(audible()[2])
+    completeUtterance(audible()[3])
+    expect(audible().map((utterance) => utterance.text)).toEqual(['First explanation.', 'Second explanation.', 'Hi.', 'Final explanation.'])
+    expect(options.onSegment).toHaveBeenLastCalledWith(2)
+    expect(options.onPhase).toHaveBeenLastCalledWith('shadowing')
+    await vi.advanceTimersByTimeAsync(1799)
+    expect(options.onPhase).toHaveBeenLastCalledWith('shadowing')
+    await vi.advanceTimersByTimeAsync(1)
+    expect(options.onPhase).toHaveBeenLastCalledWith('complete')
+    expect(options.onError).not.toHaveBeenCalled()
+  })
+
   it('講解段落不加入跟讀留白，也不在完成後留下中斷訂閱', async () => {
     const { startAudioLesson } = await import('./audioLessonPlayback')
     const { speakEnglish } = await import('./speech')

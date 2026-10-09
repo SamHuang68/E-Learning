@@ -19,7 +19,7 @@ type Props = {
   segments: AudioLessonSegment[]
 }
 
-type PlaybackScope = 'lesson' | 'examples' | 'replay' | 'check'
+type PlaybackScope = 'lesson' | 'remaining' | 'examples' | 'replay' | 'check'
 
 function availableVoices(): SpeechSynthesisVoice[] {
   if (!isSpeechSupported()) return []
@@ -54,6 +54,7 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
   const voiceWaitRef = useRef<AbortController | null>(null)
   const contentKey = JSON.stringify(segments)
   const items = segments.filter((segment) => segment.text.trim() || segment.audioSrc)
+  const remaining = current >= 0 ? items.slice(current) : []
   const examples = items.filter((segment) => segment.kind === 'example')
   const samples = [...new Set(items.map((segment) => segment.lang))].flatMap((lang) => {
     const segment = items.find((item) => item.lang === lang && item.text.trim())
@@ -225,6 +226,8 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
 
   const completeText = playback.scope === 'check'
     ? en ? 'Test events finished; confirm whether you heard it' : '試播事件已結束，請確認是否聽到'
+    : playback.scope === 'remaining'
+      ? en ? 'Remaining segments finished' : '剩餘段落播放完成'
     : playback.scope === 'examples'
     ? en ? 'Examples finished' : '原文示範播放完成'
     : playback.scope === 'replay'
@@ -295,11 +298,14 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
           <button type="button" className="ghost" disabled={current <= 0} onClick={() => selectSegment(current - 1)}>{en ? 'Previous segment' : '上一段'}</button>
           <button type="button" className="ghost" disabled={current >= items.length - 1} onClick={() => selectSegment(current + 1)}>{en ? 'Next segment' : '下一段'}</button>
         </div>
-        <p id={navigationId}>{en ? 'Changing the selection stops playback. Choose a segment, then use Replay current to hear it.' : '更換段落會停止目前播放。選取後按「重播當句」即可播放。'}</p>
+        <p id={navigationId}>{en ? 'Changing the selection stops playback. Replay current plays one segment; Play from here continues to the end. Earlier examples and their repeat time are skipped.' : '更換段落會停止目前播放。「重播當句」播放單段；「從此段播放」接續到課尾，不補播前方原文或其留白。'}</p>
       </div> : null}
       <div className="audio-lesson-actions" aria-describedby={statusId}>
         <button type="button" className="primary-btn inline" disabled={!canPlay(items)} onClick={() => play(items, 'lesson')}>
           {en ? 'Play lesson' : '播放導讀'}
+        </button>
+        <button type="button" className="ghost" aria-describedby={items.length ? navigationId : undefined} disabled={!canPlay(remaining)} onClick={() => play(remaining, 'remaining')}>
+          {en ? 'Play from here' : '從此段播放'}
         </button>
         <button type="button" className="ghost" disabled={!canPlay(examples)} onClick={() => play(examples, 'examples')}>
           {en ? 'Play examples' : '聽原文示範'}
