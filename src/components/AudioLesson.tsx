@@ -49,6 +49,7 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
   const [diagnostic, setDiagnostic] = useState<AudioCheck | null>(null)
   const [checkText, setCheckText] = useState<string | null>(null)
   const stopRef = useRef<(() => void) | null>(null)
+  const continueRef = useRef<(() => void) | null>(null)
   const runRef = useRef(0)
   const mountedRef = useRef(false)
   const voiceWaitRef = useRef<AbortController | null>(null)
@@ -72,6 +73,7 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
 
   function stop() {
     runRef.current += 1
+    continueRef.current = null
     stopRef.current?.()
     stopRef.current = null
     setPhase('stopped')
@@ -109,6 +111,7 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
 
   useEffect(() => {
     runRef.current += 1
+    continueRef.current = null
     stopRef.current?.()
     stopRef.current = null
     setPhase('idle')
@@ -120,6 +123,7 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
     const hidden = () => {
       if (!document.hidden) return
       runRef.current += 1
+      continueRef.current = null
       stopRef.current?.()
       stopRef.current = null
       setPhase((previous) => previous === 'preparing' || previous === 'playing' || previous === 'shadowing' ? 'stopped' : previous)
@@ -129,6 +133,7 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
     document.addEventListener('visibilitychange', hidden)
     return () => {
       runRef.current += 1
+      continueRef.current = null
       stopRef.current?.()
       stopRef.current = null
       document.removeEventListener('visibilitychange', hidden)
@@ -151,6 +156,7 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
     if (!canPlay(selection)) return
     runRef.current += 1
     const run = runRef.current
+    continueRef.current = null
     stopRef.current?.()
     stopRef.current = null
     setError('')
@@ -162,6 +168,9 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
     const ownedStop = startAudioLesson(selection, {
       rate,
       shadow: scope === 'check' ? false : shadow,
+      onShadowing: (continuePlayback) => {
+        if (run === runRef.current) continueRef.current = continuePlayback
+      },
       onSource: (source) => {
         if (run !== runRef.current) return
         setDiagnostic((previous) => previous ? { ...previous, source } : null)
@@ -174,6 +183,7 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
       },
       onPhase: (next) => {
         if (run !== runRef.current) return
+        if (next !== 'shadowing') continueRef.current = null
         setPhase(next)
         setDiagnostic((previous) => previous ? recordCheckPhase(previous, next) : null)
       },
@@ -316,10 +326,22 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
         <button type="button" className="ghost" disabled={!active} onClick={stop}>
           {en ? 'Stop' : '停止'}
         </button>
+        <button type="button" className="ghost" disabled={phase !== 'shadowing'} onClick={() => {
+          const continuePlayback = continueRef.current
+          continueRef.current = null
+          continuePlayback?.()
+        }}>
+          {en ? 'Continue now' : '立即接續'}
+        </button>
       </div>
       <p id={statusId} className="audio-lesson-status" role="status" aria-live="polite" aria-atomic="true">
         {phaseText}{active && playback.total ? ` · ${playback.index + 1}/${playback.total}` : ''}
       </p>
+      {phase === 'shadowing' ? <p className="audio-lesson-preferences">
+        {en
+          ? 'The lesson continues automatically after repeat time. Choose Continue now when you are ready. The last group finishes playback.'
+          : '留白結束後會自動接續；練習完成可按「立即接續」。最後一組會結束播放。'}
+      </p> : null}
       {playback.total > 0 && items[current] ? (
         <div className="audio-lesson-current">
           <p className="audio-lesson-current-label">

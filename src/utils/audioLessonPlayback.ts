@@ -74,11 +74,17 @@ export function startAudioLesson(
         if (!active) return
         const duration = Math.max(1800, example.text.trim().length *
           (example.lang === 'en-US' ? 90 : 180) / options.rate + 600)
-        shadowTimer = window.setTimeout(() => {
+        let consumed = false
+        const continuePlayback = () => {
+          if (!current() || consumed) return
+          consumed = true
+          window.clearTimeout(shadowTimer)
           shadowTimer = 0
           exampleIndex = -1
           play(index + 1)
-        }, duration)
+        }
+        shadowTimer = window.setTimeout(continuePlayback, duration)
+        options.onShadowing?.(continuePlayback)
       } else play(index + 1)
     }
     const startTts = (fallbackReason?: string) => {
