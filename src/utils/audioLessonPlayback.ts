@@ -21,6 +21,8 @@ export function startAudioLesson(
   let stopSegment: (() => void) | undefined
   let shadowTimer = 0
   let exampleIndex = -1
+  let round = 1
+  const repeatCount = options.repeatCount === 2 || options.repeatCount === 3 ? options.repeatCount : 1
   let segmentRun = 0
   let ownSpeechRequest = false
   let unsubscribeSpeech: (() => void) | undefined
@@ -48,7 +50,12 @@ export function startAudioLesson(
       finish('complete')
       return
     }
-    if (segment.kind === 'example') exampleIndex = index
+    if (segment.kind === 'example') {
+      if (exampleIndex !== index) round = 1
+      exampleIndex = index
+      options.onRound?.(round, repeatCount)
+      if (!active) return
+    }
     options.onSegment(index)
     if (!active) return
     options.onPhase('preparing')
@@ -66,8 +73,18 @@ export function startAudioLesson(
       stopSegment = undefined
       const next = segments[index + 1]
       const example = segments[exampleIndex]
+      const groupEnded = example && (!next || next.kind === 'example')
+      const advance = () => {
+        if (groupEnded && round < repeatCount) {
+          round += 1
+          play(exampleIndex)
+        } else {
+          if (groupEnded) exampleIndex = -1
+          play(index + 1)
+        }
+      }
       // 示範與後續連續解說為同一組；組尾才回到示範原文供跟讀。
-      if (options.shadow && example && (!next || next.kind === 'example')) {
+      if (options.shadow && groupEnded) {
         options.onSegment(exampleIndex)
         if (!active) return
         options.onPhase('shadowing')
@@ -81,13 +98,12 @@ export function startAudioLesson(
           consumed = true
           window.clearTimeout(shadowTimer)
           shadowTimer = 0
-          exampleIndex = -1
-          play(index + 1)
+          advance()
         }
         const deadline = performance.now() + duration
         shadowTimer = window.setTimeout(continuePlayback, duration)
         options.onShadowing?.(continuePlayback, deadline)
-      } else play(index + 1)
+      } else advance()
     }
     const startTts = (fallbackReason?: string) => {
       if (!current()) return

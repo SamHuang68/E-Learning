@@ -19,27 +19,36 @@ afterEach(() => {
 })
 
 describe('語音教學本機偏好', () => {
+  it('既有三欄偏好保留並補一次練習，讀取不寫回', () => {
+    const previous = '{"rate":0.7,"shadow":false,"shadowLength":"extended"}'
+    values.set(key, previous)
+    expect(loadAudioLessonPreferences()).toEqual({ rate: 0.7, shadow: false, shadowLength: 'extended', repeatCount: 1 })
+    expect(values.get(key)).toBe(previous)
+  })
+
   it('舊版兩欄偏好沿用原值並補標準留白，不在讀取時改寫', () => {
     const previous = '{"rate":0.7,"shadow":false}'
     values.set(key, previous)
-    expect(loadAudioLessonPreferences()).toEqual({ rate: 0.7, shadow: false, shadowLength: 'standard' })
+    expect(loadAudioLessonPreferences()).toEqual({ rate: 0.7, shadow: false, shadowLength: 'standard', repeatCount: 1 })
     expect(values.get(key)).toBe(previous)
   })
 
   it('初次使用維持正常語速與留白，不在讀取時寫入', () => {
-    expect(loadAudioLessonPreferences()).toEqual({ rate: 0.95, shadow: true, shadowLength: 'standard' })
+    expect(loadAudioLessonPreferences()).toEqual({ rate: 0.95, shadow: true, shadowLength: 'standard', repeatCount: 1 })
     expect(values.size).toBe(0)
   })
 
   it.each([
-    { rate: 0.95 as const, shadow: true, shadowLength: 'standard' as const },
-    { rate: 0.95 as const, shadow: false, shadowLength: 'standard' as const },
-    { rate: 0.7 as const, shadow: true, shadowLength: 'standard' as const },
-    { rate: 0.7 as const, shadow: false, shadowLength: 'standard' as const },
-    { rate: 0.95 as const, shadow: true, shadowLength: 'extended' as const },
-    { rate: 0.95 as const, shadow: false, shadowLength: 'extended' as const },
-    { rate: 0.7 as const, shadow: true, shadowLength: 'extended' as const },
-    { rate: 0.7 as const, shadow: false, shadowLength: 'extended' as const },
+    { rate: 0.95 as const, shadow: true, shadowLength: 'standard' as const, repeatCount: 1 as const },
+    { rate: 0.95 as const, shadow: false, shadowLength: 'standard' as const, repeatCount: 1 as const },
+    { rate: 0.7 as const, shadow: true, shadowLength: 'standard' as const, repeatCount: 1 as const },
+    { rate: 0.7 as const, shadow: false, shadowLength: 'standard' as const, repeatCount: 1 as const },
+    { rate: 0.95 as const, shadow: true, shadowLength: 'extended' as const, repeatCount: 1 as const },
+    { rate: 0.95 as const, shadow: false, shadowLength: 'extended' as const, repeatCount: 1 as const },
+    { rate: 0.7 as const, shadow: true, shadowLength: 'extended' as const, repeatCount: 1 as const },
+    { rate: 0.7 as const, shadow: false, shadowLength: 'extended' as const, repeatCount: 1 as const },
+    { rate: 0.95 as const, shadow: true, shadowLength: 'standard' as const, repeatCount: 2 as const },
+    { rate: 0.7 as const, shadow: false, shadowLength: 'extended' as const, repeatCount: 3 as const },
   ])('只保存合法偏好，不通知學習進度同步：%j', (preferences) => {
     const notify = vi.fn()
     setProgressChangeHook(notify)
@@ -54,30 +63,30 @@ describe('語音教學本機偏好', () => {
   it.each(['{', 'null', '[]', '"慢速"', 'false', '{"rate":"0.7","shadow":"false"}', '{"rate":9,"shadow":0}'])
     ('忽略壞 JSON、錯誤型別與範圍外數值：%s', (raw) => {
       values.set(key, raw)
-      expect(loadAudioLessonPreferences()).toEqual({ rate: 0.95, shadow: true, shadowLength: 'standard' })
+      expect(loadAudioLessonPreferences()).toEqual({ rate: 0.95, shadow: true, shadowLength: 'standard', repeatCount: 1 })
       expect(values.get(key)).toBe(raw)
     })
 
   it('逐欄保留有效值，不因另一欄無效而全部遺失', () => {
     values.set(key, '{"rate":0.7,"shadow":"false"}')
-    expect(loadAudioLessonPreferences()).toEqual({ rate: 0.7, shadow: true, shadowLength: 'standard' })
+    expect(loadAudioLessonPreferences()).toEqual({ rate: 0.7, shadow: true, shadowLength: 'standard', repeatCount: 1 })
     values.set(key, '{"rate":-1,"shadow":false}')
-    expect(loadAudioLessonPreferences()).toEqual({ rate: 0.95, shadow: false, shadowLength: 'standard' })
+    expect(loadAudioLessonPreferences()).toEqual({ rate: 0.95, shadow: false, shadowLength: 'standard', repeatCount: 1 })
   })
 
   it.each([null, false, 2, 'long', 'EXTENDED'])('無效留白長度回標準但不丟棄其他偏好：%s', (shadowLength) => {
     values.set(key, JSON.stringify({ rate: 0.7, shadow: false, shadowLength }))
-    expect(loadAudioLessonPreferences()).toEqual({ rate: 0.7, shadow: false, shadowLength: 'standard' })
+    expect(loadAudioLessonPreferences()).toEqual({ rate: 0.7, shadow: false, shadowLength: 'standard', repeatCount: 1 })
   })
 
   it('舊呼叫端仍可只儲存語速與留白開關', () => {
     expect(saveAudioLessonPreferences({ rate: 0.7, shadow: false })).toBe(true)
-    expect(JSON.parse(values.get(key)!)).toEqual({ rate: 0.7, shadow: false, shadowLength: 'standard' })
+    expect(JSON.parse(values.get(key)!)).toEqual({ rate: 0.7, shadow: false, shadowLength: 'standard', repeatCount: 1 })
   })
 
   it('儲存不可用時回預設，寫入如實回報失敗', () => {
     vi.stubGlobal('localStorage', undefined)
-    expect(loadAudioLessonPreferences()).toEqual({ rate: 0.95, shadow: true, shadowLength: 'standard' })
+    expect(loadAudioLessonPreferences()).toEqual({ rate: 0.95, shadow: true, shadowLength: 'standard', repeatCount: 1 })
     expect(saveAudioLessonPreferences({ rate: 0.7, shadow: false })).toBe(false)
   })
 
@@ -86,7 +95,14 @@ describe('語音教學本機偏好', () => {
       getItem: () => { throw new Error('受控讀取失敗') },
       setItem: () => { throw new Error('受控寫入失敗') },
     })
-    expect(loadAudioLessonPreferences()).toEqual({ rate: 0.95, shadow: true, shadowLength: 'standard' })
+    expect(loadAudioLessonPreferences()).toEqual({ rate: 0.95, shadow: true, shadowLength: 'standard', repeatCount: 1 })
     expect(saveAudioLessonPreferences({ rate: 0.7, shadow: false })).toBe(false)
+  })
+
+  it.each([null, false, 0, 4, 1.5, '2'])('無效次數回一次，不丟棄既有偏好：%s', (repeatCount) => {
+    const previous = JSON.stringify({ rate: 0.7, shadow: false, shadowLength: 'extended', repeatCount })
+    values.set(key, previous)
+    expect(loadAudioLessonPreferences()).toEqual({ rate: 0.7, shadow: false, shadowLength: 'extended', repeatCount: 1 })
+    expect(values.get(key)).toBe(previous)
   })
 })

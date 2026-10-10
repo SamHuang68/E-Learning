@@ -494,6 +494,26 @@ describe('語音教學分段與播放生命週期', () => {
     expect(options.onError).not.toHaveBeenCalled()
   })
 
+  it.each([2, 3] as const)('每組練習 %s 次後才前進下一組，不省略組內解說', async (repeatCount) => {
+    const { startAudioLesson } = await import('./audioLessonPlayback')
+    const onRound = vi.fn()
+    const next = { ...segments[0], id: 'next', text: 'Next example.' }
+    startAudioLesson([...segments, next], { ...options, repeatCount, onRound })
+    for (let round = 1; round <= repeatCount; round += 1) {
+      completeUtterance(audible()[(round - 1) * 2])
+      completeUtterance(audible()[(round - 1) * 2 + 1])
+      const expected = Array.from({ length: round }, () => segments.map((item) => item.text)).flat()
+      expect(audible().map((item) => item.text)).toEqual([...expected, round < repeatCount ? segments[0].text : next.text])
+    }
+    expect(onRound.mock.calls).toEqual([
+      ...Array.from({ length: repeatCount }, (_, index) => [index + 1, repeatCount]),
+      [1, repeatCount],
+    ])
+    for (let round = 0; round < repeatCount; round += 1) completeUtterance(audible()[repeatCount * 2 + round])
+    expect(options.onPhase).toHaveBeenLastCalledWith('complete')
+    expect(vi.getTimerCount()).toBe(0)
+  })
+
   it.each([
     ['Hi.', 'en-US', 0.8, 1800],
     ['1234567890', 'en-US', 0.5, 2400],
@@ -509,6 +529,93 @@ describe('語音教學分段與播放生命週期', () => {
     expect(options.onPhase).toHaveBeenLastCalledWith('shadowing')
     await vi.advanceTimersByTimeAsync(1)
     expect(options.onPhase).toHaveBeenLastCalledWith('complete')
+    expect(vi.getTimerCount()).toBe(0)
+  })
+
+  it('兩輪多段解說逐輪留白，舊接續函式不能越過新一輪', async () => {
+    const { startAudioLesson } = await import('./audioLessonPlayback')
+    const group: AudioLessonSegment[] = [
+      { ...segments[0], text: 'Hi.' }, segments[1],
+      { ...segments[1], id: 'more', text: '補充解說。' },
+      { ...segments[0], id: 'next', text: 'Next.' },
+    ]
+    const onShadowing = vi.fn()
+    const onRound = vi.fn()
+    const stop = startAudioLesson(group, { ...options, shadow: true, repeatCount: 2, onRound, onShadowing })
+    completeUtterance(audible()[0])
+    completeUtterance(audible()[1])
+    expect(onShadowing).not.toHaveBeenCalled()
+    completeUtterance(audible()[2])
+    const oldContinue = onShadowing.mock.calls[0][0] as () => void
+    oldContinue()
+    oldContinue()
+    expect(audible().map((item) => item.text)).toEqual([...group.slice(0, 3).map((item) => item.text), 'Hi.'])
+    for (let index = 3; index < 6; index += 1) completeUtterance(audible()[index])
+    expect(onShadowing).toHaveBeenCalledTimes(2)
+    oldContinue()
+    expect(audible()).toHaveLength(6)
+    await vi.advanceTimersByTimeAsync(1799)
+    expect(options.onPhase).toHaveBeenLastCalledWith('shadowing')
+    await vi.advanceTimersByTimeAsync(1)
+    expect(audible()[6].text).toBe('Next.')
+    expect(onRound.mock.calls).toEqual([[1, 2], [2, 2], [1, 2]])
+    stop()
+    expect(vi.getTimerCount()).toBe(0)
+  })
+
+  it('三次設定不循環前導解說，只有後方完整組練習三次', async () => {
+    const { startAudioLesson } = await import('./audioLessonPlayback')
+    const group: AudioLessonSegment[] = [
+      { ...segments[1], text: '第一段解說。' },
+      { ...segments[1], id: 'leading', text: '第二段解說。' },
+      { ...segments[0], text: 'Hi.' }, segments[1],
+    ]
+    const onShadowing = vi.fn()
+    const onRound = vi.fn()
+    startAudioLesson(group, { ...options, shadow: true, repeatCount: 3, onRound, onShadowing })
+    completeUtterance(audible()[0])
+    completeUtterance(audible()[1])
+    expect(onShadowing).not.toHaveBeenCalled()
+    for (let round = 0; round < 3; round += 1) {
+      completeUtterance(audible()[2 + round * 2])
+      completeUtterance(audible()[3 + round * 2])
+      onShadowing.mock.calls[round][0]()
+    }
+    expect(audible().map((item) => item.text)).toEqual([
+      group[0].text, group[1].text, ...Array.from({ length: 3 }, () => ['Hi.', segments[1].text]).flat(),
+    ])
+    expect(onRound.mock.calls).toEqual([[1, 3], [2, 3], [3, 3]])
+    expect(options.onPhase).toHaveBeenLastCalledWith('complete')
+    expect(vi.getTimerCount()).toBe(0)
+  })
+
+  it.each(['stop', 'error', 'new-lesson'] as const)('第二輪 %s 後舊回呼不能復活循環', async (action) => {
+    const { startAudioLesson } = await import('./audioLessonPlayback')
+    const stop = startAudioLesson([segments[0]], { ...options, repeatCount: 3 })
+    completeUtterance(audible()[0])
+    const second = audible()[1]
+    startUtterance(second)
+    const oldEnd = second.onend
+    const oldError = second.onerror
+    const nextOptions = { ...options, onPhase: vi.fn() }
+    if (action === 'stop') stop()
+    else if (action === 'error') oldError?.({ error: 'synthesis-failed' })
+    else {
+      startAudioLesson([segments[1]], nextOptions)
+      startUtterance(audible()[2])
+    }
+    oldEnd?.()
+    oldError?.({ error: 'synthesis-failed' })
+    await vi.advanceTimersByTimeAsync(2000)
+    expect(audible()).toHaveLength(action === 'new-lesson' ? 3 : 2)
+    expect(options.onPhase).toHaveBeenLastCalledWith(action === 'error' ? 'error' : 'stopped')
+    if (action === 'error') expect(options.onError).toHaveBeenCalledTimes(1)
+    else expect(options.onError).not.toHaveBeenCalled()
+    if (action === 'new-lesson') {
+      expect(nextOptions.onPhase).toHaveBeenLastCalledWith('playing')
+      endUtterance(audible()[2])
+      expect(nextOptions.onPhase).toHaveBeenLastCalledWith('complete')
+    }
     expect(vi.getTimerCount()).toBe(0)
   })
 

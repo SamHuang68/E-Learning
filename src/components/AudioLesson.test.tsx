@@ -70,6 +70,16 @@ afterEach(() => {
 })
 
 describe('共用語音教學介面', () => {
+  it.each(['zh-Hant', 'en'] as const)('%s 每組練習預設一次並提供二次與三次', (locale) => {
+    const html = render(locale)
+    const label = locale === 'en' ? 'Rounds per group' : '每組練習'
+    expect(html).toContain(`<label>${label}<select`)
+    expect(html).toContain('<option value="1" selected="">1')
+    expect(html).toContain('<option value="2">2')
+    expect(html).toContain('<option value="3">3')
+    expect(html).toContain(locale === 'en' ? 'Replay current and audio checks always play once.' : '重播當句與試播固定一次。')
+  })
+
   it.each(['zh-Hant', 'en'] as const)('%s 留白長度預設標準並明示加長倍率', (locale) => {
     const html = render(locale)
     expect(html).toContain(locale === 'en' ? 'Repeat time' : '留白長度')
