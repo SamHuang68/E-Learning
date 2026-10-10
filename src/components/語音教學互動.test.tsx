@@ -10,7 +10,8 @@ import { AudioLesson } from './AudioLesson'
 
 // 掛載真實 React 與播放器；只控制原生語音事件和時間，不冒充瀏覽器聲音驗收。
 class ControlledUtterance {
-  constructor(public text: string) {}
+  text: string
+  constructor(text: string) { this.text = text }
   lang = ''
   rate = 1
   pitch = 1
