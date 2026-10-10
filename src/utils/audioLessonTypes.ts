@@ -2,6 +2,8 @@ import type { SpeechVoiceSelection } from './speech'
 
 export type AudioLessonLanguage = 'ja-JP' | 'en-US' | 'zh-TW'
 
+export type AudioLessonShadowLength = 'standard' | 'extended'
+
 export type AudioLessonSource = {
   kind: 'clip' | 'speech'
   lang: AudioLessonLanguage
@@ -28,6 +30,7 @@ export type AudioLessonPhase =
 export type AudioLessonPlaybackOptions = {
   rate: number
   shadow: boolean
+  shadowLength?: AudioLessonShadowLength
   onSegment: (index: number) => void
   onPhase: (phase: AudioLessonPhase) => void
   onError: (code: string) => void

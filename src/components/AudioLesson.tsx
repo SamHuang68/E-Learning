@@ -62,7 +62,7 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
   const [current, setCurrent] = useState(0)
   const [playback, setPlayback] = useState({ scope: 'lesson' as PlaybackScope, index: 0, total: 0 })
   const [preferences, setPreferences] = useState(loadAudioLessonPreferences)
-  const { rate, shadow } = preferences
+  const { rate, shadow, shadowLength } = preferences
   const [preferencesSaved, setPreferencesSaved] = useState(true)
   const [error, setError] = useState('')
   const [diagnostic, setDiagnostic] = useState<AudioCheck | null>(null)
@@ -192,6 +192,7 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
     const ownedStop = startAudioLesson(selection, {
       rate,
       shadow: scope === 'check' ? false : shadow,
+      shadowLength,
       onShadowing: (continuePlayback, deadline) => {
         if (run !== runRef.current) return
         continueRef.current = continuePlayback
@@ -318,6 +319,15 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
             changePreferences({ ...preferences, shadow: event.target.checked })
           }} />
           {en ? 'Leave time to repeat' : '留白跟讀'}
+        </label>
+        <label>
+          {en ? 'Repeat time' : '留白長度'}
+          <select value={shadowLength} disabled={!shadow} onChange={(event) => {
+            changePreferences({ ...preferences, shadowLength: event.target.value === 'extended' ? 'extended' : 'standard' })
+          }}>
+            <option value="standard">{en ? 'Standard' : '標準'}</option>
+            <option value="extended">{en ? 'Longer (2×)' : '加長（2 倍）'}</option>
+          </select>
         </label>
       </div>
       <p className="audio-lesson-preferences">

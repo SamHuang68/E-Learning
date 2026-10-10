@@ -70,6 +70,24 @@ afterEach(() => {
 })
 
 describe('共用語音教學介面', () => {
+  it.each(['zh-Hant', 'en'] as const)('%s 留白長度預設標準並明示加長倍率', (locale) => {
+    const html = render(locale)
+    expect(html).toContain(locale === 'en' ? 'Repeat time' : '留白長度')
+    expect(html).toMatch(new RegExp(`<option value="standard" selected="">${locale === 'en' ? 'Standard' : '標準'}</option>`))
+    expect(html).toContain(locale === 'en' ? 'Longer (2×)' : '加長（2 倍）')
+  })
+
+  it.each([true, false])('留白開關 %s 保留加長設定，關閉時選單停用而不隱藏', (shadow) => {
+    vi.stubGlobal('localStorage', { getItem: (key: string) => key === 'e-learning-audio-lesson-v1'
+      ? JSON.stringify({ rate: 0.7, shadow, shadowLength: 'extended' }) : null })
+    const html = render('en')
+    const control = html.match(/<label>Repeat time<select[^>]*>[\s\S]*?<\/select><\/label>/)?.[0]
+    expect(control).toBeDefined()
+    expect(control).toContain('<option value="extended" selected="">Longer (2×)</option>')
+    expect(control?.includes('disabled=""')).toBe(!shadow)
+    expect(html).toMatch(/<option value="0.7" selected="">Slow<\/option>/)
+  })
+
   it.each([
     ['zh-Hant', 2800, '留白剩餘約 2 秒'],
     ['en', 3400, 'About 3 seconds left to repeat'],
