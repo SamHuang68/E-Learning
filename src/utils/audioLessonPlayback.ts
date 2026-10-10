@@ -73,7 +73,8 @@ export function startAudioLesson(
         options.onPhase('shadowing')
         if (!active) return
         const duration = Math.max(1800, example.text.trim().length *
-          (example.lang === 'en-US' ? 90 : 180) / options.rate + 600)
+          (example.lang === 'en-US' ? 90 : 180) / options.rate + 600) *
+          (options.shadowLength === 'extended' ? 2 : 1)
         let consumed = false
         const continuePlayback = () => {
           if (!current() || consumed) return

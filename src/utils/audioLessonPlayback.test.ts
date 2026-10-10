@@ -512,11 +512,31 @@ describe('語音教學分段與播放生命週期', () => {
     expect(vi.getTimerCount()).toBe(0)
   })
 
-  it('留白立即接續只前進一次，並取消該次自動接續期限', async () => {
+  it.each([
+    ['Hi.', 'en-US', 0.95, 3600],
+    ['12345678901234', 'en-US', 0.7, 4800],
+    ['12345678901234', 'ja-JP', 0.7, 8400],
+  ] as const)('加長留白使用標準兩倍的同一期限：%s %s %s', async (text, lang, rate, duration) => {
+    const { startAudioLesson } = await import('./audioLessonPlayback')
+    vi.spyOn(performance, 'now').mockReturnValue(1000)
+    const onShadowing = vi.fn()
+    startAudioLesson([{ ...segments[0], text, lang }], {
+      ...options, rate, shadow: true, shadowLength: 'extended', onShadowing,
+    })
+    completeUtterance(audible()[0])
+    expect(onShadowing).toHaveBeenCalledWith(expect.any(Function), 1000 + duration)
+    await vi.advanceTimersByTimeAsync(duration - 1)
+    expect(options.onPhase).toHaveBeenLastCalledWith('shadowing')
+    await vi.advanceTimersByTimeAsync(1)
+    expect(options.onPhase).toHaveBeenLastCalledWith('complete')
+    expect(vi.getTimerCount()).toBe(0)
+  })
+
+  it.each(['standard', 'extended'] as const)('%s 留白立即接續只前進一次，並取消該次自動接續期限', async (shadowLength) => {
     const { startAudioLesson } = await import('./audioLessonPlayback')
     const onShadowing = vi.fn()
     const next = { ...segments[0], id: 'next', text: 'Next example.' }
-    startAudioLesson([...segments, next], { ...options, shadow: true, onShadowing })
+    startAudioLesson([...segments, next], { ...options, shadow: true, shadowLength, onShadowing })
     expect(onShadowing).not.toHaveBeenCalled()
     completeUtterance(audible()[0])
     completeUtterance(audible()[1])
@@ -533,15 +553,17 @@ describe('語音教學分段與播放生命週期', () => {
     expect(options.onPhase).toHaveBeenLastCalledWith('shadowing')
     onShadowing.mock.calls[1][0]()
     expect(options.onPhase).toHaveBeenLastCalledWith('complete')
-    await vi.advanceTimersByTimeAsync(10000)
+    await vi.advanceTimersByTimeAsync(20000)
     expect(audible()).toHaveLength(3)
     expect(vi.getTimerCount()).toBe(0)
   })
 
-  it.each(['stop', 'hidden', 'pagehide', 'new-lesson', 'new-speech'] as const)('留白接續權限在 %s 後失效', async (action) => {
+  it.each((['standard', 'extended'] as const).flatMap((shadowLength) =>
+    (['stop', 'hidden', 'pagehide', 'new-lesson', 'new-speech'] as const).map((action) => ({ shadowLength, action })),
+  ))('$shadowLength 留白接續權限在 $action 後失效', async ({ shadowLength, action }) => {
     const { startAudioLesson } = await import('./audioLessonPlayback')
     const onShadowing = vi.fn()
-    const stop = startAudioLesson([...segments, { ...segments[0], id: 'next' }], { ...options, shadow: true, onShadowing })
+    const stop = startAudioLesson([...segments, { ...segments[0], id: 'next' }], { ...options, shadow: true, shadowLength, onShadowing })
     completeUtterance(audible()[0])
     completeUtterance(audible()[1])
     const continueNow = onShadowing.mock.calls[0][0] as () => void
@@ -558,7 +580,7 @@ describe('語音教學分段與播放生命週期', () => {
     const count = audible().length
     if (count > 2) completeUtterance(audible()[2])
     continueNow()
-    await vi.advanceTimersByTimeAsync(10000)
+    await vi.advanceTimersByTimeAsync(20000)
     expect(audible()).toHaveLength(count)
     expect(options.onPhase).toHaveBeenLastCalledWith('stopped')
     expect(vi.getTimerCount()).toBe(0)
