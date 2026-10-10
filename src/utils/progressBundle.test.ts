@@ -42,6 +42,7 @@ describe('progress bundle', () => {
   it.each([
     { rate: 0.7, shadow: false },
     { rate: 0.7, shadow: false, shadowLength: 'extended' },
+    { rate: 0.7, shadow: false, shadowLength: 'extended', repeatCount: 3 },
   ])('語音偏好不隨進度匯出、匯入或清除：%j', (preference) => {
     const preferences = JSON.stringify(preference)
     localStorage.setItem(LOCAL_PREFERENCE_KEYS.audioLesson, preferences)

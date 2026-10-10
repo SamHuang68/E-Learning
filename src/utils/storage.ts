@@ -3,7 +3,7 @@ import { LEARN_ORDER, type KanaScript, type LearnRowId } from '../data/kana'
 import { defaultItemState, type ItemState } from '../engine/srs'
 import type { ToeicBuilderConfig, ToeicCertificate } from '../toeic/data/certificates'
 import { LOCAL_PREFERENCE_KEYS, PROGRESS_STORAGE_KEYS } from './progressKeys'
-import type { AudioLessonShadowLength } from './audioLessonTypes'
+import type { AudioLessonRepeatCount, AudioLessonShadowLength } from './audioLessonTypes'
 import {
   LEARNING_EVENT_SCHEMA_VERSION,
   PROGRESS_BUNDLE_VERSION,
@@ -699,6 +699,7 @@ export type AudioLessonPreferences = {
   rate: 0.95 | 0.7
   shadow: boolean
   shadowLength: AudioLessonShadowLength
+  repeatCount: AudioLessonRepeatCount
 }
 
 function normalizeAudioLessonPreferences(value: unknown): AudioLessonPreferences {
@@ -708,6 +709,7 @@ function normalizeAudioLessonPreferences(value: unknown): AudioLessonPreferences
     rate: candidate.rate === 0.7 ? 0.7 : 0.95,
     shadow: typeof candidate.shadow === 'boolean' ? candidate.shadow : true,
     shadowLength: candidate.shadowLength === 'extended' ? 'extended' : 'standard',
+    repeatCount: candidate.repeatCount === 2 || candidate.repeatCount === 3 ? candidate.repeatCount : 1,
   }
 }
 
@@ -719,7 +721,9 @@ export function loadAudioLessonPreferences(): AudioLessonPreferences {
   }
 }
 
-export function saveAudioLessonPreferences(preferences: Omit<AudioLessonPreferences, 'shadowLength'> & { shadowLength?: AudioLessonPreferences['shadowLength'] }): boolean {
+export function saveAudioLessonPreferences(
+  preferences: Pick<AudioLessonPreferences, 'rate' | 'shadow'> & Partial<Pick<AudioLessonPreferences, 'shadowLength' | 'repeatCount'>>,
+): boolean {
   try {
     // 僅保存本機偏好，不觸發學習進度同步。
     localStorage.setItem(LOCAL_PREFERENCE_KEYS.audioLesson, JSON.stringify(normalizeAudioLessonPreferences(preferences)))

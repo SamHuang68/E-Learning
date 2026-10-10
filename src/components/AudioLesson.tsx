@@ -62,7 +62,8 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
   const [current, setCurrent] = useState(0)
   const [playback, setPlayback] = useState({ scope: 'lesson' as PlaybackScope, index: 0, total: 0 })
   const [preferences, setPreferences] = useState(loadAudioLessonPreferences)
-  const { rate, shadow, shadowLength } = preferences
+  const { rate, shadow, shadowLength, repeatCount } = preferences
+  const [round, setRound] = useState({ current: 1, total: 1 })
   const [preferencesSaved, setPreferencesSaved] = useState(true)
   const [error, setError] = useState('')
   const [diagnostic, setDiagnostic] = useState<AudioCheck | null>(null)
@@ -95,6 +96,7 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
     runRef.current += 1
     continueRef.current = null
     setShadowTiming({ deadline: 0 })
+    setRound({ current: 1, total: 1 })
     stopRef.current?.()
     stopRef.current = null
     setPhase('stopped')
@@ -138,6 +140,7 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
     stopRef.current = null
     setPhase('idle')
     setCurrent(0)
+    setRound({ current: 1, total: 1 })
     setPlayback({ scope: 'lesson', index: 0, total: 0 })
     setError('')
     setDiagnostic(null)
@@ -185,6 +188,7 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
     stopRef.current = null
     setError('')
     setPlayback({ scope, index: 0, total: selection.length })
+    setRound({ current: 1, total: 1 })
     setPhase('preparing')
     setCheckText(scope === 'check' ? selection[0].text : null)
     setDiagnostic({ startedAt: Date.now(), rate, isCheck: scope === 'check', phase: 'preparing',
@@ -193,6 +197,11 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
       rate,
       shadow: scope === 'check' ? false : shadow,
       shadowLength,
+      repeatCount: scope === 'check' || scope === 'replay' ? 1 : repeatCount,
+      onRound: (current, total) => {
+        if (run !== runRef.current) return
+        setRound({ current, total })
+      },
       onShadowing: (continuePlayback, deadline) => {
         if (run !== runRef.current) return
         continueRef.current = continuePlayback
@@ -329,9 +338,22 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
             <option value="extended">{en ? 'Longer (2×)' : '加長（2 倍）'}</option>
           </select>
         </label>
+        <label>
+          {en ? 'Rounds per group' : '每組練習'}
+          <select value={repeatCount} onChange={(event) => {
+            changePreferences({ ...preferences, repeatCount: event.target.value === '3' ? 3 : event.target.value === '2' ? 2 : 1 })
+          }}>
+            <option value={1}>{en ? '1 round' : '1 次'}</option>
+            <option value={2}>{en ? '2 rounds' : '2 次'}</option>
+            <option value={3}>{en ? '3 rounds' : '3 次'}</option>
+          </select>
+        </label>
       </div>
       <p className="audio-lesson-preferences">
         {en ? 'Preferences stay in this browser; they are not included in progress exports or sync.' : '偏好僅限本瀏覽器，不會隨學習進度匯出或同步。'}
+      </p>
+      <p className="audio-lesson-preferences">
+        {en ? 'Each group includes an example and its explanations. Replay current and audio checks always play once.' : '每組包含原文示範及其解說。重播當句與試播固定一次。'}
       </p>
       {!preferencesSaved ? <p className="audio-lesson-notice" role="alert">
         {en ? 'Preferences could not be saved. These settings still apply here, but reopening may restore the previous values.' : '偏好未能儲存。此畫面仍使用新設定，重新開啟可能回復舊值。'}
@@ -375,11 +397,15 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
       </div>
       <p id={statusId} className="audio-lesson-status" role="status" aria-live="polite" aria-atomic="true">
         {phaseText}{active && playback.total ? ` · ${playback.index + 1}/${playback.total}` : ''}
+        {active && round.total > 1 ? en ? ` · Round ${round.current} of ${round.total}` : ` · 本組第 ${round.current}/${round.total} 次` : ''}
       </p>
       {phase === 'shadowing' && shadowTiming.deadline > 0
         ? <ShadowCountdown key={shadowTiming.deadline} deadline={shadowTiming.deadline} en={en} /> : null}
       {phase === 'shadowing' ? <p className="audio-lesson-preferences">
-        {en
+        {round.total > 1 ? en
+          ? 'Each round has its own repeat time. Continue now ends only this repeat time; the next round or group follows automatically.'
+          : '每次都有跟讀留白。「立即接續」只結束這次留白，再自動進入下一次或下一組。'
+        : en
           ? 'The lesson continues automatically after repeat time. Choose Continue now when you are ready. The last group finishes playback.'
           : '留白結束後會自動接續；練習完成可按「立即接續」。最後一組會結束播放。'}
       </p> : null}
