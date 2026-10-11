@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "scope": "targeted",
+  "project": "SamHuang68/E-Learning",
+  "baseCommit": "13d1db4a20d7c5c92d3f5747a22f0bcb6b74b92d",
+  "release": false,
+  "documentation": ["tools/codex/來源與接入.md", "REVISION_HISTORY.md", "README.md"],
+  "cases": [{
+    "id": "CI明列變更與證據重用",
+    "reason": "本輪只接入 CI：覆核明列案例、變更覆蓋、成功重用、失敗與進行中阻擋、發布門檻及即時產物不快取。",
+    "kind": "command",
+    "command": ["python", "-B", "tools/codex/test_專案驗證.py"],
+    "targets": ["tools/codex/test_專案驗證.py"],
+    "changes": [".github/workflows/deploy-pages.yml", "tools/codex/verification_gate.py", "tools/codex/變更驗證.py", "tools/codex/專案驗證.py", "tools/codex/test_專案驗證.py"],
+    "inputs": [".github/workflows/deploy-pages.yml", "tools/codex/verification_gate.py", "tools/codex/變更驗證.py", "tools/codex/專案驗證.py", "tools/codex/test_專案驗證.py"],
+    "expectedSeconds": 10,
+    "timeoutSeconds": 60,
+    "reusePolicy": "success"
+  }]
+}

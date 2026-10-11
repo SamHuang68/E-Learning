@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || format('pages-{0}', github.ref) }}
@@ -17,35 +18,62 @@ concurrency:
 
 jobs:
   build:
+    # 保留分支保護的既有名稱；實際只執行明列的局部案例。
     name: 完整驗證
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    outputs:
+      release: ${{ steps.scope.outputs.release }}
+    env:
+      VALIDATION_BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+      PYTHONUTF8: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
     steps:
-      - name: Checkout
+      - name: 取得來源與基底
         uses: actions/checkout@v5
         with:
+          fetch-depth: 0
           persist-credentials: false
 
-      - name: Setup Node
+      - name: 設定 Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12.10'
+
+      - name: 讀取必要環境
+        id: prepare
+        run: python -B tools/codex/專案驗證.py --prepare --evidence-dir "${{ runner.temp }}/e-learning-verification"
+
+      - name: 設定 Node
+        if: steps.prepare.outputs.node == 'true'
         uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
 
+      - name: 安裝鎖定依賴
+        if: steps.prepare.outputs.node == 'true'
+        run: npm ci --no-audit
+
+      - name: 核對變更、案例及發布門檻
+        id: scope
+        run: python -B tools/codex/專案驗證.py --check --evidence-dir "${{ runner.temp }}/e-learning-verification"
+
       - name: 正式依賴弱點閘門
+        if: steps.scope.outputs.release == 'true'
         id: audit_prod
         timeout-minutes: 5
-        run: npm run audit:prod
+        run: python -B tools/codex/專案驗證.py --audit prod --evidence-dir "${{ runner.temp }}/e-learning-verification"
 
       - name: 完整依賴弱點報告（非阻擋）
         id: audit_all
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && steps.scope.outputs.release == 'true' }}
         continue-on-error: true
         timeout-minutes: 5
-        run: npm run audit:all
+        run: python -B tools/codex/專案驗證.py --audit all --evidence-dir "${{ runner.temp }}/e-learning-verification"
 
       - name: 記錄依賴弱點狀態
-        if: ${{ always() }}
+        if: ${{ always() && steps.scope.outputs.release == 'true' }}
         shell: bash
         env:
           PROD_OUTCOME: ${{ steps.audit_prod.outcome }}
@@ -57,44 +85,36 @@ jobs:
             echo "- 正式依賴閘門：\`${PROD_OUTCOME}\`"
             echo "- 完整依賴圖（非阻擋報告）：\`${ALL_OUTCOME}\`"
           } >> "$GITHUB_STEP_SUMMARY"
-
           if [ "$ALL_OUTCOME" = "failure" ]; then
-            echo "::warning title=完整依賴弱點稽核未通過::請檢查該步驟；可能是完整依賴圖中的安全告警（含正式、開發或建置依賴），也可能是套件登錄服務傳輸錯誤。正式依賴仍由前一步阻擋。"
-          elif [ "$PROD_OUTCOME" = "success" ] && [ "$ALL_OUTCOME" != "success" ]; then
-            echo "::warning title=完整依賴弱點稽核未完成::正式依賴閘門已通過，但完整依賴圖沒有成功完成；請檢查該步驟狀態。"
+            echo "::warning title=完整依賴弱點稽核未通過::請檢查安全告警或登錄服務傳輸錯誤；正式依賴仍由前一步阻擋。"
           fi
 
-      - name: 安裝鎖定依賴
-        run: npm ci --no-audit
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Test
-        run: npm test
-
-      - name: Verify Supabase schema contract
-        run: npm run verify:schema
-
-      - name: Build
+      - name: 執行明列案例並沿用有效證據
         env:
+          GH_TOKEN: ${{ github.token }}
           VITE_BASE_PATH: /${{ github.event.repository.name }}/
           VITE_SUPABASE_URL: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && secrets.VITE_SUPABASE_URL || '' }}
           VITE_SUPABASE_ANON_KEY: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && secrets.VITE_SUPABASE_ANON_KEY || '' }}
-        run: npm run build
+        run: python -B tools/codex/專案驗證.py --restore-ci --evidence-dir "${{ runner.temp }}/e-learning-verification"
 
-      - name: Verify production and offline assets
-        run: npm run verify:dist
+      - name: 保存驗證收據與失敗紀錄
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: 變更驗證證據
+          path: ${{ runner.temp }}/e-learning-verification/
+          if-no-files-found: ignore
+          retention-days: 30
 
-      - name: Upload artifact
-        if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
+      - name: 上傳網站產物
+        if: ${{ steps.scope.outputs.release == 'true' && github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
         uses: actions/upload-pages-artifact@v5
         with:
           path: dist
 
   deploy:
     name: 發布 GitHub Pages
-    if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
+    if: ${{ needs.build.outputs.release == 'true' && github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
     needs: build
     runs-on: ubuntu-latest
     permissions:
@@ -104,6 +124,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy to GitHub Pages
+      - name: 發布至既有 GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5

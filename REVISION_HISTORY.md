@@ -1,5 +1,15 @@
 # Revision history
 
+## 2026-10-12｜驗收與 CI 收尾.1｜人工語音證據與明列局部案例
+
+- 正式產品維持語音教學 .12，基準 `13d1db4a20d7c5c92d3f5747a22f0bcb6b74b92d`。本輪沒有修改播放器、教材、進度、偏好或產品依賴。
+- 使用者人工日語試播有聲音；同次診斷於 953 毫秒進入播放、4,089 毫秒完成，`started=true`、`error=null`，頁面匯出內容與使用者提供內容一致。`heard=null` 仍保留；聽感以使用者回覆為證，不改寫成程式自證。舊下載檔為失敗紀錄，不再冒充成功試播。
+- 受控點擊仍出現只有原生 end、沒有 start 的限制；未宣稱根因已修復，不以自動化失敗改動人工可用的語音程式。暫時觀測器已還原，學習資料雜湊未變。
+- CI 接入既有共用驗證器，保留 required check 名稱及全部既有測試；明列變更與案例、有效成功證據重用、未映射／失敗／進行中拒絕、當次產物不快取。發布仍需建置順序、受影響測試與 lint、必要後端 schema，以及有明確授權的線上依賴稽核。
+- 本機經全域 verification_gate 執行 22 個 CI 入口局部案例，全數通過；沒有跑產品全套、語音回歸或重新建置。證據：`C:/Users/Sam/AI-Workspace/docs/e-learning/closeout-verification/驗證帳本/run-20261012T015751-ca0d5d49/`。作者自審，未另行安排跨供應商簽核。
+- 本輪 `release=false`，GitHub Pages 不重新發布。已唯讀核對 Cloudflare 原建置命令為 `npm run build`；使用者明確同意「同意，本輪略過 Cloudflare 重建」，僅本輪提交與合併訊息使用官方 `[CF-Pages-Skip]` 前綴，GitHub 局部檢查照常執行。沒有變更 Cloudflare 帳號、安全或建置設定。
+- 本條為提交前紀錄；提交、PR、CI 重用與合併實績以本輪最終交付收據為準。外部證據保存在 `C:/Users/Sam/AI-Workspace/docs/e-learning/closeout-verification/20261012/`。
+
 ## capacity-resilience.1 — 2026-10-03 — local candidate
 
 The existing artifact version remains the content-derived precache buildId.
