@@ -59,7 +59,7 @@ npm run build          # tsc + vite + generate-precache
 npm run verify:dist    # 缺 public audio／archify／content 或 Hub chunk 即失敗
 ```
 
-CI 另在安裝前透過 npm 套件登錄服務執行兩層線上依賴稽核：正式環境依賴的 low 以上安全告警都會阻擋部署；完整依賴圖（含開發與建置工具）則保留原始結果並在 Actions 摘要顯示警告，但不會把登錄服務傳輸失敗誤報成已確認的開發依賴弱點。本機需要即時重查時可分別執行：
+真正產品發布的 CI 保留兩層線上依賴稽核，經 `verification_gate.py` 核對完整範圍的必要性與明確授權後執行：正式環境依賴的 low 以上安全告警都會阻擋部署；完整依賴圖（含開發與建置工具）則保留原始結果並在 Actions 摘要顯示警告，但不會把登錄服務傳輸失敗誤報成已確認的開發依賴弱點。CI／文件變更不觸發產品稽核或重建。本機需要即時重查時，以下原有命令仍保留，但須先依當次範圍建立驗證計畫：
 
 ```bash
 npm run audit:prod     # 正式環境依賴；low 以上告警均以非零狀態結束
@@ -70,9 +70,9 @@ npm run audit:all      # 完整依賴圖；info 以上告警均以非零狀態�
 
 ### PR 合併前驗證
 
-目標為 `main` 的 PR 會執行與正式部署相同的「完整驗證」job：正式依賴稽核、完整依賴報告、鎖檔安裝、lint、全部測試、schema、build 與 `verify:dist`。PR 採 GitHub 的預設合併參照 checkout，以候選與基底整合後的內容接受驗證；不依檔案類型略過，因此文件與 workflow 變更也能產生 required check。建立、提交更新、重開、轉為可審查與編輯 PR 都會觸發，涵蓋變更基底到 `main` 的情境；一般標題或描述編輯也會重新驗證。
+目標為 `main` 的 PR 保留 required check 名稱「完整驗證」，但實際只執行 `.github/驗證計畫.json` 明列的局部案例。基底、變更檔、契約、直接命令、受測輸入及耗時必須對應；漏列即阻擋，不自動擴成全套。PR 採 GitHub 的預設合併參照 checkout，既有成功證據按內容、驗證器及環境重用；標題編輯或合併 SHA 改變本身不是重跑理由。測試與原有 scripts 未刪除；完整驗證仍須另有必要性與使用者對該範圍的明確授權。
 
-PR 的 `GITHUB_TOKEN` 只有 `contents: read`，不注入 Supabase 設定、不上傳 Pages artifact，也不執行 GitHub Pages 部署。PR 的 concurrency 依 PR 編號隔離，更新同一 PR 只會取消該 PR 的舊驗證。只有 `main` 的 push 或手動執行可上傳 artifact 並進入具有 `pages: write`、`id-token: write` 權限的部署 job；Cloudflare 的 PR 預覽由既有外部整合獨立提供。
+PR 的 `GITHUB_TOKEN` 只有 `contents: read` 與用來讀取既有收據的 `actions: read`，不注入 Supabase 設定、不上傳 Pages artifact，也不執行 GitHub Pages 部署。PR 的 concurrency 依 PR 編號隔離。只有具有產品變更、通過明列發布門檻的 `main` push 或手動執行，才上傳網站 artifact 並進入具有 `pages: write`、`id-token: write` 權限的部署 job。純 CI／文件變更不重新發布網站；Cloudflare 預覽仍由既有外部整合獨立提供，不能假定它已受本入口控制。接入規格與來源見 [`tools/codex/來源與接入.md`](tools/codex/來源與接入.md)。
 
 `main` 的 required check 名稱為「完整驗證」，來源限定 GitHub Actions，要求分支與最新基底同步，並適用於管理員。正式依賴 low 以上告警與任何必要驗證失敗都會阻擋合併；完整依賴圖的 info 以上告警維持非阻擋報告。這項分支保護是 GitHub repository 設定，workflow 檔案本身不會自動啟用；實際啟用狀態及發布證據記錄於本次 PR。
 
