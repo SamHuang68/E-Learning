@@ -1,9 +1,10 @@
-import { useEffect, useId, useRef, useState } from 'react'
+import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { useI18n } from '../i18n/i18n'
 import { isSpeechSupported, warmVoices } from '../utils/speech'
 import { startAudioLesson } from '../utils/audioLessonPlayback'
 import { hasLessonVoice } from '../utils/audioLessonVoices'
 import { loadAudioLessonPreferences, saveAudioLessonPreferences, type AudioLessonPreferences } from '../utils/storage'
+import { loadAudioLessonPosition, saveAudioLessonPosition } from '../utils/語音位置'
 import { checkExcerpt, recordCheckPhase, type AudioCheck } from '../utils/語音檢查'
 import { AudioCheckPanel, AudioSourceLabel } from './語音檢查面板'
 import type {
@@ -55,6 +56,7 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
   const headingId = useId()
   const statusId = useId()
   const navigationId = useId()
+  const resumeId = useId()
   const supported = isSpeechSupported()
   const [voices, setVoices] = useState(availableVoices)
   const [voicesLoaded, setVoicesLoaded] = useState(() => availableVoices().length > 0)
@@ -65,6 +67,8 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
   const { rate, shadow, shadowLength, repeatCount } = preferences
   const [round, setRound] = useState({ current: 1, total: 1 })
   const [preferencesSaved, setPreferencesSaved] = useState(true)
+  const [resumeIndex, setResumeIndex] = useState<number | null>(null)
+  const [positionSaved, setPositionSaved] = useState(true)
   const [error, setError] = useState('')
   const [diagnostic, setDiagnostic] = useState<AudioCheck | null>(null)
   const [checkText, setCheckText] = useState<string | null>(null)
@@ -75,7 +79,9 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
   const mountedRef = useRef(false)
   const voiceWaitRef = useRef<AbortController | null>(null)
   const contentKey = JSON.stringify(segments)
-  const items = segments.filter((segment) => segment.text.trim() || segment.audioSrc)
+  // 消費者可在每次 render 建立新陣列；依實際內容穩定重設與位置還原的依賴。
+  const items = useMemo(() => (JSON.parse(contentKey) as AudioLessonSegment[])
+    .filter((segment) => segment.text.trim() || segment.audioSrc), [contentKey])
   const remaining = current >= 0 ? items.slice(current) : []
   const examples = items.filter((segment) => segment.kind === 'example')
   const samples = [...new Set(items.map((segment) => segment.lang))].flatMap((lang) => {
@@ -140,6 +146,8 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
     stopRef.current = null
     setPhase('idle')
     setCurrent(0)
+    setResumeIndex(loadAudioLessonPosition(lessonId, items))
+    setPositionSaved(true)
     setRound({ current: 1, total: 1 })
     setPlayback({ scope: 'lesson', index: 0, total: 0 })
     setError('')
@@ -164,7 +172,7 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
       stopRef.current = null
       document.removeEventListener('visibilitychange', hidden)
     }
-  }, [lessonId, contentKey, locale])
+  }, [lessonId, items, locale])
 
   const canPlay = (selection: AudioLessonSegment[]) => selection.length > 0 && selection.every(
     (segment) => Boolean(segment.audioSrc) || (supported && hasLessonVoice(segment.lang, voices)),
@@ -180,6 +188,7 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
 
   function play(selection: AudioLessonSegment[], scope: PlaybackScope) {
     if (!canPlay(selection)) return
+    if (scope !== 'check') setResumeIndex(null)
     runRef.current += 1
     const run = runRef.current
     continueRef.current = null
@@ -215,6 +224,8 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
         if (run !== runRef.current) return
         const item = selection[index]
         setCurrent(items.findIndex((segment) => segment.id === item.id))
+        // 記住的是練習目標，不代表已聽完；試播節錄不覆蓋正式位置。
+        if (scope !== 'check') setPositionSaved(saveAudioLessonPosition(lessonId, item))
         setPlayback((previous) => ({ ...previous, index }))
       },
       onPhase: (next) => {
@@ -259,6 +270,8 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
     if (!Number.isInteger(index) || index < 0 || index >= items.length) return
     stop()
     setCurrent(index)
+    setResumeIndex(null)
+    setPositionSaved(saveAudioLessonPosition(lessonId, items[index]))
     setPlayback({ scope: 'replay', index: 0, total: 1 })
     setPhase('idle')
     setError('')
@@ -357,6 +370,28 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
       </p>
       {!preferencesSaved ? <p className="audio-lesson-notice" role="alert">
         {en ? 'Preferences could not be saved. These settings still apply here, but reopening may restore the previous values.' : '偏好未能儲存。此畫面仍使用新設定，重新開啟可能回復舊值。'}
+      </p> : null}
+      {resumeIndex !== null && items[resumeIndex] ? <div className="audio-lesson-resume" aria-describedby={resumeId}>
+        <p id={resumeId}>
+          {en ? 'Last practice position: ' : '上次練習位置：'}{segmentLabel(items[resumeIndex], resumeIndex)}
+        </p>
+        <p className="audio-lesson-preferences">
+          {en ? 'Resume plays from the start of this segment. No audio starts until you choose a playback action.' : '接續會從這一段開頭播放；未按播放操作前不會自動出聲。'}
+        </p>
+        <div className="audio-lesson-actions">
+          <button type="button" className="ghost" disabled={!canPlay(items.slice(resumeIndex))} onClick={() => play(items.slice(resumeIndex), 'remaining')}>
+            {en ? 'Resume last practice' : '接續上次'}
+          </button>
+          <button type="button" className="ghost" disabled={!canPlay(items)} onClick={() => play(items, 'lesson')}>
+            {en ? 'Start from beginning' : '從頭開始'}
+          </button>
+        </div>
+      </div> : null}
+      <p className="audio-lesson-preferences">
+        {en ? 'Practice positions stay in this browser for the latest 50 lessons, separately from learning progress; they are not exported, synced or cleared with progress.' : '練習位置僅保存本瀏覽器最近 50 課，與學習進度分開，不隨進度匯出、同步或清除。'}
+      </p>
+      {!positionSaved ? <p className="audio-lesson-notice" role="alert">
+        {en ? 'Practice position could not be saved. You can keep practising here; reopening may show the previous position.' : '練習位置未能儲存。仍可在此練習，重新開啟可能顯示舊位置。'}
       </p> : null}
       {items.length > 0 ? <div className="audio-lesson-navigation">
         <label>
