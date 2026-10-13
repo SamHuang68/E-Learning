@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { LocaleContext } from '../i18n/i18n'
 import { translate } from '../i18n/messages'
 import { LOCAL_PREFERENCE_KEYS } from '../utils/progressKeys'
+import { loadAudioLessonPosition } from '../utils/語音位置'
 import type { AudioLessonSegment } from '../utils/audioLessonTypes'
 import { AudioLesson } from './AudioLesson'
 
@@ -38,10 +39,10 @@ const synth = {
 let host: HTMLDivElement
 let root: Root
 
-async function mount(locale: 'zh-Hant' | 'en' = 'zh-Hant') {
+async function mount(locale: 'zh-Hant' | 'en' = 'zh-Hant', lessonId = 'interaction-lesson', segments = samples) {
   await act(async () => root.render(
     <LocaleContext.Provider value={{ locale, setLocale: () => {}, t: (key, vars) => translate(locale, key, vars) }}>
-      <AudioLesson lessonId="interaction-lesson" segments={samples} />
+      <AudioLesson lessonId={lessonId} segments={segments} />
     </LocaleContext.Provider>,
   ))
 }
@@ -70,7 +71,11 @@ async function choose(name: string, value: string) {
 }
 
 async function click(name: string) {
-  await act(async () => button(name).click())
+  await act(async () => {
+    button(name).click()
+    // 位置寫入也會排入 jsdom 的零延遲 storage 事件；不清除播放計時器。
+    await vi.advanceTimersByTimeAsync(0)
+  })
 }
 
 async function completeSpeech() {
@@ -80,6 +85,7 @@ async function completeSpeech() {
     utterance.onstart?.()
     synth.speaking = false
     utterance.onend?.()
+    await vi.advanceTimersByTimeAsync(0)
   })
 }
 
@@ -108,6 +114,98 @@ afterEach(async () => {
 })
 
 describe('語音教學的真實元件互動', () => {
+  it('手動選段保存位置，重新掛載只提示；接續才播放該段到課尾', async () => {
+    await mount()
+    await choose('選擇段落', '1')
+    expect(loadAudioLessonPosition('interaction-lesson', samples)).toBe(1)
+    const stored = localStorage.getItem(LOCAL_PREFERENCE_KEYS.audioLessonPosition)
+    await act(async () => root.unmount())
+    root = createRoot(host)
+    await mount()
+    expect(host.querySelector('.audio-lesson-resume')?.textContent).toContain('2 / 2')
+    expect(utterances).toHaveLength(0)
+    expect(select('選擇段落').value).toBe('0')
+    expect(localStorage.getItem(LOCAL_PREFERENCE_KEYS.audioLessonPosition)).toBe(stored)
+    await click('接續上次')
+    expect(utterances.map((item) => item.text)).toEqual(['Bye.'])
+    expect(select('選擇段落').value).toBe('1')
+    expect(host.querySelector('.audio-lesson-resume')).toBeNull()
+    await completeSpeech()
+    await click('立即接續')
+    expect(host.querySelector('.audio-lesson-status')?.textContent).toBe('剩餘段落播放完成')
+  })
+
+  it('英文從頭開始沿用完整導讀，停止後舊事件不覆蓋新課位置', async () => {
+    await mount('en')
+    await choose('Choose segment', '1')
+    await mount('en', 'other-lesson')
+    expect(host.querySelector('.audio-lesson-resume')).toBeNull()
+    await mount('en')
+    expect(host.querySelector('.audio-lesson-resume')?.textContent).toContain('Last practice position')
+    await click('Start from beginning')
+    expect(utterances.map((item) => item.text)).toEqual(['Hi.'])
+    const old = utterances.at(-1)!
+    const oldStart = old.onstart
+    const oldEnd = old.onend
+    expect(oldStart).toBeTypeOf('function')
+    expect(oldEnd).toBeTypeOf('function')
+    await mount('en', 'other-lesson')
+    await act(async () => { oldStart!(); oldEnd!() })
+    expect(loadAudioLessonPosition('other-lesson', samples)).toBeNull()
+    expect(loadAudioLessonPosition('interaction-lesson', samples)).toBe(0)
+    expect(host.querySelector('.audio-lesson-status')?.textContent).toBe('Ready when you are')
+  })
+
+  it('試播不覆蓋位置，切回課程仍可接續，教材改寫後不錯接', async () => {
+    await mount()
+    await choose('選擇段落', '1')
+    await click('試播英語節錄')
+    await completeSpeech()
+    expect(loadAudioLessonPosition('interaction-lesson', samples)).toBe(1)
+    await mount('zh-Hant', 'other-lesson')
+    await mount()
+    expect(host.querySelector('.audio-lesson-resume')?.textContent).toContain('Bye.')
+    await mount('zh-Hant', 'interaction-lesson', [samples[0], { ...samples[1], text: 'Changed.' }])
+    expect(host.querySelector('.audio-lesson-resume')).toBeNull()
+    expect(select('選擇段落').value).toBe('0')
+    expect(utterances).toHaveLength(1)
+  })
+
+  it('位置儲存失敗保留選段且明示限制，成功後清除提示', async () => {
+    await mount()
+    const save = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('受控位置儲存拒絕') })
+    await choose('選擇段落', '1')
+    expect(select('選擇段落').value).toBe('1')
+    expect(host.querySelector('[role="alert"]')?.textContent).toContain('練習位置未能儲存')
+    await click('重播當句')
+    expect(utterances.map((item) => item.text)).toEqual(['Bye.'])
+    save.mockRestore()
+    await choose('選擇段落', '0')
+    expect(host.querySelector('[role="alert"]')).toBeNull()
+    expect(loadAudioLessonPosition('interaction-lesson', samples)).toBe(0)
+  })
+
+  it('留白記住原文目標；隱藏後停止且重新開啟不自動出聲', async () => {
+    const segments: AudioLessonSegment[] = [samples[0], { ...samples[1], kind: 'explanation' }]
+    await mount('zh-Hant', 'group-lesson', segments)
+    await click('播放導讀')
+    await completeSpeech()
+    expect(loadAudioLessonPosition('group-lesson', segments)).toBe(1)
+    await completeSpeech()
+    expect(loadAudioLessonPosition('group-lesson', segments)).toBe(0)
+    await act(async () => {
+      vi.spyOn(document, 'hidden', 'get').mockReturnValue(true)
+      document.dispatchEvent(new Event('visibilitychange'))
+    })
+    expect(host.querySelector('.audio-lesson-status')?.textContent).toBe('已停止')
+    expect(host.querySelector('[role="timer"]')).toBeNull()
+    await act(async () => root.unmount())
+    root = createRoot(host)
+    await mount('zh-Hant', 'group-lesson', segments)
+    expect(host.querySelector('.audio-lesson-resume')?.textContent).toContain('1 / 2')
+    expect(utterances).toHaveLength(2)
+  })
+
   it('留白中更改設定會停止舊播放並清除倒數', async () => {
     await mount()
     await click('聽原文示範')

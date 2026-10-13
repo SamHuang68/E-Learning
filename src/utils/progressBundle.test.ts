@@ -39,6 +39,17 @@ function parseStored(key: string): unknown {
 }
 
 describe('progress bundle', () => {
+  it('語音位置不隨進度匯出、匯入或清除', () => {
+    const positions = JSON.stringify([{ lessonId: '課程甲', segmentKey: '段落甲' }])
+    localStorage.setItem(LOCAL_PREFERENCE_KEYS.audioLessonPosition, positions)
+    const bundle = exportProgressBundle()
+    expect(bundle).not.toHaveProperty('audioLessonPosition')
+    expect(JSON.stringify(bundle)).not.toContain('課程甲')
+    clearLocalProgressCache()
+    expect(localStorage.getItem(LOCAL_PREFERENCE_KEYS.audioLessonPosition)).toBe(positions)
+    expect(importProgressBundle({ ...bundle, audioLessonPosition: [] })).toBe(true)
+    expect(localStorage.getItem(LOCAL_PREFERENCE_KEYS.audioLessonPosition)).toBe(positions)
+  })
   it.each([
     { rate: 0.7, shadow: false },
     { rate: 0.7, shadow: false, shadowLength: 'extended' },

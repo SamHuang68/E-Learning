@@ -52,6 +52,8 @@ Canonical registry: [`src/utils/progressKeys.ts`](../src/utils/progressKeys.ts) 
 
 ## localStorage — builder / secret (never uploaded)
 
+語音位置另用 `e-learning-audio-position-v1`：保存本瀏覽器最近 50 課的最後選取／練習目標，以既有課程識別及段落的識別、原文、語言、類型、音檔位置精準比對；段落改寫或匹配不唯一時不接續。不是播放完成、秒數或輪次紀錄。只保存在本瀏覽器，不依登入帳戶隔離，不隨學習進度匯出、同步或清除；沒有跨分頁即時同步。讀取不寫回，試播不覆蓋位置，儲存遭拒會顯示提示。重新開啟不自動出聲。
+
 | Key | What |
 | --- | --- |
 | `aoba-presets` | Japanese course-builder presets |

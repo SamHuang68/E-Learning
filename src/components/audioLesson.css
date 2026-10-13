@@ -134,6 +134,22 @@
   border-radius: 8px;
 }
 
+.audio-lesson-resume {
+  padding: 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-soft);
+}
+
+.audio-lesson-resume > p {
+  margin-block: 0 0.5rem;
+  line-height: 1.65;
+}
+
+.audio-lesson-resume .audio-lesson-actions {
+  margin-block-end: 0;
+}
+
 .audio-lesson-current p {
   margin-block: 0;
 }
