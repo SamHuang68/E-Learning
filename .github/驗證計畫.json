@@ -5,10 +5,10 @@
   "baseCommit": "6f9337b329d256fc0280ce97889d110c9e730a2a",
   "release": true,
   "securityReview": {
-    "explicit": false,
+    "explicit": true,
     "necessity": "產品實際發布沿用正式依賴弱點門檻及非阻擋的開發依賴報告；只查 package-lock 的完整依賴圖與當次登錄資料，不跑完整產品測試。",
-    "user_quote": "",
-    "source": "本輪依賴稽核待使用者回覆；未取得前不得啟動發布 CI。"
+    "user_quote": "同意本輪依賴弱點稽核",
+    "source": "2026-10-13 本對話本輪回覆；問題明列 npm 鎖檔正式依賴與含開發依賴稽核，不含產品完整測試。"
   },
   "documentation": [
     "docs/cookie-localstorage-inventory.md",
@@ -146,9 +146,7 @@
       ],
       "changes": [
         "src/components/AudioLesson.tsx",
-        "src/components/語音教學互動.test.tsx",
-        "src/utils/語音位置.ts",
-        "src/utils/語音位置.test.ts"
+        "src/utils/語音位置.ts"
       ],
       "inputs": [
         "src/components/AudioLesson.tsx",
@@ -1109,9 +1107,7 @@
       ],
       "changes": [
         "src/components/AudioLesson.tsx",
-        "src/components/語音教學互動.test.tsx",
-        "src/utils/語音位置.ts",
-        "src/utils/語音位置.test.ts"
+        "src/utils/語音位置.ts"
       ],
       "inputs": [
         "src/components/AudioLesson.tsx",
@@ -1759,9 +1755,7 @@
       ],
       "changes": [
         "src/components/AudioLesson.tsx",
-        "src/components/語音教學互動.test.tsx",
-        "src/utils/語音位置.ts",
-        "src/utils/語音位置.test.ts"
+        "src/utils/語音位置.ts"
       ],
       "inputs": [
         "src/components/AudioLesson.tsx",
@@ -2409,9 +2403,7 @@
       ],
       "changes": [
         "src/components/AudioLesson.tsx",
-        "src/components/語音教學互動.test.tsx",
-        "src/utils/語音位置.ts",
-        "src/utils/語音位置.test.ts"
+        "src/utils/語音位置.ts"
       ],
       "inputs": [
         "src/components/AudioLesson.tsx",
