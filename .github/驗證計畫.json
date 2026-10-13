@@ -2,13 +2,13 @@
   "schemaVersion": 1,
   "scope": "targeted",
   "project": "SamHuang68/E-Learning",
-  "baseCommit": "0ee9be128746a7942fe56ba9ca7f3d47988a7410",
+  "baseCommit": "6f9337b329d256fc0280ce97889d110c9e730a2a",
   "release": true,
   "securityReview": {
     "explicit": true,
     "necessity": "產品實際發布沿用正式依賴弱點門檻及非阻擋的開發依賴報告；只查 package-lock 的完整依賴圖與當次登錄資料，不跑完整產品測試。",
     "user_quote": "同意本輪依賴弱點稽核",
-    "source": "2026-10-13 本對話回覆；問題明列 npm 鎖檔正式依賴與含開發依賴稽核、不含產品完整測試。"
+    "source": "2026-10-13 本對話本輪回覆；問題明列 npm 鎖檔正式依賴與含開發依賴稽核，不含產品完整測試。"
   },
   "documentation": [
     "docs/cookie-localstorage-inventory.md",
@@ -18,7 +18,7 @@
   "cases": [
     {
       "id": "語音接續元件與位置",
-      "reason": "新增語音位置；驗證接續、不自動播放、精準定位及進度隔離對應契約。",
+      "reason": "單課清除的確認、取消、失敗重試、播放保護與資料隔離；保留既有接續契約。",
       "kind": "command",
       "command": [
         "node",
@@ -35,147 +35,9 @@
       ],
       "changes": [
         "src/components/AudioLesson.tsx",
-        "src/components/audioLesson.css",
         "src/components/語音教學互動.test.tsx",
         "src/utils/語音位置.ts",
-        "src/utils/語音位置.test.ts",
-        "src/utils/progressKeys.ts"
-      ],
-      "inputs": [
-        "src/components/AudioLesson.test.tsx",
-        "src/components/AudioLesson.tsx",
-        "src/components/audioLesson.css",
-        "src/components/語音教學互動.test.tsx",
-        "src/components/語音檢查面板.tsx",
-        "src/cs/csLabRegistry.ts",
-        "src/cs/data/curriculum.ts",
-        "src/cs/data/mockExams.ts",
-        "src/cs/data/solvingSignals.ts",
-        "src/cs/utils/csProgressSchema.ts",
-        "src/data/course.ts",
-        "src/data/kana.ts",
-        "src/engine/gates/storageInventory.test.ts",
-        "src/engine/srs.ts",
-        "src/i18n/i18n.tsx",
-        "src/i18n/locale.ts",
-        "src/i18n/messages.ts",
-        "src/i18n/messagesAuth.ts",
-        "src/i18n/messagesCalculusPreset.ts",
-        "src/i18n/messagesEnOverrides.ts",
-        "src/i18n/messagesExercise.ts",
-        "src/i18n/messagesHubMarks.ts",
-        "src/i18n/messagesMathToday.ts",
-        "src/i18n/messagesUi.ts",
-        "src/i18n/messagesVault.ts",
-        "src/toeic/data/certificates.ts",
-        "src/utils/audioLessonPlayback.ts",
-        "src/utils/audioLessonTypes.ts",
-        "src/utils/audioLessonVoices.ts",
-        "src/utils/mediaAudio.ts",
-        "src/utils/progressBundle.test.ts",
-        "src/utils/progressKeys.ts",
-        "src/utils/progressSchema.ts",
-        "src/utils/speech.ts",
-        "src/utils/storage.ts",
-        "src/utils/topRoute.ts",
-        "src/utils/語音位置.test.ts",
-        "src/utils/語音位置.ts",
-        "src/utils/語音檢查.ts",
-        "docs/cookie-localstorage-inventory.md",
-        "node_modules/vitest/vitest.mjs",
-        "package.json",
-        "package-lock.json",
-        "vite.config.ts"
-      ],
-      "expectedSeconds": 8,
-      "timeoutSeconds": 60,
-      "reusePolicy": "success"
-    },
-    {
-      "id": "語音接續進度隔離",
-      "reason": "新增語音位置；驗證接續、不自動播放、精準定位及進度隔離對應契約。",
-      "kind": "command",
-      "command": [
-        "node",
-        "node_modules/vitest/vitest.mjs",
-        "run",
-        "src/utils/progressBundle.test.ts",
-        "-t",
-        "語音位置"
-      ],
-      "targets": [
-        "src/utils/progressBundle.test.ts"
-      ],
-      "changes": [
-        "src/utils/progressBundle.test.ts",
-        "src/utils/progressKeys.ts"
-      ],
-      "inputs": [
-        "src/components/AudioLesson.test.tsx",
-        "src/components/AudioLesson.tsx",
-        "src/components/audioLesson.css",
-        "src/components/語音教學互動.test.tsx",
-        "src/components/語音檢查面板.tsx",
-        "src/cs/csLabRegistry.ts",
-        "src/cs/data/curriculum.ts",
-        "src/cs/data/mockExams.ts",
-        "src/cs/data/solvingSignals.ts",
-        "src/cs/utils/csProgressSchema.ts",
-        "src/data/course.ts",
-        "src/data/kana.ts",
-        "src/engine/gates/storageInventory.test.ts",
-        "src/engine/srs.ts",
-        "src/i18n/i18n.tsx",
-        "src/i18n/locale.ts",
-        "src/i18n/messages.ts",
-        "src/i18n/messagesAuth.ts",
-        "src/i18n/messagesCalculusPreset.ts",
-        "src/i18n/messagesEnOverrides.ts",
-        "src/i18n/messagesExercise.ts",
-        "src/i18n/messagesHubMarks.ts",
-        "src/i18n/messagesMathToday.ts",
-        "src/i18n/messagesUi.ts",
-        "src/i18n/messagesVault.ts",
-        "src/toeic/data/certificates.ts",
-        "src/utils/audioLessonPlayback.ts",
-        "src/utils/audioLessonTypes.ts",
-        "src/utils/audioLessonVoices.ts",
-        "src/utils/mediaAudio.ts",
-        "src/utils/progressBundle.test.ts",
-        "src/utils/progressKeys.ts",
-        "src/utils/progressSchema.ts",
-        "src/utils/speech.ts",
-        "src/utils/storage.ts",
-        "src/utils/topRoute.ts",
-        "src/utils/語音位置.test.ts",
-        "src/utils/語音位置.ts",
-        "src/utils/語音檢查.ts",
-        "docs/cookie-localstorage-inventory.md",
-        "node_modules/vitest/vitest.mjs",
-        "package.json",
-        "package-lock.json",
-        "vite.config.ts"
-      ],
-      "expectedSeconds": 8,
-      "timeoutSeconds": 60,
-      "reusePolicy": "success"
-    },
-    {
-      "id": "語音位置儲存清冊",
-      "reason": "新增語音位置；驗證接續、不自動播放、精準定位及進度隔離對應契約。",
-      "kind": "command",
-      "command": [
-        "node",
-        "node_modules/vitest/vitest.mjs",
-        "run",
-        "src/engine/gates/storageInventory.test.ts"
-      ],
-      "targets": [
-        "src/engine/gates/storageInventory.test.ts"
-      ],
-      "changes": [
-        "src/engine/gates/storageInventory.test.ts",
-        "src/utils/progressKeys.ts"
+        "src/utils/語音位置.test.ts"
       ],
       "inputs": [
         "src/components/AudioLesson.test.tsx",
@@ -238,28 +100,19 @@
         "src/components/AudioLesson.tsx",
         "src/components/語音教學互動.test.tsx",
         "src/utils/語音位置.ts",
-        "src/utils/語音位置.test.ts",
-        "src/utils/progressKeys.ts",
-        "src/utils/progressBundle.test.ts",
-        "src/engine/gates/storageInventory.test.ts"
+        "src/utils/語音位置.test.ts"
       ],
       "targets": [
         "src/components/AudioLesson.tsx",
         "src/components/語音教學互動.test.tsx",
         "src/utils/語音位置.ts",
-        "src/utils/語音位置.test.ts",
-        "src/utils/progressKeys.ts",
-        "src/utils/progressBundle.test.ts",
-        "src/engine/gates/storageInventory.test.ts"
+        "src/utils/語音位置.test.ts"
       ],
       "changes": [
         "src/components/AudioLesson.tsx",
         "src/components/語音教學互動.test.tsx",
         "src/utils/語音位置.ts",
-        "src/utils/語音位置.test.ts",
-        "src/utils/progressKeys.ts",
-        "src/utils/progressBundle.test.ts",
-        "src/engine/gates/storageInventory.test.ts"
+        "src/utils/語音位置.test.ts"
       ],
       "inputs": [
         "src/components/AudioLesson.tsx",
@@ -293,9 +146,7 @@
       ],
       "changes": [
         "src/components/AudioLesson.tsx",
-        "src/components/audioLesson.css",
-        "src/utils/語音位置.ts",
-        "src/utils/progressKeys.ts"
+        "src/utils/語音位置.ts"
       ],
       "inputs": [
         "src/components/AudioLesson.tsx",
@@ -353,9 +204,9 @@
       ],
       "changes": [
         "src/components/AudioLesson.tsx",
-        "src/components/audioLesson.css",
+        "src/components/語音教學互動.test.tsx",
         "src/utils/語音位置.ts",
-        "src/utils/progressKeys.ts"
+        "src/utils/語音位置.test.ts"
       ],
       "inputs": [
         "src/components/AudioLesson.tsx",
@@ -1256,9 +1107,7 @@
       ],
       "changes": [
         "src/components/AudioLesson.tsx",
-        "src/components/audioLesson.css",
-        "src/utils/語音位置.ts",
-        "src/utils/progressKeys.ts"
+        "src/utils/語音位置.ts"
       ],
       "inputs": [
         "src/components/AudioLesson.tsx",
@@ -1906,9 +1755,7 @@
       ],
       "changes": [
         "src/components/AudioLesson.tsx",
-        "src/components/audioLesson.css",
-        "src/utils/語音位置.ts",
-        "src/utils/progressKeys.ts"
+        "src/utils/語音位置.ts"
       ],
       "inputs": [
         "src/components/AudioLesson.tsx",
@@ -2556,9 +2403,7 @@
       ],
       "changes": [
         "src/components/AudioLesson.tsx",
-        "src/components/audioLesson.css",
-        "src/utils/語音位置.ts",
-        "src/utils/progressKeys.ts"
+        "src/utils/語音位置.ts"
       ],
       "inputs": [
         "src/components/AudioLesson.tsx",

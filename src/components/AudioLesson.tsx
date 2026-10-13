@@ -4,7 +4,7 @@ import { isSpeechSupported, warmVoices } from '../utils/speech'
 import { startAudioLesson } from '../utils/audioLessonPlayback'
 import { hasLessonVoice } from '../utils/audioLessonVoices'
 import { loadAudioLessonPreferences, saveAudioLessonPreferences, type AudioLessonPreferences } from '../utils/storage'
-import { loadAudioLessonPosition, saveAudioLessonPosition } from '../utils/語音位置'
+import { clearAudioLessonPosition, loadAudioLessonPosition, saveAudioLessonPosition } from '../utils/語音位置'
 import { checkExcerpt, recordCheckPhase, type AudioCheck } from '../utils/語音檢查'
 import { AudioCheckPanel, AudioSourceLabel } from './語音檢查面板'
 import type {
@@ -57,6 +57,7 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
   const statusId = useId()
   const navigationId = useId()
   const resumeId = useId()
+  const positionHelpId = useId()
   const supported = isSpeechSupported()
   const [voices, setVoices] = useState(availableVoices)
   const [voicesLoaded, setVoicesLoaded] = useState(() => availableVoices().length > 0)
@@ -69,6 +70,7 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
   const [preferencesSaved, setPreferencesSaved] = useState(true)
   const [resumeIndex, setResumeIndex] = useState<number | null>(null)
   const [positionSaved, setPositionSaved] = useState(true)
+  const [positionCleared, setPositionCleared] = useState<boolean | null>(null)
   const [error, setError] = useState('')
   const [diagnostic, setDiagnostic] = useState<AudioCheck | null>(null)
   const [checkText, setCheckText] = useState<string | null>(null)
@@ -148,6 +150,7 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
     setCurrent(0)
     setResumeIndex(loadAudioLessonPosition(lessonId, items))
     setPositionSaved(true)
+    setPositionCleared(null)
     setRound({ current: 1, total: 1 })
     setPlayback({ scope: 'lesson', index: 0, total: 0 })
     setError('')
@@ -188,7 +191,10 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
 
   function play(selection: AudioLessonSegment[], scope: PlaybackScope) {
     if (!canPlay(selection)) return
-    if (scope !== 'check') setResumeIndex(null)
+    if (scope !== 'check') {
+      setResumeIndex(null)
+      setPositionCleared(null)
+    }
     runRef.current += 1
     const run = runRef.current
     continueRef.current = null
@@ -271,12 +277,25 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
     stop()
     setCurrent(index)
     setResumeIndex(null)
+    setPositionCleared(null)
     setPositionSaved(saveAudioLessonPosition(lessonId, items[index]))
     setPlayback({ scope: 'replay', index: 0, total: 1 })
     setPhase('idle')
     setError('')
     setDiagnostic(null)
     setCheckText(null)
+  }
+
+  function clearPosition() {
+    if (active || !window.confirm(en
+      ? 'Clear the saved practice position for this lesson only? Other lessons, learning progress and preferences will stay unchanged.'
+      : '只清除此課儲存的練習位置？其他課、學習進度與偏好都會保留。')) return
+    const cleared = clearAudioLessonPosition(lessonId)
+    setPositionCleared(cleared)
+    if (cleared) {
+      setResumeIndex(null)
+      setPositionSaved(true)
+    }
   }
 
   function segmentLabel(segment: AudioLessonSegment, index: number) {
@@ -390,6 +409,21 @@ export function AudioLesson({ lessonId, title, segments }: Props) {
       <p className="audio-lesson-preferences">
         {en ? 'Practice positions stay in this browser for the latest 50 lessons, separately from learning progress; they are not exported, synced or cleared with progress.' : '練習位置僅保存本瀏覽器最近 50 課，與學習進度分開，不隨進度匯出、同步或清除。'}
       </p>
+      <div className="audio-lesson-actions">
+        <button type="button" className="ghost" disabled={active} aria-describedby={positionHelpId} onClick={clearPosition}>
+          {en ? 'Clear this lesson’s position' : '清除此課練習位置'}
+        </button>
+      </div>
+      <p id={positionHelpId} className="audio-lesson-preferences">
+        {active
+          ? en ? 'Stop playback before clearing this lesson’s position.' : '請先停止播放，再清除此課位置。'
+          : en ? 'Only this lesson’s saved position is cleared. Choosing a segment or playing again saves a new position.' : '只清除此課的保存位置；下次選段或播放會重新記住位置。'}
+      </p>
+      {positionCleared === true ? <p className="audio-lesson-preferences" role="status">
+        {en ? 'This lesson’s saved position is cleared. Your current selection, other lessons and learning progress are unchanged.' : '已清除此課保存位置。目前選段、其他課及學習進度都沒有變更。'}
+      </p> : positionCleared === false ? <p className="audio-lesson-notice" role="alert">
+        {en ? 'The saved position could not be cleared. It is still available; check browser storage settings and try again.' : '練習位置未能清除，原位置仍保留。請檢查瀏覽器儲存設定後重試。'}
+      </p> : null}
       {!positionSaved ? <p className="audio-lesson-notice" role="alert">
         {en ? 'Practice position could not be saved. You can keep practising here; reopening may show the previous position.' : '練習位置未能儲存。仍可在此練習，重新開啟可能顯示舊位置。'}
       </p> : null}

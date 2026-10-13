@@ -58,3 +58,22 @@ export function saveAudioLessonPosition(lessonId: string, segment: AudioLessonSe
     return false
   }
 }
+
+/** 只清除此課位置；保留其他項目，不觸發學習進度同步。 */
+export function clearAudioLessonPosition(lessonId: string): boolean {
+  if (!lessonId) return false
+  try {
+    const raw = localStorage.getItem(key)
+    if (raw === null) return true
+    const positions: unknown = JSON.parse(raw)
+    if (!Array.isArray(positions)) return false
+    // 清除不順便修剪、去重或整理其他課程的資料。
+    const next = positions.filter((position: unknown) => !position || typeof position !== 'object'
+      || Array.isArray(position) || !('lessonId' in position) || position.lessonId !== lessonId)
+    if (next.length === positions.length) return true
+    localStorage.setItem(key, JSON.stringify(next))
+    return true
+  } catch {
+    return false
+  }
+}
