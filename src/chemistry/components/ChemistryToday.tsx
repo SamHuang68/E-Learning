@@ -33,7 +33,7 @@ export const ChemistryToday: React.FC<Props> = ({
   return (
     <div className="math-today-view chemistry-today-view">
       {/* 頂部年級 Banner */}
-      <section className="math-hero-card compact-hero" style={{ background: 'linear-gradient(135deg, #065f46, #059669)' }}>
+      <section className="math-hero-card compact-hero">
         <div className="hero-header-line">
           <div className="hero-title-group">
             <span className="stage-pill">{gradeInfo.band}</span>

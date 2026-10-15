@@ -1,3 +1,4 @@
+import '../學科內頁呈現.css'
 import { localizeToeicCertificate } from '../i18n/toeicCertificateCopy'
 import { lazy, Suspense, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useAuth } from '../auth/AuthContext'
@@ -909,7 +910,7 @@ export function ToeicApp({ onBackHub, onSwitchLang }: Props) {
           : nav
 
   return (
-    <main id="main-content" tabIndex={-1} className="app-shell toeic-shell">
+    <main id="main-content" tabIndex={-1} className="app-shell toeic-shell learning-course">
       <ToeicSidebar
         nav={sidebarNav}
         onNav={handleNav}

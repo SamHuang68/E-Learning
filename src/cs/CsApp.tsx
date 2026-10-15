@@ -1,3 +1,4 @@
+import '../學科內頁呈現.css'
 import React, { useState, useEffect, Suspense } from 'react'
 import type { LangId } from '../utils/storage'
 import { CsTopNav, type CsNavSection } from './components/CsTopNav'
@@ -132,7 +133,7 @@ export const CsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
   }
 
   return (
-    <div className="app-shell cs-shell">
+    <div className="app-shell cs-shell learning-course">
       {/* 頂部水平功能列 (取代側邊欄，一頁盡覽所有功能) */}
       <CsTopNav
         activeSection={activeSection}

@@ -1,3 +1,4 @@
+import '../學科內頁呈現.css'
 import React, { useState, useEffect } from 'react'
 import {
   type ChemistryGradeId,
@@ -142,7 +143,7 @@ export const ChemistryApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
   const labKey = activeLabId || 'periodic'
 
   return (
-    <div className="app-shell math-shell chemistry-shell">
+    <div className="app-shell math-shell chemistry-shell learning-course">
       <ChemistrySidebar
         activeNav={activeNav}
         onNav={setActiveNav}

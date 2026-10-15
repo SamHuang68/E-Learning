@@ -1,3 +1,4 @@
+import '../學科內頁呈現.css'
 import { localizeMathGrade, mathTeachingCopy } from '../i18n/mathTeachingCopy'
 import React, { useState, useEffect, useMemo } from 'react'
 import type { MathGradeId } from './data/curriculum'
@@ -235,7 +236,7 @@ export const MathApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
   }
 
   return (
-    <main id="main-content" tabIndex={-1} className="app-shell math-shell">
+    <main id="main-content" tabIndex={-1} className="app-shell math-shell learning-course">
       <MathSidebar
         activeNav={activeNav}
         onNav={setActiveNav}
