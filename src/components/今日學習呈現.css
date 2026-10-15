@@ -1,0 +1,67 @@
+/* 日語今日頁的局部版面；不影響其他軌道共用元件。 */
+.learning-today .unit-banner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 160px auto;
+  gap: 1.25rem;
+  padding: 1.25rem;
+  border-radius: 20px;
+  box-shadow: 0 5px 18px rgb(44 38 31 / 4%);
+  background: var(--surface);
+  border-color: var(--line);
+  border-top: 4px solid var(--unit-color);
+}
+.learning-today .unit-banner::before { display: none; }
+.learning-today .unit-banner h2 { max-width: none; font-size: clamp(1.65rem, 2.6vw, 2.25rem); line-height: 1.45; }
+.learning-today .unit-banner p { display: block; overflow: visible; -webkit-line-clamp: unset; max-width: none; font-size: 0.9rem; line-height: 1.75; }
+.learning-today .unit-pill { background: var(--surface-soft); color: var(--navy); }
+.learning-today .today-first-step { padding-left: 0.8rem; margin-bottom: 1.1rem; border-left: 3px solid var(--accent-border); }
+.learning-today .today-first-step strong { font-family: var(--font-sans); color: var(--navy); font-size: 0.9rem; }
+.learning-today .today-first-step p { margin: 0.3rem 0 0; font-size: 0.84rem; }
+.learning-today .banner-actions button { border-radius: 11px; }
+.learning-today .progress-ring { position: static; width: 92px; height: 92px; }
+.learning-today .progress-ring > div { width: 68px; height: 68px; background: var(--surface); color: var(--ink); }
+.learning-today .progress-ring small { font-size: 0.68rem; }
+.learning-today .hero-art { display: block; filter: none; }
+
+.learning-today .today-support-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 1rem; }
+.learning-today .daily-review { margin: 0; padding: 1rem 1.1rem; flex-wrap: wrap; align-content: space-between; gap: 0.8rem; background: var(--surface); box-shadow: none; border-radius: 14px; }
+.learning-today .daily-review::before { display: none; }
+.learning-today .daily-review h2 { font-family: var(--font-sans); font-size: 1.05rem; line-height: 1.6; }
+.learning-today .daily-review :is(span, p) { font-size: 0.82rem; line-height: 1.65; }
+.learning-today .daily-review .eyebrow { margin: 0 0 0.35rem; font-size: 0.68rem; }
+.learning-today .due-empty-state p { margin: 0.2rem 0 0; }
+.learning-today .due-empty-state strong { font-family: var(--font-sans); font-size: 0.84rem; }
+.learning-today .daily-review-actions { align-items: start; gap: 0.5rem; }
+.learning-today .daily-review .primary-btn { border-radius: 10px; font-size: 0.85rem; }
+.learning-today .section-heading { margin-top: 1.7rem; }
+.learning-today .section-heading .eyebrow { margin: 0 0 0.4rem; }
+.learning-today .task-grid button { display: flex; flex-direction: column; align-items: start; padding: 1.15rem; background: var(--surface); border: 1px solid var(--line); border-radius: 15px; box-shadow: none; }
+.learning-today .task-grid button::before { display: none; }
+.learning-today .task-grid button:hover { border-color: var(--accent-border); background: var(--surface-soft); }
+.learning-today .task-grid h3 { font-size: 1.1rem; line-height: 1.6; }
+.learning-today .task-grid h3 span { font-size: inherit; letter-spacing: normal; color: inherit; }
+.learning-today .task-grid p { line-height: 1.6; }
+.learning-today .task-grid b { margin-top: auto; }
+.learning-today .result-panel { background: var(--surface-soft); }
+.learning-today :is(button, a):focus-visible { outline: 3px solid var(--navy); outline-offset: 3px; }
+
+@media (max-width: 1150px) and (min-width: 861px) {
+  .learning-today .unit-banner { grid-template-columns: minmax(0, 1fr) 110px; }
+  .learning-today .hero-art { grid-column: 2; grid-row: 1; align-self: start; }
+  .learning-today .progress-ring { grid-column: 2; grid-row: 1; align-self: end; margin-top: 100px; }
+}
+
+@media (max-width: 650px) {
+  .learning-today .unit-banner { grid-template-columns: minmax(0, 1fr) 92px; gap: 1rem; padding: 1.1rem; }
+  .learning-today .unit-banner > div:first-child { grid-column: 1 / -1; }
+  .learning-today .hero-art { grid-column: 1; justify-self: start; width: 130px; }
+  .learning-today .progress-ring { grid-column: 2; }
+  .learning-today .today-support-grid { grid-template-columns: minmax(0, 1fr); }
+  .learning-today .task-grid { grid-template-columns: minmax(0, 1fr); }
+  .learning-today .section-heading { flex-wrap: wrap; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .learning-today :is(.unit-banner, .daily-review, .task-grid button) { animation: none; transition: none; }
+  .learning-today .task-grid button:hover { transform: none; }
+}
