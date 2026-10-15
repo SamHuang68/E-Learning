@@ -35,7 +35,7 @@ export const PhysicsToday: React.FC<Props> = ({
   return (
     <div className="math-today-view physics-today-view">
       {/* 頂部年級 Banner */}
-      <section className="math-hero-card compact-hero" style={{ background: 'linear-gradient(135deg, #0369a1, #0284c7)' }}>
+      <section className="math-hero-card compact-hero">
         <div className="hero-header-line">
           <div className="hero-title-group">
             <span className="stage-pill">{gradeInfo.band}</span>

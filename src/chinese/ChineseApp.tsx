@@ -1,3 +1,4 @@
+import '../學科內頁呈現.css'
 import React, { Suspense, useState } from 'react'
 import { ChineseSidebar, type ChineseNavSection } from './components/ChineseSidebar'
 import { ChineseToday } from './components/ChineseToday'
@@ -175,7 +176,7 @@ export const ChineseApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
   }
 
   return (
-    <div className="math-app-shell chinese-app-shell">
+    <div className="math-app-shell chinese-app-shell learning-course">
       {/* 左側導覽列 */}
       <ChineseSidebar
         activeSection={section}

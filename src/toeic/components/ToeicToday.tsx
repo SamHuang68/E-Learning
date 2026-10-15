@@ -52,7 +52,7 @@ export function ToeicToday({
   const ringDeg = Math.round((overall / 100) * 360)
 
   return (
-    <section className="study-section">
+    <section className="study-section course-today">
       <section
         className="unit-banner"
         style={{ '--unit-color': cert.color } as CSSProperties}
@@ -97,57 +97,6 @@ export function ToeicToday({
         </div>
       </section>
 
-      <div className="daily-review">
-        <div>
-          <p className="eyebrow">SRS · TODAY</p>
-          <h2>
-            {streak}-day streak · {dailyDone}/{dailyGoal} cards
-          </h2>
-          <span>
-            Today candidate queue: {dueCount} cards. Practice matches the current
-            unit, then saves spacing, daily goal progress, and achievements when
-            the session is completed.
-          </span>
-        </div>
-        <div className="daily-review-actions">
-          <button
-            type="button"
-            className="primary-btn inline"
-            disabled={dueCount <= 0}
-            onClick={onStartReview}
-          >
-            {t('todayView.review')}
-          </button>
-          <a
-            className="srs-guide-link"
-            href={srsGuideUrl}
-            target="_blank"
-            rel="noreferrer"
-            aria-label={t('todayView.srsGuideAria')}
-          >
-            {t('todayView.srsGuide')}
-          </a>
-          <span className="srs-guide-mobile-note">{t('todayView.srsMobile')}</span>
-        </div>
-      </div>
-
-      {cert.id === 'orange' && (
-        <div className="daily-review">
-          <div>
-            <p className="eyebrow">FOUNDATION</p>
-            <h2>{t('en.foundationTitle')}</h2>
-            <span>{t('en.foundationBody')}</span>
-          </div>
-          <button
-            type="button"
-            className="primary-btn inline"
-            onClick={onOpenPhonics}
-          >
-            {t('en.phonicsCta')}
-          </button>
-        </div>
-      )}
-
       <div className="section-heading">
         <div>
           <p className="eyebrow">TODAY&apos;S PLAN</p>
@@ -186,6 +135,59 @@ export function ToeicToday({
           </p>
           <b>Go →</b>
         </button>
+      </div>
+
+      <div className="course-support-grid">
+        <div className="daily-review">
+          <div>
+            <p className="eyebrow">SRS · TODAY</p>
+            <h2>
+              {streak}-day streak · {dailyDone}/{dailyGoal} cards
+            </h2>
+            <span>
+              Today candidate queue: {dueCount} cards. Practice matches the current
+              unit, then saves spacing, daily goal progress, and achievements when
+              the session is completed.
+            </span>
+          </div>
+          <div className="daily-review-actions">
+            <button
+              type="button"
+              className="primary-btn inline"
+              disabled={dueCount <= 0}
+              onClick={onStartReview}
+            >
+              {t('todayView.review')}
+            </button>
+            <a
+              className="srs-guide-link"
+              href={srsGuideUrl}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={t('todayView.srsGuideAria')}
+            >
+              {t('todayView.srsGuide')}
+            </a>
+            <span className="srs-guide-mobile-note">{t('todayView.srsMobile')}</span>
+          </div>
+        </div>
+
+        {cert.id === 'orange' && (
+          <div className="daily-review">
+            <div>
+              <p className="eyebrow">FOUNDATION</p>
+              <h2>{t('en.foundationTitle')}</h2>
+              <span>{t('en.foundationBody')}</span>
+            </div>
+            <button
+              type="button"
+              className="primary-btn inline"
+              onClick={onOpenPhonics}
+            >
+              {t('en.phonicsCta')}
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="result-panel">

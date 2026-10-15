@@ -85,7 +85,7 @@ describe('TOEIC 實際頁面語言', () => {
     ])
     selectLocale('zh-Hant')
     html.push(renderToStaticMarkup(createElement(ToeicBuilder)))
-    // 四個證書、24 個單元及日文側欄；新增解說語言 pressed 與導覽裝飾 icon aria-hidden。
-    expect(createHash('sha256').update(html.join('\n')).digest('hex')).toBe('593a45405d73f1597a541c2bd01604369e8decf14ae0830a2dcc8e73803efbdf')
+    // 四證書與 24 單元內容不變；學科呈現契約核准任務前移與支援容器，保留完整 HTML 基準。
+    expect(createHash('sha256').update(html.join('\n')).digest('hex')).toBe('5991c1614fdd7aa2973d4cfa6b5d430d065771f61f2508ea2591ab40ad5e9842')
   })
 })

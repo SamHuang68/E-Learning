@@ -50,55 +50,45 @@ export const ChineseToday: React.FC<Props> = ({ xp, onNavigate }) => {
   const text = (value: string) => chineseTeachingCopy(locale, value)
 
   return (
-    <div className="chinese-today-view" style={{ width: '100%', maxWidth: '100%', minWidth: 0 }}>
-      <div
-        className="signal-hero-card"
-        style={{
-          background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(239, 68, 68, 0.15))',
-          border: '1px solid rgba(245, 158, 11, 0.3)',
-          borderRadius: '14px',
-          padding: '1.2rem 1.4rem',
-          marginBottom: '1rem',
-        }}
-      >
-        <span lang={locale === 'en' ? 'en' : 'ja'} className="signal-badge" style={{ background: '#f59e0b', color: '#000', fontWeight: 800 }}>
+    <div className="chinese-today-view">
+      <div className="signal-hero-card chinese-today-hero">
+        <span lang={locale === 'en' ? 'en' : 'ja'} className="signal-badge">
           {text('🌸 台湾華語・繁体字中国語スタジオ')}
         </span>
-        <h2 style={{ margin: '0.4rem 0 0.2rem', fontSize: '1.4rem' }}>
+        <h2>
           {text('歡迎來到臺灣華語學習空間！')}
         </h2>
-        <p lang={locale === 'en' ? 'en' : 'ja'} className="hero-desc" style={{ margin: 0, fontSize: '0.85rem', color: 'var(--muted)', lineHeight: 1.5 }}>
+        <p lang={locale === 'en' ? 'en' : 'ja'} className="hero-desc">
           {text('日本語母語者の視点に立ち、四声の音高カーブ・日中漢字の落とし穴・3秒文法直感判断・リアル台湾会話を最短ルートで完全攻略。')}
         </p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(240px, 100%), 1fr))', gap: '0.8rem', marginBottom: '1rem' }}>
+      <div className="chinese-module-grid">
         {modules.map((module) => (
           <button
             key={module.section}
             type="button"
-            className="practice-card"
-            style={{ padding: '1rem', textAlign: 'left', cursor: 'pointer', borderRadius: '12px', background: 'var(--surface)', border: '1px solid var(--line)' }}
+            className="practice-card chinese-module-card"
             onClick={() => onNavigate(module.section)}
           >
-            <div aria-hidden="true" style={{ fontSize: '1.6rem', marginBottom: '0.3rem' }}>{module.icon}</div>
-            <strong style={{ fontSize: '0.95rem', display: 'block' }}>{text(module.title)}</strong>
-            <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0.2rem 0 0', fontSize: '0.74rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+            <div aria-hidden="true" className="chinese-module-icon">{module.icon}</div>
+            <strong>{text(module.title)}</strong>
+            <p lang={locale === 'en' ? 'en' : 'ja'}>
               {text(module.description)}
             </p>
-            <span style={{ fontSize: '0.72rem', color: '#f59e0b', fontWeight: 700, marginTop: '0.5rem', display: 'inline-block' }}>
+            <span className="chinese-module-action">
               {text(module.action)}
             </span>
           </button>
         ))}
       </div>
 
-      <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.8rem' }}>
+      <div className="chinese-achievement">
         <div>
-          <span style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block' }}>{text('今日成就達成')}</span>
-          <strong style={{ fontSize: '1.2rem', color: '#f59e0b' }}>{xp} {text('XP 累積')}</strong>
+          <span className="chinese-achievement-label">{text('今日成就達成')}</span>
+          <strong>{xp} {text('XP 累積')}</strong>
         </div>
-        <div style={{ fontSize: '0.76rem', color: 'var(--muted)' }}>
+        <div className="chinese-achievement-goal">
           {text('🎯 建議今日目標：完成 1 組聲調練習與 1 組偽友詞避坑！')}
         </div>
       </div>

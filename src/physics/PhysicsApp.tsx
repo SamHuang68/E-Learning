@@ -1,3 +1,4 @@
+import '../學科內頁呈現.css'
 import React, { useState, useEffect } from 'react'
 import {
   type PhysicsGradeId,
@@ -141,7 +142,7 @@ export const PhysicsApp: React.FC<Props> = ({ onBackHub, onSwitchLang }) => {
   const labKey = activeLabId || 'projectile'
 
   return (
-    <div className="app-shell math-shell physics-shell">
+    <div className="app-shell math-shell physics-shell learning-course">
       <PhysicsSidebar
         activeNav={activeNav}
         onNav={setActiveNav}
