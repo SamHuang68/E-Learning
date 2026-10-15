@@ -18,6 +18,7 @@ import { LocaleToggle } from './i18n/LocaleComponents'
 import { filterHubTracks } from './hubSearch'
 import { loadHubSnapshot, selectHubDerived } from './hubModel'
 import type { MessageKey } from './i18n/messages'
+import './首頁呈現.css'
 
 type Props = {
   onChoose: (lang: LangId) => void
@@ -283,24 +284,21 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
       tabIndex={-1}
       role="main"
       aria-label={t('hub.landmark.main')}
-      className="hub unified-hub"
+      className="hub unified-hub learning-hub"
     >
       <header role="banner" className="hub-hero">
         <div className="hub-topbar">
-          <div>
-            <p className="eyebrow">{t('hub.eyebrow')}</p>
-            <h1>{t('hub.title')}</h1>
-          </div>
+          <p className="hub-brand"><span aria-hidden="true">學</span>{t('hub.eyebrow')}</p>
           <div className="hub-topbar-tools">
             <LocaleToggle />
             <HubShortcutHelp />
           </div>
         </div>
+        <div className="hub-intro-grid">
+        <div className="hub-intro-copy">
+        <h1>{t('hub.title')}</h1>
         <p className="lede">
           {t('hub.lede')}
-        </p>
-        <p className="section-subtext">
-          {t('hub.subtext')}
         </p>
         {catalogFirst && (
           <div className="catalog-first-banner" role="status" aria-live="polite">
@@ -325,17 +323,20 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
               {t('hub.resumeEmpty')}
             </a>
           )}
-          <a className="hub-secondary-cta" href="#tracks-title">
+          {preferred && <a className="hub-secondary-cta" href="#tracks-title">
             {t('hub.seeAll')}
-          </a>
+          </a>}
         </div>
-      </header>
+        </div>
 
-      <section className="hub-section-block hub-today-block" aria-label={t('hub.todayLabel')}>
-        <p className="section-subtext">{t('hub.todayLabel')}</p>
-        <WhyThisNext kind={todaySuggestion.reasonKey} dueCount={todaySuggestion.dueCount} />
+      <section className="hub-today-block" aria-label={t('hub.todayLabel')}>
+        <div className="hub-today-topline">
+          <p className="eyebrow">{t('hub.todayLabel')}</p>
+          <span className="hub-today-mark" aria-hidden="true">{todayTrack.mark}</span>
+        </div>
         <h2>{todayTrack.title}</h2>
         <p className="track-desc">{todayTrack.desc}</p>
+        <WhyThisNext kind={todaySuggestion.reasonKey} dueCount={todaySuggestion.dueCount} />
         <div className="hub-hero-actions">
           <button
             type="button"
@@ -346,8 +347,12 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
           </button>
         </div>
       </section>
+        </div>
+        <p className="hub-storage-note">{t('hub.subtext')}</p>
+      </header>
 
-      <nav role="navigation" aria-label={t('hub.landmark.nav')} className="hub-section-block" aria-labelledby="tracks-title">
+      <nav role="navigation" aria-label={t('hub.landmark.nav')} className="hub-section-block hub-catalog" aria-labelledby="tracks-title">
+        <div className="hub-catalog-toolbar">
         <div className="section-header-row">
           <h2 id="tracks-title">{t('hub.tracksTitle')}</h2>
           <span className="section-subtext">{t('hub.tracksCount')}</span>
@@ -365,6 +370,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
             aria-labelledby="hub-track-search-label"
             autoComplete="off"
           />
+        </div>
         </div>
 
         {visibleTracks.length === 0 ? (
@@ -387,7 +393,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
         ) : (
         <div className="hub-grid eight-track-grid">
           {visibleTracks.map((track) => (
-            <article key={track.id} className={`hub-card ${track.extraClass}`}>
+            <article key={track.id} className={`hub-card ${track.extraClass}`} data-track={track.id}>
               <button type="button" className="hub-card-hit" onClick={track.onClick}>
                 <div className="hub-card-header">
                   <div className={`hub-card-mark ${track.markClass}`}>{track.mark}</div>
@@ -395,7 +401,7 @@ export function Hub({ onChoose, onOpenPrivacy }: Props) {
                 </div>
                 <h3>{track.title}</h3>
                 <p className="track-desc">{track.desc}</p>
-                <div className="track-user-progress">
+                <div className="track-catalog-scope">
                   <span>{track.catalog}</span>
                 </div>
                 <div className="track-user-progress">

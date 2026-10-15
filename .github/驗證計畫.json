@@ -2,59 +2,88 @@
   "schemaVersion": 1,
   "scope": "targeted",
   "project": "SamHuang68/E-Learning",
-  "baseCommit": "6f9337b329d256fc0280ce97889d110c9e730a2a",
+  "baseCommit": "31811ce56bfa99e911266f6e2ed4b73f911f085e",
   "release": true,
   "securityReview": {
     "explicit": true,
     "necessity": "產品實際發布沿用正式依賴弱點門檻及非阻擋的開發依賴報告；只查 package-lock 的完整依賴圖與當次登錄資料，不跑完整產品測試。",
     "user_quote": "同意本輪依賴弱點稽核",
-    "source": "2026-10-13 本對話本輪回覆；問題明列 npm 鎖檔正式依賴與含開發依賴稽核，不含產品完整測試。"
+    "source": "2026-10-15 本對話本輪回覆；同意本輪依賴弱點稽核，範圍為 npm 鎖檔正式依賴與含開發依賴，不含產品完整測試。"
   },
   "documentation": [
-    "docs/cookie-localstorage-inventory.md",
-    "docs/語音教學本機交付紀錄.md",
+    "docs/首頁呈現設計契約.md",
     "REVISION_HISTORY.md"
   ],
   "cases": [
     {
-      "id": "語音接續元件與位置",
-      "reason": "單課清除的確認、取消、失敗重試、播放保護與資料隔離；保留既有接續契約。",
+      "id": "首頁與今日學習呈現契約",
+      "reason": "首頁八軌入口、搜尋清除、多益教學語言切換與中英文實際渲染；今日學習零進度完整入口、既有進度數字、複習與單元選取；同時保留既有 Hub 公開資料契約案例。",
       "kind": "command",
       "command": [
         "node",
         "node_modules/vitest/vitest.mjs",
         "run",
-        "src/components/AudioLesson.test.tsx",
-        "src/components/語音教學互動.test.tsx",
-        "src/utils/語音位置.test.ts"
+        "src/components/首頁呈現契約.test.tsx",
+        "src/Hub.test.tsx"
       ],
       "targets": [
-        "src/components/AudioLesson.test.tsx",
-        "src/components/語音教學互動.test.tsx",
-        "src/utils/語音位置.test.ts"
+        "src/components/首頁呈現契約.test.tsx",
+        "src/Hub.test.tsx"
       ],
       "changes": [
-        "src/components/AudioLesson.tsx",
-        "src/components/語音教學互動.test.tsx",
-        "src/utils/語音位置.ts",
-        "src/utils/語音位置.test.ts"
+        "src/Hub.tsx",
+        "src/components/TodayView.tsx",
+        "src/i18n/messages.ts",
+        "src/components/首頁呈現契約.test.tsx"
       ],
       "inputs": [
-        "src/components/AudioLesson.test.tsx",
-        "src/components/AudioLesson.tsx",
-        "src/components/audioLesson.css",
-        "src/components/語音教學互動.test.tsx",
-        "src/components/語音檢查面板.tsx",
+        "src/Hub.test.tsx",
+        "src/Hub.tsx",
+        "src/aoba/data/grammarSignals.ts",
+        "src/auth/AuthContext.ts",
+        "src/auth/AuthPanel.tsx",
+        "src/chemistry/data/curriculum.ts",
+        "src/chemistry/data/g10.ts",
+        "src/chemistry/data/g11.ts",
+        "src/chemistry/data/g12.ts",
+        "src/chemistry/data/g7.ts",
+        "src/chemistry/data/g8.ts",
+        "src/chemistry/data/g9.ts",
+        "src/chemistry/utils/chemistryStorage.ts",
+        "src/chinese/utils/chineseStorage.ts",
+        "src/components/AnalyticsPanel.tsx",
+        "src/components/DataControls.tsx",
+        "src/components/HeroArt.tsx",
+        "src/components/HubShortcutHelp.tsx",
+        "src/components/KnowledgeRadar.tsx",
+        "src/components/TodayView.tsx",
+        "src/components/WhyThisNext.tsx",
+        "src/components/knowledgeRadarLayout.ts",
+        "src/components/今日學習呈現.css",
+        "src/components/首頁呈現契約.test.tsx",
         "src/cs/csLabRegistry.ts",
-        "src/cs/data/curriculum.ts",
-        "src/cs/data/mockExams.ts",
-        "src/cs/data/solvingSignals.ts",
         "src/cs/utils/csProgressSchema.ts",
+        "src/cs/utils/csStorage.ts",
         "src/data/course.ts",
         "src/data/kana.ts",
-        "src/engine/gates/storageInventory.test.ts",
+        "src/data/practiceTypes.ts",
+        "src/engine/adaptive.ts",
+        "src/engine/analytics.ts",
+        "src/engine/audioSynthesizer.ts",
+        "src/engine/fsrs.ts",
+        "src/engine/gamification.ts",
+        "src/engine/habits.ts",
+        "src/engine/radar.ts",
         "src/engine/srs.ts",
+        "src/engine/todaySuggestion.ts",
+        "src/engine/trackProgressRollup.ts",
+        "src/hubModel.ts",
+        "src/hubSearch.ts",
+        "src/i18n/LocaleComponents.tsx",
+        "src/i18n/badgeI18n.ts",
         "src/i18n/i18n.tsx",
+        "src/i18n/jaTeachingCopy.ts",
+        "src/i18n/jlptChrome.ts",
         "src/i18n/locale.ts",
         "src/i18n/messages.ts",
         "src/i18n/messagesAuth.ts",
@@ -65,66 +94,76 @@
         "src/i18n/messagesMathToday.ts",
         "src/i18n/messagesUi.ts",
         "src/i18n/messagesVault.ts",
+        "src/i18n/pickUi.ts",
+        "src/i18n/radarDimCopy.ts",
+        "src/i18n/radarI18n.ts",
+        "src/i18n/teachingCopy.ts",
+        "src/lib/localBackend.ts",
+        "src/lib/supabase.ts",
+        "src/math/data/curriculum.ts",
+        "src/math/data/solvingSignals.ts",
+        "src/math/utils/mathStorage.ts",
+        "src/physics/data/curriculum.ts",
+        "src/physics/utils/physicsStorage.ts",
         "src/toeic/data/certificates.ts",
-        "src/utils/audioLessonPlayback.ts",
+        "src/toeic/data/chunks.ts",
+        "src/utils/ankiExportLoader.ts",
+        "src/utils/ankiExporter.ts",
         "src/utils/audioLessonTypes.ts",
         "src/utils/audioLessonVoices.ts",
-        "src/utils/mediaAudio.ts",
-        "src/utils/progressBundle.test.ts",
+        "src/utils/chunkLoadError.ts",
+        "src/utils/cloudProgress.ts",
         "src/utils/progressKeys.ts",
+        "src/utils/progressMerge.ts",
         "src/utils/progressSchema.ts",
+        "src/utils/sanitizeClientError.ts",
         "src/utils/speech.ts",
         "src/utils/storage.ts",
         "src/utils/topRoute.ts",
-        "src/utils/語音位置.test.ts",
-        "src/utils/語音位置.ts",
-        "src/utils/語音檢查.ts",
-        "docs/cookie-localstorage-inventory.md",
+        "src/首頁呈現.css",
         "node_modules/vitest/vitest.mjs",
         "package.json",
         "package-lock.json",
-        "vite.config.ts"
+        "vite.config.ts",
+        "tsconfig.json",
+        "tsconfig.app.json"
       ],
-      "expectedSeconds": 8,
+      "expectedSeconds": 10,
       "timeoutSeconds": 60,
       "reusePolicy": "success"
     },
     {
-      "id": "語音接續局部程式風格",
-      "reason": "本輪受影響 TS/TSX 來源 lint，保留既有警告阻擋。",
+      "id": "首頁呈現局部程式風格",
+      "reason": "只檢查本輪三個 TS/TSX 產品來源與新增呈現契約案例，保留既有警告阻擋。",
       "kind": "command",
       "command": [
         "node",
         "node_modules/oxlint/bin/oxlint",
         "--deny-warnings",
-        "src/components/AudioLesson.tsx",
-        "src/components/語音教學互動.test.tsx",
-        "src/utils/語音位置.ts",
-        "src/utils/語音位置.test.ts"
+        "src/Hub.tsx",
+        "src/components/TodayView.tsx",
+        "src/i18n/messages.ts",
+        "src/components/首頁呈現契約.test.tsx"
       ],
       "targets": [
-        "src/components/AudioLesson.tsx",
-        "src/components/語音教學互動.test.tsx",
-        "src/utils/語音位置.ts",
-        "src/utils/語音位置.test.ts"
+        "src/Hub.tsx",
+        "src/components/TodayView.tsx",
+        "src/i18n/messages.ts",
+        "src/components/首頁呈現契約.test.tsx"
       ],
       "changes": [
-        "src/components/AudioLesson.tsx",
-        "src/components/語音教學互動.test.tsx",
-        "src/utils/語音位置.ts",
-        "src/utils/語音位置.test.ts"
+        "src/Hub.tsx",
+        "src/components/TodayView.tsx",
+        "src/i18n/messages.ts",
+        "src/components/首頁呈現契約.test.tsx"
       ],
       "inputs": [
-        "src/components/AudioLesson.tsx",
-        "src/components/語音教學互動.test.tsx",
-        "src/utils/語音位置.ts",
-        "src/utils/語音位置.test.ts",
-        "src/utils/progressKeys.ts",
-        "src/utils/progressBundle.test.ts",
-        "src/engine/gates/storageInventory.test.ts",
+        "src/Hub.tsx",
+        "src/components/TodayView.tsx",
+        "src/i18n/messages.ts",
+        "src/components/首頁呈現契約.test.tsx",
         "package.json",
         "package-lock.json",
-        "vite.config.ts",
         ".oxlintrc.json",
         "node_modules/oxlint/bin/oxlint"
       ],
@@ -134,7 +173,7 @@
     },
     {
       "id": "網站建置資產前置",
-      "reason": "語音接續修改正式產品；沿用既有建置與產物完整性門檻，前序步驟產生當次 dist，不執行產品全套測試。",
+      "reason": "首頁與今日學習呈現修改正式產品；沿用既有正式產物前置、型別、建置、離線快取與完整性門檻及順序。完整輸入清單是建置依賴識別，不執行產品全套測試。",
       "kind": "command",
       "command": [
         "node",
@@ -145,14 +184,13 @@
         "scripts/prepare-archify.mjs"
       ],
       "changes": [
-        "src/components/AudioLesson.tsx",
-        "src/utils/語音位置.ts"
+        "src/Hub.tsx",
+        "src/components/TodayView.tsx",
+        "src/i18n/messages.ts",
+        "src/首頁呈現.css",
+        "src/components/今日學習呈現.css"
       ],
       "inputs": [
-        "src/components/AudioLesson.tsx",
-        "src/components/audioLesson.css",
-        "src/utils/語音位置.ts",
-        "src/utils/progressKeys.ts",
         "package.json",
         "package-lock.json",
         "vite.config.ts",
@@ -179,7 +217,12 @@
         "public/archify/transformer-attention.architecture.json",
         "public/archify/transformer-attention.html",
         "public/srs-review.html",
-        "scripts/prepare-archify.mjs"
+        "scripts/prepare-archify.mjs",
+        "src/Hub.tsx",
+        "src/components/TodayView.tsx",
+        "src/i18n/messages.ts",
+        "src/首頁呈現.css",
+        "src/components/今日學習呈現.css"
       ],
       "environmentKeys": [
         "VITE_BASE_PATH",
@@ -191,8 +234,8 @@
       "reusePolicy": "never"
     },
     {
-      "id": "語音接續型別建置",
-      "reason": "語音接續修改正式產品；沿用既有建置與產物完整性門檻，前序步驟產生當次 dist，不執行產品全套測試。",
+      "id": "首頁呈現型別建置",
+      "reason": "首頁與今日學習呈現修改正式產品；沿用既有正式產物前置、型別、建置、離線快取與完整性門檻及順序。完整輸入清單是建置依賴識別，不執行產品全套測試。",
       "kind": "command",
       "command": [
         "node",
@@ -203,10 +246,12 @@
         "node_modules/typescript/bin/tsc"
       ],
       "changes": [
-        "src/components/AudioLesson.tsx",
-        "src/components/語音教學互動.test.tsx",
-        "src/utils/語音位置.ts",
-        "src/utils/語音位置.test.ts"
+        "src/Hub.tsx",
+        "src/components/TodayView.tsx",
+        "src/i18n/messages.ts",
+        "src/首頁呈現.css",
+        "src/components/今日學習呈現.css",
+        "src/components/首頁呈現契約.test.tsx"
       ],
       "inputs": [
         "src/components/AudioLesson.tsx",
@@ -1082,7 +1127,10 @@
         "tsconfig.json",
         "tsconfig.node.json",
         "src/utils/語音位置.test.ts",
-        "node_modules/typescript/bin/tsc"
+        "node_modules/typescript/bin/tsc",
+        "src/首頁呈現.css",
+        "src/components/今日學習呈現.css",
+        "src/components/首頁呈現契約.test.tsx"
       ],
       "environmentKeys": [
         "VITE_BASE_PATH",
@@ -1095,7 +1143,7 @@
     },
     {
       "id": "網站產品建置",
-      "reason": "語音接續修改正式產品；沿用既有建置與產物完整性門檻，前序步驟產生當次 dist，不執行產品全套測試。",
+      "reason": "首頁與今日學習呈現修改正式產品；沿用既有正式產物前置、型別、建置、離線快取與完整性門檻及順序。完整輸入清單是建置依賴識別，不執行產品全套測試。",
       "kind": "command",
       "command": [
         "node",
@@ -1106,8 +1154,11 @@
         "node_modules/vite/bin/vite.js"
       ],
       "changes": [
-        "src/components/AudioLesson.tsx",
-        "src/utils/語音位置.ts"
+        "src/Hub.tsx",
+        "src/components/TodayView.tsx",
+        "src/i18n/messages.ts",
+        "src/首頁呈現.css",
+        "src/components/今日學習呈現.css"
       ],
       "inputs": [
         "src/components/AudioLesson.tsx",
@@ -1731,7 +1782,9 @@
         "tsconfig.app.json",
         "tsconfig.json",
         "tsconfig.node.json",
-        "node_modules/vite/bin/vite.js"
+        "node_modules/vite/bin/vite.js",
+        "src/首頁呈現.css",
+        "src/components/今日學習呈現.css"
       ],
       "environmentKeys": [
         "VITE_BASE_PATH",
@@ -1744,7 +1797,7 @@
     },
     {
       "id": "網站離線快取產物",
-      "reason": "語音接續修改正式產品；沿用既有建置與產物完整性門檻，前序步驟產生當次 dist，不執行產品全套測試。",
+      "reason": "首頁與今日學習呈現修改正式產品；沿用既有正式產物前置、型別、建置、離線快取與完整性門檻及順序。完整輸入清單是建置依賴識別，不執行產品全套測試。",
       "kind": "command",
       "command": [
         "node",
@@ -1754,8 +1807,11 @@
         "scripts/generate-precache.mjs"
       ],
       "changes": [
-        "src/components/AudioLesson.tsx",
-        "src/utils/語音位置.ts"
+        "src/Hub.tsx",
+        "src/components/TodayView.tsx",
+        "src/i18n/messages.ts",
+        "src/首頁呈現.css",
+        "src/components/今日學習呈現.css"
       ],
       "inputs": [
         "src/components/AudioLesson.tsx",
@@ -2379,7 +2435,9 @@
         "tsconfig.app.json",
         "tsconfig.json",
         "tsconfig.node.json",
-        "scripts/generate-precache.mjs"
+        "scripts/generate-precache.mjs",
+        "src/首頁呈現.css",
+        "src/components/今日學習呈現.css"
       ],
       "environmentKeys": [
         "VITE_BASE_PATH",
@@ -2392,7 +2450,7 @@
     },
     {
       "id": "網站產物完整性",
-      "reason": "語音接續修改正式產品；沿用既有建置與產物完整性門檻，前序步驟產生當次 dist，不執行產品全套測試。",
+      "reason": "首頁與今日學習呈現修改正式產品；沿用既有正式產物前置、型別、建置、離線快取與完整性門檻及順序。完整輸入清單是建置依賴識別，不執行產品全套測試。",
       "kind": "command",
       "command": [
         "node",
@@ -2402,8 +2460,11 @@
         "scripts/verify-dist.mjs"
       ],
       "changes": [
-        "src/components/AudioLesson.tsx",
-        "src/utils/語音位置.ts"
+        "src/Hub.tsx",
+        "src/components/TodayView.tsx",
+        "src/i18n/messages.ts",
+        "src/首頁呈現.css",
+        "src/components/今日學習呈現.css"
       ],
       "inputs": [
         "src/components/AudioLesson.tsx",
@@ -3028,7 +3089,9 @@
         "tsconfig.json",
         "tsconfig.node.json",
         "scripts/verify-dist.mjs",
-        "scripts/precacheRequired.mjs"
+        "scripts/precacheRequired.mjs",
+        "src/首頁呈現.css",
+        "src/components/今日學習呈現.css"
       ],
       "environmentKeys": [
         "VITE_BASE_PATH",

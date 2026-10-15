@@ -10,6 +10,7 @@ import {
 } from '../i18n/jlptChrome'
 import type { ProgressState } from '../utils/storage'
 import { HeroArt } from './HeroArt'
+import './今日學習呈現.css'
 
 type Props = {
   level: JlptLevel
@@ -56,26 +57,8 @@ export function TodayView({
   const overall = Math.round((vocabPct + readingPct + grammarPct) / 3)
   const ringDeg = Math.round((overall / 100) * 360)
 
-  if (overall === 0) {
-    return (
-      <section className="study-section today-view">
-        <div className="empty-state-card" role="status" aria-live="polite">
-          <h2>{t('todayView.emptyTitle')}</h2>
-          <p>{t('todayView.emptyBody')}</p>
-          <button
-            type="button"
-            className="primary-btn"
-            onClick={onStartVocab}
-          >
-            {t('todayView.emptyCta')}
-          </button>
-        </div>
-      </section>
-    )
-  }
-
   return (
-    <section className="study-section today-view">
+    <section className="study-section today-view learning-today">
       <section
         className="unit-banner"
         style={{ '--unit-color': level.color } as CSSProperties}
@@ -86,9 +69,15 @@ export function TodayView({
           </span>
           <h2 lang="ja">{unit.titleJa}</h2>
           <p>{jaTeachingCopy(locale, level.audience)}</p>
+          {overall === 0 && (
+            <div className="today-first-step" role="status">
+              <strong>{t('todayView.emptyTitle')}</strong>
+              <p>{t('todayView.emptyBody')}</p>
+            </div>
+          )}
           <div className="banner-actions">
             <button type="button" onClick={onStartVocab}>
-              {t('todayView.start')}
+              {t(overall === 0 ? 'todayView.emptyCta' : 'todayView.start')}
             </button>
             <span>
               {t('todayView.meta', { words: unit.words, reading: unit.reading })}
@@ -107,6 +96,47 @@ export function TodayView({
         </div>
       </section>
 
+      <div className="section-heading">
+        <div>
+          <p className="eyebrow">TODAY&apos;S PLAN</p>
+          <h2>{t('todayView.planTitle')}</h2>
+        </div>
+        <span>{t('todayView.planMeta')}</span>
+      </div>
+
+      <div className="task-grid">
+        <button type="button" onClick={onStartVocab}>
+          <i>Aa</i>
+          <span>TASK 01</span>
+          <h3>{t('todayView.vocab')}</h3>
+          <p>
+            {t('todayView.done', { done: progress.vocabDone, total: unit.words })}
+          </p>
+          <b>{t('todayView.go')}</b>
+        </button>
+        <button type="button" onClick={onStartReading}>
+          <i>📖</i>
+          <span>TASK 02</span>
+          <h3>{jaTeachingCopy(locale, unit.title)}</h3>
+          <p>
+            {t('todayView.answered', { done: progress.readingDone, total: unit.reading })}
+          </p>
+          <b>{t('todayView.go')}</b>
+        </button>
+        <button type="button" onClick={onStartGrammar}>
+          <i>Aa</i>
+          <span>TASK 03</span>
+          <h3>{jaTeachingCopy(locale, '場面・敬語')}｜<span lang="ja">{unit.grammar}</span></h3>
+          <p>
+            {progress.grammarStarted
+              ? t('todayView.grammarIn')
+              : t('todayView.grammarNew')}
+          </p>
+          <b>{t('todayView.go')}</b>
+        </button>
+      </div>
+
+      <div className="today-support-grid">
       <div className="daily-review">
         <div>
           <p className="eyebrow">SRS · TODAY</p>
@@ -157,46 +187,7 @@ export function TodayView({
         </button>
       </div>
 
-      <div className="section-heading">
-        <div>
-          <p className="eyebrow">TODAY&apos;S PLAN</p>
-          <h2>{t('todayView.planTitle')}</h2>
-        </div>
-        <span>{t('todayView.planMeta')}</span>
       </div>
-
-      <div className="task-grid">
-        <button type="button" onClick={onStartVocab}>
-          <i>Aa</i>
-          <span>TASK 01</span>
-          <h3>{t('todayView.vocab')}</h3>
-          <p>
-            {t('todayView.done', { done: progress.vocabDone, total: unit.words })}
-          </p>
-          <b>{t('todayView.go')}</b>
-        </button>
-        <button type="button" onClick={onStartReading}>
-          <i>📖</i>
-          <span>TASK 02</span>
-          <h3>{jaTeachingCopy(locale, unit.title)}</h3>
-          <p>
-            {t('todayView.answered', { done: progress.readingDone, total: unit.reading })}
-          </p>
-          <b>{t('todayView.go')}</b>
-        </button>
-        <button type="button" onClick={onStartGrammar}>
-          <i>Aa</i>
-          <span>TASK 03</span>
-          <h3>{jaTeachingCopy(locale, '場面・敬語')}｜<span lang="ja">{unit.grammar}</span></h3>
-          <p>
-            {progress.grammarStarted
-              ? t('todayView.grammarIn')
-              : t('todayView.grammarNew')}
-          </p>
-          <b>{t('todayView.go')}</b>
-        </button>
-      </div>
-
       <div className="result-panel">
         <div>
           <strong>{overall}%</strong>
