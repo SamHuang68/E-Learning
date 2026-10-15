@@ -48,14 +48,14 @@ export const AiMatrixTransformerLab: React.FC<Props> = ({ onEarnXp }) => {
   const currentWeights = ATTENTION_MATRIX[selectedTokenIdx]
 
   return (
-    <div className="math-lab ai-transformer-lab" style={{ width: '100%', maxWidth: '100%', minWidth: 0 }}>
+    <div className="math-lab ai-transformer-lab cs-lab">
       {/* 標頭 */}
-      <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
+      <div className="lab-header">
         <div>
-          <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+          <h3>
             <span>🤖</span> {copy('現代 AI 矩陣平行加速與 Transformer Self-Attention 實驗室', 'Modern AI Matrix Acceleration and Transformer Self-Attention Lab')}
           </h3>
-          <p className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+          <p className="lab-desc">
             {copy('即時體驗 GPU 平行張量運算 (GEMM)、縮放點積自注意力機制與大模型 KV Cache 空間換時間。', 'Explore parallel GPU tensor GEMM, scaled dot-product attention Softmax(QKᵀ/√d)V, and the memory-for-computation tradeoff of an LLM KV cache.')}
           </p>
         </div>

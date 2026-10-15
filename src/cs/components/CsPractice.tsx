@@ -47,9 +47,9 @@ export const CsPractice: React.FC<Props> = ({
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+    <div className="cs-practice">
       {/* 單元切換膠囊 */}
-      <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+      <div className="cs-practice-unit-tabs">
         {curriculum.map((u, idx) => {
           const isActive = u.id === activeUnitId
           const unitCompleted = u.questions.every((q) => completedQuestions.includes(q.id))
@@ -57,14 +57,7 @@ export const CsPractice: React.FC<Props> = ({
             <button aria-pressed={isActive}
               key={u.id}
               type="button"
-              className={`pill-btn ${isActive ? 'active' : ''}`}
-              style={{
-                padding: '0.35rem 0.65rem',
-                fontSize: '0.74rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.3rem',
-              }}
+              className={`pill-btn cs-practice-unit-tab ${isActive ? 'active' : ''}`}
               onClick={() => setActiveUnitId(u.id)}
             >
               <span>{unitCompleted ? '✓' : idx + 1}</span>
@@ -75,23 +68,23 @@ export const CsPractice: React.FC<Props> = ({
       </div>
 
       {/* 當前單元標頭與核心概念速覽 */}
-      <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+      <div className="cs-practice-overview">
+        <div className="cs-practice-overview-header">
           <div>
-            <span style={{ fontSize: '0.7rem', padding: '0.1rem 0.4rem', borderRadius: '999px', background: 'rgba(37, 99, 235, 0.15)', color: '#2563eb', fontWeight: 700 }}>
+            <span className="cs-practice-strand">
               {t(csStrandMessageKey(currentUnit.strand))} · {csTeachingCopy(locale, currentUnit.band)}
             </span>
-            <h3 style={{ margin: '0.3rem 0 0.1rem', fontSize: '1.05rem' }}>{currentUnit.title}</h3>
-            <span style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>{currentUnit.subtitle}</span>
+            <h3>{currentUnit.title}</h3>
+            <span className="cs-practice-overview-subtitle">{currentUnit.subtitle}</span>
           </div>
         </div>
 
         {/* 核心觀念要點 */}
-        <div style={{ background: 'var(--surface-soft)', borderRadius: '8px', padding: '0.65rem 0.8rem', marginTop: '0.5rem', border: '1px solid var(--line)' }}>
-          <strong style={{ fontSize: '0.76rem', color: '#2563eb', display: 'block', marginBottom: '0.25rem' }}>
+        <div className="cs-practice-concepts">
+          <strong>
             {copy('📖 本單元核心觀念精要：', '📖 Core concepts in this unit:')}
           </strong>
-          <ul style={{ margin: 0, paddingLeft: '1.1rem', fontSize: '0.74rem', lineHeight: 1.5, color: 'var(--text)' }}>
+          <ul>
             {currentUnit.concepts.map((concept, cIdx) => (
               <li key={cIdx}>{concept}</li>
             ))}
@@ -100,7 +93,7 @@ export const CsPractice: React.FC<Props> = ({
       </div>
 
       {/* 單元題目列表 */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+      <div className="cs-practice-questions">
         {currentUnit.questions.map((q, qIdx) => {
           const isSubmitted = submittedQuestions[q.id]
           const chosenOpt = selectedOptions[q.id]
@@ -109,32 +102,30 @@ export const CsPractice: React.FC<Props> = ({
           return (
             <div
               key={q.id}
+              className="cs-practice-question"
               style={{
-                background: 'var(--surface)',
                 border: isDone ? '1px solid rgba(16, 185, 129, 0.4)' : '1px solid var(--line)',
-                borderRadius: '12px',
-                padding: '1rem',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                  <span style={{ fontSize: '0.72rem', padding: '0.1rem 0.4rem', borderRadius: '999px', background: 'rgba(37, 99, 235, 0.15)', color: '#2563eb', fontWeight: 700 }}>
+              <div className="cs-practice-question-header">
+                <div className="cs-practice-question-title">
+                  <span className="cs-practice-question-number">
                     {copy(`第 ${qIdx + 1} 題`, `Question ${qIdx + 1}`)}
                   </span>
-                  <strong style={{ fontSize: '0.88rem' }}>{q.title}</strong>
+                  <strong>{q.title}</strong>
                 </div>
                 {isDone && (
-                  <span style={{ fontSize: '0.72rem', color: '#10b981', fontWeight: 700 }}>{copy('✓ 已掌握 (+15 XP)', '✓ Mastered (+15 XP)')}</span>
+                  <span className="cs-practice-mastery" style={{ color: '#10b981' }}>{copy('✓ 已掌握 (+15 XP)', '✓ Mastered (+15 XP)')}</span>
                 )}
               </div>
 
-              <p style={{ fontSize: '0.84rem', lineHeight: 1.5, margin: '0.4rem 0 0.6rem' }}>
+              <p className="cs-practice-stem">
                 {q.question}
               </p>
 
               {/* 選項列表 */}
               {q.options && (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '0.35rem' }}>
+                <div className="cs-practice-options">
                   {q.options.map((opt, optIdx) => {
                     const isChosen = chosenOpt === optIdx
                     const isCorrect = optIdx === q.answer
@@ -156,25 +147,19 @@ export const CsPractice: React.FC<Props> = ({
                       <button
                         key={optIdx}
                         type="button"
-                        className="practice-card"
+                        className="practice-card cs-practice-option"
                         aria-pressed={isChosen}
                         aria-disabled={Boolean(isSubmitted)}
                         style={{
-                          padding: '0.5rem 0.8rem',
-                          borderRadius: '8px',
                           border: `1px solid ${border}`,
                           background: bg,
-                          textAlign: 'left',
                           cursor: isSubmitted ? 'default' : 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
                         }}
                         onClick={() => handleSelectOption(q, optIdx)}
                       >
-                        <span style={{ fontSize: '0.8rem' }}>{opt}</span>
-                        {isSubmitted && isCorrect && <span style={{ color: '#10b981', fontWeight: 700 }}>{copy('✓ 正確', '✓ Correct')}</span>}
-                        {isSubmitted && isChosen && !isCorrect && <span style={{ color: '#ef4444', fontWeight: 700 }}>{copy('✗ 錯誤', '✗ Incorrect')}</span>}
+                        <span className="cs-practice-option-text">{opt}</span>
+                        {isSubmitted && isCorrect && <span className="cs-practice-option-status" style={{ color: '#10b981' }}>{copy('✓ 正確', '✓ Correct')}</span>}
+                        {isSubmitted && isChosen && !isCorrect && <span className="cs-practice-option-status" style={{ color: '#ef4444' }}>{copy('✗ 錯誤', '✗ Incorrect')}</span>}
                       </button>
                     )
                   })}
@@ -183,19 +168,19 @@ export const CsPractice: React.FC<Props> = ({
 
               {/* 詳解區域 */}
               {isSubmitted && (
-                <div style={{ marginTop: '0.65rem', padding: '0.75rem', borderRadius: '8px', background: 'var(--surface-soft)', border: '1px solid var(--line)' }}>
-                  <p role="status" aria-live="polite" aria-atomic="true" className="status-line" style={{ margin: '0 0 0.4rem' }}>
+                <div className="cs-practice-feedback">
+                  <p role="status" aria-live="polite" aria-atomic="true" className="status-line">
                     {chosenOpt === q.answer ? copy('答對了', 'Correct') : copy('答錯了', 'Incorrect')}
                   </p>
-                  <strong style={{ fontSize: '0.78rem', color: '#2563eb', display: 'block', marginBottom: '0.3rem' }}>
+                  <strong className="cs-practice-feedback-title">
                     {copy('💡 步驟式深度解析：', '💡 Step-by-step explanation:')}
                   </strong>
-                  <ol style={{ margin: 0, paddingLeft: '1.2rem', fontSize: '0.76rem', lineHeight: 1.5, color: 'var(--text)' }}>
+                  <ol>
                     {q.solution.map((step, sIdx) => (
                       <li key={sIdx}>{step}</li>
                     ))}
                   </ol>
-                  <div style={{ marginTop: '0.4rem', fontSize: '0.72rem', color: 'var(--muted)' }}>
+                  <div className="cs-practice-keypoint">
                     <strong>{copy('考點精要：', 'Key point:')}</strong>{q.explanation}
                   </div>
                 </div>

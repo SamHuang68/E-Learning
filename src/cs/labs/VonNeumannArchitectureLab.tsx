@@ -84,14 +84,14 @@ export const VonNeumannArchitectureLab: React.FC<Props> = ({ onEarnXp }) => {
   const currentInfo = stepLabels[cycleStep]
 
   return (
-    <div className="math-lab von-neumann-lab" style={{ width: '100%', maxWidth: '100%', minWidth: 0 }}>
+    <div className="math-lab von-neumann-lab cs-lab">
       {/* 標頭 */}
-      <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
+      <div className="lab-header">
         <div>
-          <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+          <h3>
             <span>⚙️</span> {copy('馮紐曼五大單元動態資料流與機器週期實驗室', 'Von Neumann Dataflow and Machine-Cycle Lab')}
           </h3>
-          <p className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+          <p className="lab-desc">
             {copy('視覺化 CPU 的取指、解碼、執行與寫回週期，以及 PC、IR、ALU 與系統匯流排。', 'Visualize the CPU fetch, decode, execute, and writeback cycle together with the PC, IR, ALU, and system buses.')}
           </p>
         </div>

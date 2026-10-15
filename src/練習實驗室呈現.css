@@ -1,0 +1,245 @@
+/* 延續學科內頁風格，限定練習與實驗室容器，不改題庫或圖形計算。 */
+.practice-view,
+.math-practice-shell,
+.cs-practice {
+  --activity-accent: var(--course-accent, #3f6f64);
+  width: min(100%, 960px);
+  min-width: 0;
+  margin-inline: auto;
+}
+
+.practice-view {
+  --workspace-accent: var(--activity-accent);
+  --workspace-accent-strong: var(--navy);
+  --workspace-accent-soft: var(--surface-soft);
+  --workspace-prompt-from: var(--surface-soft);
+  --workspace-prompt-to: var(--surface);
+}
+.practice-view > h1 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1rem;
+  margin: 0.4rem 0 1rem;
+  font-size: clamp(1.35rem, 2.2vw, 1.85rem);
+  line-height: 1.4;
+}
+.practice-view > h1 > span {
+  flex-shrink: 0;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+  font: 600 0.85rem / 1.4 var(--font-sans);
+}
+.practice-view > .eyebrow { margin-block: 0.8rem 0.25rem; }
+.practice-view .practice-card,
+.math-practice-shell > .practice-card {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: clamp(1rem, 2.4vw, 1.65rem);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: 0 6px 20px rgb(35 77 67 / 5%);
+  overflow: visible;
+}
+.practice-view .practice-card::before { display: none; }
+.practice-view .flash-face {
+  min-height: 0;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  border-radius: 12px;
+  line-height: 1.65;
+  background: var(--surface-soft);
+  color: var(--ink);
+  box-shadow: none;
+}
+.practice-view .flash-face strong { font-size: clamp(1.35rem, 2.2vw, 1.9rem); }
+.practice-view .choice-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
+.practice-view .choice-grid .choice-btn {
+  min-height: 56px;
+  padding-block: 0.8rem;
+  text-align: left;
+  border-radius: 12px;
+  font-size: 1rem;
+  box-shadow: none;
+}
+.practice-view .choice-grid .choice-btn.correct,
+.practice-view .choice-grid .choice-btn.correct:hover {
+  border-color: #248356;
+  background: color-mix(in srgb, #248356 14%, var(--surface));
+  color: var(--ink);
+}
+.practice-view .choice-grid .choice-btn.wrong,
+.practice-view .choice-grid .choice-btn.wrong:hover {
+  border-color: #bb4b43;
+  background: color-mix(in srgb, #bb4b43 12%, var(--surface));
+  color: var(--ink);
+}
+.practice-view .choice-grid .choice-btn[aria-disabled='true'] { transform: none; cursor: default; }
+.practice-view .choice-grid .choice-btn.wrong .choice-result-mark { color: inherit; }
+.practice-view .flash-actions { gap: 0.65rem; flex-wrap: wrap; }
+.practice-view .practice-card > .flash-actions:last-child { margin-top: 1.25rem; justify-content: flex-end; }
+.practice-view .status-line { padding: 0.8rem 1rem; border-radius: 10px; line-height: 1.6; }
+.practice-view :is(button, input, select):focus-visible,
+.math-practice-shell :is(button, input, select):focus-visible,
+.cs-practice button:focus-visible,
+.math-lab :is(button, input, select):focus-visible {
+  outline: 3px solid var(--activity-accent, var(--course-accent, #3f6f64));
+  outline-offset: 3px;
+}
+
+/* 數學、物理與化學共用題卡，不更動正誤與已選取狀態色。 */
+.math-practice-shell .practice-top-bar {
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 0;
+}
+.math-practice-shell .practice-top-bar > div { min-width: 0; flex-wrap: wrap; }
+.math-practice-shell .practice-unit-tag { overflow-wrap: anywhere; }
+.math-practice-shell .question-header { gap: 0.75rem; flex-wrap: wrap; align-items: baseline; }
+.math-practice-shell .question-body { margin-block: 1rem 1.25rem; font-size: 1.15rem; line-height: 1.8; }
+.math-practice-shell .question-body h3 { margin: 0 0 0.75rem; font-size: 1.25rem; }
+.math-practice-shell .options-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
+.math-practice-shell .option-btn { min-height: 56px; padding: 0.85rem 1rem; border-radius: 12px; line-height: 1.6; }
+.math-practice-shell :is(.opt-text, .opt-content) { min-width: 0; }
+.math-practice-shell :is(.opt-letter, .opt-marker) { flex-shrink: 0; }
+.math-practice-shell :is(.practice-actions, .action-buttons-row) { flex-wrap: wrap; gap: 0.65rem; }
+.math-practice-shell :is(.hint-card, .hint-box, .solution-card, .solution-box) {
+  padding: 1rem;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  line-height: 1.75;
+}
+.math-practice-shell :is(.fill-text-input, .btn-submit-answer, .btn-next-question, .btn-hint-toggle) { min-height: 44px; font-size: 1rem; }
+
+/* 計概題庫：與一般內容卡片分離寬度及下距，保留動態正誤邊框。 */
+.cs-practice { display: flex; flex-direction: column; gap: 1.25rem; }
+.cs-practice-unit-tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.cs-practice-unit-tab { display: flex; align-items: center; gap: 0.35rem; font-size: 0.9rem; }
+.cs-practice-overview,
+.cs-practice-question { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: clamp(1rem, 2.4vw, 1.65rem); }
+.cs-practice-overview-header { display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-start; }
+.cs-practice-overview-header h3 { margin: 0.6rem 0 0.25rem; font-size: 1.3rem; line-height: 1.5; }
+.cs-practice-strand,
+.cs-practice-question-number { padding: 0.25rem 0.6rem; border-radius: 6px; background: var(--surface-soft); color: var(--navy); font-size: 0.8rem; font-weight: 700; }
+.cs-practice-overview-subtitle { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+.cs-practice-concepts { margin-top: 1rem; padding: 1rem; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-soft); }
+.cs-practice-concepts > strong { color: var(--navy); font-size: 0.95rem; }
+.cs-practice-concepts > ul { margin: 0.6rem 0 0; padding-left: 1.3rem; font-size: 0.95rem; line-height: 1.8; }
+.cs-practice-questions { display: flex; flex-direction: column; gap: 1.25rem; }
+.cs-practice-question-header,
+.cs-practice-question-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem; }
+.cs-practice-question-header { justify-content: space-between; }
+.cs-practice-question-title > strong { font-size: 1rem; }
+.cs-practice-mastery { font-size: 0.85rem; }
+.cs-practice-stem { margin: 1rem 0; font-size: 1.05rem; line-height: 1.8; }
+.cs-practice-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
+.cs-practice .cs-practice-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: none;
+  min-height: 56px;
+  margin: 0;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  text-align: left;
+  box-shadow: none;
+}
+.cs-practice-option-text { font-size: 1rem; line-height: 1.6; }
+.cs-practice-option-status { flex-shrink: 0; font-size: 0.85rem; font-weight: 700; }
+.cs-practice-feedback { margin-top: 1rem; padding: 1rem; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-soft); }
+.cs-practice-feedback > .status-line { margin: 0 0 0.65rem; }
+.cs-practice-feedback-title { font-size: 0.95rem; }
+.cs-practice-feedback > ol { margin: 0.65rem 0; padding-left: 1.3rem; font-size: 0.95rem; line-height: 1.8; }
+.cs-practice-keypoint { font-size: 0.95rem; color: var(--muted); line-height: 1.7; }
+
+/* 實驗室保留專用圖形與控制項，只整理周邊閱讀與選擇層級。 */
+:is(.learning-course, .app-shell) .math-lab { min-width: 0; border-radius: 18px; padding: clamp(1rem, 2vw, 1.5rem); margin-top: 0.75rem; }
+.math-lab .lab-header { gap: 1rem; flex-wrap: wrap; margin-bottom: 1.25rem; padding-bottom: 1rem; }
+/* 舊實驗室在標題及說明寫入固定小字；只覆寫這兩個已具名文字區，不碰圖形標籤。 */
+.math-lab .lab-header h3 { font-size: 1.2rem !important; line-height: 1.5 !important; }
+.math-lab .lab-desc { font-size: 0.95rem !important; line-height: 1.7 !important; }
+.labs-sub-bar { flex-wrap: wrap; overflow-x: visible; gap: 0.65rem; }
+.labs-sub-bar .pill-btn { white-space: normal; min-height: 44px; line-height: 1.5; }
+:is(.physics-labs-showcase, .chemistry-labs-showcase) > .mock-nav-tabs {
+  gap: 0.5rem;
+  padding: 0.5rem;
+  margin-bottom: 0;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+:is(.physics-labs-showcase, .chemistry-labs-showcase) > .mock-nav-tabs .mock-tab { min-height: 44px; border-radius: 10px; line-height: 1.5; }
+.math-lab .lab-sliders-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: 1rem; margin-top: 1.5rem; padding: 1rem; border-radius: 12px; border: 1px solid var(--line); background: var(--surface-soft); }
+.math-lab .slider-control { display: grid; gap: 0.65rem; min-width: 0; }
+.math-lab .slider-control input[type='range'] { width: 100%; min-height: 32px; accent-color: var(--course-accent, #3f6f64); }
+.fraction-lab .fraction-display-card { display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; padding: 1rem; border-radius: 12px; background: var(--surface-soft); }
+.fraction-lab .fraction-visuals { min-width: 0; }
+.fraction-lab .pie-visual-box { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+.fraction-lab .visual-caption { font-size: 0.9rem; line-height: 1.5; text-align: center; }
+.fraction-lab .number-line-box { padding: 0.5rem 1.5rem 1.5rem; }
+.fraction-lab .number-line-box h4 { margin: 1rem 0 2.75rem; }
+.fraction-lab .num-line-track { position: relative; height: 3px; background: var(--muted); }
+.fraction-lab .num-line-marker { position: absolute; top: -6px; transform: translateX(-50%); display: grid; justify-items: center; }
+.fraction-lab .marker-pin { width: 14px; height: 14px; border-radius: 50%; background: var(--navy); border: 2px solid var(--surface); }
+.fraction-lab .marker-label { position: absolute; bottom: 1.25rem; padding: 0.2rem 0.4rem; border-radius: 5px; background: var(--navy); color: var(--on-navy); white-space: nowrap; font-size: 0.85rem; }
+.fraction-lab .num-line-ticks { display: flex; justify-content: space-between; padding-top: 0.55rem; font-size: 0.85rem; }
+.fraction-lab .num-line-ticks > span { position: relative; }
+.fraction-lab .num-line-ticks > span::before { content: ''; position: absolute; left: 50%; bottom: 100%; height: 7px; border-left: 1px solid var(--muted); }
+.calculus-studio-workspace :is(.calculus-lab-control-card, .calculus-assessment-widget) { border-radius: 18px; box-shadow: none; }
+.calculus-assessment-widget :is(.assessment-topbar, .tier-pills-row) { gap: 0.65rem; }
+.calculus-assessment-widget :is(.btn-tier-pill, .btn-mode-tab) { min-height: 44px; white-space: normal; line-height: 1.5; }
+.calculus-lab-control-card :is(.control-card-header, .slider-label-row) { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: baseline; justify-content: space-between; }
+.calculus-lab-control-card .control-card-header { margin-bottom: 1rem; }
+.calculus-lab-control-card .control-card-header h4 { margin: 0; font-size: 1.1rem; line-height: 1.5; }
+.calculus-lab-control-card .mode-badge { padding: 0.25rem 0.5rem; border-radius: 6px; background: var(--surface-soft); color: var(--muted); font-size: 0.75rem; overflow-wrap: anywhere; }
+.calculus-lab-control-card .form-group { display: grid; gap: 0.5rem; margin-block: 1rem; }
+.calculus-lab-control-card .form-group :is(select, input) { width: 100%; min-width: 0; min-height: 44px; padding: 0.6rem; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); font-size: 0.95rem; }
+.calculus-assessment-widget .theta-gauge-box { flex-wrap: wrap; line-height: 1.6; }
+.calculus-assessment-widget .problem-header-row h4 { margin-block: 0.75rem; font-size: 1.15rem; line-height: 1.5; }
+.calculus-assessment-widget .problem-question-text { font-size: 1rem; line-height: 1.8; }
+.calculus-assessment-widget .problem-options-list { display: grid; gap: 0.75rem; }
+.cs-lab { display: flex; flex-direction: column; gap: 1rem; width: 100%; max-width: 100%; min-width: 0; }
+.cs-lab:not(.math-lab) { height: 100%; overflow-y: auto; padding-right: 0.4rem; }
+.cs-lab-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; padding: 1.25rem; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); }
+.cs-lab .lab-header { margin-bottom: 0; }
+.tone-listening-lab { width: 100%; max-width: 100%; min-width: 0; }
+
+/* 聲調辨音仍採原本題目與語音，讓核心播放、詞義與解析更清楚。 */
+.tone-drill-card { display: flex; flex-direction: column; align-items: stretch; gap: 1.25rem; width: min(100%, 760px); margin-inline: auto; padding: clamp(1rem, 2vw, 1.5rem); border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
+.tone-drill-meta { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.65rem; align-items: center; }
+.tone-drill-counter { padding: 0.3rem 0.6rem; border-radius: 999px; background: var(--surface-soft); color: var(--navy); font-size: 0.85rem; font-weight: 700; }
+.tone-drill-title { font-size: 0.95rem; color: var(--muted); }
+.tone-drill-play { text-align: center; margin: 0.5rem 0; }
+.tone-drill-play-button { padding: 0.85rem 1.4rem; min-height: 48px; border-radius: 12px; background: var(--navy); color: var(--on-navy); font-size: 1rem; white-space: normal; }
+.tone-drill-help { display: block; margin-top: 0.75rem; color: var(--muted); font-size: 0.9rem; line-height: 1.7; }
+.tone-drill-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.tone-listening-lab .tone-drill-option { width: 100%; max-width: none; margin: 0; padding: 1.25rem 1rem; text-align: center; border: 2px solid; border-radius: 12px; box-shadow: none; }
+.tone-drill-option h3 { margin: 0 0 0.5rem; font-size: 2rem; }
+.tone-drill-pinyin { color: var(--navy); font-size: 1.05rem; }
+.tone-drill-meaning { display: block; margin-top: 0.4rem; color: var(--muted); font-size: 0.95rem; line-height: 1.6; }
+.tone-drill-feedback { padding: 1rem; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-soft); font-size: 0.95rem; line-height: 1.75; }
+.tone-drill-result { margin-bottom: 0.65rem; font-weight: 700; }
+.tone-drill-feedback p { margin: 0 0 0.65rem; color: var(--muted); }
+.tone-drill-example { color: var(--muted); }
+.tone-drill-next { display: flex; justify-content: flex-end; margin-top: 1rem; }
+
+@media (max-width: 700px) {
+  .practice-view .choice-grid,
+  .math-practice-shell .options-grid,
+  .cs-practice-options,
+  .tone-drill-options { grid-template-columns: minmax(0, 1fr); }
+  .practice-view .flash-face { padding: 1rem; }
+  .practice-view .flash-face strong { font-size: 1.35rem; }
+  .math-practice-shell .practice-top-bar > div { max-width: 100%; }
+  .math-lab :is(.fraction-layout, .coord-layout, .pythagoras-layout, .unit-circle-layout, .calculus-layout) { grid-template-columns: minmax(0, 1fr); }
+  .math-lab .lab-sliders-row { padding: 0.85rem; }
+  .cs-practice-question-header { align-items: flex-start; }
+}
