@@ -28,9 +28,9 @@ export const PipelineHazardLab: React.FC<Props> = ({ onEarnXp }) => {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', height: '100%', overflowY: 'auto', paddingRight: '0.4rem' }}>
+    <div className="cs-lab">
       {/* 頂部控制面板 */}
-      <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '12px', padding: '1rem', display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div className="cs-lab-header">
         <div>
           <h3 style={{ margin: 0, fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <span>⚡</span> {copy('CPU 5級管線冒險與前向傳遞 (Forwarding) 實驗室', 'Five-Stage CPU Pipeline Hazards and Forwarding Lab')}

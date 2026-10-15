@@ -54,14 +54,14 @@ export const ToneListeningLab: React.FC<Props> = ({ onEarnXp }) => {
   }
 
   return (
-    <div className="math-lab tone-listening-lab" style={{ width: '100%', maxWidth: '100%', minWidth: 0 }}>
+    <div className="math-lab tone-listening-lab">
       {/* 標頭 */}
-      <div className="lab-header" style={{ marginBottom: '0.8rem' }}>
+      <div className="lab-header">
         <div>
-          <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+          <h3>
             <span>🎧</span> {locale === 'en' ? 'Four-Tone Listening Lab' : '四聲聲調辨音聽力實驗室 (Tone Listening Lab)'}
           </h3>
-          <p lang={locale === 'en' ? 'en' : 'ja'} className="lab-desc" style={{ margin: 0, fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.4 }}>
+          <p lang={locale === 'en' ? 'en' : 'ja'} className="lab-desc">
             {locale === 'en'
               ? 'Train your ear with blind listening comparisons of Mandarin minimal pairs that differ mainly by tone.'
               : '日本人学習者が最も聞き取りにくい「最小対立体（Minimal Pairs）」をブラインドで聴き分け、耳を鍛えよう！'}
@@ -70,44 +70,24 @@ export const ToneListeningLab: React.FC<Props> = ({ onEarnXp }) => {
       </div>
 
       {/* 測驗核心卡片 */}
-      <div
-        style={{
-          background: 'var(--surface)',
-          border: '1px solid var(--line)',
-          borderRadius: '16px',
-          padding: '1.2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '1rem',
-          maxWidth: '560px',
-          margin: '0 auto',
-        }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
-          <span style={{ fontSize: '0.74rem', padding: '0.15rem 0.5rem', borderRadius: '999px', background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', fontWeight: 700 }}>
+      <div className="tone-drill-card">
+        <div className="tone-drill-meta">
+          <span className="tone-drill-counter">
             {locale === 'en' ? 'Question' : '問題'} #{drillIdx + 1} / {TONE_DRILLS.length}
           </span>
-          <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>{localizedDrill.titleJa}</span>
+          <span lang={locale === 'en' ? 'en' : 'ja'} className="tone-drill-title">{localizedDrill.titleJa}</span>
         </div>
 
         {/* 播放按鈕 */}
-        <div style={{ textAlign: 'center', margin: '0.6rem 0' }}>
+        <div className="tone-drill-play">
           <button lang={locale === 'en' ? 'en' : 'ja'}
             type="button"
-            className="btn-primary"
-            style={{
-              padding: '0.8rem 1.6rem',
-              fontSize: '1rem',
-              borderRadius: '999px',
-              boxShadow: '0 4px 16px rgba(245, 158, 11, 0.3)',
-              background: 'linear-gradient(135deg, #f59e0b, #ef4444)',
-            }}
+            className="btn-primary tone-drill-play-button"
             onClick={handlePlayQuestion}
           >
             {locale === 'en' ? '🔊 Play audio' : '🔊 音声を聴く (Play Audio)'}
           </button>
-          <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.74rem', color: 'var(--muted)', display: 'block', marginTop: '0.4rem' }}>
+          <span lang={locale === 'en' ? 'en' : 'ja'} className="tone-drill-help">
             {locale === 'en'
               ? 'Listen to the pronunciation, then choose the word you heard.'
               : 'ボタンを押して発音を聞き、どちらの単語か判定してください'}
@@ -115,17 +95,13 @@ export const ToneListeningLab: React.FC<Props> = ({ onEarnXp }) => {
         </div>
 
         {/* 二選一選項按鈕 */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.8rem', width: '100%' }}>
+        <div className="tone-drill-options">
           <button
             type="button"
-            className="practice-card"
+            className="practice-card tone-drill-option"
             aria-pressed={selectedAnswer === 'A'}
             aria-disabled={hasSubmitted}
             style={{
-              padding: '1rem 0.8rem',
-              textAlign: 'center',
-              borderRadius: '12px',
-              border: '2px solid',
               borderColor:
                 hasSubmitted && isPlayingTarget === 'A'
                   ? '#10b981'
@@ -142,23 +118,19 @@ export const ToneListeningLab: React.FC<Props> = ({ onEarnXp }) => {
             }}
             onClick={() => handlePick('A')}
           >
-            <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.4rem' }}>{currentDrill.pairA.zh}</h3>
-            <div lang="zh-Latn" style={{ fontSize: '0.82rem', color: '#f59e0b' }}>{currentDrill.pairA.pinyin}</div>
-            <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block', marginTop: '0.2rem' }}>
+            <h3>{currentDrill.pairA.zh}</h3>
+            <div lang="zh-Latn" className="tone-drill-pinyin">{currentDrill.pairA.pinyin}</div>
+            <span lang={locale === 'en' ? 'en' : 'ja'} className="tone-drill-meaning">
               {localizedDrill.pairA.meaningJa}
             </span>
           </button>
 
           <button
             type="button"
-            className="practice-card"
+            className="practice-card tone-drill-option"
             aria-pressed={selectedAnswer === 'B'}
             aria-disabled={hasSubmitted}
             style={{
-              padding: '1rem 0.8rem',
-              textAlign: 'center',
-              borderRadius: '12px',
-              border: '2px solid',
               borderColor:
                 hasSubmitted && isPlayingTarget === 'B'
                   ? '#10b981'
@@ -175,9 +147,9 @@ export const ToneListeningLab: React.FC<Props> = ({ onEarnXp }) => {
             }}
             onClick={() => handlePick('B')}
           >
-            <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.4rem' }}>{currentDrill.pairB.zh}</h3>
-            <div lang="zh-Latn" style={{ fontSize: '0.82rem', color: '#f59e0b' }}>{currentDrill.pairB.pinyin}</div>
-            <span lang={locale === 'en' ? 'en' : 'ja'} style={{ fontSize: '0.72rem', color: 'var(--muted)', display: 'block', marginTop: '0.2rem' }}>
+            <h3>{currentDrill.pairB.zh}</h3>
+            <div lang="zh-Latn" className="tone-drill-pinyin">{currentDrill.pairB.pinyin}</div>
+            <span lang={locale === 'en' ? 'en' : 'ja'} className="tone-drill-meaning">
               {localizedDrill.pairB.meaningJa}
             </span>
           </button>
@@ -185,20 +157,20 @@ export const ToneListeningLab: React.FC<Props> = ({ onEarnXp }) => {
 
         {/* 提交後的辨析解析 */}
         {hasSubmitted && (
-          <div style={{ width: '100%', background: 'var(--surface-soft)', padding: '0.8rem', borderRadius: '10px', border: '1px solid var(--line)', fontSize: '0.78rem', lineHeight: 1.45 }}>
-            <div style={{ fontWeight: 700, color: selectedAnswer === isPlayingTarget ? '#10b981' : '#ef4444', marginBottom: '0.3rem' }}>
+          <div className="tone-drill-feedback">
+            <div className="tone-drill-result" style={{ color: selectedAnswer === isPlayingTarget ? '#10b981' : '#ef4444' }}>
               {selectedAnswer === isPlayingTarget
                 ? locale === 'en' ? '🎉 Correct! (+10 XP)' : '🎉 正解！(+10 XP)'
                 : locale === 'en' ? '⚠️ Not quite. Listen once more and compare the tones.' : '⚠️ 不正解。もう一度音を聞き比べてみましょう。'}
             </div>
-            <p lang={locale === 'en' ? 'en' : 'ja'} style={{ margin: '0 0 0.4rem', color: 'var(--muted)' }}>
+            <p lang={locale === 'en' ? 'en' : 'ja'}>
               💡 <strong>{locale === 'en' ? 'Listening cue: ' : '聞き分けのコツ：'}</strong><span>{localizedDrill.confusionPointJa}</span>
             </p>
-            <div style={{ fontSize: '0.74rem', color: 'var(--muted)' }}>
+            <div className="tone-drill-example">
               {locale === 'en' ? 'Target example: ' : '例文：'}{currentDrill.exampleContextZh}
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.6rem' }}>
+            <div className="tone-drill-next">
               <button lang={locale === 'en' ? 'en' : 'ja'} type="button" className="btn-primary" onClick={handleNext}>
                 {locale === 'en' ? 'Next question →' : '次の問題へ →'}
               </button>
